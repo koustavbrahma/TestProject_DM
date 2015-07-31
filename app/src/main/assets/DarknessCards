@@ -1,0 +1,26 @@
+BeginAcidRefluxtheFleshboiler
+BeginSlotAttributes
+AcidRefluxtheFleshboiler
+16
+DevilMask
+5
+1
+3000
+1
+EndSlotAttributes
+BeginFlagAttributes
+Slayer 31
+Blocker 31
+CantAttack 1
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndAcidRefluxtheFleshboiler

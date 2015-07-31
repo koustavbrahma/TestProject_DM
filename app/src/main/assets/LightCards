@@ -1,0 +1,28 @@
+BeginAdomistheOracle
+BeginSlotAttributes
+AdomistheOracle
+8
+LightBringer
+3
+1
+2000
+1
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+HasTapAbility 1
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+TapAbility 1
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+1 300 1 0 0 0 0 0 4 0 0 0 0 0 0 0 0 0
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndAdomistheOracle

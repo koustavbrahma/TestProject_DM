@@ -1,0 +1,26 @@
+BeginAdventureBoar
+BeginSlotAttributes
+AdventureBoar
+4
+BeastFolk
+2
+1
+1000
+1
+EndSlotAttributes
+BeginFlagAttributes
+PowerAttacker 2000
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndAdventureBoar

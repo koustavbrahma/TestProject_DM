@@ -1,0 +1,255 @@
+Notes: P--> persistent attribute cannot be changed (one should not play with these attributes)
+       C--> Changeable attribute , can changed during spreading.
+****************************************************************************************************
+SlotAttribute name: Civilization (P)
+Description: what civilization creature or spell is?
+             W ----> water
+             F ----> fire
+             N ----> nature
+             L ----> light
+             D ----> darkness
+
+             D L N F W
+             0 0 0 0 1 ----> means water civilization card.
+****************************************************************************************************
+SlotAttribute name: Race  (P)
+Description:
+****************************************************************************************************
+SlotAttribute/FlagAttribute name: Power     (P/C)
+Description: Contains the power value. This attribute is mostly used in opponent set of cards.
+****************************************************************************************************
+FlagAttribute name: CanAttack      (P) +
+Description: Tells about it can attack what.
+             P ----> Player
+             S ----> Shield
+
+             1 means can attack.
+             0 means can't attack.
+             so,  P  S
+                  1  1 ----> 3 can means attack all
+****************************************************************************************************
+FlagAttribute name: ChangeableCanAttackPlayer      (C) +
+Description: Tells about it can attack player.
+****************************************************************************************************
+FlagAttribute name: ChangeableCanAttackShield      (C) +
+Description: Tells about it can attack shield.
+****************************************************************************************************
+FlagAttribute name: AttackTappedCard     (P) +
+Description: Tells about which tapped cards it can attack.
+             W ----> water
+             F ----> fire
+             N ----> nature
+             L ----> light
+             D ----> darkness
+
+             D L N F W
+             0 0 0 0 0 ----> 0 means can't attack tapped cards.
+****************************************************************************************************
+FlagAttribute name: ChangeableAttackTappedCard (C) +
+Description: can attack tapped card.
+****************************************************************************************************
+FlagAttribute name: AttackTappedCardCivilization<> (C) +
+Description: can attack tapped card of that civilization.
+****************************************************************************************************
+FlagAttribute name: AttackUntappedCard    (P) +
+Description: Tells about which Untapped cards it can attack.
+             W ----> water
+             F ----> fire
+             N ----> nature
+             L ----> light
+             D ----> darkness
+
+             D L N F W
+             0 0 0 0 0 ----> 0 means can't attack untapped cards.
+****************************************************************************************************
+FlagAttribute name: ChangeableAttackUntappedCard     (C) +
+Description: Can attack Untap creature.
+****************************************************************************************************
+FlagAttribute name: AttackUntappedCardCivilization<>    (C) +
+Description: Can attack Untap creature of that civilization.
+****************************************************************************************************
+FlagAttribute name: ShieldTrigger    (P) +
+Description: Tells whether the card is shield trigger or not.
+****************************************************************************************************
+FlagAttribute name: PowerAttacker     (C) +
+Description: While attacking, this card get this additional power value present in this attribute.
+****************************************************************************************************
+FlagAttribute name:  NoSummoningSickness      (C)  +
+Description: Tells whether the card has no summon sickness.
+****************************************************************************************************
+FlagAttribute name: Slayer         (P) +
+Description: Tells whether the card is slayer
+             W ----> water
+             F ----> fire
+             N ----> nature
+             L ----> light
+             D ----> darkness
+
+             D L N F W
+             1 1 1 1 1 ----> means can Slayer any civilization.
+****************************************************************************************************
+FlagAttribute name: ChangeableSlayer         (C) +
+Description: Tells whether the card is slayer
+****************************************************************************************************
+FlagAttribute name: Blocker      (P) +
+Description: Whether blocker or not.
+             W ----> water
+             F ----> fire
+             N ----> nature
+             L ----> light
+             D ----> darkness
+
+             D L N F W
+             1 1 1 1 1 ----> means can block any civilization.
+****************************************************************************************************
+FlagAttribute name: ChangeableBlocker    (C) +
+Description: Whether blocker or not.
+****************************************************************************************************
+FlagAttribute name: Breaker   (C) +
+Description: How many shield it can break. This actually overwrites the slot breaker attr.
+****************************************************************************************************
+FlagAttribute name: AttackUnBlockable      (P) +
+Description: Tells Unblockable from which civilization.
+             W ----> water
+             F ----> fire
+             N ----> nature
+             L ----> light
+             D ----> darkness
+             C ----> creature
+             P ----> player
+             S ----> shield
+
+             S P C | D L N F W
+             1 1 1 | 1 1 1 1 1 ----> means can't be blocked while attacking anything.
+****************************************************************************************************
+FlagAttribute name: EachTurnIfAble   (C)
+Description: can attack each turn if able.
+****************************************************************************************************
+FlagAttribute name: Survivor    (P)
+Description: Whether survivor or not.
+****************************************************************************************************
+FlagAttribute name: CantBeAttacked    (P) +
+Description: This creature can't be attacked.
+             W ----> water
+             F ----> fire
+             N ----> nature
+             L ----> light
+             D ----> darkness
+
+             D L N F W
+             1 1 1 1 1 ----> means cann't be attacked any civilization.
+****************************************************************************************************
+FlagAttribute name: ChangeableCantBeAttacked  (C) +
+Description: This creature can't be attacked.
+****************************************************************************************************
+FlagAttribute name: CantAttack   (C) +
+Description: This creature can't attack anything.
+****************************************************************************************************
+FlagAttribute name: CantBeChooseByOpponent     (C)
+Description: This creature can't be choose by opponent.
+****************************************************************************************************
+FlagAttribute name: StealthPlayer (C) +
+Description: This creature can't be blocked while attacking player. This attribute overrides the effect of
+             AttackUnBlockable.
+****************************************************************************************************
+FlagAttribute name: StealthShield (C) +
+Description: This creature can't be blocked while attacking Shield. This attribute overrides the effect of
+             AttackUnBlockable.
+****************************************************************************************************
+FlagAttribute name: StealthCreature (C) +
+Description: This creature can't be blocked while attacking creature. This attribute overrides the effect of
+             AttackUnBlockable.
+****************************************************************************************************
+FlagAttribute name: NewSummonedCreature   (C)  +
+Description: Whether the creature is newly summoned.Need to be cleared after that turn ends.
+****************************************************************************************************
+FlagAttribute name: DontUnTap  (C) +
+Description: Cant be untapped.
+****************************************************************************************************
+FlagAttribute name: Tapped  (C) +
+Description: Whether the creature is tapped or not.
+****************************************************************************************************
+FlagAttribute name: NotYetSpread     (C)  +
+Description: This card has not gone spreading once. This attribute is present for a new summoned card.
+             After first spreading, remove this attribute.
+****************************************************************************************************
+FlagAttribute name: WaveStriker  (P)  +
+Description: While 2 or more other creatures in the battle zone have "wave striker,"
+             the creature has its Wave Striker ability.
+****************************************************************************************************
+FlagAttribute name: AlwaysTapped   (C)      (??)
+Description: Remains Tapped always.
+****************************************************************************************************
+FlagAttribute name: ManaCost      (C) +
+Description: This attribute get added with the original mana cost.
+****************************************************************************************************
+FlagAttribute name: NManaCost      (C) +
+Description: This attribute get subtracted with the original mana cost.
+****************************************************************************************************
+FlagAttribute name: PseudoShieldTrigger   (C)  (??)
+Description: Like Shield Trigger this gives control to opponent to perform some action, but your
+             turn doesn't ends.
+****************************************************************************************************
+FlagAttribute name: UnTapAfterBattle  (C)
+Description: Untap the card after battle.
+****************************************************************************************************
+FlagAttribute name: AttackIfAble  (C)
+Description: If the creature can attack then player have to attack using this creature before he ends
+             his turn.
+****************************************************************************************************
+FlagAttribute name: EvolutionCompatible      (P)  +
+Description: If this attribute is present on a creature it means player can use this card as a base
+             for evolving any creature.
+****************************************************************************************************
+FLagAttribute name: DestroyAtTurnEnd      (C)   (??)
+Description: When turns ends destroy it.
+****************************************************************************************************
+FlagAttribute name: CantUseTapAbility       (C)   +
+Description: With this attribute player can not use tap ability
+****************************************************************************************************
+FlagAttribute name: SummonTapped       (C) +
+Description: While summoning summon it tap.
+****************************************************************************************************
+FlagAttribute name: AddToManaTapped  (C) +
+Description: While adding to mana,add it tapped.
+****************************************************************************************************
+FlagAttribute name: DontDestroy (C)
+Description: Can't be destroy after the creature is killed during battle.
+****************************************************************************************************
+FlagAttribute name: ThisCreatureCantAttackThisCreature<GP>      (C) +  (??)
+Description: This prevents a creature to attack a specific card in a particular grid position.
+****************************************************************************************************
+FlagAttribute name: IgnoreAnyAttackPrevent   (C) +
+Description: With this any kind of attack prevent constraints are ignore. Means you can attack any kind
+             of creature whether Tap or Untap.
+****************************************************************************************************
+FlagAttribute name: UpperPowerLevelToBeBlocked     (P) +
+Description: Blocker with power less than this value can only block this creature.
+****************************************************************************************************
+FlagAttribute name: LowerPowerLevelToBeBlocked     (P) +
+Description: Blocker with power greater than this can only block this creature.
+****************************************************************************************************
+FlagAttribute name: CantSummon         (C) +
+Description: Even Mana value is satisfied this spell/creature can't be cast or summon.
+****************************************************************************************************
+FlagAttribute name: HasTapAbility       (P) +
+Description: This creature has tap ability.
+****************************************************************************************************
+FlagAttribute name: HasTurboRash   (P)
+Description: This creature has turbo rash ability.
+****************************************************************************************************
+FlagAttribute name: ActiveTurboRash   (C)
+Description: Now creature can use its turbo rash ability.
+****************************************************************************************************
+FlagAttribute name: MaskDestroyDst  (C)  +
+Description: Mask the original destroy destination. Value of the attr is new-zone+1.
+****************************************************************************************************
+FlagAttribute name: SmashShieldBreaker  (C) +
+Description: When this creature breaks any shield put those shield into the graveyard, opponent can't
+use shield trigger ability even if there is any.
+****************************************************************************************************
+FlagAttribute name: SilentSkill  (P) +
+Description: Tells whether the creature has any silent skill ability.
+****************************************************************************************************
+FlagAttribute name: DestroyAfterBattle (P)  +
+Description: After battle Destroy the creature.

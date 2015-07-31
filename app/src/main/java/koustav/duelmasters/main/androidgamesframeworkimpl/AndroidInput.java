@@ -1,0 +1,47 @@
+package koustav.duelmasters.main.androidgamesframeworkimpl;
+
+import java.util.List;
+
+import android.content.Context;
+import android.view.View;
+import koustav.duelmasters.main.androidgamesframework.Input;
+import koustav.duelmasters.main.androidgamesframework.TouchHandler;
+
+/**
+ * Created by Koustav on 2/10/2015.
+ * Abstract: Input implementation of out game framework ties together all the handlers.
+ */
+public class AndroidInput implements Input {
+    KeyboardHandler keyHandler;
+    TouchHandler touchHandler;
+
+    public AndroidInput (Context context, View view, float scaleX, float scaleY) {
+        keyHandler = new KeyboardHandler(view);
+        touchHandler = new SingleTouchHandler(view, scaleX, scaleY);
+    }
+
+    @Override
+    public  boolean isKeyPressed(int keyCode) {
+        return keyHandler.isKeyPressed(keyCode);
+    }
+    @Override
+    public List<KeyEvent> getKeyEvents() {
+        return keyHandler.getKeyEvents();
+    }
+    @Override
+    public  boolean isTouchDown(int pointer) {
+        return touchHandler.isTouchDown(pointer);
+    }
+    @Override
+    public  int getTouchX(int pointer) {
+        return touchHandler.getTouchX(pointer);
+    }
+    @Override
+    public  int getTouchY(int pointer) {
+        return touchHandler.getTouchY(pointer);
+    }
+    @Override
+    public List<TouchEvent> getTouchEvents() {
+        return touchHandler.getTouchEvents();
+    }
+}

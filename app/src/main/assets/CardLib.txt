@@ -1,0 +1,30 @@
+BeginAquaHulcus
+BeginSlotAttributes
+AquaHulcus
+1
+LiquidPeople
+3
+1
+2000
+1
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+HasTapAbility 1
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+SummonOrCastAbility 1
+TapAbility 2
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+1 2 1 0 0 0 0 0 1 4 0 0 0 0 0 0 0 0
+1 300 1 0 0 0 0 0 4 0 0 0 0 0 0 0 0 0
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndAquaHulcus
