@@ -16,5 +16,5 @@ public enum ConditionType {
     WorldFlag,
     CollectCardEqualToTempZoneCount,
     NameId,
-    RaceContainSubStringForEvolution,
+    RaceContainSubStringForEvolutionOrFlagSpread,
 }

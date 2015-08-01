@@ -25,6 +25,7 @@ public class OnTurn {
         S1,
         S2,
         S3,
+        S4a,
         S4,
         S5,
         S6,
@@ -43,6 +44,7 @@ public class OnTurn {
     OnTurnState S;
     World world;
     InstructionSet NotYetSpreadCleanup;
+    boolean SummonTapped;
 
 
     public OnTurn(World world) {
@@ -50,6 +52,7 @@ public class OnTurn {
         S = OnTurnState.S1;
         String instruction = InstSetUtil.GenerateAttributeCleanUpInstruction(3333, "NotYetSpread", 1);
         NotYetSpreadCleanup = new InstructionSet(instruction);
+        SummonTapped = false;
     }
 /*
  Main API which controls the states and calls other API according to 'S' value
@@ -62,6 +65,8 @@ public class OnTurn {
             SummonOrCastUpdate();
         if (S == OnTurnState.S3)
             AttackUpdate();
+        if (S == OnTurnState.S4a)
+            EvolutionUpdate();
         if (S == OnTurnState.S4)
             SummonUpdate();
         if (S == OnTurnState.S5)
@@ -589,22 +594,23 @@ public class OnTurn {
                     world.getEventLog().registerEvent(tcard, false, 0 , "Tapped", true ,1);
                 }
                 if (SummoningOrCastCard.getType() == TypeOfCard.Creature) {
-                    boolean summonTapped = false;
+                    SummonTapped = false;
                     if (GetUtil.SummonTapped(SummoningOrCastCard)) {
-                        summonTapped = true;
+                        SummonTapped = true;
                     }
                     String SummonCardInstruction = InstSetUtil.GenerateSelfChangeZoneInstruction(0);
                     InstructionSet instruction = new InstructionSet(SummonCardInstruction);
                     world.getInstructionHandler().setCardAndInstruction(SummoningOrCastCard, instruction);
                     world.getInstructionHandler().execute();
-                    if (summonTapped) {
+                    if (SummonTapped) {
                         SetUnsetUtil.SetTappedAttr((InactiveCard) world.getFetchCard());
                         world.getEventLog().registerEvent(world.getFetchCard(), false, 0 , "Tapped", true ,1);
+                        SummonTapped = false;
                     }
                     //sendeventlog
                     String msg = world.getEventLog().getAndClearEvents();
                     NetworkUtil.sendDirectiveUpdates(world,DirectiveHeader.ApplyEvents, msg, null);
-                    if (SummoningOrCastCard.getPrimaryInstructionForTheInstructionID(InstructionID.SummonOrCastAbility) == null) {
+                    if (((ActiveCard)world.getFetchCard()).getPrimaryInstructionForTheInstructionID(InstructionID.SummonOrCastAbility) == null) {
                         this.S = OnTurnState.SX;
                         world.getEventLog().setRecording(false);
                         world.setFetchCard(null);
@@ -629,9 +635,17 @@ public class OnTurn {
                 }
 
                 if (SummoningOrCastCard.getType() == TypeOfCard.Evolution) {
+                    SummonTapped = false;
+                    if (GetUtil.SummonTapped(SummoningOrCastCard)) {
+                        SummonTapped = true;
+                    }
+                    String EvolutionInst = InstSetUtil.GenerateEvolutionInstruction(SummoningOrCastCard.getEvolutionCompareString());
+                    InstructionSet Einstruction = new InstructionSet(EvolutionInst);
+                    world.getInstructionHandler().setCardAndInstruction(SummoningOrCastCard, Einstruction);
                     //sendEventlog
                     String msg = world.getEventLog().getAndClearEvents();
                     NetworkUtil.sendDirectiveUpdates(world,DirectiveHeader.ApplyEvents, msg, null);
+                    this.S = OnTurnState.S4a;
                 }
 
                 world.clearWorldFlag(WorldFlags.ManaSelectMode);
@@ -699,6 +713,32 @@ public class OnTurn {
             //sendevent
             String msg = world.getEventLog().getAndClearEvents();
             NetworkUtil.sendDirectiveUpdates(world,DirectiveHeader.ApplyEvents, msg, null);
+        }
+    }
+/*
+  Perform evolution S4a
+ */
+    private void EvolutionUpdate() {
+        if (world.getInstructionHandler().execute()) {
+            if (SummonTapped) {
+                SetUnsetUtil.SetTappedAttr((InactiveCard) world.getFetchCard());
+                world.getEventLog().registerEvent(world.getFetchCard(), false, 0 , "Tapped", true ,1);
+                SummonTapped = false;
+            }
+            //sendeventlog
+            String msg = world.getEventLog().getAndClearEvents();
+            NetworkUtil.sendDirectiveUpdates(world,DirectiveHeader.ApplyEvents, msg, null);
+            if (((ActiveCard)world.getFetchCard()).getPrimaryInstructionForTheInstructionID(InstructionID.SummonOrCastAbility) == null) {
+                this.S = OnTurnState.SX;
+                world.getEventLog().setRecording(false);
+                world.setFetchCard(null);
+            } else {
+                world.getInstructionIteratorHandler().setCard((InactiveCard) world.getFetchCard());
+                ArrayList<InstructionSet> instructions =
+                        ((ActiveCard) world.getFetchCard()).getPrimaryInstructionForTheInstructionID(InstructionID.SummonOrCastAbility);
+                world.getInstructionIteratorHandler().setInstructions(instructions);
+                this.S = OnTurnState.S4;
+            }
         }
     }
 /*

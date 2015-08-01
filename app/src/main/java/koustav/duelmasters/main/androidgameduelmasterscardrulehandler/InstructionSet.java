@@ -154,7 +154,7 @@ public class InstructionSet {
                         condition = new Condition(ConditionType.NameId, InstructionArray[5], lpower, upower);
                         break;
                     case "12":
-                        condition = new Condition(ConditionType.RaceContainSubStringForEvolution, InstructionArray[5], lpower, upower);
+                        condition = new Condition(ConditionType.RaceContainSubStringForEvolutionOrFlagSpread, InstructionArray[5], lpower, upower);
                         break;
                     default:
                         throw new IllegalArgumentException("Invalid condition type");

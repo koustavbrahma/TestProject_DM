@@ -715,11 +715,12 @@ public class InstructionHandler {
                     CollectCardList.add(card);
                 }
             }
-        }else if (instruction.getCondition().getConditionType() == ConditionType.RaceContainSubStringForEvolution) {
+        }else if (instruction.getCondition().getConditionType() == ConditionType.RaceContainSubStringForEvolutionOrFlagSpread) {
             InactiveCard card;
             for (int i =0; i < zone.zoneSize(); i++) {
                 card = (InactiveCard) zone.getZoneArray().get(i);
-                if (card.getRace().contains(instruction.getCondition().getValue()) || GetUtil.EvolutionCompatible(card)) {
+                if ((card.getRace().contains(instruction.getCondition().getValue()) && (!(instruction.getAction() == Action.Evolution) || !GetUtil.IsTapped(card)))
+                        || (instruction.getAction() == Action.Evolution && GetUtil.EvolutionCompatible(card) && !GetUtil.IsTapped(card))) {
                     CollectCardList.add(card);
                 }
             }

@@ -39,4 +39,9 @@ public class InstSetUtil {
         String instructionString = "2 " + ActionZone + " 0 1 11 " + nameId + " 0 0 1 " + zone + " 0 0 0 0 0 0 0 0";
         return instructionString;
     }
+
+    public static String GenerateEvolutionInstruction(String RaceSubString) {
+        String instructionString = "1 1 0 1 12 " + RaceSubString + " 0 0 5 0 0 0 0 0 0 0 0 0";
+        return instructionString;
+    }
 }
