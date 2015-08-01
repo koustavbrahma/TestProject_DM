@@ -6,6 +6,7 @@ import koustav.duelmasters.main.androidgameduelmastersdatastructure.InactiveCard
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.World;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.WorldFlags;
 import koustav.duelmasters.main.androidgameduelmastersnetworkmodule.DirectiveHeader;
+import koustav.duelmasters.main.androidgameduelmastersutil.ActUtil;
 import koustav.duelmasters.main.androidgameduelmastersutil.InstSetUtil;
 import koustav.duelmasters.main.androidgameduelmastersutil.SetUnsetUtil;
 
@@ -19,6 +20,7 @@ public class WorldUpdateOffTurn {
         S2,
         S3,
         S4,
+        S5,
         SX,
         SY,
     }
@@ -50,6 +52,10 @@ public class WorldUpdateOffTurn {
 
         if (S == WorldUpdateoffTurnState.S4) {
             SetCleanUpInst();
+        }
+
+        if (S == WorldUpdateoffTurnState.S5) {
+            EvolutionHandler();
         }
 
         if (S == WorldUpdateoffTurnState.SX) {
@@ -90,6 +96,11 @@ public class WorldUpdateOffTurn {
 
         if (splitdirective[0].equals(DirectiveHeader.SetTempCleanUp) && (splitdirective.length > 2)) {
             S = WorldUpdateoffTurnState.S4;
+            return;
+        }
+
+        if (splitdirective[0].equals(DirectiveHeader.EvolutionEvent) && (splitdirective.length > 2)) {
+            S = WorldUpdateoffTurnState.S5;
             return;
         }
     }
@@ -196,13 +207,16 @@ public class WorldUpdateOffTurn {
                 throw new  IllegalArgumentException("Invalid Set clean directive 1");
 
             String[] msgInfo = msgField[0].split(" ");
-            if (msgInfo.length != 3)
+            if (msgInfo.length != 4)
                 throw new  IllegalArgumentException("Invalid Set clean directive 2");
             int Cardzone = Integer.parseInt(msgInfo[0]);
             int GridIndex = Integer.parseInt(msgInfo[1]);
-            int placementLocation = Integer.parseInt(msgInfo[2]);
+            int placementLocation = Integer.parseInt(msgInfo[3]);
 
             InactiveCard card = (InactiveCard) world.getGridIndexTrackingTable().getCardMappedToGivenGridPosition(Cardzone, GridIndex);
+            if (!card.getNameID().equals(msgInfo[2]))
+                throw new IllegalArgumentException("Data inconsistency");
+
             if (placementLocation == 1) {
                 InstructionSet instruction = new InstructionSet(msgField[1]);
                 if (Cardzone >= 0 && Cardzone <= 3) {
@@ -221,6 +235,31 @@ public class WorldUpdateOffTurn {
                 }
             }
         }
+
+        S = WorldUpdateoffTurnState.SY;
+    }
+
+    private void EvolutionHandler() {
+        String[] msg = splitdirective[1].split(" ");
+
+        if (msg.length != 6)
+            throw new IllegalArgumentException("Invalid evolution directive");
+
+        int ECardzone = Integer.parseInt(msg[0]);
+        int EGridIndex = Integer.parseInt(msg[1]);
+
+        int BCardzone = Integer.parseInt(msg[3]);
+        int BGridIndex = Integer.parseInt(msg[4]);
+
+        InactiveCard Ecard = (InactiveCard) world.getGridIndexTrackingTable().getCardMappedToGivenGridPosition(ECardzone, EGridIndex);
+        if (!Ecard.getNameID().equals(msg[2]))
+            throw new IllegalArgumentException("Data inconsistency");
+
+        InactiveCard Bcard = (InactiveCard) world.getGridIndexTrackingTable().getCardMappedToGivenGridPosition(BCardzone, BGridIndex);
+        if (!Bcard.getNameID().equals(msg[5]))
+            throw new IllegalArgumentException("Data inconsistency");
+
+        ActUtil.EvolveCreature(Ecard,Bcard, world);
 
         S = WorldUpdateoffTurnState.SY;
     }

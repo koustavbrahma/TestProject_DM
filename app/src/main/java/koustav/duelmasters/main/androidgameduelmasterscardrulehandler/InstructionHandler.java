@@ -474,6 +474,15 @@ public class InstructionHandler {
      */
     private void PerformEvolution() {
         InactiveCard card;
+        int Ezone = CurrentCard.GridPosition().getZone();
+        int Bzone = CollectCardList.get(0).GridPosition().getZone();
+        if (Ezone !=3 && Bzone != 0)
+            throw new IllegalArgumentException("Inconsistent zone, I am not expecting any thing any other zone");
+        Ezone = Ezone + 7;
+        Bzone = Bzone + 7;
+        String msg = Ezone + " " + CurrentCard.GridPosition().getGridIndex() + " " + CurrentCard.getNameID() +
+                Bzone + " " + CollectCardList.get(0).GridPosition().getGridIndex() + " " + CollectCardList.get(0).getNameID();
+        NetworkUtil.sendDirectiveUpdates(world, DirectiveHeader.EvolutionEvent, msg, null);
         card = (InactiveCard) ActUtil.EvolveCreature(CurrentCard, CollectCardList.get(0), world);
 
         if (CurrentCard == world.getFetchCard()) {
@@ -879,7 +888,7 @@ public class InstructionHandler {
                         zone = zone - 7;
                     }
 
-                    msgT = zone + " " + card.GridPosition().getGridIndex() + " " + 1 + "$" + Sinstruction;
+                    msgT = zone + " " + card.GridPosition().getGridIndex() + " " + card.getNameID() + " " + 1 + "$" + Sinstruction;
                     msg = msg.concat(msgT);
                     if ( i < CollectCardList.size() - 1) {
                         msg = msg.concat("#");
@@ -911,7 +920,7 @@ public class InstructionHandler {
                         zone = zone - 7;
                     }
 
-                    msgT = zone + " " + card.GridPosition().getGridIndex() + " " + 2 + "$" + Sinstruction;
+                    msgT = zone + " " + card.GridPosition().getGridIndex() + " " + card.getNameID() +" " + 2 + "$" + Sinstruction;
                     msg = msg.concat(msgT);
                     if (i < CollectCardList.size() - 1) {
                         msg = msg.concat("#");

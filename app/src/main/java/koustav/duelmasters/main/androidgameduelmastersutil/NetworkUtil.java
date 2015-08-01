@@ -35,7 +35,7 @@ public class NetworkUtil {
         }
     }
 
-    public static String PackFlagAttributeForDataTransfer(InactiveCard card) {
+/*    public static String PackFlagAttributeForDataTransfer(InactiveCard card) {
         int cardzone = card.GridPosition().getZone();
         if (cardzone < 4) {
             cardzone = cardzone +7;
@@ -80,7 +80,7 @@ public class NetworkUtil {
             i = i+2;
         }
     }
-
+*/
     public static String GenerateTappedCardInfo(World world, int zone) {
         if ( zone > 1)
             throw new IllegalArgumentException("Invalid Zone passed");

@@ -8,4 +8,5 @@ public class DirectiveHeader {
     public static String ApplyEvents = "ApplyEvents";
     public static String TappedCardInfo = "TappedCardInfo";
     public static String SetTempCleanUp = "SetTempCleanUp";
+    public static String EvolutionEvent = "EvolutionEvent";
 }
