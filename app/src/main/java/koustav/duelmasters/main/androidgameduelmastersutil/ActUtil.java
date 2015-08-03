@@ -92,7 +92,7 @@ public class ActUtil {
                     world.getMaze().ClearEvolutionTrack(card);
                     GridIndex = world.getGridIndexTrackingTable().getNewGridIndex(d+7);
                     Icard = new InactiveCard(Bcard.ExtractCardInfo(), new GridPositionIndex(d+7, GridIndex));
-                    world.getMaze().getZoneList().get(d).getZoneArray().add(Icard);
+                    world.getMaze().getZoneList().get(d+7).getZoneArray().add(Icard);
                     world.getGridIndexTrackingTable().trackGridIndex(Icard.GridPosition(), Icard);
                 }
             }
@@ -104,7 +104,7 @@ public class ActUtil {
                 if (Bcard != null) {
                     world.getMaze().ClearEvolutionTrack(card);
                     Dcard = new InactiveCard(Bcard.ExtractCardInfo(), new GridPositionIndex(d+7, 0));
-                    world.getMaze().getZoneList().get(d).getZoneArray().add(0,Dcard);
+                    world.getMaze().getZoneList().get(d+7).getZoneArray().add(0,Dcard);
                 }
             }
         } else {

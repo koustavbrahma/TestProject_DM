@@ -474,13 +474,15 @@ public class InstructionHandler {
      */
     private void PerformEvolution() {
         InactiveCard card;
+        if (CollectCardList.size() == 0)
+            return;
         int Ezone = CurrentCard.GridPosition().getZone();
         int Bzone = CollectCardList.get(0).GridPosition().getZone();
         if (Ezone !=3 && Bzone != 0)
             throw new IllegalArgumentException("Inconsistent zone, I am not expecting any thing any other zone");
         Ezone = Ezone + 7;
         Bzone = Bzone + 7;
-        String msg = Ezone + " " + CurrentCard.GridPosition().getGridIndex() + " " + CurrentCard.getNameID() +
+        String msg = Ezone + " " + CurrentCard.GridPosition().getGridIndex() + " " + CurrentCard.getNameID() + " " +
                 Bzone + " " + CollectCardList.get(0).GridPosition().getGridIndex() + " " + CollectCardList.get(0).getNameID();
         NetworkUtil.sendDirectiveUpdates(world, DirectiveHeader.EvolutionEvent, msg, null);
         card = (InactiveCard) ActUtil.EvolveCreature(CurrentCard, CollectCardList.get(0), world);

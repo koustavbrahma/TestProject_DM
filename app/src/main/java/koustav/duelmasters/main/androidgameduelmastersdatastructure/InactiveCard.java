@@ -84,7 +84,7 @@ public class InactiveCard extends Cards {
     protected void unpackSlotAttribute() {
         int size = cardinfo.SlotAttributes.size();
 
-        if(size != 7) {
+        if(size != 8) {
             throw new IllegalArgumentException("SlotAttributes should be equal to 7.");
         } else {
             nameID = new String(cardinfo.SlotAttributes.get(0));
@@ -127,6 +127,8 @@ public class InactiveCard extends Cards {
             } catch (NumberFormatException e) {
                 throw new IllegalArgumentException("Invalid breaker value for " + nameID);
             }
+
+            EvolutionCompareString = cardinfo.SlotAttributes.get(7);
         }
     }
 

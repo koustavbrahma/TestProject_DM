@@ -21,7 +21,7 @@ SummonOrCastAbility 1
 TapAbility 2
 EndPrimaryInstructionIndex
 BeginPrimaryInstructions
-1 2 1 0 0 0 0 0 1 4 0 0 0 0 0 0 0 0
+1 1 1 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0
 1 300 1 0 0 0 0 0 4 0 0 0 0 0 0 0 0 0
 EndPrimaryInstructions
 BeginCrossInstructionIndex
@@ -29,7 +29,35 @@ EndCrossInstructionIndex
 BeginCrossInstruction
 EndCrossInstruction
 EndAquaHulcus
-
+#
+BeginAquaHulcus2
+BeginSlotAttributes
+AquaHulcus2
+1
+LiquidPeople
+3
+2
+2000
+1
+LiquidPeople
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+MaskDestroyDst 2
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndAquaHulcus2
+#
 BeginDummy1
 BeginSlotAttributes
 Dummy1
@@ -56,7 +84,7 @@ EndCrossInstructionIndex
 BeginCrossInstruction
 EndCrossInstruction
 EndDummy1
-
+#
 BeginDummy2
 BeginSlotAttributes
 Dummy2
@@ -83,7 +111,7 @@ EndCrossInstructionIndex
 BeginCrossInstruction
 EndCrossInstruction
 EndDummy2
-
+#
 BeginDummy3
 BeginSlotAttributes
 Dummy3
@@ -110,7 +138,7 @@ EndCrossInstructionIndex
 BeginCrossInstruction
 EndCrossInstruction
 EndDummy3
-
+#
 BeginDummy4
 BeginSlotAttributes
 Dummy4
@@ -137,7 +165,7 @@ EndCrossInstructionIndex
 BeginCrossInstruction
 EndCrossInstruction
 EndDummy4
-
+#
 BeginDummy5
 BeginSlotAttributes
 Dummy5

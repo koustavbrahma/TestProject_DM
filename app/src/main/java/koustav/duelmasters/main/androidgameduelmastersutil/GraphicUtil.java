@@ -383,8 +383,12 @@ public class GraphicUtil {
                 x = UIUtil.GridPositionToXCoordinateTransform((card.GridPosition().getGridIndex()),
                         world.getframeBufferWidht());
                 if (x != null && y != null) {
-                    int x2 = world.getframeBufferWidht() - w - x;
-                    g.drawRect(x2,y,4,4, Color.BLACK);
+                    if (card.GridPosition().getZone() > 6) {
+                        int x2 = world.getframeBufferWidht() - w - x;
+                        g.drawRect(x2, y, 4, 4, Color.BLACK);
+                    } else if (card.GridPosition().getZone() < 6) {
+                        g.drawRect(x, y, 4, 4, Color.BLACK);
+                    }
                 }
             }
         }

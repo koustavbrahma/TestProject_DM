@@ -441,7 +441,7 @@ public class GetUtil {
         Zone zone = world.getMaze().getZoneList().get(0);
         for (int i = 0; i < zone.zoneSize(); i++) {
             Bcard = (InactiveCard) zone.getZoneArray().get(i);
-            if (Bcard.getRace().contains(card.getEvolutionCompareString()) || GetUtil.EvolutionCompatible(Bcard)) {
+            if ((Bcard.getRace().contains(card.getEvolutionCompareString()) || GetUtil.EvolutionCompatible(Bcard)) && !GetUtil.IsTapped(Bcard)) {
                 status = true;
                 break;
             }

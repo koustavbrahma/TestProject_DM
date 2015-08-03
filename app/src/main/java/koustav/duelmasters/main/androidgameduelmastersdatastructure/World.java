@@ -140,7 +140,7 @@ public class World {
                 InputStream CardLibList = game.getFileIO().readAsset("CardLib.txt");
                 BufferedReader bufferedReaderCardLibList = new BufferedReader(new InputStreamReader(CardLibList));
                 String CardPackedInfo;
-                while (!CardTitle.equals(CardPackedInfo = bufferedReaderCardLibList.readLine()));
+                while (!CardTitle.equals(CardPackedInfo = bufferedReaderCardLibList.readLine()) && CardPackedInfo != null);
                 if (CardPackedInfo != null){
                     if (CardTitle.equals(CardPackedInfo)) {
                         CardPackedInfo = bufferedReaderCardLibList.readLine();
@@ -169,10 +169,10 @@ public class World {
                         }
                         CardPackedInfo = bufferedReaderCardLibList.readLine();
                     }
+                    maze.getZoneList().get(5).getZoneArray().add(card);
                 }
                 bufferedReaderCardLibList.close();
                 CardLibList.close();
-                maze.getZoneList().get(5).getZoneArray().add(card);
             }
             bufferedReaderDeckList.close();
             DeckList.close();
@@ -195,7 +195,7 @@ public class World {
                 InputStream CardLibList = game.getFileIO().readAsset("CardLib.txt");
                 BufferedReader bufferedReaderCardLibList = new BufferedReader(new InputStreamReader(CardLibList));
                 String CardPackedInfo;
-                while (!CardTitle.equals(CardPackedInfo = bufferedReaderCardLibList.readLine()));
+                while (!CardTitle.equals(CardPackedInfo = bufferedReaderCardLibList.readLine()) && CardPackedInfo != null);
                 if (CardPackedInfo != null){
                     if (CardTitle.equals(CardPackedInfo)) {
                         CardPackedInfo = bufferedReaderCardLibList.readLine();
@@ -224,10 +224,10 @@ public class World {
                         }
                         CardPackedInfo = bufferedReaderCardLibList.readLine();
                     }
+                    maze.getZoneList().get(12).getZoneArray().add(card);
                 }
                 bufferedReaderCardLibList.close();
                 CardLibList.close();
-                maze.getZoneList().get(12).getZoneArray().add(card);
             }
             bufferedReaderDeckList.close();
             DeckList.close();
