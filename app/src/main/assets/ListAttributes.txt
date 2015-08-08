@@ -253,3 +253,7 @@ Description: Tells whether the creature has any silent skill ability.
 ****************************************************************************************************
 FlagAttribute name: DestroyAfterBattle (P)  +
 Description: After battle Destroy the creature.
+****************************************************************************************************
+FlagAttribute name: MarkedCard   (*)
+Description: This attribute is for internal use. Don't use while writing library. This attribute
+             tracks which are selected by user.

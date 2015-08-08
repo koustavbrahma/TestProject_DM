@@ -44,4 +44,9 @@ public class InstSetUtil {
         String instructionString = "1 1 0 1 12 " + RaceSubString + " 0 0 5 0 0 0 0 0 0 0 0 0";
         return instructionString;
     }
+
+    public static String GenerateCopyCardToTempZoneBasedOnAttribute(String Attribute, int ActionZone) {
+        String instructionString = "13 " + ActionZone + " 0 1 6 " + Attribute + " 0 0 0 0 0 0 0 0 0 0 0 0";
+        return instructionString;
+    }
 }

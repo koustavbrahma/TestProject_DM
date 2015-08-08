@@ -119,6 +119,7 @@ public class TestScreen extends Screen {
         GraphicUtil.presentSilentSkill(world);
         GraphicUtil.presentCardSelectMode(world);
         GraphicUtil.presentCardInfoUserSelect(world);
+        GraphicUtil.presentBlockerSelect(world);
     }
 
     @Override

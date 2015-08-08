@@ -139,6 +139,15 @@ public class SetUnsetUtil {
         card.getflagAttributes().ClearAttribute("Tapped");
     }
 
+    public static void SetMarkedCard(InactiveCard card) {
+        card.getflagAttributes().ClearAttribute("MarkedCard");
+        card.getflagAttributes().SetAttribute("MarkedCard", 1);
+    }
+
+    public static void UnSetMarkedCard(InactiveCard card) {
+        card.getflagAttributes().ClearAttribute("MarkedCard");
+    }
+
     public static void SpreadingFlagAttr(World world) {
         Zone MyBattleZone = world.getMaze().getZoneList().get(0);
         Zone OpponentBattleZone = world.getMaze().getZoneList().get(7);

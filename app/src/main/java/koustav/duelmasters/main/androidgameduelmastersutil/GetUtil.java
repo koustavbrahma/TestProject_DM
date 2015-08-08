@@ -134,7 +134,7 @@ public class GetUtil {
         int blockerpower = blocker.getPower() + blocker.getflagAttributes().GetAttribute("Power");
         int max_power = attacker.getflagAttributes().GetAttribute("UpperPowerLevelToBeBlocked");
         int min_power = attacker.getflagAttributes().GetAttribute("LowerPowerLevelToBeBlocked");
-        if(max_power == -1) {
+        if(max_power == 0) {
             if(min_power > blockerpower)
                 return false;
         } else  {
@@ -154,6 +154,8 @@ public class GetUtil {
     }
 
     public static boolean IsBlocker(InactiveCard blocker, InactiveCard attacker) {
+        if (GetUtil.IsTapped(blocker))
+            return false;
         if (blocker.getflagAttributes().GetAttribute("ChangeableBlocker") > 0)
             return true;
         if ((blocker.getflagAttributes().GetAttribute("Blocker") & attacker.getCivilization()) > 0)
@@ -442,6 +444,21 @@ public class GetUtil {
         for (int i = 0; i < zone.zoneSize(); i++) {
             Bcard = (InactiveCard) zone.getZoneArray().get(i);
             if ((Bcard.getRace().contains(card.getEvolutionCompareString()) || GetUtil.EvolutionCompatible(Bcard)) && !GetUtil.IsTapped(Bcard)) {
+                status = true;
+                break;
+            }
+        }
+
+        return status;
+    }
+
+    public static boolean OpponentHasABlocker(World world, InactiveCard Attacker) {
+        InactiveCard card;
+        boolean status = false;
+        Zone zone = world.getMaze().getZoneList().get(7);
+        for (int i = 0; i < zone.zoneSize(); i++) {
+            card = (InactiveCard) zone.getZoneArray().get(i);
+            if (GetUtil.IsBlocker(card, Attacker)) {
                 status = true;
                 break;
             }

@@ -1,14 +1,20 @@
 package koustav.duelmasters.main.androidgameduelmastersstatemachine;
 
 
+import java.util.ArrayList;
+
 import koustav.duelmasters.main.androidgameduelmasterscardrulehandler.InstructionSet;
+import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.InactiveCard;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.World;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.WorldFlags;
 import koustav.duelmasters.main.androidgameduelmastersnetworkmodule.DirectiveHeader;
 import koustav.duelmasters.main.androidgameduelmastersutil.ActUtil;
+import koustav.duelmasters.main.androidgameduelmastersutil.GetUtil;
 import koustav.duelmasters.main.androidgameduelmastersutil.InstSetUtil;
+import koustav.duelmasters.main.androidgameduelmastersutil.NetworkUtil;
 import koustav.duelmasters.main.androidgameduelmastersutil.SetUnsetUtil;
+import koustav.duelmasters.main.androidgameduelmastersutil.UIUtil;
 
 /**
  * Created by Koustav on 3/28/2015.
@@ -21,6 +27,7 @@ public class WorldUpdateOffTurn {
         S3,
         S4,
         S5,
+        S6,
         SX,
         SY,
     }
@@ -29,10 +36,14 @@ public class WorldUpdateOffTurn {
     String directive;
     String[] splitdirective;
     InstructionSet NotYetSpreadCleanup;
+    InactiveCard AttackingCard;
+    InactiveCard AttackedCard;
 
     public WorldUpdateOffTurn(World world){
         this.world = world;
         this.S = WorldUpdateoffTurnState.S1;
+        AttackingCard = null;
+        AttackingCard = null;
         String instruction = InstSetUtil.GenerateAttributeCleanUpInstruction(3333, "NotYetSpread", 1);
         NotYetSpreadCleanup = new InstructionSet(instruction);
     }
@@ -56,6 +67,10 @@ public class WorldUpdateOffTurn {
 
         if (S == WorldUpdateoffTurnState.S5) {
             EvolutionHandler();
+        }
+
+        if (S == WorldUpdateoffTurnState.S6) {
+            SelectBlocker();
         }
 
         if (S == WorldUpdateoffTurnState.SX) {
@@ -101,6 +116,30 @@ public class WorldUpdateOffTurn {
 
         if (splitdirective[0].equals(DirectiveHeader.EvolutionEvent) && (splitdirective.length > 2)) {
             S = WorldUpdateoffTurnState.S5;
+            return;
+        }
+
+        if (splitdirective[0].equals(DirectiveHeader.RequestBlocker) && (splitdirective.length > 2)){
+            S = WorldUpdateoffTurnState.S6;
+            world.getMaze().getZoneList().get(6).getZoneArray().clear();
+            String[] msg = splitdirective[1].split(" ");
+
+            if (msg.length != 3 && msg.length != 6)
+                throw new IllegalArgumentException("Invalid evolution directive");
+
+            int ACardzone = Integer.parseInt(msg[0]);
+            int AGridIndex = Integer.parseInt(msg[1]);
+            AttackingCard = (InactiveCard) world.getGridIndexTrackingTable().getCardMappedToGivenGridPosition(ACardzone, AGridIndex);
+            if (!AttackingCard.getNameID().equals(msg[2]))
+                throw new IllegalArgumentException("Data inconsistency");
+            if (msg.length == 6) {
+                int BCardzone = Integer.parseInt(msg[3]);
+                int BGridIndex = Integer.parseInt(msg[4]);
+                AttackedCard = (InactiveCard) world.getGridIndexTrackingTable().getCardMappedToGivenGridPosition(BCardzone, BGridIndex);
+                if (!AttackedCard.getNameID().equals(msg[5]))
+                    throw new IllegalArgumentException("Data inconsistency");
+            }
+            world.setWorldFlag(WorldFlags.BlockerSelectMode);
             return;
         }
     }
@@ -236,7 +275,7 @@ public class WorldUpdateOffTurn {
             }
         }
 
-        S = WorldUpdateoffTurnState.SY;
+        S = WorldUpdateoffTurnState.S1;
     }
 
     private void EvolutionHandler() {
@@ -262,6 +301,58 @@ public class WorldUpdateOffTurn {
         ActUtil.EvolveCreature(Ecard,Bcard, world);
 
         S = WorldUpdateoffTurnState.SY;
+    }
+
+    private void SelectBlocker() {
+        ArrayList<Cards> CollectedCardList = world.getMaze().getZoneList().get(6).getZoneArray();
+        ArrayList<Cards> MyCreatures = world.getMaze().getZoneList().get(0).getZoneArray();
+
+        if (CollectedCardList.size() == 1) {
+            if (UIUtil.TouchedAcceptButton(world)) {
+                InactiveCard card = (InactiveCard) CollectedCardList.get(0);
+                int zone = card.GridPosition().getZone() + 7;
+                String msg = zone + " " + card.GridPosition().getGridIndex() + " " +
+                        card.getNameID();
+                NetworkUtil.sendDirectiveUpdates(world, DirectiveHeader.SendBlocker, msg, null);
+                S = WorldUpdateoffTurnState.S1;
+                world.clearWorldFlag(WorldFlags.BlockerSelectMode);
+                AttackingCard = null;
+                AttackedCard = null;
+                return;
+            }
+        }
+
+        if (UIUtil.TouchedDeclineButton(world)){
+            NetworkUtil.sendDirectiveUpdates(world, DirectiveHeader.SendBlocker, null, null);
+            S = WorldUpdateoffTurnState.S1;
+            world.clearWorldFlag(WorldFlags.BlockerSelectMode);
+            AttackingCard = null;
+            AttackedCard = null;
+            return;
+        }
+
+        InactiveCard SelectedCard = (InactiveCard) UIUtil.GetTouchedTrackCard(world);
+
+        if (SelectedCard == null)
+            return;
+        if (SelectedCard.GridPosition().getZone() != 0)
+            return;
+
+        if (CollectedCardList.contains(SelectedCard)) {
+            UIUtil.TrackSelectedCardsWhenUserIsChoosing(CollectedCardList, MyCreatures, SelectedCard);
+            return;
+        }
+
+        if (CollectedCardList.size() != 0)
+            return;
+
+        if (AttackedCard != null && SelectedCard == AttackedCard)
+            return;
+
+        if (!GetUtil.IsBlocker(SelectedCard, AttackingCard))
+            return;
+
+        UIUtil.TrackSelectedCardsWhenUserIsChoosing(CollectedCardList, MyCreatures, SelectedCard);
     }
 
     private void ResumeTurnControl() {

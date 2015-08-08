@@ -20,7 +20,8 @@ public class GraphicUtil {
     public static boolean BlockPresent(World world) {
         if (world.getWorldFlag(WorldFlags.ManaSelectMode) || world.getWorldFlag(WorldFlags.ShieldSelectMode) ||
                 world.getWorldFlag(WorldFlags.AttackSelectMode) || world.getWorldFlag(WorldFlags.SilentSkillMode) ||
-                world.getWorldFlag(WorldFlags.CardSelectingMode) || !world.getTurn())
+                world.getWorldFlag(WorldFlags.CardSelectingMode) || world.getWorldFlag(WorldFlags.BlockerSelectMode)||
+                !world.getTurn())
             return true;
         else
             return false;
@@ -371,6 +372,39 @@ public class GraphicUtil {
             g.drawPixmap(Assets.Button, w * 6, 0);
         }
         if (world.getWorldFlag(WorldFlags.AcceptCardSelectingMode)) {
+            g.drawPixmap(Assets.Button, w * 2, 0);
+        }
+
+        if (CollectedCardList.size() > 0) {
+            Cards card;
+            Integer x, y;
+            for (int i = 0; i < CollectedCardList.size(); i++) {
+                card = CollectedCardList.get(i);
+                y = UIUtil.ZoneIndexToYCoordinateTransform(card.GridPosition().getZone(), world.getframeBufferHeight());
+                x = UIUtil.GridPositionToXCoordinateTransform((card.GridPosition().getGridIndex()),
+                        world.getframeBufferWidht());
+                if (x != null && y != null) {
+                    if (card.GridPosition().getZone() > 6) {
+                        int x2 = world.getframeBufferWidht() - w - x;
+                        g.drawRect(x2, y, 4, 4, Color.BLACK);
+                    } else if (card.GridPosition().getZone() < 6) {
+                        g.drawRect(x, y, 4, 4, Color.BLACK);
+                    }
+                }
+            }
+        }
+    }
+
+    public static void presentBlockerSelect(World world) {
+        if (!world.getWorldFlag(WorldFlags.BlockerSelectMode))
+            return;
+
+        Graphics g = world.getGame().getGraphics();
+        int w = world.getframeBufferWidht()/8;
+        ArrayList<Cards> CollectedCardList = world.getMaze().getZoneList().get(6).getZoneArray();
+        g.drawPixmap(Assets.Button, w * 6, 0);
+
+        if (CollectedCardList.size() == 1) {
             g.drawPixmap(Assets.Button, w * 2, 0);
         }
 

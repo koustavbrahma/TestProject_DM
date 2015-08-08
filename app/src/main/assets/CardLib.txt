@@ -72,6 +72,7 @@ EndSlotAttributes
 BeginFlagAttributes
 CanAttack 3
 AttackTappedCard 31
+Blocker 31
 NewSummonedCreature 1
 NotYetSpread 1
 EndFlagAttributes

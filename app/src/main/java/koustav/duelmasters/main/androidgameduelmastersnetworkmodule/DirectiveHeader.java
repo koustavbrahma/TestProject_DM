@@ -9,4 +9,6 @@ public class DirectiveHeader {
     public static String TappedCardInfo = "TappedCardInfo";
     public static String SetTempCleanUp = "SetTempCleanUp";
     public static String EvolutionEvent = "EvolutionEvent";
+    public static String RequestBlocker = "RequestBlocker";
+    public static String SendBlocker = "SendBlocker";
 }

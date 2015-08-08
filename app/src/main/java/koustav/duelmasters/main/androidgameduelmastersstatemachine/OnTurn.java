@@ -35,6 +35,7 @@ public class OnTurn {
         S10,
         S11,
         S12,
+        S12a,
         S13,
         S14,
         S15,
@@ -85,6 +86,8 @@ public class OnTurn {
             PostIfAttackUpdate();
         if (S == OnTurnState.S12)
             BlockerUpdate();
+        if (S == OnTurnState.S12a)
+            OpponentBlockerDirective();
         if (S == OnTurnState.S13)
             CreatureBattleUpdate();
         if (S == OnTurnState.S14)
@@ -223,6 +226,8 @@ public class OnTurn {
                         card.getPrimaryInstructionForTheInstructionID(InstructionID.IfAttacked);
                 world.getInstructionIteratorHandler().setCard(card);
                 world.getInstructionIteratorHandler().setInstructions(IfAttackInsts);
+                SetUnsetUtil.SetMarkedCard((InactiveCard) CollectedCardList.get(0));
+                CollectedCardList.clear();
                 this.S = OnTurnState.S11;
                 world.getEventLog().setRecording(true);
                 return;
@@ -240,7 +245,15 @@ public class OnTurn {
                 }
             } else {
                 if (GetUtil.CanAttackPlayer(card) || GetUtil.IgnoreAnyAttackPrevent(card)) {
-
+                    world.setWorldFlag(WorldFlags.PlayerAttackMode);
+                    world.getMaze().getZoneList().get(6).getZoneArray().clear();
+                    ArrayList<InstructionSet> IfAttackInsts =
+                            card.getPrimaryInstructionForTheInstructionID(InstructionID.IfAttacked);
+                    world.getInstructionIteratorHandler().setCard(card);
+                    world.getInstructionIteratorHandler().setInstructions(IfAttackInsts);
+                    this.S = OnTurnState.S11;
+                    world.getEventLog().setRecording(true);
+                    world.clearWorldFlag(WorldFlags.AttackSelectMode);
                 }
             }
             return;
@@ -274,17 +287,137 @@ public class OnTurn {
         UIUtil.TrackSelectedCardsWhenUserIsChoosing(CollectedCardList, OpponentCreatures, SelectedCard);
     }
 /*
- Wait for opponent to decide whether he/she will block or not
+ Check whether opponent have a blocker, if yes send a request which blocker he/she will use
  S12
  */
     private void BlockerUpdate() {
-        if (world.getWorldFlag(WorldFlags.AttackSelectMode) && world.getWorldFlag(WorldFlags.ShieldSelectMode))
-            throw new IllegalArgumentException("Both Attackselect mode and ShieldSelect mode is on");
+        int count = 0;
+        if (world.getWorldFlag(WorldFlags.AttackSelectMode))
+            count++;
+        if (world.getWorldFlag(WorldFlags.ShieldSelectMode))
+            count++;
+        if (world.getWorldFlag(WorldFlags.PlayerAttackMode))
+            count++;
+
+        if (count >1)
+            throw new IllegalArgumentException("More than one mode is on");
+
+        if (GetUtil.OpponentHasABlocker(world, (InactiveCard) world.getFetchCard())) {
+            String CollectAttackMarkedCard = InstSetUtil.GenerateCopyCardToTempZoneBasedOnAttribute("MarkedCard", 2);
+            InstructionSet CollectInst = new InstructionSet(CollectAttackMarkedCard);
+            world.getInstructionHandler().setCardAndInstruction((InactiveCard) world.getFetchCard(), CollectInst);
+            world.getInstructionHandler().execute();
+            ArrayList<Cards> CollectedCardList = world.getMaze().getZoneList().get(6).getZoneArray();
+            int zone = world.getFetchCard().GridPosition().getZone() + 7;
+            if (CollectedCardList.size() !=1) {
+                String msg = zone + " " + world.getFetchCard().GridPosition().getZone() + " " +
+                        world.getFetchCard().getNameID();
+                NetworkUtil.sendDirectiveUpdates(world, DirectiveHeader.RequestBlocker, msg, null);
+            } else {
+                Cards card = CollectedCardList.get(0);
+                int zone2 = card.GridPosition().getZone() - 7;
+                String msg = zone + " " + world.getFetchCard().GridPosition().getGridIndex() + " " +
+                        world.getFetchCard().getNameID() + " " + zone2 + " " + card.GridPosition().getGridIndex()
+                        + " " + card.getNameID();
+                NetworkUtil.sendDirectiveUpdates(world, DirectiveHeader.RequestBlocker, msg, null);
+            }
+            S = OnTurnState.S12a;
+            CollectedCardList.clear();
+        } else {
+            if (world.getWorldFlag(WorldFlags.AttackSelectMode))
+                S = OnTurnState.S13;
+            if (world.getWorldFlag(WorldFlags.ShieldSelectMode))
+                S = OnTurnState.S14;
+            if (world.getWorldFlag(WorldFlags.PlayerAttackMode)) {
+                //need to handle later
+            }
+        }
+    }
+/*
+ Wait for opponent to decide whether he/she will block or not
+ S12a
+     */
+    private void OpponentBlockerDirective() {
+        if (world.getGame().getNetwork().getSocket() == null || world.getGame().getNetwork().getSocket().isClosed()) {
+            // for now this but later handle it properly
+            if (world.getWorldFlag(WorldFlags.AttackSelectMode))
+                S = OnTurnState.S13;
+            if (world.getWorldFlag(WorldFlags.ShieldSelectMode))
+                S = OnTurnState.S14;
+            if (world.getWorldFlag(WorldFlags.PlayerAttackMode)) {
+                //need to handle later
+            }
+            return;
+        }
+
+        if (world.getGame().getNetwork().getreceivedDirectiveSize() == 0)
+            return;
+
+        String directive = world.getGame().getNetwork().getreceivedDirectiveMsg();
+        String[] splitdirective = directive.split("@");
+        if (!splitdirective[0].equals(DirectiveHeader.SendBlocker))
+            return;
+
+        if (!(splitdirective.length > 2)) {
+            if (world.getWorldFlag(WorldFlags.AttackSelectMode))
+                S = OnTurnState.S13;
+            if (world.getWorldFlag(WorldFlags.ShieldSelectMode))
+                S = OnTurnState.S14;
+            if (world.getWorldFlag(WorldFlags.PlayerAttackMode)) {
+                //need to handle later
+            }
+            return;
+        }
+
+        String[] msg = splitdirective[1].split(" ");
+
+        if (msg.length != 3)
+            throw new IllegalArgumentException("Invalid evolution directive");
+
+        int BCardzone = Integer.parseInt(msg[0]);
+        int BGridIndex = Integer.parseInt(msg[1]);
+        InactiveCard BlockerCard = (InactiveCard) world.getGridIndexTrackingTable().getCardMappedToGivenGridPosition(BCardzone, BGridIndex);
+        if (!BlockerCard.getNameID().equals(msg[2]))
+            throw new IllegalArgumentException("Data inconsistency");
+
+        int TypeOfAttack = 0;
 
         if (world.getWorldFlag(WorldFlags.AttackSelectMode))
-            S = OnTurnState.S13;
+            TypeOfAttack = 1;
         if (world.getWorldFlag(WorldFlags.ShieldSelectMode))
-            S = OnTurnState.S14;
+            TypeOfAttack = 4;
+        if (world.getWorldFlag(WorldFlags.PlayerAttackMode))
+            TypeOfAttack = 2;
+
+        if (!GetUtil.IsTapped(BlockerCard)) {
+            SetUnsetUtil.SetTappedAttr(BlockerCard);
+            world.getEventLog().registerEvent(BlockerCard, false, 0 , "Tapped", true ,1);
+        }
+
+        if (GetUtil.IsBlockable((InactiveCard) world.getFetchCard(), BlockerCard, TypeOfAttack)) {
+            String CollectAttackMarkedCard = InstSetUtil.GenerateCopyCardToTempZoneBasedOnAttribute("MarkedCard", 202);
+            InstructionSet CollectInst = new InstructionSet(CollectAttackMarkedCard);
+            world.getInstructionHandler().setCardAndInstruction((InactiveCard) world.getFetchCard(), CollectInst);
+            world.getInstructionHandler().execute();
+            ArrayList<Cards> CollectedCardList = world.getMaze().getZoneList().get(6).getZoneArray();
+            for (int i =0; i < CollectedCardList.size(); i++) {
+                SetUnsetUtil.UnSetMarkedCard((InactiveCard) CollectedCardList.get(i));
+            }
+            SetUnsetUtil.SetMarkedCard(BlockerCard);
+            world.clearWorldFlag(WorldFlags.ShieldSelectMode);
+            world.clearWorldFlag(WorldFlags.PlayerAttackMode);
+            world.setWorldFlag(WorldFlags.AttackSelectMode);
+            CollectedCardList.clear();
+            S = OnTurnState.S13;
+        } else {
+            if (world.getWorldFlag(WorldFlags.AttackSelectMode))
+                S = OnTurnState.S13;
+            if (world.getWorldFlag(WorldFlags.ShieldSelectMode))
+                S = OnTurnState.S14;
+            if (world.getWorldFlag(WorldFlags.PlayerAttackMode)) {
+                //need to handle later
+            }
+        }
     }
 /*
  If user decides to attack creature or if get blocked, this API will be called to evaluate the result of
@@ -293,10 +426,15 @@ public class OnTurn {
  */
     private void CreatureBattleUpdate() {
         ActiveCard AttackingCard = (ActiveCard) world.getFetchCard();
+        String CollectAttackMarkedCard = InstSetUtil.GenerateCopyCardToTempZoneBasedOnAttribute("MarkedCard", 2);
+        InstructionSet CollectInst = new InstructionSet(CollectAttackMarkedCard);
+        world.getInstructionHandler().setCardAndInstruction(AttackingCard, CollectInst);
+        world.getInstructionHandler().execute();
         ArrayList<Cards> CollectedCardList = world.getMaze().getZoneList().get(6).getZoneArray();
         if (CollectedCardList.size() != 1)
             throw new IllegalArgumentException("Something went wrong with the creature to attack");
         InactiveCard AttackedCard = (InactiveCard) CollectedCardList.get(0);
+        SetUnsetUtil.UnSetMarkedCard(AttackedCard);
         CollectedCardList.clear();
         int AttackResult = GetUtil.AttackEvaluation(AttackingCard, AttackedCard);
         CollectedCardList.add(AttackingCard);
@@ -462,6 +600,10 @@ public class OnTurn {
                 world.getInstructionIteratorHandler().setCard(card);
                 world.getInstructionIteratorHandler().setInstructions(IfAttackInsts);
                 this.S = OnTurnState.S11;
+                for (int i = 0; i < CollectedCardList.size(); i++) {
+                    SetUnsetUtil.SetMarkedCard((InactiveCard) CollectedCardList.get(i));
+                }
+                CollectedCardList.clear();
                 world.getEventLog().setRecording(true);
                 return;
             }
@@ -498,7 +640,14 @@ public class OnTurn {
  */
     private void ShieldBreakingUpdate() {
         ActiveCard card = (ActiveCard) world.getFetchCard();
+        String CollectAttackMarkedCard = InstSetUtil.GenerateCopyCardToTempZoneBasedOnAttribute("MarkedCard", 200);
+        InstructionSet CollectInst = new InstructionSet(CollectAttackMarkedCard);
+        world.getInstructionHandler().setCardAndInstruction(card, CollectInst);
+        world.getInstructionHandler().execute();
         ArrayList<Cards> CollectedCardList = world.getMaze().getZoneList().get(6).getZoneArray();
+        for (int i =0; i < CollectedCardList.size(); i++) {
+            SetUnsetUtil.UnSetMarkedCard((InactiveCard) CollectedCardList.get(i));
+        }
         if (!GetUtil.IsTapped(card)) {
             SetUnsetUtil.SetTappedAttr(card);
             world.getEventLog().registerEvent(card, false, 0 , "Tapped", true ,1);
