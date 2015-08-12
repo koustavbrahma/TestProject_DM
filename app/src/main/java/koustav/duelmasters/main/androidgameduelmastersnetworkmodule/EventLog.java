@@ -11,10 +11,12 @@ import koustav.duelmasters.main.androidgamesframework.Screen;
  */
 public class EventLog {
     ArrayList<String> events;
+    ArrayList<String> HoldMsg;
     boolean recording;
 
     public EventLog() {
         events = new ArrayList<String>();
+        HoldMsg = new ArrayList<String>();
         recording = false;
     }
 
@@ -54,5 +56,22 @@ public class EventLog {
         }
         events.clear();
         return eventTrunk;
+    }
+
+    public void AddHoldMsg(String msg) {
+        HoldMsg.add(msg);
+    }
+
+    public String getHoldMsg(){
+        String holdmsg = null;
+        if (HoldMsg.size() !=0) {
+            holdmsg = new String(HoldMsg.get(0));
+            for (int i = 1; i < HoldMsg.size(); i++) {
+                holdmsg = holdmsg.concat("#");
+                holdmsg = holdmsg.concat(HoldMsg.get(i));
+            }
+        }
+        HoldMsg.clear();
+        return holdmsg;
     }
 }

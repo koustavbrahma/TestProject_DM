@@ -3,6 +3,7 @@ package koustav.duelmasters.main.androidgameduelmastersstatemachine;
 
 import java.util.ArrayList;
 
+import koustav.duelmasters.main.androidgameduelmasterscardrulehandler.InstructionID;
 import koustav.duelmasters.main.androidgameduelmasterscardrulehandler.InstructionSet;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.InactiveCard;
@@ -28,6 +29,7 @@ public class WorldUpdateOffTurn {
         S4,
         S5,
         S6,
+        S7,
         SX,
         SY,
     }
@@ -73,6 +75,10 @@ public class WorldUpdateOffTurn {
             SelectBlocker();
         }
 
+        if (S == WorldUpdateoffTurnState.S7) {
+            SetTemporarySpreadingInst();
+        }
+
         if (S == WorldUpdateoffTurnState.SX) {
             ResumeTurnControl();
         }
@@ -96,6 +102,12 @@ public class WorldUpdateOffTurn {
 
         if (splitdirective[0].equals(DirectiveHeader.EndOfTurn)) {
             S = WorldUpdateoffTurnState.SX;
+            return;
+        }
+
+        if (splitdirective[0].equals(DirectiveHeader.EndOfTurnDueToShieldTrigger)) {
+            S = WorldUpdateoffTurnState.SX;
+            world.setWorldFlag(WorldFlags.ShieldTriggerFound);
             return;
         }
 
@@ -142,6 +154,11 @@ public class WorldUpdateOffTurn {
             world.setWorldFlag(WorldFlags.BlockerSelectMode);
             return;
         }
+
+        if (splitdirective[0].equals(DirectiveHeader.SetTmpSpreadingInst) && (splitdirective.length > 2)) {
+            S = WorldUpdateoffTurnState.S7;
+            return;
+        }
     }
 
     private void ApplyEvents() {
@@ -171,6 +188,11 @@ public class WorldUpdateOffTurn {
                 throw new IllegalArgumentException("Data inconsistency");
 
             if (move) {
+                if (card.GridPosition().getZone() == 0 || card.GridPosition().getZone() == 7) {
+                    ArrayList<InstructionSet> CleanUpInst = card.getCrossInstructionForTheInstructionID(InstructionID.CleanUp);
+                    world.getInstructionIteratorHandler().setCard(card);
+                    world.getInstructionIteratorHandler().setInstructions(CleanUpInst);
+                }
                 String moveInstruction = InstSetUtil.GenerateSelfChangeZoneInstruction(Integer.parseInt(eventField[4]));
                 InstructionSet instruction = new InstructionSet(moveInstruction);
                 world.getInstructionHandler().setCardAndInstruction(card, instruction);
@@ -298,6 +320,9 @@ public class WorldUpdateOffTurn {
         if (!Bcard.getNameID().equals(msg[5]))
             throw new IllegalArgumentException("Data inconsistency");
 
+        ArrayList<InstructionSet> CleanUpInst = Bcard.getCrossInstructionForTheInstructionID(InstructionID.CleanUp);
+        world.getInstructionIteratorHandler().setCard(Bcard);
+        world.getInstructionIteratorHandler().setInstructions(CleanUpInst);
         ActUtil.EvolveCreature(Ecard,Bcard, world);
 
         S = WorldUpdateoffTurnState.SY;
@@ -353,6 +378,32 @@ public class WorldUpdateOffTurn {
             return;
 
         UIUtil.TrackSelectedCardsWhenUserIsChoosing(CollectedCardList, MyCreatures, SelectedCard);
+    }
+
+    private void SetTemporarySpreadingInst() {
+        String[] msg = splitdirective[1].split("#");
+
+        for (int i = 0 ; i < msg.length; i++) {
+            String[] msgField = msg[i].split("$");
+
+            if (msgField.length != 2)
+                throw new  IllegalArgumentException("Invalid Set spreadingInst directive 1");
+
+            String[] msgInfo = msgField[0].split(" ");
+            if (msgInfo.length != 3)
+                throw new  IllegalArgumentException("Invalid Set spreadingInst directive 2");
+            int Cardzone = Integer.parseInt(msgInfo[0]);
+            int GridIndex = Integer.parseInt(msgInfo[1]);
+
+            InactiveCard card = (InactiveCard) world.getGridIndexTrackingTable().getCardMappedToGivenGridPosition(Cardzone, GridIndex);
+            if (!card.getNameID().equals(msgInfo[2]))
+                throw new IllegalArgumentException("Data inconsistency");
+
+            InstructionSet instruction = new InstructionSet(msgField[1]);
+            card.AddTemporarySpreadingInst(instruction);
+        }
+
+        S = WorldUpdateoffTurnState.S1;
     }
 
     private void ResumeTurnControl() {

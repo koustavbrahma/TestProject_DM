@@ -37,6 +37,10 @@ public class InstructionIteratorHandler {
         this.card= card;
     }
 
+    public InactiveCard getCard () {
+        return this.card;
+    }
+
     public boolean update() {
         boolean status = false;
         if (S == AbilityHandlerStates.S1)

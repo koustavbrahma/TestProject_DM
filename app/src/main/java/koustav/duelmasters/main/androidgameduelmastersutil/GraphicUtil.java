@@ -21,7 +21,7 @@ public class GraphicUtil {
         if (world.getWorldFlag(WorldFlags.ManaSelectMode) || world.getWorldFlag(WorldFlags.ShieldSelectMode) ||
                 world.getWorldFlag(WorldFlags.AttackSelectMode) || world.getWorldFlag(WorldFlags.SilentSkillMode) ||
                 world.getWorldFlag(WorldFlags.CardSelectingMode) || world.getWorldFlag(WorldFlags.BlockerSelectMode)||
-                !world.getTurn())
+                world.getWorldFlag(WorldFlags.ShieldTriggerMode) || !world.getTurn())
             return true;
         else
             return false;
@@ -351,8 +351,8 @@ public class GraphicUtil {
         }
     }
 
-    public static void presentSilentSkill(World world) {
-        if (!world.getWorldFlag(WorldFlags.SilentSkillMode))
+    public static void presentSilentSkillOrShieldTrigger(World world) {
+        if (!world.getWorldFlag(WorldFlags.SilentSkillMode) && !world.getWorldFlag(WorldFlags.ShieldTriggerMode))
             return;
 
         Graphics g = world.getGame().getGraphics();
@@ -396,7 +396,7 @@ public class GraphicUtil {
     }
 
     public static void presentBlockerSelect(World world) {
-        if (!world.getWorldFlag(WorldFlags.BlockerSelectMode))
+        if (!world.getWorldFlag(WorldFlags.BlockerSelectMode) || world.getTurn())
             return;
 
         Graphics g = world.getGame().getGraphics();

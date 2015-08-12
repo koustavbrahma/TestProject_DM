@@ -254,6 +254,10 @@ Description: Tells whether the creature has any silent skill ability.
 FlagAttribute name: DestroyAfterBattle (P)  +
 Description: After battle Destroy the creature.
 ****************************************************************************************************
-FlagAttribute name: MarkedCard   (*)
+FlagAttribute name: MarkedCard   (*) +
 Description: This attribute is for internal use. Don't use while writing library. This attribute
              tracks which are selected by user.
+****************************************************************************************************
+FlagAttribute name: SummonOnAllManaMatch  (P)  +
+Description: With this attribute a creature/spell can only be summon or cast if all the cards in mana
+             zone matches the civilization

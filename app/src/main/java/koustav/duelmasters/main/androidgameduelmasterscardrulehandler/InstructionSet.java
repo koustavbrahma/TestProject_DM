@@ -17,7 +17,8 @@ public class InstructionSet {
     Condition condition;
     Action action;
     int ChangeDestination;
-    int AttrCountOrIndex;
+    int AttrCountOrIndex;           /* For selfboost inst 1 == always boost 2 == boost if collect card > 0
+                                        3== Exact match */
     FlagAttribute Attr;
     CleanUpPlacement cleanUpPlacement;
     int CleanUpIndex;

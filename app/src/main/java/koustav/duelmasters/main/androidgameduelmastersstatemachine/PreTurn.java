@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import koustav.duelmasters.main.androidgameduelmasterscardrulehandler.InstructionID;
 import koustav.duelmasters.main.androidgameduelmasterscardrulehandler.InstructionSet;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.ActiveCard;
+import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.InactiveCard;
+import koustav.duelmasters.main.androidgameduelmastersdatastructure.TypeOfCard;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.World;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.WorldFlags;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Zone;
@@ -23,6 +25,10 @@ public class PreTurn {
     enum State {
         S1,
         S2,
+        S2a,
+        S2b,
+        S2c,
+        S2d,
         S3,
         S4,
         S5,
@@ -33,7 +39,9 @@ public class PreTurn {
     InstructionSet UnTapCreaturesInstruction;
     InstructionSet CleanDontUnTap;
     InstructionSet NotYetSpreadCleanup;
+    InstructionSet CollectInst;
     int Counter;
+    Boolean SummonTapped;
 
     public PreTurn(World world){
         this.world = world;
@@ -47,7 +55,10 @@ public class PreTurn {
         CleanDontUnTap = new InstructionSet(instruction3);
         String instruction4 = InstSetUtil.GenerateAttributeCleanUpInstruction(3333, "NotYetSpread", 1);
         NotYetSpreadCleanup = new InstructionSet(instruction4);
+        String CollectAttackMarkedCard = InstSetUtil.GenerateCopyCardToTempZoneBasedOnAttribute("MarkedCard", 1000);
+        CollectInst = new InstructionSet(CollectAttackMarkedCard);
         Counter = 0;
+        SummonTapped = false;
     }
 
     public boolean update(){
@@ -55,6 +66,14 @@ public class PreTurn {
             Cleanup();
         if (S == State.S2)
             ResetAndUnpackOppTappedAttr();
+        if (S == State.S2a)
+            ShieldTriggerUpdate();
+        if (S == State.S2b)
+            RunShieldTrigger();
+        if (S == State.S2c)
+            ShieldTriggerSummonUpdate();
+        if (S == State.S2d)
+            ShieldTriggerCastUpdate();
         if (S == State.S3)
             RunSilentSkill();
         if (S == State.S4)
@@ -166,7 +185,153 @@ public class PreTurn {
         SetUnsetUtil.SpreadingFlagAttr(world);
         world.getInstructionHandler().setCardAndInstruction(null, NotYetSpreadCleanup);
         world.getInstructionHandler().execute();
-        S = State.S3;
+        if (world.getWorldFlag(WorldFlags.ShieldTriggerFound)) {
+            world.clearWorldFlag(WorldFlags.ShieldTriggerFound);
+            world.setWorldFlag(WorldFlags.ShieldTriggerMode);
+            S = State.S2a;
+            world.getEventLog().setRecording(true);
+        } else {
+            S = State.S3;
+        }
+    }
+
+    private void ShieldTriggerUpdate() {
+        if (world.getGame().getNetwork().getSocket() == null || world.getGame().getNetwork().getSocket().isClosed()) {
+            SetUnsetUtil.SpreadingFlagAttr(world);
+            world.getInstructionHandler().setCardAndInstruction(null, NotYetSpreadCleanup);
+            world.getInstructionHandler().execute();
+            S = State.S3;
+            // for now this but later handle it properly
+            return;
+        }
+        if (world.getGame().getNetwork().getreceivedDirectiveSize() == 0)
+            return;
+
+        String directive = world.getGame().getNetwork().getreceivedDirectiveMsg();
+        String [] splitdirective = directive.split("@");
+
+        if (!splitdirective[0].equals(DirectiveHeader.ShieldTriggerInfo)) {
+            throw new IllegalArgumentException("Invalid Directive at this point");
+        }
+
+        if (splitdirective.length > 2) {
+            String[] packedData = splitdirective[1].split("#");
+            for (int i = 0; i < packedData.length; i++) {
+                String[] eventField = packedData[i].split(" ");
+
+                if (eventField.length != 3)
+                    throw new IllegalArgumentException("Invalid tapped card info");
+
+                int Cardzone = Integer.parseInt(eventField[0]);
+                int GridIndex = Integer.parseInt(eventField[1]);
+                if (Cardzone != 3)
+                    throw new IllegalArgumentException("Invalid zone for shield trigger card info");
+
+                ActiveCard card = (ActiveCard) world.getGridIndexTrackingTable().getCardMappedToGivenGridPosition(Cardzone, GridIndex);
+                if (!card.getNameID().equals(eventField[2]))
+                    throw new IllegalArgumentException("Data inconsistency");
+                SetUnsetUtil.SetMarkedCard(card);
+            }
+        }
+
+        S = State.S2b;
+    }
+
+    private void RunShieldTrigger() {
+        world.getInstructionHandler().setCardAndInstruction(null, CollectInst);
+        world.getInstructionHandler().execute();
+        ArrayList<Cards> CollectedCardList = world.getMaze().getZoneList().get(6).getZoneArray();
+        if (CollectedCardList.size() == 0) {
+            S = State.S3;
+            world.clearWorldFlag(WorldFlags.ShieldTriggerMode);
+            world.getEventLog().setRecording(false);
+            return;
+        }
+        ActiveCard card = (ActiveCard) CollectedCardList.get(0);
+        if (UIUtil.TouchedAcceptButton(world)) {
+            SetUnsetUtil.UnSetMarkedCard(card);
+            world.clearWorldFlag(WorldFlags.ShieldTriggerMode);
+
+            if (card.getType() == TypeOfCard.Creature) {
+                SummonTapped = false;
+                if (GetUtil.SummonTapped(card)) {
+                    SummonTapped = true;
+                }
+                String SummonCardInstruction = InstSetUtil.GenerateSelfChangeZoneInstruction(0);
+                InstructionSet instruction = new InstructionSet(SummonCardInstruction);
+                world.getInstructionHandler().setCardAndInstruction(card, instruction);
+                world.getInstructionHandler().execute();
+                card = (ActiveCard) world.getInstructionHandler().getCurrentCard();
+                if (SummonTapped) {
+                    SetUnsetUtil.SetTappedAttr(card);
+                    world.getEventLog().registerEvent(card, false, 0 , "Tapped", true ,1);
+                    SummonTapped = false;
+                }
+                //sendeventlog
+                String msg = world.getEventLog().getAndClearEvents();
+                NetworkUtil.sendDirectiveUpdates(world,DirectiveHeader.ApplyEvents, msg, null);
+                if (card.getPrimaryInstructionForTheInstructionID(InstructionID.SummonOrCastAbility) == null) {
+                    return;
+                } else {
+                    world.getInstructionIteratorHandler().setCard(card);
+                    ArrayList<InstructionSet> instructions = card.getPrimaryInstructionForTheInstructionID(InstructionID.SummonOrCastAbility);
+                    world.getInstructionIteratorHandler().setInstructions(instructions);
+                    this.S = State.S2c;
+                }
+            }
+
+            if (card.getType() == TypeOfCard.Spell) {
+                world.getInstructionIteratorHandler().setCard(card);
+                ArrayList<InstructionSet> instructions = card.getPrimaryInstructionForTheInstructionID(InstructionID.SummonOrCastAbility);
+                world.getInstructionIteratorHandler().setInstructions(instructions);
+                S = State.S2d;
+            }
+        }
+
+        if (UIUtil.TouchedDeclineButton(world)){
+            SetUnsetUtil.UnSetMarkedCard(card);
+            return;
+        }
+
+    }
+
+    private void ShieldTriggerSummonUpdate() {
+        if (world.getInstructionIteratorHandler().update()) {
+            S = State.S2b;
+            world.setWorldFlag(WorldFlags.ShieldTriggerMode);
+            //sendevent
+            String msg = world.getEventLog().getAndClearEvents();
+            NetworkUtil.sendDirectiveUpdates(world,DirectiveHeader.ApplyEvents, msg, null);
+        }
+    }
+
+    private void ShieldTriggerCastUpdate() {
+        if (world.getInstructionIteratorHandler().update()) {
+            InactiveCard card = world.getInstructionIteratorHandler().getCard();
+            if (GetUtil.MaskDestroyDstVal(card) > 0) {
+                String DestroyDstInst = InstSetUtil.GenerateSelfChangeZoneInstruction(GetUtil.MaskDestroyDstVal(card) - 1);
+                InstructionSet instruction = new InstructionSet(DestroyDstInst);
+                world.getInstructionHandler().setCardAndInstruction(card, instruction);
+                world.getInstructionHandler().execute();
+            } else {
+                ArrayList<InstructionSet> instructions = card.getCrossInstructionForTheInstructionID(InstructionID.DestroyDst);
+                if (instructions != null) {
+                    InstructionSet instruction = instructions.get(0);
+                    world.getInstructionHandler().setCardAndInstruction(card, instruction);
+                    world.getInstructionHandler().execute();
+                } else {
+                    String DestroyInst = InstSetUtil.GenerateSelfChangeZoneInstruction(4);
+                    InstructionSet instruction = new InstructionSet(DestroyInst);
+                    world.getInstructionHandler().setCardAndInstruction(card, instruction);
+                    world.getInstructionHandler().execute();
+                }
+            }
+            S = State.S2b;
+            world.setWorldFlag(WorldFlags.ShieldTriggerMode);
+            //sendevent
+            String msg = world.getEventLog().getAndClearEvents();
+            NetworkUtil.sendDirectiveUpdates(world, DirectiveHeader.ApplyEvents, msg, null);
+        }
     }
 
     private void RunSilentSkill(){

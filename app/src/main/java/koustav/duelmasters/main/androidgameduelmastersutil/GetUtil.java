@@ -209,6 +209,13 @@ public class GetUtil {
             return false;
     }
 
+    public static boolean IsSummonOnAllManaMatch(InactiveCard card) {
+        if (card.getflagAttributes().GetAttribute("SummonOnAllManaMatch") > 0)
+            return true;
+        else
+            return false;
+    }
+
     public static boolean CanAttackCard(InactiveCard attacking, InactiveCard attacked) {
         String attr;
         if(IgnoreAnyAttackPrevent(attacking))
@@ -361,6 +368,21 @@ public class GetUtil {
 
         if (card.getType() == TypeOfCard.Evolution && !GetUtil.IsEvolutionBaseExist(card, world)) {
             return false;
+        }
+
+        if (GetUtil.IsSummonOnAllManaMatch(card)) {
+            InactiveCard mcard;
+            boolean status = true;
+            for (int i =0; i < world.getMaze().getZoneList().get(1).zoneSize(); i++) {
+                mcard = (InactiveCard) world.getMaze().getZoneList().get(1).getZoneArray().get(i);
+                if (!RequiredCivilization(mcard, card.getCivilization())) {
+                    status = false;
+                    break;
+                }
+            }
+
+            if (!status)
+                return false;
         }
 
         int ManaCost = getTotalManaCost(card);

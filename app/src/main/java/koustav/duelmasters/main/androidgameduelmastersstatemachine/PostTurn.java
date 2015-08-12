@@ -6,6 +6,7 @@ import koustav.duelmasters.main.androidgameduelmasterscardrulehandler.Instructio
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.ActiveCard;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.InactiveCard;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.World;
+import koustav.duelmasters.main.androidgameduelmastersdatastructure.WorldFlags;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Zone;
 import koustav.duelmasters.main.androidgameduelmastersnetworkmodule.DirectiveHeader;
 import koustav.duelmasters.main.androidgameduelmastersutil.InstSetUtil;
@@ -39,7 +40,7 @@ public class PostTurn {
         if (S == PostTurnState.S1)
             Cleanup();
         if (S == PostTurnState.S2) {
-            status = ResetAndUnpackOppCardAttr();
+            status = ResetAndUnpackOppTappedCardAttr();
         }
         return status;
     }
@@ -105,7 +106,7 @@ public class PostTurn {
         S = PostTurnState.S2;
     }
 
-    private boolean ResetAndUnpackOppCardAttr() {
+    private boolean ResetAndUnpackOppTappedCardAttr() {
         if (world.getGame().getNetwork().getSocket() == null || world.getGame().getNetwork().getSocket().isClosed()) {
             SetUnsetUtil.SpreadingFlagAttr(world);
             world.getInstructionHandler().setCardAndInstruction(null, NotYetSpreadCleanup);
@@ -152,6 +153,11 @@ public class PostTurn {
         world.getInstructionHandler().setCardAndInstruction(null, NotYetSpreadCleanup);
         world.getInstructionHandler().execute();
         S = PostTurnState.S1;
+        if (world.getWorldFlag(WorldFlags.ShieldTriggerFound)) {
+            world.clearWorldFlag(WorldFlags.ShieldTriggerFound);
+            String msg2 = world.getEventLog().getHoldMsg();
+            NetworkUtil.sendDirectiveUpdates(world, DirectiveHeader.ShieldTriggerInfo, msg2, null);
+        }
         return true;
     }
 }

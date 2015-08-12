@@ -116,7 +116,7 @@ public class TestScreen extends Screen {
         GraphicUtil.presentInfoTab(world);
         GraphicUtil.presentHighlightManaCard(world);
         GraphicUtil.presentAttackedCard(world);
-        GraphicUtil.presentSilentSkill(world);
+        GraphicUtil.presentSilentSkillOrShieldTrigger(world);
         GraphicUtil.presentCardSelectMode(world);
         GraphicUtil.presentCardInfoUserSelect(world);
         GraphicUtil.presentBlockerSelect(world);

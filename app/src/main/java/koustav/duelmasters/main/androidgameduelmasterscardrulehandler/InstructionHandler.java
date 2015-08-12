@@ -292,8 +292,67 @@ public class InstructionHandler {
  */
     private void CardBoostFlagAttribute() {
         boolean boost = false;
-        if (CollectCardList.size() > 0)
+        if (instruction.getAttrCountOrIndex() == 1)
             boost = true;
+        if ((instruction.getAttrCountOrIndex() == 2) && (CollectCardList.size() > 0))
+            boost = true;
+
+        if (instruction.getAttrCountOrIndex() == 3) {
+            int[] ActionZone = instruction.getActionZone();
+            int count = 0;
+            if (CurrentCard != null && (CurrentCard.GridPosition().getZone() > 6)) {
+                for (int i = 0; i < 7; i++) {
+                    if (ActionZone[i] == 0)
+                        continue;
+
+                    if (ActionZone[i] == 1) {
+                        count = count + world.getMaze().getZoneList().get(i+7).zoneSize();
+                        if ((i+7) == CurrentCard.GridPosition().getZone())
+                            count--;
+                    }
+
+                    if (ActionZone[i] == 2) {
+                        count = count + world.getMaze().getZoneList().get(i).zoneSize();
+                    }
+
+                    if (ActionZone[i] == 3) {
+                        count = count + world.getMaze().getZoneList().get(i).zoneSize();
+                        count = count + world.getMaze().getZoneList().get(i+7).zoneSize();
+                        if ((i+7) == CurrentCard.GridPosition().getZone())
+                            count--;
+                    }
+                }
+            }else {
+                for (int i = 0; i < 7; i++) {
+                    if (ActionZone[i] == 0)
+                        continue;
+
+                    if (ActionZone[i] == 1) {
+                        count = count + world.getMaze().getZoneList().get(i).zoneSize();
+                        if ((CurrentCard != null) && (i == CurrentCard.GridPosition().getZone()))
+                            count--;
+                    }
+
+                    if (ActionZone[i] == 2) {
+                        count = count + world.getMaze().getZoneList().get(i+7).zoneSize();
+                    }
+
+                    if (ActionZone[i] == 3) {
+                        count = count + world.getMaze().getZoneList().get(i).zoneSize();
+                        count = count + world.getMaze().getZoneList().get(i+7).zoneSize();
+                        if ((CurrentCard != null) && (i == CurrentCard.GridPosition().getZone()))
+                            count--;
+                    }
+                }
+            }
+            if (CollectCardList.size() == count)
+                boost = true;
+        }
+
+        if (instruction.getAttrCountOrIndex() == 4) {
+            if (CollectCardList.size() == instruction.getConditionCount())
+                boost = true;
+        }
 
         SetUnsetUtil.SetUnsetBoostFlagAttr(CurrentCard, instruction, boost);
     }
@@ -359,11 +418,28 @@ public class InstructionHandler {
     private void SetTemporarySpreadInstruction(){
         String SpreadinstructionStr = ((ActiveCard)CurrentCard).cardInfo().PrimaryInstruction.get(instruction.getAttrCountOrIndex() - 1);
         InactiveCard card;
+        String msg = new String("");
         for (int i = 0; i < CollectCardList.size(); i++) {
             card = (InactiveCard) CollectCardList.get(i);
             InstructionSet Spreadinstruction = new InstructionSet(SpreadinstructionStr);
             card.AddTemporarySpreadingInst(Spreadinstruction);
+            int zone;
+            if (card.GridPosition().getZone() > 6) {
+                zone = card.GridPosition().getZone() - 7;
+            } else if (card.GridPosition().getZone() < 6) {
+                zone = card.GridPosition().getZone() + 7;
+            } else {
+                throw new IllegalArgumentException("Unexpected zone");
+            }
+            String tmp = zone + " " + card.GridPosition().getGridIndex() +
+                    " " + card.getNameID();
+            msg = msg.concat(tmp);
+            msg = msg.concat("$");
+            msg = msg.concat(SpreadinstructionStr);
+            msg = msg.concat("#");
         }
+
+        NetworkUtil.sendDirectiveUpdates(world,DirectiveHeader.SetTmpSpreadingInst, msg, null);
     }
 /*
   This API clean up flag attr based on collection count
@@ -485,12 +561,7 @@ public class InstructionHandler {
         String msg = Ezone + " " + CurrentCard.GridPosition().getGridIndex() + " " + CurrentCard.getNameID() + " " +
                 Bzone + " " + CollectCardList.get(0).GridPosition().getGridIndex() + " " + CollectCardList.get(0).getNameID();
         NetworkUtil.sendDirectiveUpdates(world, DirectiveHeader.EvolutionEvent, msg, null);
-        card = (InactiveCard) ActUtil.EvolveCreature(CurrentCard, CollectCardList.get(0), world);
-
-        if (CurrentCard == world.getFetchCard()) {
-            world.setFetchCard(card);
-        }
-        setCurrentCard(card);
+        SetUnsetUtil.SetMarkedCard((InactiveCard) CollectCardList.get(0));
     }
 /*
  This API is used to collect card from zones. Sometimes based on condition also.
@@ -735,8 +806,10 @@ public class InstructionHandler {
                     CollectCardList.add(card);
                 }
             }
+        }else if (instruction.getCondition().getConditionType() == ConditionType.Nil) {
+
         }else {
-            throw new IllegalArgumentException("condition type cannot be nil as condition count is not zero");
+            throw new IllegalArgumentException("condition type is Illegal");
         }
     }
 /*

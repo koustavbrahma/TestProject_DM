@@ -11,12 +11,12 @@ public class WorldFlags {
     public static String AttackSelectMode = "AttackMode";
     public static String ShieldSelectMode = "ShieldSelectMode";
     public static String PlayerAttackMode = "PlayerAttackMode";
-    public static String ShieldTrigger = "ShieldTrigger";
-    public static String WasBlocked = "WasBlocked";
+    public static String ShieldTriggerFound = "ShieldTriggerFound";
     public static String SilentSkillMode = "SilentSkillMode";
     public static String CardSelectingMode = "UserSelectingMode";
     public static String MaySkipCardSelectingMode = "MaySkipCardSelectingMode";
     public static String AcceptCardSelectingMode = "AcceptCardSelectingMode";
     public static String DisplayInfoUserSelect = "DisplayInfoUserSelect";
     public static String BlockerSelectMode = "BlockerSelectMode";
+    public static String ShieldTriggerMode = "ShieldTriggerMode";
 }

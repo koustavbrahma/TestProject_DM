@@ -11,6 +11,7 @@ import koustav.duelmasters.main.androidgameduelmastersdatastructure.TypeOfCard;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.World;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.WorldFlags;
 import koustav.duelmasters.main.androidgameduelmastersnetworkmodule.DirectiveHeader;
+import koustav.duelmasters.main.androidgameduelmastersutil.ActUtil;
 import koustav.duelmasters.main.androidgameduelmastersutil.GetUtil;
 import koustav.duelmasters.main.androidgameduelmastersutil.InstSetUtil;
 import koustav.duelmasters.main.androidgameduelmastersutil.NetworkUtil;
@@ -36,6 +37,7 @@ public class OnTurn {
         S11,
         S12,
         S12a,
+        S12b,
         S13,
         S14,
         S15,
@@ -88,12 +90,12 @@ public class OnTurn {
             BlockerUpdate();
         if (S == OnTurnState.S12a)
             OpponentBlockerDirective();
+        if (S == OnTurnState.S12b)
+            PostIfUnBlockedUpdate();
         if (S == OnTurnState.S13)
             CreatureBattleUpdate();
         if (S == OnTurnState.S14)
             ShieldBreakingUpdate();
-        if (S == OnTurnState.S15)
-            PostIfUnBlockedUpdate();
         if (S == OnTurnState.SX)
             FlagSpreadingUpdate();
         return status;
@@ -321,16 +323,11 @@ public class OnTurn {
                         + " " + card.getNameID();
                 NetworkUtil.sendDirectiveUpdates(world, DirectiveHeader.RequestBlocker, msg, null);
             }
+            world.setWorldFlag(WorldFlags.BlockerSelectMode);
             S = OnTurnState.S12a;
             CollectedCardList.clear();
         } else {
-            if (world.getWorldFlag(WorldFlags.AttackSelectMode))
-                S = OnTurnState.S13;
-            if (world.getWorldFlag(WorldFlags.ShieldSelectMode))
-                S = OnTurnState.S14;
-            if (world.getWorldFlag(WorldFlags.PlayerAttackMode)) {
-                //need to handle later
-            }
+            S = OnTurnState.S12b;
         }
     }
 /*
@@ -340,13 +337,8 @@ public class OnTurn {
     private void OpponentBlockerDirective() {
         if (world.getGame().getNetwork().getSocket() == null || world.getGame().getNetwork().getSocket().isClosed()) {
             // for now this but later handle it properly
-            if (world.getWorldFlag(WorldFlags.AttackSelectMode))
-                S = OnTurnState.S13;
-            if (world.getWorldFlag(WorldFlags.ShieldSelectMode))
-                S = OnTurnState.S14;
-            if (world.getWorldFlag(WorldFlags.PlayerAttackMode)) {
-                //need to handle later
-            }
+            S = OnTurnState.S12b;
+            world.clearWorldFlag(WorldFlags.BlockerSelectMode);
             return;
         }
 
@@ -356,16 +348,11 @@ public class OnTurn {
         String directive = world.getGame().getNetwork().getreceivedDirectiveMsg();
         String[] splitdirective = directive.split("@");
         if (!splitdirective[0].equals(DirectiveHeader.SendBlocker))
-            return;
+            throw new IllegalArgumentException("Invalid Directive at this point");
 
         if (!(splitdirective.length > 2)) {
-            if (world.getWorldFlag(WorldFlags.AttackSelectMode))
-                S = OnTurnState.S13;
-            if (world.getWorldFlag(WorldFlags.ShieldSelectMode))
-                S = OnTurnState.S14;
-            if (world.getWorldFlag(WorldFlags.PlayerAttackMode)) {
-                //need to handle later
-            }
+            S = OnTurnState.S12b;
+            world.clearWorldFlag(WorldFlags.BlockerSelectMode);
             return;
         }
 
@@ -418,6 +405,7 @@ public class OnTurn {
                 //need to handle later
             }
         }
+        world.clearWorldFlag(WorldFlags.BlockerSelectMode);
     }
 /*
  If user decides to attack creature or if get blocked, this API will be called to evaluate the result of
@@ -437,7 +425,6 @@ public class OnTurn {
         SetUnsetUtil.UnSetMarkedCard(AttackedCard);
         CollectedCardList.clear();
         int AttackResult = GetUtil.AttackEvaluation(AttackingCard, AttackedCard);
-        CollectedCardList.add(AttackingCard);
         if (!GetUtil.IsTapped(AttackingCard)) {
             SetUnsetUtil.SetTappedAttr(AttackingCard);
             world.getEventLog().registerEvent(AttackingCard, false, 0 , "Tapped", true ,1);
@@ -544,17 +531,8 @@ public class OnTurn {
         //send Eventlog
         String msg = world.getEventLog().getAndClearEvents();
         NetworkUtil.sendDirectiveUpdates(world,DirectiveHeader.ApplyEvents, msg, null);
-        if (!world.getWorldFlag(WorldFlags.WasBlocked)) {
-            ArrayList<InstructionSet> IfUnBlocked =
-                    ((ActiveCard) CollectedCardList.get(0)).getPrimaryInstructionForTheInstructionID(InstructionID.IfUnblocked);
-            world.getInstructionIteratorHandler().setCard((InactiveCard) world.getFetchCard());
-            world.getInstructionIteratorHandler().setInstructions(IfUnBlocked);
-            S = OnTurnState.S15;
-        } else {
-            world.clearWorldFlag(WorldFlags.WasBlocked);
-            world.getEventLog().setRecording(false);
-            S = OnTurnState.SX;
-        }
+        world.getEventLog().setRecording(false);
+        S = OnTurnState.SX;
         CollectedCardList.clear();
         world.clearWorldFlag(WorldFlags.AttackSelectMode);
     }
@@ -572,12 +550,17 @@ public class OnTurn {
     }
 /*
  After attack this is were if unblocked is handled.
- S15
+ S12b
  */
     private void PostIfUnBlockedUpdate() {
         if (world.getInstructionIteratorHandler().update()) {
-            world.getEventLog().setRecording(false);
-            S = OnTurnState.SX;
+            if (world.getWorldFlag(WorldFlags.AttackSelectMode))
+                S = OnTurnState.S13;
+            if (world.getWorldFlag(WorldFlags.ShieldSelectMode))
+                S = OnTurnState.S14;
+            if (world.getWorldFlag(WorldFlags.PlayerAttackMode)) {
+                //need to handle later
+            }
             //send Eventlog
             String msg = world.getEventLog().getAndClearEvents();
             NetworkUtil.sendDirectiveUpdates(world,DirectiveHeader.ApplyEvents, msg, null);
@@ -638,7 +621,7 @@ public class OnTurn {
  This API updates the breaking of the shield and detects if there is any shield trigger.
  S14
  */
-    private void ShieldBreakingUpdate() {
+    private boolean ShieldBreakingUpdate() {
         ActiveCard card = (ActiveCard) world.getFetchCard();
         String CollectAttackMarkedCard = InstSetUtil.GenerateCopyCardToTempZoneBasedOnAttribute("MarkedCard", 200);
         InstructionSet CollectInst = new InstructionSet(CollectAttackMarkedCard);
@@ -664,19 +647,10 @@ public class OnTurn {
             String msg = world.getEventLog().getAndClearEvents();
             NetworkUtil.sendDirectiveUpdates(world,DirectiveHeader.ApplyEvents, msg, null);
             world.clearWorldFlag(WorldFlags.ShieldSelectMode);
-            if (!world.getWorldFlag(WorldFlags.WasBlocked)) {
-                ArrayList<InstructionSet> IfUnBlocked =
-                        card.getPrimaryInstructionForTheInstructionID(InstructionID.IfUnblocked);
-                world.getInstructionIteratorHandler().setCard(card);
-                world.getInstructionIteratorHandler().setInstructions(IfUnBlocked);
-                S = OnTurnState.S15;
-            } else {
-                world.clearWorldFlag(WorldFlags.WasBlocked);
-                S = OnTurnState.SX;
-                world.getEventLog().setRecording(false);
-            }
+            S = OnTurnState.SX;
+            world.getEventLog().setRecording(false);
             CollectedCardList.clear();
-            return;
+            return false;
         }
 
         boolean isShieldTrigger = false;
@@ -706,25 +680,41 @@ public class OnTurn {
         TempList.clear();
         if (!isShieldTrigger) {
             world.clearWorldFlag(WorldFlags.ShieldSelectMode);
-            if (!world.getWorldFlag(WorldFlags.WasBlocked)) {
-                ArrayList<InstructionSet> IfUnBlocked =
-                        card.getPrimaryInstructionForTheInstructionID(InstructionID.IfUnblocked);
-                world.getInstructionIteratorHandler().setCard(card);
-                world.getInstructionIteratorHandler().setInstructions(IfUnBlocked);
-                S = OnTurnState.S15;
-            } else {
-                world.clearWorldFlag(WorldFlags.WasBlocked);
-                S = OnTurnState.SX;
-                world.getEventLog().setRecording(false);
-            }
+            S = OnTurnState.SX;
+            world.getEventLog().setRecording(false);
             CollectedCardList.clear();
-            return;
+            return false;
         }
 
         SetUnsetUtil.SpreadingFlagAttr(world);
+        world.getInstructionHandler().setCardAndInstruction(null, NotYetSpreadCleanup);
+        world.getInstructionHandler().execute();
         world.clearWorldFlag(WorldFlags.ShieldSelectMode);
-        this.S = OnTurnState.S16;
+        if (!NetworkUtil.sendDirectiveUpdates(world, DirectiveHeader.EndOfTurnDueToShieldTrigger, null, null)) {
+            //handle the case when socket is closed
+            S = OnTurnState.S1;
+            world.getEventLog().setRecording(false);
+            CollectedCardList.clear();
+            return true;
+        }
+        this.S = OnTurnState.S1;
         world.getEventLog().setRecording(false);
+        world.setWorldFlag(WorldFlags.ShieldTriggerFound);
+        String msg2 = new String("");
+        for (int i = 0; i < CollectedCardList.size(); i++) {
+            if (GetUtil.IsShieldTrigger((InactiveCard) CollectedCardList.get(i))) {
+                int zone = CollectedCardList.get(i).GridPosition().getZone() - 7;
+                String tmp = zone + " " + CollectedCardList.get(i).GridPosition().getGridIndex() +
+                        " " + CollectedCardList.get(i).getNameID();
+                msg2 = msg2.concat(tmp);
+                msg2 = msg2.concat("#");
+            }
+        }
+        CollectedCardList.clear();
+        if (msg2.length() > 0) {
+            world.getEventLog().AddHoldMsg(msg2);
+        }
+        return true;
     }
 /*
  This API is called when user decides to summon or cast card.
@@ -869,6 +859,20 @@ public class OnTurn {
  */
     private void EvolutionUpdate() {
         if (world.getInstructionHandler().execute()) {
+            ActiveCard card = (ActiveCard) world.getFetchCard();
+            String CollectAttackMarkedCard = InstSetUtil.GenerateCopyCardToTempZoneBasedOnAttribute("MarkedCard", 1);
+            InstructionSet CollectInst = new InstructionSet(CollectAttackMarkedCard);
+            world.getInstructionHandler().setCardAndInstruction(card, CollectInst);
+            world.getInstructionHandler().execute();
+            ArrayList<Cards> CollectedCardList = world.getMaze().getZoneList().get(6).getZoneArray();
+            if (CollectedCardList.size() != 1)
+                throw new IllegalArgumentException("Something went wrong while evolution");
+            SetUnsetUtil.UnSetMarkedCard((InactiveCard) CollectedCardList.get(0));
+            ArrayList<InstructionSet> CleanUpInst = ((InactiveCard)CollectedCardList.get(0)).getCrossInstructionForTheInstructionID(InstructionID.CleanUp);
+            world.getInstructionIteratorHandler().setCard((InactiveCard) CollectedCardList.get(0));
+            world.getInstructionIteratorHandler().setInstructions(CleanUpInst);
+            InactiveCard card2 = (InactiveCard) ActUtil.EvolveCreature(card, CollectedCardList.get(0), world);
+            world.setFetchCard(card2);
             if (SummonTapped) {
                 SetUnsetUtil.SetTappedAttr((InactiveCard) world.getFetchCard());
                 world.getEventLog().registerEvent(world.getFetchCard(), false, 0 , "Tapped", true ,1);
