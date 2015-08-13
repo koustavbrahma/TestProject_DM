@@ -24,6 +24,8 @@ public class PostTurn {
     World world;
     InstructionSet NewSummonedCreatureCleanUp;
     InstructionSet NotYetSpreadCleanup;
+    InstructionSet ActiveTurboRushCleanup;
+    InstructionSet UsedTurboRushSetAttrCleanup;
     PostTurnState S;
 
     public PostTurn(World world){
@@ -32,6 +34,10 @@ public class PostTurn {
         NewSummonedCreatureCleanUp = new InstructionSet(instruction);
         String instruction2 = InstSetUtil.GenerateAttributeCleanUpInstruction(3333, "NotYetSpread", 1);
         NotYetSpreadCleanup = new InstructionSet(instruction2);
+        String instruction3 = InstSetUtil.GenerateAttributeCleanUpInstruction(1, "ActiveTurboRush", 100);
+        ActiveTurboRushCleanup = new InstructionSet(instruction3);
+        String instruction4 = InstSetUtil.GenerateAttributeCleanUpInstruction(1, "UsedTurboRushSetAttr", 1);
+        UsedTurboRushSetAttrCleanup = new InstructionSet(instruction4);
         S = PostTurnState.S1;
     }
 
@@ -48,6 +54,11 @@ public class PostTurn {
     private void Cleanup() {
         world.getInstructionHandler().setCardAndInstruction(null, NewSummonedCreatureCleanUp);
         world.getInstructionHandler().execute();
+        world.getInstructionHandler().setCardAndInstruction(null, ActiveTurboRushCleanup);
+        world.getInstructionHandler().execute();
+        world.getInstructionHandler().setCardAndInstruction(null, UsedTurboRushSetAttrCleanup);
+        world.getInstructionHandler().execute();
+
         Zone MyBattleZone = world.getMaze().getZoneList().get(0);
 
         for (int i = 0; i < MyBattleZone.zoneSize(); i++) {

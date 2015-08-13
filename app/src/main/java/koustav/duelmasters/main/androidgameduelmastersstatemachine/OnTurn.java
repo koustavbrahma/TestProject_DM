@@ -226,6 +226,17 @@ public class OnTurn {
             if (UIUtil.TouchedAcceptButton(world)) {
                 ArrayList<InstructionSet> IfAttackInsts =
                         card.getPrimaryInstructionForTheInstructionID(InstructionID.IfAttacked);
+                if (GetUtil.IsActiveTurboRush(card)) {
+                    ArrayList<InstructionSet> tmp =
+                            card.getPrimaryInstructionForTheInstructionID(InstructionID.TurboRushIfAttacked);
+                    if (IfAttackInsts != null && tmp != null) {
+                        for (int i = 0; i < tmp.size(); i++) {
+                            IfAttackInsts.add(tmp.get(i));
+                        }
+                    } else if (tmp != null) {
+                        IfAttackInsts = tmp;
+                    }
+                }
                 world.getInstructionIteratorHandler().setCard(card);
                 world.getInstructionIteratorHandler().setInstructions(IfAttackInsts);
                 SetUnsetUtil.SetMarkedCard((InactiveCard) CollectedCardList.get(0));
@@ -251,6 +262,18 @@ public class OnTurn {
                     world.getMaze().getZoneList().get(6).getZoneArray().clear();
                     ArrayList<InstructionSet> IfAttackInsts =
                             card.getPrimaryInstructionForTheInstructionID(InstructionID.IfAttacked);
+                    if (GetUtil.IsActiveTurboRush(card)) {
+                        ArrayList<InstructionSet> tmp =
+                                card.getPrimaryInstructionForTheInstructionID(InstructionID.TurboRushIfAttacked);
+                        if (IfAttackInsts != null && tmp != null) {
+                            for (int i = 0; i < tmp.size(); i++) {
+                                IfAttackInsts.add(tmp.get(i));
+                            }
+                        } else if (tmp != null) {
+                            IfAttackInsts = tmp;
+                        }
+                    }
+
                     world.getInstructionIteratorHandler().setCard(card);
                     world.getInstructionIteratorHandler().setInstructions(IfAttackInsts);
                     this.S = OnTurnState.S11;
@@ -327,6 +350,22 @@ public class OnTurn {
             S = OnTurnState.S12a;
             CollectedCardList.clear();
         } else {
+            ArrayList<InstructionSet> IfAttackUnblockedInsts =
+                    ((ActiveCard) world.getFetchCard()).getPrimaryInstructionForTheInstructionID(InstructionID.IfUnblocked);
+            if (GetUtil.IsActiveTurboRush((ActiveCard) world.getFetchCard())) {
+                ArrayList<InstructionSet> tmp =
+                        ((ActiveCard) world.getFetchCard()).getPrimaryInstructionForTheInstructionID(InstructionID.TurboRushIfUnblocked);
+                if (IfAttackUnblockedInsts != null && tmp != null) {
+                    for (int i = 0; i < tmp.size(); i++) {
+                        IfAttackUnblockedInsts.add(tmp.get(i));
+                    }
+                } else if (tmp != null) {
+                    IfAttackUnblockedInsts = tmp;
+                }
+            }
+
+            world.getInstructionIteratorHandler().setCard((ActiveCard)world.getFetchCard());
+            world.getInstructionIteratorHandler().setInstructions(IfAttackUnblockedInsts);
             S = OnTurnState.S12b;
         }
     }
@@ -337,6 +376,22 @@ public class OnTurn {
     private void OpponentBlockerDirective() {
         if (world.getGame().getNetwork().getSocket() == null || world.getGame().getNetwork().getSocket().isClosed()) {
             // for now this but later handle it properly
+            ArrayList<InstructionSet> IfAttackUnblockedInsts =
+                    ((ActiveCard) world.getFetchCard()).getPrimaryInstructionForTheInstructionID(InstructionID.IfUnblocked);
+            if (GetUtil.IsActiveTurboRush((ActiveCard) world.getFetchCard())) {
+                ArrayList<InstructionSet> tmp =
+                        ((ActiveCard) world.getFetchCard()).getPrimaryInstructionForTheInstructionID(InstructionID.TurboRushIfUnblocked);
+                if (IfAttackUnblockedInsts != null && tmp != null) {
+                    for (int i = 0; i < tmp.size(); i++) {
+                        IfAttackUnblockedInsts.add(tmp.get(i));
+                    }
+                } else if (tmp != null) {
+                    IfAttackUnblockedInsts = tmp;
+                }
+            }
+
+            world.getInstructionIteratorHandler().setCard((ActiveCard)world.getFetchCard());
+            world.getInstructionIteratorHandler().setInstructions(IfAttackUnblockedInsts);
             S = OnTurnState.S12b;
             world.clearWorldFlag(WorldFlags.BlockerSelectMode);
             return;
@@ -351,6 +406,22 @@ public class OnTurn {
             throw new IllegalArgumentException("Invalid Directive at this point");
 
         if (!(splitdirective.length > 2)) {
+            ArrayList<InstructionSet> IfAttackUnblockedInsts =
+                    ((ActiveCard) world.getFetchCard()).getPrimaryInstructionForTheInstructionID(InstructionID.IfUnblocked);
+            if (GetUtil.IsActiveTurboRush((ActiveCard) world.getFetchCard())) {
+                ArrayList<InstructionSet> tmp =
+                        ((ActiveCard) world.getFetchCard()).getPrimaryInstructionForTheInstructionID(InstructionID.TurboRushIfUnblocked);
+                if (IfAttackUnblockedInsts != null && tmp != null) {
+                    for (int i = 0; i < tmp.size(); i++) {
+                        IfAttackUnblockedInsts.add(tmp.get(i));
+                    }
+                } else if (tmp != null) {
+                    IfAttackUnblockedInsts = tmp;
+                }
+            }
+
+            world.getInstructionIteratorHandler().setCard((ActiveCard)world.getFetchCard());
+            world.getInstructionIteratorHandler().setInstructions(IfAttackUnblockedInsts);
             S = OnTurnState.S12b;
             world.clearWorldFlag(WorldFlags.BlockerSelectMode);
             return;
@@ -580,6 +651,18 @@ public class OnTurn {
             if (UIUtil.TouchedAcceptButton(world)) {
                 ArrayList<InstructionSet> IfAttackInsts =
                         card.getPrimaryInstructionForTheInstructionID(InstructionID.IfAttacked);
+                if (GetUtil.IsActiveTurboRush(card)) {
+                    ArrayList<InstructionSet> tmp =
+                            card.getPrimaryInstructionForTheInstructionID(InstructionID.TurboRushIfAttacked);
+                    if (IfAttackInsts != null && tmp != null) {
+                        for (int i = 0; i < tmp.size(); i++) {
+                            IfAttackInsts.add(tmp.get(i));
+                        }
+                    } else if (tmp != null) {
+                        IfAttackInsts = tmp;
+                    }
+                }
+
                 world.getInstructionIteratorHandler().setCard(card);
                 world.getInstructionIteratorHandler().setInstructions(IfAttackInsts);
                 this.S = OnTurnState.S11;
@@ -643,6 +726,12 @@ public class OnTurn {
                 world.getInstructionHandler().setCardAndInstruction(shield, instruction);
                 world.getInstructionHandler().execute();
             }
+            String ActivateTurboRush = InstSetUtil.GenerateSetAttributeBasedOnPresenceOfOtherAttribute("HasTurboRush", "ActiveTurboRush", 1, 1);
+            InstructionSet instruction2 = new InstructionSet(ActivateTurboRush);
+            world.getInstructionHandler().setCardAndInstruction(card, instruction2);
+            world.getInstructionHandler().execute();
+            SetUnsetUtil.SetTurboRushSetAttr(world);
+
             //send eventlog
             String msg = world.getEventLog().getAndClearEvents();
             NetworkUtil.sendDirectiveUpdates(world,DirectiveHeader.ApplyEvents, msg, null);
@@ -679,6 +768,16 @@ public class OnTurn {
         }
         TempList.clear();
         if (!isShieldTrigger) {
+            String ActivateTurboRush = InstSetUtil.GenerateSetAttributeBasedOnPresenceOfOtherAttribute("HasTurboRash", "ActiveTurboRash", 1, 1);
+            InstructionSet instruction2 = new InstructionSet(ActivateTurboRush);
+            world.getInstructionHandler().setCardAndInstruction(card, instruction2);
+            world.getInstructionHandler().execute();
+            SetUnsetUtil.SetTurboRushSetAttr(world);
+
+            //send eventlog
+            String msg2 = world.getEventLog().getAndClearEvents();
+            NetworkUtil.sendDirectiveUpdates(world,DirectiveHeader.ApplyEvents, msg2, null);
+
             world.clearWorldFlag(WorldFlags.ShieldSelectMode);
             S = OnTurnState.SX;
             world.getEventLog().setRecording(false);

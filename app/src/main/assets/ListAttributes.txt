@@ -235,11 +235,14 @@ Description: Even Mana value is satisfied this spell/creature can't be cast or s
 FlagAttribute name: HasTapAbility       (P) +
 Description: This creature has tap ability.
 ****************************************************************************************************
-FlagAttribute name: HasTurboRash   (P)
+FlagAttribute name: HasTurboRush   (P)   +
 Description: This creature has turbo rash ability.
 ****************************************************************************************************
-FlagAttribute name: ActiveTurboRash   (C)
+FlagAttribute name: ActiveTurboRush   (C)    +
 Description: Now creature can use its turbo rash ability.
+****************************************************************************************************
+FlagAttribute name: UsedTurboRushSetAttr   (C) +
+Description: This tells that turbo rush set attr ability is already used
 ****************************************************************************************************
 FlagAttribute name: MaskDestroyDst  (C)  +
 Description: Mask the original destroy destination. Value of the attr is new-zone+1.

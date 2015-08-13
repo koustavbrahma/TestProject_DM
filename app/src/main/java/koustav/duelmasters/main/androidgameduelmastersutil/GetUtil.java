@@ -358,6 +358,20 @@ public class GetUtil {
             return false;
     }
 
+    public static boolean IsActiveTurboRush(InactiveCard card) {
+        if (card.getflagAttributes().GetAttribute("ActiveTurboRush") > 0)
+            return true;
+        else
+            return false;
+    }
+
+    public static boolean IsUsedTurboRushSetAttr(InactiveCard card) {
+        if (card.getflagAttributes().GetAttribute("UsedTurboRushSetAttr") > 0)
+            return true;
+        else
+            return false;
+    }
+
     public static int getTotalManaCost(InactiveCard card) {
         return (card.getCost() + ManaCost(card) - NManaCost(card));
     }

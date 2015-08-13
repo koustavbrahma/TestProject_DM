@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import koustav.duelmasters.main.androidgameduelmasterscardrulehandler.InstructionID;
 import koustav.duelmasters.main.androidgameduelmasterscardrulehandler.InstructionSet;
+import koustav.duelmasters.main.androidgameduelmastersdatastructure.ActiveCard;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.InactiveCard;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.World;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Zone;
@@ -146,6 +147,27 @@ public class SetUnsetUtil {
 
     public static void UnSetMarkedCard(InactiveCard card) {
         card.getflagAttributes().ClearAttribute("MarkedCard");
+    }
+
+    public static void SetUsedTurboRushSetAttr(InactiveCard card) {
+        card.getflagAttributes().ClearAttribute("UsedTurboRushSetAttr");
+        card.getflagAttributes().SetAttribute("UsedTurboRushSetAttr", 1);
+    }
+
+    public static void SetTurboRushSetAttr(World world) {
+        Zone zone = world.getMaze().getZoneList().get(0);
+
+        for (int i = 0; i < zone.zoneSize(); i++) {
+            ActiveCard card = (ActiveCard) zone.getZoneArray().get(i);
+            if (GetUtil.IsActiveTurboRush(card) && !GetUtil.IsUsedTurboRushSetAttr(card)) {
+                ArrayList<InstructionSet> instructions = card.getPrimaryInstructionForTheInstructionID(InstructionID.TurboRushSetAttrAbility);
+                world.getInstructionIteratorHandler().setCard(card);
+                world.getInstructionIteratorHandler().setInstructions(instructions);
+                while (!world.getInstructionIteratorHandler().update()) ;
+                if (instructions != null)
+                    SetUnsetUtil.SetUsedTurboRushSetAttr(card);
+            }
+        }
     }
 
     public static void SpreadingFlagAttr(World world) {

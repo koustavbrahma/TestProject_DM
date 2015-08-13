@@ -40,6 +40,8 @@ public class PreTurn {
     InstructionSet CleanDontUnTap;
     InstructionSet NotYetSpreadCleanup;
     InstructionSet CollectInst;
+    InstructionSet ActiveTurboRushCleanup;
+    InstructionSet UsedTurboRushSetAttrCleanup;
     int Counter;
     Boolean SummonTapped;
 
@@ -57,6 +59,10 @@ public class PreTurn {
         NotYetSpreadCleanup = new InstructionSet(instruction4);
         String CollectAttackMarkedCard = InstSetUtil.GenerateCopyCardToTempZoneBasedOnAttribute("MarkedCard", 1000);
         CollectInst = new InstructionSet(CollectAttackMarkedCard);
+        String instruction5 = InstSetUtil.GenerateAttributeCleanUpInstruction(2, "ActiveTurboRush", 100);
+        ActiveTurboRushCleanup = new InstructionSet(instruction5);
+        String instruction6 = InstSetUtil.GenerateAttributeCleanUpInstruction(2, "UsedTurboRushSetAttr", 1);
+        UsedTurboRushSetAttrCleanup = new InstructionSet(instruction6);
         Counter = 0;
         SummonTapped = false;
     }
@@ -87,6 +93,10 @@ public class PreTurn {
 
     private void Cleanup() {
         world.getInstructionHandler().setCardAndInstruction(null, UnTapManaInstruction);
+        world.getInstructionHandler().execute();
+        world.getInstructionHandler().setCardAndInstruction(null, ActiveTurboRushCleanup);
+        world.getInstructionHandler().execute();
+        world.getInstructionHandler().setCardAndInstruction(null, UsedTurboRushSetAttrCleanup);
         world.getInstructionHandler().execute();
 
         Zone MyBattleZone = world.getMaze().getZoneList().get(0);

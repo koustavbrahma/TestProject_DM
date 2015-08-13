@@ -7,6 +7,9 @@ public class InstructionID {
     public static String CleanUp = "CleanUp";
     public static String IfAttacked = "IfAttacked";
     public static String IfUnblocked = "IfUnblocked";
+    public static String TurboRushIfAttacked = "TurboRushIfAttacked";
+    public static String TurboRushIfUnblocked = "TurboRushIfUnblocked";
+    public static String TurboRushSetAttrAbility = "TurboRushSetAttrAbility";
     public static String SummonOrCastAbility = "SummonOrCastAbility";
     public static String DestroyDst = "DestroyDst";
     public static String FlagSpreading = "FlagSpreading";

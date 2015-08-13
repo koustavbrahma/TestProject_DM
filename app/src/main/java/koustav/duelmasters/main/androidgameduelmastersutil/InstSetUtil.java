@@ -19,6 +19,12 @@ public class InstSetUtil {
         return instructionString;
     }
 
+    public static String GenerateAttributeCleanUpBasedOnOtherAttributeInstruction(int ActionZone, String OtherAttribute,
+                                                                                  String Attribute, int val) {
+        String instructionString = "9 " + ActionZone + " 0 1 6 " + OtherAttribute + " 0 0 0 0 0 " + Attribute + " " +val +" 0 0 0 0 0";
+        return instructionString;
+    }
+
     public static String GenerateAttributeCleanUpBasedOnNotOfOtherAttributeInstruction(int ActionZone, String OtherAttribute,
                                                                                        String Attribute, int val) {
         String instructionString = "9 " + ActionZone +" 0 1 7 " + OtherAttribute+ " 0 0 0 0 0 " + Attribute+ " " + val +" 0 0 0 0 0";
@@ -47,6 +53,12 @@ public class InstSetUtil {
 
     public static String GenerateCopyCardToTempZoneBasedOnAttribute(String Attribute, int ActionZone) {
         String instructionString = "13 " + ActionZone + " 0 1 6 " + Attribute + " 0 0 0 0 0 0 0 0 0 0 0 0";
+        return instructionString;
+    }
+
+    public static String GenerateSetAttributeBasedOnPresenceOfOtherAttribute(String OtherAttribute, String Attribute, int val,
+                                                                             int ActionZone) {
+        String instructionString = "14 " + ActionZone +" 0 1 6 " + OtherAttribute+ " 0 0 0 0 0 " + Attribute+ " " + val +" 0 0 0 0 0";
         return instructionString;
     }
 }
