@@ -93,9 +93,9 @@ public class OnTurn {
         if (S == OnTurnState.S12b)
             PostIfUnBlockedUpdate();
         if (S == OnTurnState.S13)
-            CreatureBattleUpdate();
+            status = CreatureBattleUpdate();
         if (S == OnTurnState.S14)
-            ShieldBreakingUpdate();
+            status = ShieldBreakingUpdate();
         if (S == OnTurnState.SX)
             FlagSpreadingUpdate();
         return status;
@@ -258,6 +258,7 @@ public class OnTurn {
                 }
             } else {
                 if (GetUtil.CanAttackPlayer(card) || GetUtil.IgnoreAnyAttackPrevent(card)) {
+                    world.clearWorldFlag(WorldFlags.AttackSelectMode);
                     world.setWorldFlag(WorldFlags.PlayerAttackMode);
                     world.getMaze().getZoneList().get(6).getZoneArray().clear();
                     ArrayList<InstructionSet> IfAttackInsts =
@@ -465,6 +466,7 @@ public class OnTurn {
             world.clearWorldFlag(WorldFlags.ShieldSelectMode);
             world.clearWorldFlag(WorldFlags.PlayerAttackMode);
             world.setWorldFlag(WorldFlags.AttackSelectMode);
+            world.setWorldFlag(WorldFlags.WasBlocked);
             CollectedCardList.clear();
             S = OnTurnState.S13;
         } else {
@@ -483,7 +485,7 @@ public class OnTurn {
  the battle.
  S13
  */
-    private void CreatureBattleUpdate() {
+    private boolean CreatureBattleUpdate() {
         ActiveCard AttackingCard = (ActiveCard) world.getFetchCard();
         String CollectAttackMarkedCard = InstSetUtil.GenerateCopyCardToTempZoneBasedOnAttribute("MarkedCard", 2);
         InstructionSet CollectInst = new InstructionSet(CollectAttackMarkedCard);
@@ -495,6 +497,52 @@ public class OnTurn {
         InactiveCard AttackedCard = (InactiveCard) CollectedCardList.get(0);
         SetUnsetUtil.UnSetMarkedCard(AttackedCard);
         CollectedCardList.clear();
+        if (world.getWorldFlag(WorldFlags.WasBlocked)) {
+            world.clearWorldFlag(WorldFlags.WasBlocked);
+            if (GetUtil.IsBreaksWheneverBlocked(AttackingCard) > 0) {
+                int val = GetUtil.IsBreaksWheneverBlocked(AttackingCard);
+                int ActionZone = 100 * val;
+                String BreakShieldMarkForBlocking = InstSetUtil.GenerateSetAttributeOnRandomSelectedCardInstruction(ActionZone, "MarkedCard", 1, 1);
+                InstructionSet BreakShieldMarkInst =  new InstructionSet(BreakShieldMarkForBlocking);
+                world.getInstructionHandler().setCardAndInstruction(AttackingCard, BreakShieldMarkInst);
+                world.getInstructionHandler().execute();
+                String CollectMarkedShield = InstSetUtil.GenerateCopyCardToTempZoneBasedOnAttribute("MarkedCard", ActionZone);
+                InstructionSet CollectShieldInst = new InstructionSet(CollectMarkedShield);
+                world.getInstructionHandler().setCardAndInstruction(AttackingCard, CollectShieldInst);
+                world.getInstructionHandler().execute();
+                CollectedCardList = world.getMaze().getZoneList().get(6).getZoneArray();
+                if (CollectedCardList.size() != 1)
+                    throw new IllegalArgumentException("Something went wrong while marking shield");
+
+                InactiveCard ShieldCard = (InactiveCard) CollectedCardList.get(0);
+                SetUnsetUtil.UnSetMarkedCard(ShieldCard);
+
+                String BreakShield = InstSetUtil.GenerateSelfChangeZoneInstruction(3);
+                InstructionSet BreakInst = new InstructionSet(BreakShield);
+                world.getInstructionHandler().setCardAndInstruction(ShieldCard, BreakInst);
+                world.getInstructionHandler().execute();
+                CollectedCardList.clear();
+                CollectedCardList.add(world.getInstructionHandler().getCurrentCard());
+                if (GetUtil.IsShieldTrigger((InactiveCard) CollectedCardList.get(0))) {
+                    world.setWorldFlag(WorldFlags.ShieldTriggerFound);
+                    int zone;
+                    if (CollectedCardList.get(0).GridPosition().getZone() > 6) {
+                        zone = CollectedCardList.get(0).GridPosition().getZone() - 7;
+                    } else if (CollectedCardList.get(0).GridPosition().getZone() < 6) {
+                        zone = CollectedCardList.get(0).GridPosition().getZone() + 7;
+                    } else {
+                        throw new IllegalArgumentException("Invalid zone");
+                    }
+
+                    String msg = zone + " " + CollectedCardList.get(0).GridPosition().getGridIndex() +
+                            " " + CollectedCardList.get(0).getNameID();
+
+                    world.getEventLog().AddHoldMsg(msg);
+                }
+                CollectedCardList.clear();
+            }
+        }
+
         int AttackResult = GetUtil.AttackEvaluation(AttackingCard, AttackedCard);
         if (!GetUtil.IsTapped(AttackingCard)) {
             SetUnsetUtil.SetTappedAttr(AttackingCard);
@@ -603,9 +651,19 @@ public class OnTurn {
         String msg = world.getEventLog().getAndClearEvents();
         NetworkUtil.sendDirectiveUpdates(world,DirectiveHeader.ApplyEvents, msg, null);
         world.getEventLog().setRecording(false);
-        S = OnTurnState.SX;
         CollectedCardList.clear();
         world.clearWorldFlag(WorldFlags.AttackSelectMode);
+        if (world.getWorldFlag(WorldFlags.ShieldTriggerFound)) {
+            SetUnsetUtil.SpreadingFlagAttr(world);
+            world.getInstructionHandler().setCardAndInstruction(null, NotYetSpreadCleanup);
+            world.getInstructionHandler().execute();
+            NetworkUtil.sendDirectiveUpdates(world, DirectiveHeader.EndOfTurnDueToShieldTrigger, null, null);
+            S = OnTurnState.S1;
+            return true;
+        } else {
+            S = OnTurnState.SX;
+            return false;
+        }
     }
 /*
  After attack this is were If attack ability is handled.
@@ -836,6 +894,7 @@ public class OnTurn {
                     if (GetUtil.SummonTapped(SummoningOrCastCard)) {
                         SummonTapped = true;
                     }
+                    boolean ActiveWaveStriker = GetUtil.IsActiveWaveStriker(SummoningOrCastCard);
                     String SummonCardInstruction = InstSetUtil.GenerateSelfChangeZoneInstruction(0);
                     InstructionSet instruction = new InstructionSet(SummonCardInstruction);
                     world.getInstructionHandler().setCardAndInstruction(SummoningOrCastCard, instruction);
@@ -848,7 +907,8 @@ public class OnTurn {
                     //sendeventlog
                     String msg = world.getEventLog().getAndClearEvents();
                     NetworkUtil.sendDirectiveUpdates(world,DirectiveHeader.ApplyEvents, msg, null);
-                    if (((ActiveCard)world.getFetchCard()).getPrimaryInstructionForTheInstructionID(InstructionID.SummonOrCastAbility) == null) {
+                    if (((ActiveCard)world.getFetchCard()).getPrimaryInstructionForTheInstructionID(InstructionID.SummonOrCastAbility) == null &&
+                            ((ActiveCard)world.getFetchCard()).getPrimaryInstructionForTheInstructionID(InstructionID.WaveStrikerSummonOrCastAbility) == null) {
                         this.S = OnTurnState.SX;
                         world.getEventLog().setRecording(false);
                         world.setFetchCard(null);
@@ -856,6 +916,17 @@ public class OnTurn {
                         world.getInstructionIteratorHandler().setCard((InactiveCard) world.getFetchCard());
                         ArrayList<InstructionSet> instructions =
                                 ((ActiveCard) world.getFetchCard()).getPrimaryInstructionForTheInstructionID(InstructionID.SummonOrCastAbility);
+                        if (GetUtil.IsWaveStriker((InactiveCard) world.getFetchCard()) && ActiveWaveStriker) {
+                            ArrayList<InstructionSet> tmp =
+                                    ((ActiveCard) world.getFetchCard()).getPrimaryInstructionForTheInstructionID(InstructionID.WaveStrikerSummonOrCastAbility);
+                            if (instructions != null && tmp != null) {
+                                for (int i = 0; i < tmp.size(); i++) {
+                                    instructions.add(tmp.get(i));
+                                }
+                            } else if (tmp != null) {
+                                instructions = tmp;
+                            }
+                        }
                         world.getInstructionIteratorHandler().setInstructions(instructions);
                         this.S = OnTurnState.S4;
                     }
@@ -959,6 +1030,7 @@ public class OnTurn {
     private void EvolutionUpdate() {
         if (world.getInstructionHandler().execute()) {
             ActiveCard card = (ActiveCard) world.getFetchCard();
+            boolean ActiveWaveStriker = GetUtil.IsActiveWaveStriker(card);
             String CollectAttackMarkedCard = InstSetUtil.GenerateCopyCardToTempZoneBasedOnAttribute("MarkedCard", 1);
             InstructionSet CollectInst = new InstructionSet(CollectAttackMarkedCard);
             world.getInstructionHandler().setCardAndInstruction(card, CollectInst);
@@ -980,7 +1052,8 @@ public class OnTurn {
             //sendeventlog
             String msg = world.getEventLog().getAndClearEvents();
             NetworkUtil.sendDirectiveUpdates(world,DirectiveHeader.ApplyEvents, msg, null);
-            if (((ActiveCard)world.getFetchCard()).getPrimaryInstructionForTheInstructionID(InstructionID.SummonOrCastAbility) == null) {
+            if (((ActiveCard)world.getFetchCard()).getPrimaryInstructionForTheInstructionID(InstructionID.SummonOrCastAbility) == null &&
+                    ((ActiveCard)world.getFetchCard()).getPrimaryInstructionForTheInstructionID(InstructionID.WaveStrikerSummonOrCastAbility) == null) {
                 this.S = OnTurnState.SX;
                 world.getEventLog().setRecording(false);
                 world.setFetchCard(null);
@@ -988,6 +1061,17 @@ public class OnTurn {
                 world.getInstructionIteratorHandler().setCard((InactiveCard) world.getFetchCard());
                 ArrayList<InstructionSet> instructions =
                         ((ActiveCard) world.getFetchCard()).getPrimaryInstructionForTheInstructionID(InstructionID.SummonOrCastAbility);
+                if (GetUtil.IsWaveStriker((InactiveCard) world.getFetchCard()) && ActiveWaveStriker) {
+                    ArrayList<InstructionSet> tmp =
+                            ((ActiveCard) world.getFetchCard()).getPrimaryInstructionForTheInstructionID(InstructionID.WaveStrikerSummonOrCastAbility);
+                    if (instructions != null && tmp != null) {
+                        for (int i = 0; i < tmp.size(); i++) {
+                            instructions.add(tmp.get(i));
+                        }
+                    } else if (tmp != null) {
+                        instructions = tmp;
+                    }
+                }
                 world.getInstructionIteratorHandler().setInstructions(instructions);
                 this.S = OnTurnState.S4;
             }

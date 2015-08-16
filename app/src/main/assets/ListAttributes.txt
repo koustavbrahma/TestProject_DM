@@ -1,5 +1,6 @@
 Notes: P--> persistent attribute cannot be changed (one should not play with these attributes)
        C--> Changeable attribute , can changed during spreading.
+       NS--> Non super imposable, cannot be changed during spreading but can be spread
 ****************************************************************************************************
 SlotAttribute name: Civilization (P)
 Description: what civilization creature or spell is?
@@ -13,7 +14,7 @@ Description: what civilization creature or spell is?
              0 0 0 0 1 ----> means water civilization card.
 ****************************************************************************************************
 SlotAttribute name: Race  (P)
-Description:
+Description: what the race of that card
 ****************************************************************************************************
 SlotAttribute/FlagAttribute name: Power     (P/C)
 Description: Contains the power value. This attribute is mostly used in opponent set of cards.
@@ -177,6 +178,9 @@ FlagAttribute name: WaveStriker  (P)  +
 Description: While 2 or more other creatures in the battle zone have "wave striker,"
              the creature has its Wave Striker ability.
 ****************************************************************************************************
+FlagAttribute name: ActiveWaveStriker  (C)  +
+Description: Wave Striker ability is activated.
+****************************************************************************************************
 FlagAttribute name: AlwaysTapped   (C)      (??)
 Description: Remains Tapped always.
 ****************************************************************************************************
@@ -244,7 +248,7 @@ Description: Now creature can use its turbo rash ability.
 FlagAttribute name: UsedTurboRushSetAttr   (C) +
 Description: This tells that turbo rush set attr ability is already used
 ****************************************************************************************************
-FlagAttribute name: MaskDestroyDst  (C)  +
+FlagAttribute name: MaskDestroyDst  (NS)  +
 Description: Mask the original destroy destination. Value of the attr is new-zone+1.
 ****************************************************************************************************
 FlagAttribute name: SmashShieldBreaker  (C) +
@@ -264,3 +268,6 @@ Description: This attribute is for internal use. Don't use while writing library
 FlagAttribute name: SummonOnAllManaMatch  (P)  +
 Description: With this attribute a creature/spell can only be summon or cast if all the cards in mana
              zone matches the civilization
+****************************************************************************************************
+FlagAttribute name: BreaksWheneverBlocked    (P)   +
+Description: When ever this creature is blocked break one shield in random. 1 your shield, 2 opponent.

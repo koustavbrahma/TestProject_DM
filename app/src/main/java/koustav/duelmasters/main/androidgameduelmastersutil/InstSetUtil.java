@@ -61,4 +61,9 @@ public class InstSetUtil {
         String instructionString = "14 " + ActionZone +" 0 1 6 " + OtherAttribute+ " 0 0 0 0 0 " + Attribute+ " " + val +" 0 0 0 0 0";
         return instructionString;
     }
+
+    public static String GenerateSetAttributeOnRandomSelectedCardInstruction(int ActionZone, String Attribute, int val, int Count) {
+        String instructionString = "17 " + ActionZone + " " + Count +" 0 0 0 0 0 2 0 0 " + Attribute+ " " + val +" 0 0 0 0 0";
+        return instructionString;
+    }
 }

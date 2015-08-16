@@ -83,6 +83,9 @@ public class InstructionSet {
                 case "16":
                     type = InstructionType.SelfCleanUpMultiplier;
                     break;
+                case "17":
+                    type = InstructionType.ChooseRandom;
+                    break;
                 default:
                     throw new IllegalArgumentException("Invalid instruction type");
             }

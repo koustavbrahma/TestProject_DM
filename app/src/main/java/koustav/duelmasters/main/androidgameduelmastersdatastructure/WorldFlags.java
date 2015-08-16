@@ -8,7 +8,7 @@ public class WorldFlags {
     public static String CantAddToMana = "CantAddToMana";
     public static String DisplayInfo = "DisplayInfo";
     public static String ManaSelectMode = "ManaSelectMode";
-    public static String AttackSelectMode = "AttackMode";
+    public static String AttackSelectMode = "AttackSelectMode";
     public static String ShieldSelectMode = "ShieldSelectMode";
     public static String PlayerAttackMode = "PlayerAttackMode";
     public static String ShieldTriggerFound = "ShieldTriggerFound";
@@ -19,4 +19,5 @@ public class WorldFlags {
     public static String DisplayInfoUserSelect = "DisplayInfoUserSelect";
     public static String BlockerSelectMode = "BlockerSelectMode";
     public static String ShieldTriggerMode = "ShieldTriggerMode";
+    public static String WasBlocked = "WasBlocked";
 }

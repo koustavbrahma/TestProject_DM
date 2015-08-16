@@ -11,6 +11,7 @@ public class InstructionID {
     public static String TurboRushIfUnblocked = "TurboRushIfUnblocked";
     public static String TurboRushSetAttrAbility = "TurboRushSetAttrAbility";
     public static String SummonOrCastAbility = "SummonOrCastAbility";
+    public static String WaveStrikerSummonOrCastAbility = "WaveStrikerSummonOrCastAbility";
     public static String DestroyDst = "DestroyDst";
     public static String FlagSpreading = "FlagSpreading";
     public static String SilentSkill = "SilentSkill";

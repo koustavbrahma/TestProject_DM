@@ -216,6 +216,10 @@ public class GetUtil {
             return false;
     }
 
+    public static int IsBreaksWheneverBlocked(InactiveCard card) {
+        return card.getflagAttributes().GetAttribute("BreaksWheneverBlocked");
+    }
+
     public static boolean CanAttackCard(InactiveCard attacking, InactiveCard attacked) {
         String attr;
         if(IgnoreAnyAttackPrevent(attacking))
@@ -282,6 +286,13 @@ public class GetUtil {
 
     public static boolean IsWaveStriker(InactiveCard card) {
         if (card.getflagAttributes().GetAttribute("WaveStriker") > 0)
+            return true;
+        else
+            return false;
+    }
+
+    public static boolean IsActiveWaveStriker(InactiveCard card) {
+        if (card.getflagAttributes().GetAttribute("ActiveWaveStriker") > 0)
             return true;
         else
             return false;

@@ -15,6 +15,9 @@ import koustav.duelmasters.main.androidgameduelmastersdatastructure.Zone;
 public class SetUnsetUtil {
     public static void SetSpreadFlagAttr(InactiveCard card, InstructionSet instruction) {
         String attr = instruction.getAttr().getFlag();
+        if (attr.equals("MaskDestroyDst") && GetUtil.MaskDestroyDstVal(card) > 0)
+            return;
+
         int val = instruction.getAttr().getValue();
         int val2;
 
@@ -35,6 +38,9 @@ public class SetUnsetUtil {
 
     public static void SetFlagAttr(World world, InactiveCard card, InstructionSet instruction) {
         String attr = instruction.getAttr().getFlag();
+        if (attr.equals("MaskDestroyDst") && GetUtil.MaskDestroyDstVal(card) > 0)
+            return;
+
         int val = instruction.getAttr().getValue();
         int val2;
         val2 = card.getflagAttributes().GetAttribute(attr);
@@ -46,6 +52,9 @@ public class SetUnsetUtil {
 
     public static void SetUnsetBoostFlagAttr(InactiveCard card, InstructionSet instruction, boolean boost) {
         String attr = instruction.getAttr().getFlag();
+        if (attr.equals("MaskDestroyDst"))
+            throw new IllegalArgumentException("Invalid attribute to boost");
+
         int val = instruction.getAttr().getValue();
         int val2;
 
@@ -72,6 +81,9 @@ public class SetUnsetUtil {
 
     public static void SetUnsetBoostMultiplierFlagAttr(InactiveCard card, InstructionSet instruction, int boost){
         String attr = instruction.getAttr().getFlag();
+        if (attr.equals("MaskDestroyDst"))
+            throw new IllegalArgumentException("Invalid attribute to boost");
+
         int val = instruction.getAttr().getValue();
         int val2;
 

@@ -20,4 +20,5 @@ public enum InstructionType {
     SetAttr,
     SetTempSpreadInst,
     SelfCleanUpMultiplier,
+    ChooseRandom,
 }
