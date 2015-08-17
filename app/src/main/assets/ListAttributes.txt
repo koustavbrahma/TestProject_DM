@@ -271,3 +271,6 @@ Description: With this attribute a creature/spell can only be summon or cast if 
 ****************************************************************************************************
 FlagAttribute name: BreaksWheneverBlocked    (P)   +
 Description: When ever this creature is blocked break one shield in random. 1 your shield, 2 opponent.
+****************************************************************************************************
+FlagAttribute name: UntapAtEndOfTheTurn  (C) +
+Description: At the end of the turn untap the creature.

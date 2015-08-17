@@ -26,6 +26,7 @@ public class PostTurn {
     InstructionSet NotYetSpreadCleanup;
     InstructionSet ActiveTurboRushCleanup;
     InstructionSet UsedTurboRushSetAttrCleanup;
+    InstructionSet UntapAtTheEndOFTurnInst;
     PostTurnState S;
 
     public PostTurn(World world){
@@ -38,6 +39,8 @@ public class PostTurn {
         ActiveTurboRushCleanup = new InstructionSet(instruction3);
         String instruction4 = InstSetUtil.GenerateAttributeCleanUpInstruction(1, "UsedTurboRushSetAttr", 1);
         UsedTurboRushSetAttrCleanup = new InstructionSet(instruction4);
+        String instruction5 = InstSetUtil.GenerateAttributeCleanUpBasedOnOtherAttributeInstruction(1, "UntapAtEndOfTheTurn", "Tapped", 1);
+        UntapAtTheEndOFTurnInst = new InstructionSet(instruction5);
         S = PostTurnState.S1;
     }
 
@@ -57,6 +60,8 @@ public class PostTurn {
         world.getInstructionHandler().setCardAndInstruction(null, ActiveTurboRushCleanup);
         world.getInstructionHandler().execute();
         world.getInstructionHandler().setCardAndInstruction(null, UsedTurboRushSetAttrCleanup);
+        world.getInstructionHandler().execute();
+        world.getInstructionHandler().setCardAndInstruction(null, UntapAtTheEndOFTurnInst);
         world.getInstructionHandler().execute();
 
         Zone MyBattleZone = world.getMaze().getZoneList().get(0);

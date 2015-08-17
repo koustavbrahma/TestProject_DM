@@ -10,6 +10,7 @@ import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.TypeOfCard;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.World;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.WorldFlags;
+import koustav.duelmasters.main.androidgameduelmastersdatastructure.Zone;
 import koustav.duelmasters.main.androidgameduelmastersnetworkmodule.DirectiveHeader;
 import koustav.duelmasters.main.androidgameduelmastersutil.ActUtil;
 import koustav.duelmasters.main.androidgameduelmastersutil.GetUtil;
@@ -908,7 +909,8 @@ public class OnTurn {
                     String msg = world.getEventLog().getAndClearEvents();
                     NetworkUtil.sendDirectiveUpdates(world,DirectiveHeader.ApplyEvents, msg, null);
                     if (((ActiveCard)world.getFetchCard()).getPrimaryInstructionForTheInstructionID(InstructionID.SummonOrCastAbility) == null &&
-                            ((ActiveCard)world.getFetchCard()).getPrimaryInstructionForTheInstructionID(InstructionID.WaveStrikerSummonOrCastAbility) == null) {
+                            ((ActiveCard)world.getFetchCard()).getPrimaryInstructionForTheInstructionID(InstructionID.WaveStrikerSummonOrCastAbility) == null &&
+                            ! GetUtil.IsSurvivor((ActiveCard) world.getFetchCard())) {
                         this.S = OnTurnState.SX;
                         world.getEventLog().setRecording(false);
                         world.setFetchCard(null);
@@ -927,6 +929,32 @@ public class OnTurn {
                                 instructions = tmp;
                             }
                         }
+
+                        if (GetUtil.IsSurvivor((ActiveCard) world.getFetchCard())) {
+                            Zone zone = world.getMaze().getZoneList().get(0);
+                            ArrayList<InstructionSet> tmp = null;
+                            for (int i = 0; i < zone.zoneSize(); i++) {
+                                ActiveCard tcard = (ActiveCard) zone.getZoneArray().get(i);
+                                if ((tcard != world.getFetchCard()) && GetUtil.IsSurvivor(tcard)) {
+                                    ArrayList<InstructionSet> tmp2 = tcard.getPrimaryInstructionForTheInstructionID(InstructionID.SummonOrCastAbility);
+                                    if (tmp != null && tmp2 != null) {
+                                        for (int j = 0; j < tmp.size(); j++) {
+                                            tmp.add(tmp.get(j));
+                                        }
+                                    } else if (tmp2 != null) {
+                                        tmp = tmp2;
+                                    }
+                                }
+                            }
+                            if (instructions != null && tmp != null) {
+                                for (int i = 0; i < tmp.size(); i++) {
+                                    instructions.add(tmp.get(i));
+                                }
+                            } else if (tmp != null) {
+                                instructions = tmp;
+                            }
+                        }
+
                         world.getInstructionIteratorHandler().setInstructions(instructions);
                         this.S = OnTurnState.S4;
                     }
@@ -1053,7 +1081,8 @@ public class OnTurn {
             String msg = world.getEventLog().getAndClearEvents();
             NetworkUtil.sendDirectiveUpdates(world,DirectiveHeader.ApplyEvents, msg, null);
             if (((ActiveCard)world.getFetchCard()).getPrimaryInstructionForTheInstructionID(InstructionID.SummonOrCastAbility) == null &&
-                    ((ActiveCard)world.getFetchCard()).getPrimaryInstructionForTheInstructionID(InstructionID.WaveStrikerSummonOrCastAbility) == null) {
+                    ((ActiveCard)world.getFetchCard()).getPrimaryInstructionForTheInstructionID(InstructionID.WaveStrikerSummonOrCastAbility) == null &&
+                    !GetUtil.IsSurvivor((ActiveCard) world.getFetchCard())) {
                 this.S = OnTurnState.SX;
                 world.getEventLog().setRecording(false);
                 world.setFetchCard(null);
@@ -1072,6 +1101,32 @@ public class OnTurn {
                         instructions = tmp;
                     }
                 }
+
+                if (GetUtil.IsSurvivor((ActiveCard) world.getFetchCard())) {
+                    Zone zone = world.getMaze().getZoneList().get(0);
+                    ArrayList<InstructionSet> tmp = null;
+                    for (int i = 0; i < zone.zoneSize(); i++) {
+                        ActiveCard tcard = (ActiveCard) zone.getZoneArray().get(i);
+                        if ((tcard != world.getFetchCard()) && GetUtil.IsSurvivor(tcard)) {
+                            ArrayList<InstructionSet> tmp2 = tcard.getPrimaryInstructionForTheInstructionID(InstructionID.SummonOrCastAbility);
+                            if (tmp != null && tmp2 != null) {
+                                for (int j = 0; j < tmp.size(); j++) {
+                                    tmp.add(tmp.get(j));
+                                }
+                            } else if (tmp2 != null) {
+                                tmp = tmp2;
+                            }
+                        }
+                    }
+                    if (instructions != null && tmp != null) {
+                        for (int i = 0; i < tmp.size(); i++) {
+                            instructions.add(tmp.get(i));
+                        }
+                    } else if (tmp != null) {
+                        instructions = tmp;
+                    }
+                }
+
                 world.getInstructionIteratorHandler().setInstructions(instructions);
                 this.S = OnTurnState.S4;
             }
