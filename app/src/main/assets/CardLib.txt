@@ -75,10 +75,13 @@ AttackTappedCard 31
 Blocker 31
 NewSummonedCreature 1
 NotYetSpread 1
+ShieldTrigger 1
 EndFlagAttributes
 BeginPrimaryInstructionIndex
+SummonOrCastAbility 1
 EndPrimaryInstructionIndex
 BeginPrimaryInstructions
+1 2 1 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0
 EndPrimaryInstructions
 BeginCrossInstructionIndex
 EndCrossInstructionIndex

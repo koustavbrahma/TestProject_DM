@@ -21,7 +21,8 @@ public class GraphicUtil {
         if (world.getWorldFlag(WorldFlags.ManaSelectMode) || world.getWorldFlag(WorldFlags.ShieldSelectMode) ||
                 world.getWorldFlag(WorldFlags.AttackSelectMode) || world.getWorldFlag(WorldFlags.SilentSkillMode) ||
                 world.getWorldFlag(WorldFlags.CardSelectingMode) || world.getWorldFlag(WorldFlags.BlockerSelectMode)||
-                world.getWorldFlag(WorldFlags.ShieldTriggerMode) || !world.getTurn())
+                world.getWorldFlag(WorldFlags.ShieldTriggerMode) || world.getWorldFlag(WorldFlags.ShieldTriggerFound) ||
+                !world.getTurn())
             return true;
         else
             return false;

@@ -211,6 +211,7 @@ public class PreTurn {
             world.getInstructionHandler().setCardAndInstruction(null, NotYetSpreadCleanup);
             world.getInstructionHandler().execute();
             S = State.S3;
+            world.getEventLog().setRecording(false);
             // for now this but later handle it properly
             return;
         }
@@ -281,6 +282,10 @@ public class PreTurn {
                 String msg = world.getEventLog().getAndClearEvents();
                 NetworkUtil.sendDirectiveUpdates(world,DirectiveHeader.ApplyEvents, msg, null);
                 if (card.getPrimaryInstructionForTheInstructionID(InstructionID.SummonOrCastAbility) == null) {
+                    world.setWorldFlag(WorldFlags.ShieldTriggerMode);
+                    SetUnsetUtil.SpreadingFlagAttr(world);
+                    world.getInstructionHandler().setCardAndInstruction(null, NotYetSpreadCleanup);
+                    world.getInstructionHandler().execute();
                     return;
                 } else {
                     world.getInstructionIteratorHandler().setCard(card);
@@ -312,6 +317,9 @@ public class PreTurn {
             //sendevent
             String msg = world.getEventLog().getAndClearEvents();
             NetworkUtil.sendDirectiveUpdates(world,DirectiveHeader.ApplyEvents, msg, null);
+            SetUnsetUtil.SpreadingFlagAttr(world);
+            world.getInstructionHandler().setCardAndInstruction(null, NotYetSpreadCleanup);
+            world.getInstructionHandler().execute();
         }
     }
 
@@ -341,6 +349,9 @@ public class PreTurn {
             //sendevent
             String msg = world.getEventLog().getAndClearEvents();
             NetworkUtil.sendDirectiveUpdates(world, DirectiveHeader.ApplyEvents, msg, null);
+            SetUnsetUtil.SpreadingFlagAttr(world);
+            world.getInstructionHandler().setCardAndInstruction(null, NotYetSpreadCleanup);
+            world.getInstructionHandler().execute();
         }
     }
 

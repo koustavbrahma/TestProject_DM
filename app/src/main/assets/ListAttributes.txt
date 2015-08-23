@@ -126,7 +126,7 @@ Description: Tells Unblockable from which civilization.
 FlagAttribute name: EachTurnIfAble   (C)
 Description: can attack each turn if able.
 ****************************************************************************************************
-FlagAttribute name: Survivor    (P)
+FlagAttribute name: Survivor    (P)  (+)
 Description: Whether survivor or not.
 ****************************************************************************************************
 FlagAttribute name: CantBeAttacked    (P) +
