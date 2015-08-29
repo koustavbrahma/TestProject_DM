@@ -245,7 +245,7 @@ public class InstructionSet {
                      CascadeCondition = CascadeType.AlwaysCascade;
                      break;
                  case "4":
-                     CascadeCondition = CascadeType.IfTempZoneIsNonEmptyWithMoreValue;
+                     CascadeCondition = CascadeType.IfTempZoneIsNonEmptyWithMoreOrEqualValue;
                      break;
                  case "5":
                      CascadeCondition = CascadeType.IfTempZoneIsNonEmptyAndSetCount;

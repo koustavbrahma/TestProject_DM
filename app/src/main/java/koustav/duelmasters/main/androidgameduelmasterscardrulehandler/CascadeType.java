@@ -8,6 +8,6 @@ public enum CascadeType {
     IfTempZoneIsNonEmptyWithLessValue,
     IfTempZoneIsEmpty,
     AlwaysCascade,
-    IfTempZoneIsNonEmptyWithMoreValue,
+    IfTempZoneIsNonEmptyWithMoreOrEqualValue,
     IfTempZoneIsNonEmptyAndSetCount,
 }

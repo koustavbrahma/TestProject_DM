@@ -314,12 +314,6 @@ public class PreTurn {
         if (world.getInstructionIteratorHandler().update()) {
             S = State.S2b;
             world.setWorldFlag(WorldFlags.ShieldTriggerMode);
-            //sendevent
-            String msg = world.getEventLog().getAndClearEvents();
-            NetworkUtil.sendDirectiveUpdates(world,DirectiveHeader.ApplyEvents, msg, null);
-            SetUnsetUtil.SpreadingFlagAttr(world);
-            world.getInstructionHandler().setCardAndInstruction(null, NotYetSpreadCleanup);
-            world.getInstructionHandler().execute();
         }
     }
 
@@ -346,12 +340,6 @@ public class PreTurn {
             }
             S = State.S2b;
             world.setWorldFlag(WorldFlags.ShieldTriggerMode);
-            //sendevent
-            String msg = world.getEventLog().getAndClearEvents();
-            NetworkUtil.sendDirectiveUpdates(world, DirectiveHeader.ApplyEvents, msg, null);
-            SetUnsetUtil.SpreadingFlagAttr(world);
-            world.getInstructionHandler().setCardAndInstruction(null, NotYetSpreadCleanup);
-            world.getInstructionHandler().execute();
         }
     }
 
@@ -389,12 +377,6 @@ public class PreTurn {
     private void ExecuteSilentSkill() {
         if (world.getInstructionIteratorHandler().update()) {
             world.getEventLog().setRecording(false);
-            //send Eventlog
-            String msg = world.getEventLog().getAndClearEvents();
-            NetworkUtil.sendDirectiveUpdates(world,DirectiveHeader.ApplyEvents, msg, null);
-            SetUnsetUtil.SpreadingFlagAttr(world);
-            world.getInstructionHandler().setCardAndInstruction(null, NotYetSpreadCleanup);
-            world.getInstructionHandler().execute();
             S = State.S3;
         }
     }

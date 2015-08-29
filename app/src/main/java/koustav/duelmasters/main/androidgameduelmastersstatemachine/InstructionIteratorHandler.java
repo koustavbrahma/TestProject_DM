@@ -5,6 +5,10 @@ import java.util.ArrayList;
 import koustav.duelmasters.main.androidgameduelmasterscardrulehandler.InstructionSet;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.InactiveCard;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.World;
+import koustav.duelmasters.main.androidgameduelmastersnetworkmodule.DirectiveHeader;
+import koustav.duelmasters.main.androidgameduelmastersutil.InstSetUtil;
+import koustav.duelmasters.main.androidgameduelmastersutil.NetworkUtil;
+import koustav.duelmasters.main.androidgameduelmastersutil.SetUnsetUtil;
 
 /**
  * Created by Koustav on 5/24/2015.
@@ -20,6 +24,7 @@ public class InstructionIteratorHandler {
     int InstCount;
     ArrayList<InstructionSet> instructions;
     InactiveCard card;
+    InstructionSet NotYetSpreadCleanup;
 
     public InstructionIteratorHandler(World world) {
         this.world = world;
@@ -27,6 +32,8 @@ public class InstructionIteratorHandler {
         InstCount = 0;
         instructions = null;
         card = null;
+        String instruction = InstSetUtil.GenerateAttributeCleanUpInstruction(3333, "NotYetSpread", 1);
+        NotYetSpreadCleanup = new InstructionSet(instruction);
     }
 
     public void setInstructions(ArrayList<InstructionSet> instructions) {
@@ -71,10 +78,18 @@ public class InstructionIteratorHandler {
     private void  InstructionExecutor(){
         if (world.getInstructionHandler().execute()) {
             ArrayList<InstructionSet> CleanUpInst = world.getEventLog().getHoldCleanUp();
-            for (int i = 0; i < CleanUpInst.size(); i++) {
-                world.getInstructionHandler().setCardAndInstruction(null, CleanUpInst.get(i));
-                world.getInstructionHandler().execute();
+            if (CleanUpInst != null) {
+                for (int i = 0; i < CleanUpInst.size(); i++) {
+                    world.getInstructionHandler().setCardAndInstruction(null, CleanUpInst.get(i));
+                    world.getInstructionHandler().execute();
+                }
             }
+            //send Eventlog
+            String msg = world.getEventLog().getAndClearEvents();
+            NetworkUtil.sendDirectiveUpdates(world, DirectiveHeader.ApplyEvents, msg, null);
+            SetUnsetUtil.SpreadingFlagAttr(world);
+            world.getInstructionHandler().setCardAndInstruction(null, NotYetSpreadCleanup);
+            world.getInstructionHandler().execute();
             S = AbilityHandlerStates.S1;
         }
     }

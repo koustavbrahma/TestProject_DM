@@ -1036,7 +1036,7 @@ public class InstructionHandler {
         }
 
 
-        if (instruction.getCascadeCondition() == CascadeType.IfTempZoneIsNonEmptyWithMoreValue && instruction.getNextInst() != null) {
+        if (instruction.getCascadeCondition() == CascadeType.IfTempZoneIsNonEmptyWithMoreOrEqualValue && instruction.getNextInst() != null) {
             if (world.getMaze().getZoneList().get(6).zoneSize() >= count) {
                 instruction = instruction.getNextInst();
                 return false;

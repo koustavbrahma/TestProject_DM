@@ -189,33 +189,45 @@ public class SetUnsetUtil {
         for (int i = 0; i <MyBattleZone.zoneSize(); i++) {
             InactiveCard card = (InactiveCard) MyBattleZone.getZoneArray().get(i);
             ArrayList<InstructionSet> instructions = card.getCrossInstructionForTheInstructionID(InstructionID.FlagSpreading);
-            world.getInstructionIteratorHandler().setCard(card);
-            world.getInstructionIteratorHandler().setInstructions(instructions);
-            while (!world.getInstructionIteratorHandler().update());
+            if (instructions != null) {
+                for (int j = 0; i < instructions.size(); i++) {
+                    world.getInstructionHandler().setCardAndInstruction(card, instructions.get(j));
+                    world.getInstructionHandler().execute();
+                }
+            }
         }
 
         for (int i = 0; i < OpponentBattleZone.zoneSize(); i++) {
             InactiveCard card = (InactiveCard) OpponentBattleZone.getZoneArray().get(i);
             ArrayList<InstructionSet> instructions = card.getCrossInstructionForTheInstructionID(InstructionID.FlagSpreading);
-            world.getInstructionIteratorHandler().setCard(card);
-            world.getInstructionIteratorHandler().setInstructions(instructions);
-            while (!world.getInstructionIteratorHandler().update());
+            if (instructions != null) {
+                for (int j = 0; i < instructions.size(); i++) {
+                    world.getInstructionHandler().setCardAndInstruction(card, instructions.get(j));
+                    world.getInstructionHandler().execute();
+                }
+            }
         }
 
         for (int i = 0; i <MyBattleZone.zoneSize(); i++) {
             InactiveCard card = (InactiveCard) MyBattleZone.getZoneArray().get(i);
             ArrayList<InstructionSet> instructions = card.getTemporarySpreadingInst();
-            world.getInstructionIteratorHandler().setCard(card);
-            world.getInstructionIteratorHandler().setInstructions(instructions);
-            while (!world.getInstructionIteratorHandler().update());
+            if (instructions != null) {
+                for (int j = 0; i < instructions.size(); i++) {
+                    world.getInstructionHandler().setCardAndInstruction(card, instructions.get(j));
+                    world.getInstructionHandler().execute();
+                }
+            }
         }
 
         for (int i = 0; i < OpponentBattleZone.zoneSize(); i++) {
             InactiveCard card = (InactiveCard) OpponentBattleZone.getZoneArray().get(i);
             ArrayList<InstructionSet> instructions = card.getTemporarySpreadingInst();
-            world.getInstructionIteratorHandler().setCard(card);
-            world.getInstructionIteratorHandler().setInstructions(instructions);
-            while (!world.getInstructionIteratorHandler().update());
+            if (instructions != null) {
+                for (int j = 0; i < instructions.size(); i++) {
+                    world.getInstructionHandler().setCardAndInstruction(card, instructions.get(j));
+                    world.getInstructionHandler().execute();
+                }
+            }
         }
     }
 }

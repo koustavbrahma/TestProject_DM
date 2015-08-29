@@ -633,9 +633,11 @@ public class OnTurn {
         }
 
         ArrayList<InstructionSet> CleanUpInst = world.getEventLog().getHoldCleanUp();
-        for (int i = 0; i < CleanUpInst.size(); i++) {
-            world.getInstructionHandler().setCardAndInstruction(null, CleanUpInst.get(i));
-            world.getInstructionHandler().execute();
+        if (CleanUpInst != null) {
+            for (int i = 0; i < CleanUpInst.size(); i++) {
+                world.getInstructionHandler().setCardAndInstruction(null, CleanUpInst.get(i));
+                world.getInstructionHandler().execute();
+            }
         }
 
         //send Eventlog
@@ -663,12 +665,6 @@ public class OnTurn {
     private void PostIfAttackUpdate() {
         if (world.getInstructionIteratorHandler().update()) {
             S = OnTurnState.S12;
-            //send Eventlog
-            String msg = world.getEventLog().getAndClearEvents();
-            NetworkUtil.sendDirectiveUpdates(world,DirectiveHeader.ApplyEvents, msg, null);
-            SetUnsetUtil.SpreadingFlagAttr(world);
-            world.getInstructionHandler().setCardAndInstruction(null, NotYetSpreadCleanup);
-            world.getInstructionHandler().execute();
         }
     }
 /*
@@ -684,12 +680,6 @@ public class OnTurn {
             if (world.getWorldFlag(WorldFlags.PlayerAttackMode)) {
                 //need to handle later
             }
-            //send Eventlog
-            String msg = world.getEventLog().getAndClearEvents();
-            NetworkUtil.sendDirectiveUpdates(world,DirectiveHeader.ApplyEvents, msg, null);
-            SetUnsetUtil.SpreadingFlagAttr(world);
-            world.getInstructionHandler().setCardAndInstruction(null, NotYetSpreadCleanup);
-            world.getInstructionHandler().execute();
         }
     }
 /*
@@ -951,8 +941,14 @@ public class OnTurn {
                             }
                         }
 
-                        world.getInstructionIteratorHandler().setInstructions(instructions);
-                        this.S = OnTurnState.S4;
+                        if (instructions.size() > 0) {
+                            world.getInstructionIteratorHandler().setInstructions(instructions);
+                            this.S = OnTurnState.S4;
+                        } else {
+                            this.S = OnTurnState.SX;
+                            world.getEventLog().setRecording(false);
+                            world.setFetchCard(null);
+                        }
                     }
                 }
 
@@ -1040,12 +1036,9 @@ public class OnTurn {
  */
     private void SummonUpdate() {
         if (world.getInstructionIteratorHandler().update()) {
-            S = OnTurnState.SX;
+            S = OnTurnState.S1;
             world.setFetchCard(null);
             world.getEventLog().setRecording(false);
-            //sendevent
-            String msg = world.getEventLog().getAndClearEvents();
-            NetworkUtil.sendDirectiveUpdates(world,DirectiveHeader.ApplyEvents, msg, null);
         }
     }
 /*
@@ -1064,9 +1057,11 @@ public class OnTurn {
                 throw new IllegalArgumentException("Something went wrong while evolution");
             SetUnsetUtil.UnSetMarkedCard((InactiveCard) CollectedCardList.get(0));
             ArrayList<InstructionSet> CleanUpInst = ((InactiveCard)CollectedCardList.get(0)).getCrossInstructionForTheInstructionID(InstructionID.CleanUp);
-            for (int i = 0; i < CleanUpInst.size(); i++) {
-                world.getInstructionHandler().setCardAndInstruction((InactiveCard) CollectedCardList.get(0), CleanUpInst.get(i));
-                world.getInstructionHandler().execute();
+            if (CleanUpInst != null) {
+                for (int i = 0; i < CleanUpInst.size(); i++) {
+                    world.getInstructionHandler().setCardAndInstruction((InactiveCard) CollectedCardList.get(0), CleanUpInst.get(i));
+                    world.getInstructionHandler().execute();
+                }
             }
             InactiveCard card2 = (InactiveCard) ActUtil.EvolveCreature(card, CollectedCardList.get(0), world);
             world.setFetchCard(card2);
@@ -1125,8 +1120,14 @@ public class OnTurn {
                     }
                 }
 
-                world.getInstructionIteratorHandler().setInstructions(instructions);
-                this.S = OnTurnState.S4;
+                if (instructions.size() > 0) {
+                    world.getInstructionIteratorHandler().setInstructions(instructions);
+                    this.S = OnTurnState.S4;
+                } else {
+                    this.S = OnTurnState.SX;
+                    world.getEventLog().setRecording(false);
+                    world.setFetchCard(null);
+                }
             }
         }
     }
@@ -1180,12 +1181,9 @@ public class OnTurn {
                     world.getInstructionHandler().execute();
                 }
             }
-            S = OnTurnState.SX;
+            S = OnTurnState.S1;
             world.setFetchCard(null);
             world.getEventLog().setRecording(false);
-            //sendevent
-            String msg = world.getEventLog().getAndClearEvents();
-            NetworkUtil.sendDirectiveUpdates(world,DirectiveHeader.ApplyEvents, msg, null);
         }
     }
 
@@ -1198,11 +1196,8 @@ public class OnTurn {
 
     private void TapAbilityUpdate() {
         if (world.getInstructionIteratorHandler().update()) {
-            S = OnTurnState.SX;
+            S = OnTurnState.S1;
             world.getEventLog().setRecording(false);
-            //send Eventlog
-            String msg = world.getEventLog().getAndClearEvents();
-            NetworkUtil.sendDirectiveUpdates(world,DirectiveHeader.ApplyEvents, msg, null);
         }
     }
 /*

@@ -20,7 +20,9 @@ public class ActUtil {
         Cards NewCard = null;
         if (card.GridPosition().getZone() == 0 || card.GridPosition().getZone() == 7) {
             ArrayList<InstructionSet> CleanUpInst = ((InactiveCard)card).getCrossInstructionForTheInstructionID(InstructionID.CleanUp);
-            world.getEventLog().AddHoldCleanUp(CleanUpInst);
+            if (CleanUpInst != null) {
+                world.getEventLog().AddHoldCleanUp(CleanUpInst);
+            }
         }
         if (gridPosition.getZone() >= 0 && gridPosition.getZone() <= 5) {
             int z = gridPosition.getZone();

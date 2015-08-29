@@ -185,9 +185,11 @@ public class WorldUpdateOffTurn {
         }
 
         ArrayList<InstructionSet> CleanUpInst = world.getEventLog().getHoldCleanUp();
-        for (int i = 0; i < CleanUpInst.size(); i++) {
-            world.getInstructionHandler().setCardAndInstruction(null, CleanUpInst.get(i));
-            world.getInstructionHandler().execute();
+        if (CleanUpInst != null) {
+            for (int i = 0; i < CleanUpInst.size(); i++) {
+                world.getInstructionHandler().setCardAndInstruction(null, CleanUpInst.get(i));
+                world.getInstructionHandler().execute();
+            }
         }
 
         S = WorldUpdateoffTurnState.SY;
@@ -371,9 +373,12 @@ public class WorldUpdateOffTurn {
     private void ExecutePassInstruction() {
         if (world.getInstructionHandler().execute()) {
             ArrayList<InstructionSet> CleanUpInst = world.getEventLog().getHoldCleanUp();
-            world.getInstructionIteratorHandler().setCard(null);
-            world.getInstructionIteratorHandler().setInstructions(CleanUpInst);
-            while (!world.getInstructionIteratorHandler().update());
+            if (CleanUpInst != null) {
+                for (int i = 0; i < CleanUpInst.size(); i++) {
+                    world.getInstructionHandler().setCardAndInstruction(null, CleanUpInst.get(i));
+                    world.getInstructionHandler().execute();
+                }
+            }
             //Send event log
             String msg = world.getEventLog().getAndClearEvents();
             NetworkUtil.sendDirectiveUpdates(world,DirectiveHeader.ApplyEvents, msg, null);
