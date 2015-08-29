@@ -70,6 +70,11 @@ public class InstructionIteratorHandler {
 
     private void  InstructionExecutor(){
         if (world.getInstructionHandler().execute()) {
+            ArrayList<InstructionSet> CleanUpInst = world.getEventLog().getHoldCleanUp();
+            for (int i = 0; i < CleanUpInst.size(); i++) {
+                world.getInstructionHandler().setCardAndInstruction(null, CleanUpInst.get(i));
+                world.getInstructionHandler().execute();
+            }
             S = AbilityHandlerStates.S1;
         }
     }

@@ -159,6 +159,10 @@ public class InstructionHandler {
             status = true;
         }
 
+        if (instruction.getInstructionType() == InstructionType.PassControlToOpponent) {
+            status = PassControl();
+        }
+
         status = PerformCascade(status);
         SetCleanupInst(status);
 
@@ -425,6 +429,9 @@ public class InstructionHandler {
     This API set Temporary spread inst
      */
     private void SetTemporarySpreadInstruction(){
+        if (CurrentCard == null)
+            throw new IllegalArgumentException("Current card cannot be null for this instruction");
+
         String SpreadinstructionStr = ((ActiveCard)CurrentCard).cardInfo().PrimaryInstruction.get(instruction.getAttrCountOrIndex() - 1);
         InactiveCard card;
         String msg = new String("");
@@ -624,6 +631,60 @@ public class InstructionHandler {
                 Bzone + " " + CollectCardList.get(0).GridPosition().getGridIndex() + " " + CollectCardList.get(0).getNameID();
         NetworkUtil.sendDirectiveUpdates(world, DirectiveHeader.EvolutionEvent, msg, null);
         SetUnsetUtil.SetMarkedCard((InactiveCard) CollectCardList.get(0));
+    }
+/*
+ API which pass the control to opponent temporary to execute some instruction by the opponent
+ */
+    private boolean PassControl() {
+        boolean status = false;
+        if (State == InstructionState.S1) {
+            if (CurrentCard == null)
+                throw new IllegalArgumentException("Current card cannot be null for this instruction");
+
+            String instructionStr = ((ActiveCard)CurrentCard).cardInfo().PrimaryInstruction.get(instruction.getAttrCountOrIndex() - 1);
+            NetworkUtil.sendDirectiveUpdates(world,DirectiveHeader.PassControl, instructionStr, null);
+            State = InstructionState.S2;
+            if (world.getEventLog().getRecording() == false)
+                throw new IllegalArgumentException("I am expecting this to be true at this point");
+            world.getEventLog().setRecording(false);
+        }
+
+        if (State == InstructionState.S2) {
+            if (world.getGame().getNetwork().getSocket() == null || world.getGame().getNetwork().getSocket().isClosed()) {
+                State = InstructionState.S3;
+                // for now this but later handle it properly
+                return status;
+            }
+            if (world.getGame().getNetwork().getreceivedDirectiveSize() == 0)
+                return status;
+
+            String directive = world.getGame().getNetwork().getreceivedDirectiveMsg();
+            String [] splitdirective = directive.split("@");
+
+            if (splitdirective[0].equals(DirectiveHeader.PassControl)) {
+                State = InstructionState.S3;
+            }
+
+            if (splitdirective[0].equals(DirectiveHeader.ApplyEvents) && splitdirective.length > 2) {
+                String[] eventString = splitdirective[1].split("#");
+                InactiveCard card = CurrentCard;
+                InstructionSet PresentInstruction = instruction;
+
+                for (int i =0; i < eventString.length; i++) {
+                    ActUtil.ApplyEventsInt(eventString[i], world);
+                }
+
+                CurrentCard = card;
+                instruction = PresentInstruction;
+            }
+        }
+
+        if (State == InstructionState.S3) {
+            world.getEventLog().setRecording(true);
+            State = InstructionState.S1;
+            status = true;
+        }
+        return status;
     }
 /*
  This API is used to collect card from zones. Sometimes based on condition also.
@@ -977,6 +1038,16 @@ public class InstructionHandler {
 
         if (instruction.getCascadeCondition() == CascadeType.IfTempZoneIsNonEmptyWithMoreValue && instruction.getNextInst() != null) {
             if (world.getMaze().getZoneList().get(6).zoneSize() >= count) {
+                instruction = instruction.getNextInst();
+                return false;
+            } else {
+                return true;
+            }
+        }
+
+        if (instruction.getCascadeCondition() == CascadeType.IfTempZoneIsNonEmptyAndSetCount && instruction.getNextInst() != null) {
+            if (world.getMaze().getZoneList().get(6).zoneSize() > 0) {
+                instruction.getNextInst().setCount(world.getMaze().getZoneList().get(6).zoneSize());
                 instruction = instruction.getNextInst();
                 return false;
             } else {

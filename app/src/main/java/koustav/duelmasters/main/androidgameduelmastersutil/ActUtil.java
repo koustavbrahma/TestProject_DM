@@ -3,6 +3,7 @@ package koustav.duelmasters.main.androidgameduelmastersutil;
 import java.util.ArrayList;
 import java.util.Random;
 
+import koustav.duelmasters.main.androidgameduelmasterscardrulehandler.InstructionID;
 import koustav.duelmasters.main.androidgameduelmasterscardrulehandler.InstructionSet;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.ActiveCard;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
@@ -17,6 +18,10 @@ public class ActUtil {
     public static Cards ChangeZoneOperator(World world, Cards card, InstructionSet instruction) {
         GridPositionIndex gridPosition = card.GridPosition();
         Cards NewCard = null;
+        if (card.GridPosition().getZone() == 0 || card.GridPosition().getZone() == 7) {
+            ArrayList<InstructionSet> CleanUpInst = ((InactiveCard)card).getCrossInstructionForTheInstructionID(InstructionID.CleanUp);
+            world.getEventLog().AddHoldCleanUp(CleanUpInst);
+        }
         if (gridPosition.getZone() >= 0 && gridPosition.getZone() <= 5) {
             int z = gridPosition.getZone();
             int d = instruction.getActionDestination();
@@ -186,5 +191,60 @@ public class ActUtil {
         }
 
         return newCard;
+    }
+
+    public static void ApplyEventsInt(String event, World world){
+        String[] eventField = event.split(" ");
+
+        if (eventField.length != 8)
+            throw new IllegalArgumentException("Invalid eventLog");
+
+
+        int Cardzone = Integer.parseInt(eventField[0]);
+        int GridIndex = Integer.parseInt(eventField[1]);
+        boolean move = eventField[3].equals("0") ? false : true;
+        boolean set = eventField[6].equals("0") ? false : true;
+        if (Cardzone != 4 && Cardzone != 5 && Cardzone != 11 && Cardzone != 12) {
+            InactiveCard card = (InactiveCard) world.getGridIndexTrackingTable().getCardMappedToGivenGridPosition(Cardzone,GridIndex);
+            if (!card.getNameID().equals(eventField[2]))
+                throw new IllegalArgumentException("Data inconsistency");
+
+            if (move) {
+                String moveInstruction = InstSetUtil.GenerateSelfChangeZoneInstruction(Integer.parseInt(eventField[4]));
+                InstructionSet instruction = new InstructionSet(moveInstruction);
+                world.getInstructionHandler().setCardAndInstruction(card, instruction);
+                world.getInstructionHandler().execute();
+            }
+
+            if (!eventField[5].equals("0")) {
+                if (set) {
+                    String setAttrInstruction = InstSetUtil.GenerateSelfSetAttributeInstruction(eventField[5], Integer.parseInt(eventField[7]));
+                    InstructionSet instruction = new InstructionSet(setAttrInstruction);
+                    world.getInstructionHandler().setCardAndInstruction(card, instruction);
+                    world.getInstructionHandler().execute();
+                } else {
+                    String unsetAttrInstruction = InstSetUtil.GenerateSelfCleanUpAttributeInstruction(eventField[5], Integer.parseInt(eventField[7]));
+                    InstructionSet instruction = new InstructionSet(unsetAttrInstruction);
+                    world.getInstructionHandler().setCardAndInstruction(card, instruction);
+                    world.getInstructionHandler().execute();
+                }
+            }
+        } else {
+            if (move) {
+                int ActionZone = 0;
+                if (Cardzone == 4 || Cardzone == 5)
+                    ActionZone = (int) Math.pow(10, Cardzone);
+                if (Cardzone == 11 || Cardzone == 12)
+                    ActionZone = 2 * ((int)Math.pow(10, Cardzone - 7));
+                String moveInstruction = InstSetUtil.GenerateChangeZoneInstructionBasedOnNameId(ActionZone, eventField[2], Integer.parseInt(eventField[4]));
+                InstructionSet instruction = new InstructionSet(moveInstruction);
+                world.getInstructionHandler().setCardAndInstruction(null, instruction);
+                world.getInstructionHandler().execute();
+            }
+
+            if (!eventField[5].equals("0")) {
+                throw new IllegalArgumentException("Invalid event");
+            }
+        }
     }
 }

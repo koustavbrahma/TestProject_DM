@@ -14,4 +14,5 @@ public class DirectiveHeader {
     public static String SendBlocker = "SendBlocker";
     public static String ShieldTriggerInfo = "ShieldTriggerInfo";
     public static String SetTmpSpreadingInst = "SetTmpSpreadingInst";
+    public static String PassControl = "PassControl";
 }

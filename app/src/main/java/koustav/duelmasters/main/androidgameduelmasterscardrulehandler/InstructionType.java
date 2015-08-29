@@ -21,4 +21,5 @@ public enum InstructionType {
     SetTempSpreadInst,
     SelfCleanUpMultiplier,
     ChooseRandom,
+    PassControlToOpponent,
 }

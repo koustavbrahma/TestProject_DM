@@ -2,6 +2,7 @@ package koustav.duelmasters.main.androidgameduelmastersnetworkmodule;
 
 import java.util.ArrayList;
 
+import koustav.duelmasters.main.androidgameduelmasterscardrulehandler.InstructionSet;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.World;
 import koustav.duelmasters.main.androidgamesframework.Screen;
@@ -12,16 +13,22 @@ import koustav.duelmasters.main.androidgamesframework.Screen;
 public class EventLog {
     ArrayList<String> events;
     ArrayList<String> HoldMsg;
+    ArrayList<InstructionSet> HoldCleanUp;
     boolean recording;
 
     public EventLog() {
         events = new ArrayList<String>();
         HoldMsg = new ArrayList<String>();
+        HoldCleanUp = new ArrayList<InstructionSet>();
         recording = false;
     }
 
     public void setRecording(boolean val) {
         recording = val;
+    }
+
+    public boolean getRecording() {
+        return recording;
     }
 
     public void registerEvent(Cards card, boolean move, int zone, String attribute, boolean set, int val) {
@@ -73,5 +80,23 @@ public class EventLog {
         }
         HoldMsg.clear();
         return holdmsg;
+    }
+
+    public void AddHoldCleanUp(ArrayList<InstructionSet> Inst) {
+        for (int i = 0 ; i < Inst.size(); i++) {
+            HoldCleanUp.add(Inst.get(i));
+        }
+    }
+
+    public ArrayList<InstructionSet> getHoldCleanUp() {
+        ArrayList<InstructionSet> holdCleanUP = null;
+        if (HoldCleanUp.size() != 0) {
+            holdCleanUP = new ArrayList<InstructionSet>();
+            for (int i = 0; i < holdCleanUP.size(); i++) {
+                holdCleanUP.add(HoldCleanUp.get(i));
+            }
+        }
+        HoldCleanUp.clear();
+        return holdCleanUP;
     }
 }

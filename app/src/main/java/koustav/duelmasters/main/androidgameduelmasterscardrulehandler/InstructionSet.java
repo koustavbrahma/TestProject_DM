@@ -86,6 +86,9 @@ public class InstructionSet {
                 case "17":
                     type = InstructionType.ChooseRandom;
                     break;
+                case "18":
+                    type = InstructionType.PassControlToOpponent;
+                    break;
                 default:
                     throw new IllegalArgumentException("Invalid instruction type");
             }
@@ -244,6 +247,9 @@ public class InstructionSet {
                  case "4":
                      CascadeCondition = CascadeType.IfTempZoneIsNonEmptyWithMoreValue;
                      break;
+                 case "5":
+                     CascadeCondition = CascadeType.IfTempZoneIsNonEmptyAndSetCount;
+                     break;
                  default:
                      throw new IllegalArgumentException("Invalid Cascade type");
             }
@@ -273,6 +279,10 @@ public class InstructionSet {
 
     public int getCount(){
         return Count;
+    }
+
+    public void setCount(int count) {
+        this.Count = count;
     }
 
     public int getConditionCount() {

@@ -30,6 +30,7 @@ public class WorldUpdateOffTurn {
         S5,
         S6,
         S7,
+        S8,
         SX,
         SY,
     }
@@ -77,6 +78,10 @@ public class WorldUpdateOffTurn {
 
         if (S == WorldUpdateoffTurnState.S7) {
             SetTemporarySpreadingInst();
+        }
+
+        if (S == WorldUpdateoffTurnState.S8) {
+            ExecutePassInstruction();
         }
 
         if (S == WorldUpdateoffTurnState.SX) {
@@ -159,76 +164,33 @@ public class WorldUpdateOffTurn {
             S = WorldUpdateoffTurnState.S7;
             return;
         }
+
+        if (splitdirective[0].equals(DirectiveHeader.PassControl) && (splitdirective.length > 2)) {
+            S = WorldUpdateoffTurnState.S8;
+            String PassInstructionStr = splitdirective[1];
+            InstructionSet PassInst = new InstructionSet(PassInstructionStr);
+            world.getInstructionHandler().setCardAndInstruction(null, PassInst);
+            if (world.getEventLog().getRecording() == true)
+                throw new IllegalArgumentException("I am not expecting this to be ON at this point");
+            world.getEventLog().setRecording(true);
+            return;
+        }
     }
 
     private void ApplyEvents() {
         String[] eventString = splitdirective[1].split("#");
 
         for (int i =0; i < eventString.length; i++) {
-            ApplyEventsInt(eventString[i]);
+            ActUtil.ApplyEventsInt(eventString[i], world);
+        }
+
+        ArrayList<InstructionSet> CleanUpInst = world.getEventLog().getHoldCleanUp();
+        for (int i = 0; i < CleanUpInst.size(); i++) {
+            world.getInstructionHandler().setCardAndInstruction(null, CleanUpInst.get(i));
+            world.getInstructionHandler().execute();
         }
 
         S = WorldUpdateoffTurnState.SY;
-    }
-
-    private void ApplyEventsInt(String event){
-        String[] eventField = event.split(" ");
-
-        if (eventField.length != 8)
-            throw new IllegalArgumentException("Invalid eventLog");
-
-
-        int Cardzone = Integer.parseInt(eventField[0]);
-        int GridIndex = Integer.parseInt(eventField[1]);
-        boolean move = eventField[3].equals("0") ? false : true;
-        boolean set = eventField[6].equals("0") ? false : true;
-        if (Cardzone != 4 && Cardzone != 5 && Cardzone != 11 && Cardzone != 12) {
-            InactiveCard card = (InactiveCard) world.getGridIndexTrackingTable().getCardMappedToGivenGridPosition(Cardzone,GridIndex);
-            if (!card.getNameID().equals(eventField[2]))
-                throw new IllegalArgumentException("Data inconsistency");
-
-            if (move) {
-                if (card.GridPosition().getZone() == 0 || card.GridPosition().getZone() == 7) {
-                    ArrayList<InstructionSet> CleanUpInst = card.getCrossInstructionForTheInstructionID(InstructionID.CleanUp);
-                    world.getInstructionIteratorHandler().setCard(card);
-                    world.getInstructionIteratorHandler().setInstructions(CleanUpInst);
-                }
-                String moveInstruction = InstSetUtil.GenerateSelfChangeZoneInstruction(Integer.parseInt(eventField[4]));
-                InstructionSet instruction = new InstructionSet(moveInstruction);
-                world.getInstructionHandler().setCardAndInstruction(card, instruction);
-                world.getInstructionHandler().execute();
-            }
-
-            if (!eventField[5].equals("0")) {
-                if (set) {
-                    String setAttrInstruction = InstSetUtil.GenerateSelfSetAttributeInstruction(eventField[5], Integer.parseInt(eventField[7]));
-                    InstructionSet instruction = new InstructionSet(setAttrInstruction);
-                    world.getInstructionHandler().setCardAndInstruction(card, instruction);
-                    world.getInstructionHandler().execute();
-                } else {
-                    String unsetAttrInstruction = InstSetUtil.GenerateSelfCleanUpAttributeInstruction(eventField[5], Integer.parseInt(eventField[7]));
-                    InstructionSet instruction = new InstructionSet(unsetAttrInstruction);
-                    world.getInstructionHandler().setCardAndInstruction(card, instruction);
-                    world.getInstructionHandler().execute();
-                }
-            }
-        } else {
-            if (move) {
-                int ActionZone = 0;
-                if (Cardzone == 4 || Cardzone == 5)
-                    ActionZone = (int) Math.pow(10, Cardzone);
-                if (Cardzone == 11 || Cardzone == 12)
-                    ActionZone = 2 * ((int)Math.pow(10, Cardzone - 7));
-                String moveInstruction = InstSetUtil.GenerateChangeZoneInstructionBasedOnNameId(ActionZone, eventField[2], Integer.parseInt(eventField[4]));
-                InstructionSet instruction = new InstructionSet(moveInstruction);
-                world.getInstructionHandler().setCardAndInstruction(null, instruction);
-                world.getInstructionHandler().execute();
-            }
-
-            if (!eventField[5].equals("0")) {
-                throw new IllegalArgumentException("Invalid event");
-            }
-        }
     }
 
     private void ApplyTappedCardInfo() {
@@ -404,6 +366,21 @@ public class WorldUpdateOffTurn {
         }
 
         S = WorldUpdateoffTurnState.S1;
+    }
+
+    private void ExecutePassInstruction() {
+        if (world.getInstructionHandler().execute()) {
+            ArrayList<InstructionSet> CleanUpInst = world.getEventLog().getHoldCleanUp();
+            world.getInstructionIteratorHandler().setCard(null);
+            world.getInstructionIteratorHandler().setInstructions(CleanUpInst);
+            while (!world.getInstructionIteratorHandler().update());
+            //Send event log
+            String msg = world.getEventLog().getAndClearEvents();
+            NetworkUtil.sendDirectiveUpdates(world,DirectiveHeader.ApplyEvents, msg, null);
+            NetworkUtil.sendDirectiveUpdates(world, DirectiveHeader.PassControl, null, null);
+            world.getEventLog().setRecording(false);
+            S = WorldUpdateoffTurnState.SY;
+        }
     }
 
     private void ResumeTurnControl() {

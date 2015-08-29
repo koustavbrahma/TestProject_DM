@@ -551,10 +551,6 @@ public class OnTurn {
         }
 
         if (AttackResult == 1) {
-            ArrayList<InstructionSet> CleanUpInst = AttackedCard.getCrossInstructionForTheInstructionID(InstructionID.CleanUp);
-            world.getInstructionIteratorHandler().setCard(AttackedCard);
-            world.getInstructionIteratorHandler().setInstructions(CleanUpInst);
-            while (!world.getInstructionIteratorHandler().update());
             if (GetUtil.MaskDestroyDstVal(AttackedCard) > 0) {
                 String DestroyDstInst = InstSetUtil.GenerateSelfChangeZoneInstruction(GetUtil.MaskDestroyDstVal(AttackedCard) -1);
                 InstructionSet instruction = new InstructionSet(DestroyDstInst);
@@ -576,10 +572,6 @@ public class OnTurn {
         }
 
         if (AttackResult == 0) {
-            ArrayList<InstructionSet> CleanUpInst = AttackedCard.getCrossInstructionForTheInstructionID(InstructionID.CleanUp);
-            world.getInstructionIteratorHandler().setCard(AttackedCard);
-            world.getInstructionIteratorHandler().setInstructions(CleanUpInst);
-            while (!world.getInstructionIteratorHandler().update());
             if (GetUtil.MaskDestroyDstVal(AttackedCard) > 0) {
                 String DestroyDstInst = InstSetUtil.GenerateSelfChangeZoneInstruction(GetUtil.MaskDestroyDstVal(AttackedCard) -1);
                 InstructionSet instruction = new InstructionSet(DestroyDstInst);
@@ -599,9 +591,6 @@ public class OnTurn {
                 }
             }
 
-            CleanUpInst = AttackingCard.getCrossInstructionForTheInstructionID(InstructionID.CleanUp);
-            world.getInstructionIteratorHandler().setCard(AttackingCard);
-            world.getInstructionIteratorHandler().setInstructions(CleanUpInst);
             while (!world.getInstructionIteratorHandler().update());
             if (GetUtil.MaskDestroyDstVal(AttackingCard) > 0) {
                 String DestroyDstInst = InstSetUtil.GenerateSelfChangeZoneInstruction(GetUtil.MaskDestroyDstVal(AttackingCard) -1);
@@ -624,10 +613,6 @@ public class OnTurn {
         }
 
         if (AttackResult == -1) {
-            ArrayList<InstructionSet> CleanUpInst = AttackingCard.getCrossInstructionForTheInstructionID(InstructionID.CleanUp);
-            world.getInstructionIteratorHandler().setCard(AttackingCard);
-            world.getInstructionIteratorHandler().setInstructions(CleanUpInst);
-            while (!world.getInstructionIteratorHandler().update());
             if (GetUtil.MaskDestroyDstVal(AttackingCard) > 0) {
                 String DestroyDstInst = InstSetUtil.GenerateSelfChangeZoneInstruction(GetUtil.MaskDestroyDstVal(AttackingCard) -1);
                 InstructionSet instruction = new InstructionSet(DestroyDstInst);
@@ -646,6 +631,12 @@ public class OnTurn {
                     world.getInstructionHandler().execute();
                 }
             }
+        }
+
+        ArrayList<InstructionSet> CleanUpInst = world.getEventLog().getHoldCleanUp();
+        for (int i = 0; i < CleanUpInst.size(); i++) {
+            world.getInstructionHandler().setCardAndInstruction(null, CleanUpInst.get(i));
+            world.getInstructionHandler().execute();
         }
 
         //send Eventlog
@@ -676,6 +667,9 @@ public class OnTurn {
             //send Eventlog
             String msg = world.getEventLog().getAndClearEvents();
             NetworkUtil.sendDirectiveUpdates(world,DirectiveHeader.ApplyEvents, msg, null);
+            SetUnsetUtil.SpreadingFlagAttr(world);
+            world.getInstructionHandler().setCardAndInstruction(null, NotYetSpreadCleanup);
+            world.getInstructionHandler().execute();
         }
     }
 /*
@@ -694,6 +688,9 @@ public class OnTurn {
             //send Eventlog
             String msg = world.getEventLog().getAndClearEvents();
             NetworkUtil.sendDirectiveUpdates(world,DirectiveHeader.ApplyEvents, msg, null);
+            SetUnsetUtil.SpreadingFlagAttr(world);
+            world.getInstructionHandler().setCardAndInstruction(null, NotYetSpreadCleanup);
+            world.getInstructionHandler().execute();
         }
     }
 /*
@@ -1068,8 +1065,10 @@ public class OnTurn {
                 throw new IllegalArgumentException("Something went wrong while evolution");
             SetUnsetUtil.UnSetMarkedCard((InactiveCard) CollectedCardList.get(0));
             ArrayList<InstructionSet> CleanUpInst = ((InactiveCard)CollectedCardList.get(0)).getCrossInstructionForTheInstructionID(InstructionID.CleanUp);
-            world.getInstructionIteratorHandler().setCard((InactiveCard) CollectedCardList.get(0));
-            world.getInstructionIteratorHandler().setInstructions(CleanUpInst);
+            for (int i = 0; i < CleanUpInst.size(); i++) {
+                world.getInstructionHandler().setCardAndInstruction((InactiveCard) CollectedCardList.get(0), CleanUpInst.get(i));
+                world.getInstructionHandler().execute();
+            }
             InactiveCard card2 = (InactiveCard) ActUtil.EvolveCreature(card, CollectedCardList.get(0), world);
             world.setFetchCard(card2);
             if (SummonTapped) {
