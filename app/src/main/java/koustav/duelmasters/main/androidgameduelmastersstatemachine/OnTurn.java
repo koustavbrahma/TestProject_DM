@@ -591,7 +591,6 @@ public class OnTurn {
                 }
             }
 
-            while (!world.getInstructionIteratorHandler().update());
             if (GetUtil.MaskDestroyDstVal(AttackingCard) > 0) {
                 String DestroyDstInst = InstSetUtil.GenerateSelfChangeZoneInstruction(GetUtil.MaskDestroyDstVal(AttackingCard) -1);
                 InstructionSet instruction = new InstructionSet(DestroyDstInst);
