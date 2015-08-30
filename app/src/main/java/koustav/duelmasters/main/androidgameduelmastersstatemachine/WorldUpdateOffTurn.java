@@ -226,7 +226,7 @@ public class WorldUpdateOffTurn {
         String[] msg = splitdirective[1].split("#");
 
         for (int i = 0 ; i < msg.length; i++) {
-            String[] msgField = msg[i].split("$");
+            String[] msgField = msg[i].split("%");
 
             if (msgField.length != 2)
                 throw new  IllegalArgumentException("Invalid Set clean directive 1");
@@ -235,6 +235,8 @@ public class WorldUpdateOffTurn {
             if (msgInfo.length != 4)
                 throw new  IllegalArgumentException("Invalid Set clean directive 2");
             int Cardzone = Integer.parseInt(msgInfo[0]);
+            if (!(Cardzone == 0 || Cardzone == 3 || Cardzone == 7 || Cardzone == 10))
+                return;
             int GridIndex = Integer.parseInt(msgInfo[1]);
             int placementLocation = Integer.parseInt(msgInfo[3]);
 

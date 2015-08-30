@@ -553,8 +553,13 @@ public class InstructionHandler {
         }
 
         if (CollectCardList.size() > filtercount) {
-            for (int i = filtercount; i < CollectCardList.size(); i++) {
-                CollectCardList.remove(i);
+            ArrayList<Cards> tmp = new ArrayList<Cards>();
+            for (int i =0; i < filtercount; i++) {
+                tmp.add(CollectCardList.get(i));
+            }
+            CollectCardList.clear();
+            for (int i =0; i <tmp.size(); i++) {
+                CollectCardList.add(tmp.get(i));
             }
         }
         State = InstructionState.S3;
@@ -1109,7 +1114,7 @@ public class InstructionHandler {
         if (!(index > 0))
             return;
 
-        String Sinstruction = CurrentCard.cardInfo().PrimaryInstruction.get(index - 1);
+        String Sinstruction = CurrentCard.cardInfo().PrimaryInstruction.get(index);
         String msg = new String();
 
         if (instruction.getCleanUpPlacement() == CleanUpPlacement.PostCleanUp) {
@@ -1117,10 +1122,10 @@ public class InstructionHandler {
                 for (int i = 0; i < CollectCardList.size(); i++) {
                     String msgT;
                     int zone = CollectCardList.get(i).GridPosition().getZone();
-                    if ((zone >= 0 && zone <= 3) || (zone >= 7 && zone <= 10)) {
+                    if ((zone == 0 || zone == 3) || (zone == 7 && zone == 10)) {
                         InactiveCard card = (InactiveCard) CollectCardList.get(i);
                         InstructionSet Cinstruction = new InstructionSet(Sinstruction);
-                        if (zone >= 0 && zone <= 3) {
+                        if (zone == 0 || zone == 3) {
                             card.AddTemporaryPostCleanup(Cinstruction);
                         } else {
                             card.AddTemporaryPreCleanup(Cinstruction);
@@ -1131,7 +1136,7 @@ public class InstructionHandler {
                             zone = zone - 7;
                         }
 
-                        msgT = zone + " " + card.GridPosition().getGridIndex() + " " + card.getNameID() + " " + 1 + "$" + Sinstruction;
+                        msgT = zone + " " + card.GridPosition().getGridIndex() + " " + card.getNameID() + " " + 1 + "%" + Sinstruction;
                         msg = msg.concat(msgT);
                         if (i < CollectCardList.size() - 1) {
                             msg = msg.concat("#");
@@ -1144,7 +1149,7 @@ public class InstructionHandler {
 
                 String msgT;
                 int zone = CurrentCard.GridPosition().getZone() + 7;
-                msgT = zone + " " + CurrentCard.GridPosition().getGridIndex() + " " + CurrentCard.getNameID() + " " + 1 + "$" + Sinstruction;
+                msgT = zone + " " + CurrentCard.GridPosition().getGridIndex() + " " + CurrentCard.getNameID() + " " + 1 + "%" + Sinstruction;
                 msg = msg.concat(msgT);
             }
 
@@ -1173,7 +1178,7 @@ public class InstructionHandler {
                             zone = zone - 7;
                         }
 
-                        msgT = zone + " " + card.GridPosition().getGridIndex() + " " + card.getNameID() + " " + 2 + "$" + Sinstruction;
+                        msgT = zone + " " + card.GridPosition().getGridIndex() + " " + card.getNameID() + " " + 2 + "%" + Sinstruction;
                         msg = msg.concat(msgT);
                         if (i < CollectCardList.size() - 1) {
                             msg = msg.concat("#");
@@ -1186,7 +1191,7 @@ public class InstructionHandler {
 
                 String msgT;
                 int zone = CurrentCard.GridPosition().getZone() + 7;
-                msgT = zone + " " + CurrentCard.GridPosition().getGridIndex() + " " + CurrentCard.getNameID() + " " + 1 + "$" + Sinstruction;
+                msgT = zone + " " + CurrentCard.GridPosition().getGridIndex() + " " + CurrentCard.getNameID() + " " + 1 + "%" + Sinstruction;
                 msg = msg.concat(msgT);
             }
 

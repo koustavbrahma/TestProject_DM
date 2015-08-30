@@ -190,7 +190,7 @@ public class SetUnsetUtil {
             InactiveCard card = (InactiveCard) MyBattleZone.getZoneArray().get(i);
             ArrayList<InstructionSet> instructions = card.getCrossInstructionForTheInstructionID(InstructionID.FlagSpreading);
             if (instructions != null) {
-                for (int j = 0; i < instructions.size(); i++) {
+                for (int j = 0; j < instructions.size(); j++) {
                     world.getInstructionHandler().setCardAndInstruction(card, instructions.get(j));
                     world.getInstructionHandler().execute();
                 }
@@ -201,7 +201,7 @@ public class SetUnsetUtil {
             InactiveCard card = (InactiveCard) OpponentBattleZone.getZoneArray().get(i);
             ArrayList<InstructionSet> instructions = card.getCrossInstructionForTheInstructionID(InstructionID.FlagSpreading);
             if (instructions != null) {
-                for (int j = 0; i < instructions.size(); i++) {
+                for (int j = 0; j < instructions.size(); j++) {
                     world.getInstructionHandler().setCardAndInstruction(card, instructions.get(j));
                     world.getInstructionHandler().execute();
                 }
@@ -212,7 +212,7 @@ public class SetUnsetUtil {
             InactiveCard card = (InactiveCard) MyBattleZone.getZoneArray().get(i);
             ArrayList<InstructionSet> instructions = card.getTemporarySpreadingInst();
             if (instructions != null) {
-                for (int j = 0; i < instructions.size(); i++) {
+                for (int j = 0; j < instructions.size(); j++) {
                     world.getInstructionHandler().setCardAndInstruction(card, instructions.get(j));
                     world.getInstructionHandler().execute();
                 }
@@ -223,7 +223,7 @@ public class SetUnsetUtil {
             InactiveCard card = (InactiveCard) OpponentBattleZone.getZoneArray().get(i);
             ArrayList<InstructionSet> instructions = card.getTemporarySpreadingInst();
             if (instructions != null) {
-                for (int j = 0; i < instructions.size(); i++) {
+                for (int j = 0; j < instructions.size(); j++) {
                     world.getInstructionHandler().setCardAndInstruction(card, instructions.get(j));
                     world.getInstructionHandler().execute();
                 }

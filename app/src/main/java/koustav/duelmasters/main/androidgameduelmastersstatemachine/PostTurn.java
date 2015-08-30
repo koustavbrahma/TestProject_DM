@@ -69,9 +69,12 @@ public class PostTurn {
         for (int i = 0; i < MyBattleZone.zoneSize(); i++) {
             ActiveCard card = (ActiveCard) MyBattleZone.getZoneArray().get(i);
             ArrayList<InstructionSet> instructions = card.getTemporaryPostCleanup();
-            world.getInstructionIteratorHandler().setCard(card);
-            world.getInstructionIteratorHandler().setInstructions(instructions);
-            while (!world.getInstructionIteratorHandler().update()) ;
+            if (instructions != null) {
+                for (int j = 0; j < instructions.size(); j++) {
+                    world.getInstructionHandler().setCardAndInstruction(card, instructions.get(j));
+                    world.getInstructionHandler().execute();
+                }
+            }
             card.ClearTemporaryPostCleanup();
             card.ClearTemporarySpreadingInst();
         }
@@ -80,9 +83,12 @@ public class PostTurn {
         for (int i = 0; i < MyHandCards.zoneSize(); i++) {
             ActiveCard card = (ActiveCard) MyHandCards.getZoneArray().get(i);
             ArrayList<InstructionSet> instructions = card.getTemporaryPostCleanup();
-            world.getInstructionIteratorHandler().setCard(card);
-            world.getInstructionIteratorHandler().setInstructions(instructions);
-            while (!world.getInstructionIteratorHandler().update()) ;
+            if (instructions != null) {
+                for (int j = 0; j < instructions.size(); j++) {
+                    world.getInstructionHandler().setCardAndInstruction(card, instructions.get(j));
+                    world.getInstructionHandler().execute();
+                }
+            }
             card.ClearTemporaryPostCleanup();
         }
 
@@ -91,9 +97,12 @@ public class PostTurn {
         for (int i = 0; i < OppBattleZone.zoneSize(); i++) {
             InactiveCard card = (InactiveCard) OppBattleZone.getZoneArray().get(i);
             ArrayList<InstructionSet> instructions = card.getTemporaryPreCleanup();
-            world.getInstructionIteratorHandler().setCard(card);
-            world.getInstructionIteratorHandler().setInstructions(instructions);
-            while (!world.getInstructionIteratorHandler().update()) ;
+            if (instructions != null) {
+                for (int j = 0; j < instructions.size(); j++) {
+                    world.getInstructionHandler().setCardAndInstruction(card, instructions.get(j));
+                    world.getInstructionHandler().execute();
+                }
+            }
             card.ClearTemporaryPreCleanup();
         }
 
@@ -102,9 +111,12 @@ public class PostTurn {
         for (int i = 0; i < OppHandCards.zoneSize(); i++) {
             InactiveCard card = (InactiveCard) OppHandCards.getZoneArray().get(i);
             ArrayList<InstructionSet> instructions = card.getTemporaryPreCleanup();
-            world.getInstructionIteratorHandler().setCard(card);
-            world.getInstructionIteratorHandler().setInstructions(instructions);
-            while (!world.getInstructionIteratorHandler().update()) ;
+            if (instructions != null) {
+                for (int j = 0; j < instructions.size(); j++) {
+                    world.getInstructionHandler().setCardAndInstruction(card, instructions.get(j));
+                    world.getInstructionHandler().execute();
+                }
+            }
             card.ClearTemporaryPreCleanup();
         }
 

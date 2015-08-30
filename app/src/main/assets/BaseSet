@@ -2,7 +2,7 @@ BeginAquaHulcus
 BeginSlotAttributes
 AquaHulcus
 1
-LiquidPeople
+Liquid_People
 3
 1
 2000
@@ -31,7 +31,7 @@ BeginAquaKnight
 BeginSlotAttributes
 AquaKnight
 1
-LiquidPeople
+Liquid_People
 5
 1
 4000
@@ -56,3 +56,231 @@ BeginCrossInstruction
 EndCrossInstruction
 EndAquaKnight
 #
+BeginAquaSniper
+BeginSlotAttributes
+AquaSniper
+1
+Liquid_People
+8
+1
+5000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+SummonOrCastAbility 1
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+1 3 2 0 0 0 0 0 1 3 0 0 0 0 0 0 0 0
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndAquaSniper
+#
+BeginAquaSoldier
+BeginSlotAttributes
+AquaSoldier
+1
+Liquid_People
+3
+1
+1000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+DestroyDst 1
+EndCrossInstructionIndex
+BeginCrossInstruction
+3 0 0 0 0 0 0 0 0 3 0 0 0 0 0 0 0 0
+EndCrossInstruction
+EndAquaSoldier
+#
+BeginAquaVehicle
+BeginSlotAttributes
+AquaVehicle
+1
+Liquid_People
+2
+1
+1000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndAquaVehicle
+#
+BeginArmoredWalkerUrherion
+BeginSlotAttributes
+ArmoredWalkerUrherion
+2
+Armorloid
+4
+1
+3000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+FlagSpreading 1
+EndCrossInstructionIndex
+BeginCrossInstruction
+5 1 0 1 12 Human 0 0 0 0 2 PowerAttacker 2000 0 0 0 0 0
+EndCrossInstruction
+EndArmoredWalkerUrherion
+#
+BeginArtisanPicora
+BeginSlotAttributes
+ArtisanPicora
+2
+Machine_Eater
+1
+1
+2000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+SummonOrCastAbility 1
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+1 10 1 0 0 0 0 0 1 4 0 0 0 0 0 0 0 0
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndArtisanPicora
+#
+BeginAstrocometDragon
+BeginSlotAttributes
+AstrocometDragon
+2
+Armored_Dragon
+7
+1
+6000
+2
+0
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+PowerAttacker 4000
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+SummonOrCastAbility 1
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+1 10 1 0 0 0 0 0 1 4 0 0 0 0 0 0 0 0
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndAstrocometDragon
+#
+BeginAuraBlast
+BeginSlotAttributes
+AuraBlast
+4
+Nil
+4
+3
+0
+0
+0
+EndSlotAttributes
+BeginFlagAttributes
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+SummonOrCastAbility 1
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+14 1 1 0 0 0 0 0 0 0 0 PowerAttacker 2000 1 2 0 0 0
+8 0 0 0 0 0 0 0 0 0 0 PowerAttacker 2000 0 0 0 0 0
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndAuraBlast
+#
+BeginBlackFeatherShadowOfRage
+BeginSlotAttributes
+BlackFeatherShadowOfRage
+16
+Ghost
+1
+1
+3000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+SummonOrCastAbility 1
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+1 1 1 0 0 0 0 0 1 4 0 0 0 0 0 0 0 0
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndBlackFeatherShadowOfRage
