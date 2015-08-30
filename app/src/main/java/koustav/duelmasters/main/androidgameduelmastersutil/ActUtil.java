@@ -27,6 +27,17 @@ public class ActUtil {
         if (gridPosition.getZone() >= 0 && gridPosition.getZone() <= 5) {
             int z = gridPosition.getZone();
             int d = instruction.getActionDestination();
+            if (z == 0 && d ==4) {
+                ArrayList<InstructionSet> DstInst = ((InactiveCard)card).getCrossInstructionForTheInstructionID(InstructionID.DestroyDst);
+                if (DstInst != null || GetUtil.MaskDestroyDstVal((InactiveCard)card) > 0) {
+                    if (GetUtil.MaskDestroyDstVal((InactiveCard) card) > 0) {
+                        d = GetUtil.MaskDestroyDstVal((InactiveCard) card) -1;
+                    } else {
+                        InstructionSet tmpInst = DstInst.get(0);
+                        d = tmpInst.getActionDestination();
+                    }
+                }
+            }
             if (d > 5)
                 throw new IllegalArgumentException("Invalid destination to transfer card (1)");
             world.getEventLog().registerEvent(card, true, d, null, false, 0);
@@ -80,6 +91,17 @@ public class ActUtil {
         } else if (gridPosition.getZone() >= 7 && gridPosition.getZone() <=12) {
             int z = gridPosition.getZone();
             int d = instruction.getActionDestination();
+            if (z == 7 && d == 4) {
+                ArrayList<InstructionSet> DstInst = ((InactiveCard)card).getCrossInstructionForTheInstructionID(InstructionID.DestroyDst);
+                if (DstInst != null || GetUtil.MaskDestroyDstVal((InactiveCard)card) > 0) {
+                    if (GetUtil.MaskDestroyDstVal((InactiveCard) card) > 0) {
+                        d = GetUtil.MaskDestroyDstVal((InactiveCard) card) -1;
+                    } else {
+                        InstructionSet tmpInst = DstInst.get(0);
+                        d = tmpInst.getActionDestination();
+                    }
+                }
+            }
             if (d > 5)
                 throw new IllegalArgumentException("Invalid destination to transfer card (2)");
             world.getEventLog().registerEvent(card, true, d, null, false, 0);

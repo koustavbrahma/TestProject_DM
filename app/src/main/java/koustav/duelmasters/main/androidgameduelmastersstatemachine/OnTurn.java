@@ -551,85 +551,27 @@ public class OnTurn {
         }
 
         if (AttackResult == 1) {
-            if (GetUtil.MaskDestroyDstVal(AttackedCard) > 0) {
-                String DestroyDstInst = InstSetUtil.GenerateSelfChangeZoneInstruction(GetUtil.MaskDestroyDstVal(AttackedCard) -1);
-                InstructionSet instruction = new InstructionSet(DestroyDstInst);
-                world.getInstructionHandler().setCardAndInstruction(AttackedCard, instruction);
-                world.getInstructionHandler().execute();
-            } else {
-                ArrayList<InstructionSet> instructionCollection= AttackedCard.getCrossInstructionForTheInstructionID(InstructionID.DestroyDst);
-                if (instructionCollection != null) {
-                    InstructionSet instruction = instructionCollection.get(0);
-                    world.getInstructionHandler().setCardAndInstruction(AttackedCard, instruction);
-                    world.getInstructionHandler().execute();
-                } else {
-                    String DestroyDstInst = InstSetUtil.GenerateSelfChangeZoneInstruction(4);
-                    InstructionSet instruction2 = new InstructionSet(DestroyDstInst);
-                    world.getInstructionHandler().setCardAndInstruction(AttackedCard, instruction2);
-                    world.getInstructionHandler().execute();
-                }
-            }
+            String DestroyDstInst = InstSetUtil.GenerateSelfChangeZoneInstruction(4);
+            InstructionSet instruction2 = new InstructionSet(DestroyDstInst);
+            world.getInstructionHandler().setCardAndInstruction(AttackedCard, instruction2);
+            world.getInstructionHandler().execute();
         }
 
         if (AttackResult == 0) {
-            if (GetUtil.MaskDestroyDstVal(AttackedCard) > 0) {
-                String DestroyDstInst = InstSetUtil.GenerateSelfChangeZoneInstruction(GetUtil.MaskDestroyDstVal(AttackedCard) -1);
-                InstructionSet instruction = new InstructionSet(DestroyDstInst);
-                world.getInstructionHandler().setCardAndInstruction(AttackedCard, instruction);
-                world.getInstructionHandler().execute();
-            } else {
-                ArrayList<InstructionSet> instructionCollection= AttackedCard.getCrossInstructionForTheInstructionID(InstructionID.DestroyDst);
-                if (instructionCollection != null) {
-                    InstructionSet instruction = instructionCollection.get(0);
-                    world.getInstructionHandler().setCardAndInstruction(AttackedCard, instruction);
-                    world.getInstructionHandler().execute();
-                } else {
-                    String DestroyDstInst = InstSetUtil.GenerateSelfChangeZoneInstruction(4);
-                    InstructionSet instruction2 = new InstructionSet(DestroyDstInst);
-                    world.getInstructionHandler().setCardAndInstruction(AttackedCard, instruction2);
-                    world.getInstructionHandler().execute();
-                }
-            }
+            String DestroyDstInst = InstSetUtil.GenerateSelfChangeZoneInstruction(4);
+            InstructionSet instruction2 = new InstructionSet(DestroyDstInst);
+            world.getInstructionHandler().setCardAndInstruction(AttackedCard, instruction2);
+            world.getInstructionHandler().execute();
 
-            if (GetUtil.MaskDestroyDstVal(AttackingCard) > 0) {
-                String DestroyDstInst = InstSetUtil.GenerateSelfChangeZoneInstruction(GetUtil.MaskDestroyDstVal(AttackingCard) -1);
-                InstructionSet instruction = new InstructionSet(DestroyDstInst);
-                world.getInstructionHandler().setCardAndInstruction(AttackingCard, instruction);
-                world.getInstructionHandler().execute();
-            } else {
-                ArrayList<InstructionSet> instructionCollection= AttackedCard.getCrossInstructionForTheInstructionID(InstructionID.DestroyDst);
-                if (instructionCollection != null) {
-                    InstructionSet instruction = instructionCollection.get(0);
-                    world.getInstructionHandler().setCardAndInstruction(AttackingCard, instruction);
-                    world.getInstructionHandler().execute();
-                } else {
-                    String DestroyDstInst = InstSetUtil.GenerateSelfChangeZoneInstruction(4);
-                    InstructionSet instruction2 = new InstructionSet(DestroyDstInst);
-                    world.getInstructionHandler().setCardAndInstruction(AttackingCard, instruction2);
-                    world.getInstructionHandler().execute();
-                }
-            }
+            world.getInstructionHandler().setCardAndInstruction(AttackingCard, instruction2);
+            world.getInstructionHandler().execute();
         }
 
         if (AttackResult == -1) {
-            if (GetUtil.MaskDestroyDstVal(AttackingCard) > 0) {
-                String DestroyDstInst = InstSetUtil.GenerateSelfChangeZoneInstruction(GetUtil.MaskDestroyDstVal(AttackingCard) -1);
-                InstructionSet instruction = new InstructionSet(DestroyDstInst);
-                world.getInstructionHandler().setCardAndInstruction(AttackingCard, instruction);
-                world.getInstructionHandler().execute();
-            } else {
-                ArrayList<InstructionSet> instructionCollection= AttackedCard.getCrossInstructionForTheInstructionID(InstructionID.DestroyDst);
-                if (instructionCollection != null) {
-                    InstructionSet instruction = instructionCollection.get(0);
-                    world.getInstructionHandler().setCardAndInstruction(AttackingCard, instruction);
-                    world.getInstructionHandler().execute();
-                } else {
-                    String DestroyDstInst = InstSetUtil.GenerateSelfChangeZoneInstruction(4);
-                    InstructionSet instruction2 = new InstructionSet(DestroyDstInst);
-                    world.getInstructionHandler().setCardAndInstruction(AttackingCard, instruction2);
-                    world.getInstructionHandler().execute();
-                }
-            }
+            String DestroyDstInst = InstSetUtil.GenerateSelfChangeZoneInstruction(4);
+            InstructionSet instruction2 = new InstructionSet(DestroyDstInst);
+            world.getInstructionHandler().setCardAndInstruction(AttackingCard, instruction2);
+            world.getInstructionHandler().execute();
         }
 
         ArrayList<InstructionSet> CleanUpInst = world.getEventLog().getHoldCleanUp();

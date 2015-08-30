@@ -6,6 +6,7 @@ import koustav.duelmasters.main.androidgameduelmasterscardrulehandler.Instructio
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.InactiveCard;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.World;
 import koustav.duelmasters.main.androidgameduelmastersnetworkmodule.DirectiveHeader;
+import koustav.duelmasters.main.androidgameduelmastersutil.ActUtil;
 import koustav.duelmasters.main.androidgameduelmastersutil.InstSetUtil;
 import koustav.duelmasters.main.androidgameduelmastersutil.NetworkUtil;
 import koustav.duelmasters.main.androidgameduelmastersutil.SetUnsetUtil;
@@ -77,6 +78,15 @@ public class InstructionIteratorHandler {
 
     private void  InstructionExecutor(){
         if (world.getInstructionHandler().execute()) {
+            ArrayList<String> events = world.getEventLog().getEventsToExecute();
+            if (events != null) {
+                if (world.getEventLog().getRecording() == false)
+                    throw new IllegalArgumentException("I am not expecting this to be false here");
+                world.getEventLog().setRecording(false);
+                for (int i = 0; i < events.size(); i++) {
+                    ActUtil.ApplyEventsInt(events.get(i), world);
+                }
+            }
             ArrayList<InstructionSet> CleanUpInst = world.getEventLog().getHoldCleanUp();
             if (CleanUpInst != null) {
                 for (int i = 0; i < CleanUpInst.size(); i++) {

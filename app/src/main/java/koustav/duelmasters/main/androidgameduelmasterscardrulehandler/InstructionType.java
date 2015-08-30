@@ -22,4 +22,5 @@ public enum InstructionType {
     SelfCleanUpMultiplier,
     ChooseRandom,
     PassControlToOpponent,
+    MayChooseFromBegin,
 }

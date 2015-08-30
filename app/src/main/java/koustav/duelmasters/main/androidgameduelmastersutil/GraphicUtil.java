@@ -370,7 +370,7 @@ public class GraphicUtil {
         int w = world.getframeBufferWidht()/8;
         ArrayList<Cards> CollectedCardList = world.getMaze().getZoneList().get(6).getZoneArray();
         if (world.getWorldFlag(WorldFlags.MaySkipCardSelectingMode)) {
-            g.drawPixmap(Assets.Button, w * 6, 0);
+            g.drawPixmap(Assets.Button, w * 4, 0);
         }
         if (world.getWorldFlag(WorldFlags.AcceptCardSelectingMode)) {
             g.drawPixmap(Assets.Button, w * 2, 0);

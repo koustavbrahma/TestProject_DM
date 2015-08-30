@@ -14,12 +14,14 @@ public class EventLog {
     ArrayList<String> events;
     ArrayList<String> HoldMsg;
     ArrayList<InstructionSet> HoldCleanUp;
+    ArrayList<String> EventsToExecute;
     boolean recording;
 
     public EventLog() {
         events = new ArrayList<String>();
         HoldMsg = new ArrayList<String>();
         HoldCleanUp = new ArrayList<InstructionSet>();
+        EventsToExecute = new ArrayList<String>();
         recording = false;
     }
 
@@ -98,5 +100,23 @@ public class EventLog {
         }
         HoldCleanUp.clear();
         return holdCleanUP;
+    }
+
+    public void AddEventsToExecute(String [] events){
+        for (int i = 0; i < events.length; i++) {
+            EventsToExecute.add(events[i]);
+        }
+    }
+
+    public ArrayList<String> getEventsToExecute() {
+        ArrayList<String> events = null;
+        if (EventsToExecute.size() != 0) {
+            events = new ArrayList<String>();
+            for (int i =0; i < EventsToExecute.size(); i++) {
+                events.add(EventsToExecute.get(i));
+            }
+        }
+        EventsToExecute.clear();
+        return events;
     }
 }

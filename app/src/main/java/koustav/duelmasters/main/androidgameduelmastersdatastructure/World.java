@@ -137,7 +137,7 @@ public class World {
                 Cards card = new Cards(new PackedCardInfo(), gridPosition);
                 String CardTitle = "Begin";
                 CardTitle = CardTitle.concat(CardName);
-                InputStream CardLibList = game.getFileIO().readAsset("CardLib.txt");
+                InputStream CardLibList = game.getFileIO().readAsset("BaseSet");
                 BufferedReader bufferedReaderCardLibList = new BufferedReader(new InputStreamReader(CardLibList));
                 String CardPackedInfo;
                 while (!CardTitle.equals(CardPackedInfo = bufferedReaderCardLibList.readLine()) && CardPackedInfo != null);
@@ -192,7 +192,7 @@ public class World {
                 Cards card = new Cards(new PackedCardInfo(), gridPosition);
                 String CardTitle = "Begin";
                 CardTitle = CardTitle.concat(CardName);
-                InputStream CardLibList = game.getFileIO().readAsset("CardLib.txt");
+                InputStream CardLibList = game.getFileIO().readAsset("BaseSet");
                 BufferedReader bufferedReaderCardLibList = new BufferedReader(new InputStreamReader(CardLibList));
                 String CardPackedInfo;
                 while (!CardTitle.equals(CardPackedInfo = bufferedReaderCardLibList.readLine()) && CardPackedInfo != null);

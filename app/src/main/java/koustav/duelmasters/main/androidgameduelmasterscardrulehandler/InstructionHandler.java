@@ -71,10 +71,11 @@ public class InstructionHandler {
         }
 
         if (instruction.getInstructionType() == InstructionType.ChooseFromBegin) {
-            collectCards();
-            ChooseFirstNCard();
-            PerformActionOnFilterCard();
-            status = true;
+            status = ChooseFirstNCard(false);
+        }
+
+        if (instruction.getInstructionType() == InstructionType.MayChooseFromBegin) {
+            status = ChooseFirstNCard(true);
         }
 
         if (instruction.getInstructionType() == InstructionType.ChooseRandom) {
@@ -501,8 +502,49 @@ public class InstructionHandler {
 /*
  This API is used to select first N card.
  */
-    private void ChooseFirstNCard() {
-        CheckActionZoneConsistencyForChoose();
+    private boolean ChooseFirstNCard(boolean CanSkip) {
+        boolean status = false;
+        if (State == InstructionState.S1) {
+            collectCards();
+            CheckActionZoneConsistencyForChoose();
+            State = InstructionState.S2;
+            world.setWorldFlag(WorldFlags.CardSelectingMode);
+            world.setWorldFlag(WorldFlags.AcceptCardSelectingMode);
+            if (CanSkip)
+                world.setWorldFlag(WorldFlags.MaySkipCardSelectingMode);
+        }
+
+        if (State == InstructionState.S2) {
+            SelectingFirstNCard(CanSkip);
+        }
+
+        if (State == InstructionState.S3) {
+            if (PerformActionOnFilterCard()) {
+                State = InstructionState.S1;
+                status = true;
+            }
+        }
+
+        return status;
+    }
+/*
+ Selecting first N card
+ */
+    private void SelectingFirstNCard(boolean CanSkip) {
+        if (CanSkip) {
+            if (UIUtil.TouchedAcceptButton(world)) {
+
+            } else if (UIUtil.TouchedDeclineButton(world)) {
+                CollectCardList.clear();
+                State = InstructionState.S3;
+                world.clearWorldFlag(WorldFlags.CardSelectingMode);
+                world.clearWorldFlag(WorldFlags.MaySkipCardSelectingMode);
+                world.clearWorldFlag(WorldFlags.AcceptCardSelectingMode);
+                return;
+            } else {
+                return;
+            }
+        }
         int filtercount;
         if(instruction.getCount() !=0) {
             filtercount = instruction.getCount();
@@ -515,6 +557,10 @@ public class InstructionHandler {
                 CollectCardList.remove(i);
             }
         }
+        State = InstructionState.S3;
+        world.clearWorldFlag(WorldFlags.CardSelectingMode);
+        world.clearWorldFlag(WorldFlags.MaySkipCardSelectingMode);
+        world.clearWorldFlag(WorldFlags.AcceptCardSelectingMode);
     }
 /*
  This API is used to select N card in random.
@@ -644,9 +690,6 @@ public class InstructionHandler {
             String instructionStr = ((ActiveCard)CurrentCard).cardInfo().PrimaryInstruction.get(instruction.getAttrCountOrIndex() - 1);
             NetworkUtil.sendDirectiveUpdates(world,DirectiveHeader.PassControl, instructionStr, null);
             State = InstructionState.S2;
-            if (world.getEventLog().getRecording() == false)
-                throw new IllegalArgumentException("I am expecting this to be true at this point");
-            world.getEventLog().setRecording(false);
         }
 
         if (State == InstructionState.S2) {
@@ -667,20 +710,11 @@ public class InstructionHandler {
 
             if (splitdirective[0].equals(DirectiveHeader.ApplyEvents) && splitdirective.length > 2) {
                 String[] eventString = splitdirective[1].split("#");
-                InactiveCard card = CurrentCard;
-                InstructionSet PresentInstruction = instruction;
-
-                for (int i =0; i < eventString.length; i++) {
-                    ActUtil.ApplyEventsInt(eventString[i], world);
-                }
-
-                CurrentCard = card;
-                instruction = PresentInstruction;
+                world.getEventLog().AddEventsToExecute(eventString);
             }
         }
 
         if (State == InstructionState.S3) {
-            world.getEventLog().setRecording(true);
             State = InstructionState.S1;
             status = true;
         }

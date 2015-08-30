@@ -89,6 +89,9 @@ public class InstructionSet {
                 case "18":
                     type = InstructionType.PassControlToOpponent;
                     break;
+                case "19":
+                    type = InstructionType.MayChooseFromBegin;
+                    break;
                 default:
                     throw new IllegalArgumentException("Invalid instruction type");
             }
