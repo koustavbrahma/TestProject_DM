@@ -322,8 +322,10 @@ public class GraphicUtil {
         }
         Graphics g = world.getGame().getGraphics();
         int w = world.getframeBufferWidht()/8;
-        g.drawPixmap(Assets.Button, w *4, 0);
-        if (!world.getWorldFlag(WorldFlags.ShieldSelectMode)) {
+        if (!world.getWorldFlag(WorldFlags.BlockerSelectMode)) {
+            g.drawPixmap(Assets.Button, w * 4, 0);
+        }
+        if (!world.getWorldFlag(WorldFlags.ShieldSelectMode) && !world.getWorldFlag(WorldFlags.BlockerSelectMode)) {
             g.drawPixmap(Assets.Button, w * 6, 0);
         }
         InactiveCard Icard = (InactiveCard) world.getFetchCard();
@@ -403,7 +405,7 @@ public class GraphicUtil {
         Graphics g = world.getGame().getGraphics();
         int w = world.getframeBufferWidht()/8;
         ArrayList<Cards> CollectedCardList = world.getMaze().getZoneList().get(6).getZoneArray();
-        g.drawPixmap(Assets.Button, w * 6, 0);
+        g.drawPixmap(Assets.Button, w * 4, 0);
 
         if (CollectedCardList.size() == 1) {
             g.drawPixmap(Assets.Button, w * 2, 0);

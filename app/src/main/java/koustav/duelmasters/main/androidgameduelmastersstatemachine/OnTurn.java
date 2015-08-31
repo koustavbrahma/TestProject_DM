@@ -337,7 +337,7 @@ public class OnTurn {
             ArrayList<Cards> CollectedCardList = world.getMaze().getZoneList().get(6).getZoneArray();
             int zone = world.getFetchCard().GridPosition().getZone() + 7;
             if (CollectedCardList.size() !=1) {
-                String msg = zone + " " + world.getFetchCard().GridPosition().getZone() + " " +
+                String msg = zone + " " + world.getFetchCard().GridPosition().getGridIndex() + " " +
                         world.getFetchCard().getNameID();
                 NetworkUtil.sendDirectiveUpdates(world, DirectiveHeader.RequestBlocker, msg, null);
             } else {

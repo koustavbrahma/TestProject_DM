@@ -1,6 +1,7 @@
 package koustav.duelmasters.main.androidgameduelmastersutil;
 
 import koustav.duelmasters.main.androidgameduelmasterscardrulehandler.InstructionSet;
+import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.InactiveCard;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.TypeOfCard;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.World;
@@ -29,7 +30,7 @@ public class GetUtil {
         return (card.getPower() + card.getflagAttributes().GetAttribute("Power"));
     }
 
-    public static boolean RequiredCivilization(InactiveCard card, int val) {
+    public static boolean RequiredCivilization(Cards card, int val) {
         if ( val >= 0 && val < 32)
             if ((card.getCivilization() & val) > 0)
                 return true;
@@ -466,6 +467,9 @@ public class GetUtil {
 
     public static int AttackEvaluation(InactiveCard AttackingCard, InactiveCard AttackedCard) {
         int powerCompare = GetUtil.ComparePower(AttackingCard, AttackedCard);
+        /*
+        1 destroy Attacked card 0 means both -1 means attacking card 2 means nothing happened after battle
+         */
 
         if (powerCompare == 1) {
             if (GetUtil.GoingToSlay(AttackedCard,AttackingCard) || GetUtil.DestroyAfterBattle(AttackingCard)) {

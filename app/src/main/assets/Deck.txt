@@ -1,5 +1,9 @@
+CandyDrop
+BurningPower
+BronzeArmTribe
+BrawlerZyler
+BrainSerum
+BolshackDragon
 BlackFeatherShadowOfRage
 AuraBlast
-ArtisanPicora
-ArmoredWalkerUrherion
 AquaHulcus

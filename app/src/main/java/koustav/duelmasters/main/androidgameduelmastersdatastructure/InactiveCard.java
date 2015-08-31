@@ -42,6 +42,7 @@ public class InactiveCard extends Cards {
         return nameID;
     }
 
+    @Override
     public int getCivilization() {
         return civilization;
     }

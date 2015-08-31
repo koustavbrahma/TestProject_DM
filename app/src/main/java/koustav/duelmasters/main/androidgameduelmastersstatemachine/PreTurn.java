@@ -42,6 +42,7 @@ public class PreTurn {
     InstructionSet CollectInst;
     InstructionSet ActiveTurboRushCleanup;
     InstructionSet UsedTurboRushSetAttrCleanup;
+    InstructionSet NewSummonedCreatureCleanUp;
     int Counter;
     Boolean SummonTapped;
 
@@ -63,6 +64,8 @@ public class PreTurn {
         ActiveTurboRushCleanup = new InstructionSet(instruction5);
         String instruction6 = InstSetUtil.GenerateAttributeCleanUpInstruction(2, "UsedTurboRushSetAttr", 1);
         UsedTurboRushSetAttrCleanup = new InstructionSet(instruction6);
+        String instruction7 = InstSetUtil.GenerateAttributeCleanUpInstruction(2, "NewSummonedCreature", 1);
+        NewSummonedCreatureCleanUp = new InstructionSet(instruction7);
         Counter = 0;
         SummonTapped = false;
     }

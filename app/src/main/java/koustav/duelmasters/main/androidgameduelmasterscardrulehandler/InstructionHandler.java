@@ -793,7 +793,8 @@ public class InstructionHandler {
             return;
         }
 
-        if (!(instruction.getCondition().getConditionType() == ConditionType.NameId) && (index == 4 || index == 5))
+        if (!(instruction.getCondition().getConditionType() == ConditionType.NameId ||
+                instruction.getCondition().getConditionType() == ConditionType.Civilization) && (index == 4 || index == 5))
             throw new IllegalArgumentException("deck and graveyard cannot be collected based on condition (1)");
 
         if (instruction.getConditionCount() != 0) {
@@ -818,7 +819,8 @@ public class InstructionHandler {
             return;
         }
 
-        if (!(instruction.getCondition().getConditionType() == ConditionType.NameId) && (index == 4 || index == 5))
+        if (!(instruction.getCondition().getConditionType() == ConditionType.NameId ||
+                instruction.getCondition().getConditionType() == ConditionType.Civilization) && (index == 4 || index == 5))
             throw new IllegalArgumentException("deck and graveyard cannot be collected based on condition (2)");
 
         if (instruction.getConditionCount() != 0) {
@@ -830,9 +832,9 @@ public class InstructionHandler {
  */
     private void collectCardsBasedOnCondition(Zone zone) {
         if (instruction.getCondition().getConditionType() == ConditionType.Civilization) {
-            InactiveCard card;
+            Cards card;
             for (int i =0; i < zone.zoneSize(); i++) {
-                card = (InactiveCard)zone.getZoneArray().get(i);
+                card = zone.getZoneArray().get(i);
                 if (GetUtil.RequiredCivilization(card,
                         Integer.parseInt(instruction.getCondition().getValue()))) {
                     CollectCardList.add(card);

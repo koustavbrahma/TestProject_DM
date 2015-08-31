@@ -61,7 +61,7 @@ EndAquaHulcus2
 BeginDummy1
 BeginSlotAttributes
 Dummy1
-4
+2
 Human
 3
 1
@@ -92,7 +92,7 @@ EndDummy1
 BeginDummy2
 BeginSlotAttributes
 Dummy2
-16
+4
 LiquidPeople
 3
 1

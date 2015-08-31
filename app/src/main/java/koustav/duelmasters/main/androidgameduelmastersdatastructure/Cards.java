@@ -21,6 +21,9 @@ public class Cards {
     public String getNameID() {
         return new String(cardinfo.SlotAttributes.get(0));
     }
+    public int getCivilization() {
+        return Integer.parseInt(cardinfo.SlotAttributes.get(1));
+    }
     public PackedCardInfo ExtractCardInfo() {
         PackedCardInfo A;
         A = cardinfo;
