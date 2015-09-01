@@ -170,6 +170,9 @@ Description: Cant be untapped.
 FlagAttribute name: Tapped  (C) +
 Description: Whether the creature is tapped or not.
 ****************************************************************************************************
+FlagAttribute name: DummyTapped (C) +
+Description: With this attribute creatures can attack it as though it were tapped.
+****************************************************************************************************
 FlagAttribute name: NotYetSpread     (C)  +
 Description: This card has not gone spreading once. This attribute is present for a new summoned card.
              After first spreading, remove this attribute.
@@ -274,3 +277,9 @@ Description: When ever this creature is blocked break one shield in random. 1 yo
 ****************************************************************************************************
 FlagAttribute name: UntapAtEndOfTheTurn  (C) +
 Description: At the end of the turn untap the creature.
+****************************************************************************************************
+FlagAttribute name: UsedBlockedSetAttrAbility (C) +
+Description: tells that BlockedSetAttrAbility is used for this turn.
+****************************************************************************************************
+FlagAttribute name: SlayerWhenBlocked  (C)  +
+Description: This creature is Slayer only when it is blocked.

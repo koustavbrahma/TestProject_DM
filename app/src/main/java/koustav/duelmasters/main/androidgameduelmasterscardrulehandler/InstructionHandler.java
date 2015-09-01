@@ -928,7 +928,7 @@ public class InstructionHandler {
                     if(instruction.getCondition().getLowerPower() <= GetUtil.getTotalPower(card))
                         CollectCardList.add(card);
                 } else  {
-                    if(instruction.getCondition().getLowerPower() <= GetUtil.getTotalPower(card) ||
+                    if(instruction.getCondition().getLowerPower() <= GetUtil.getTotalPower(card) &&
                             instruction.getCondition().getUpperPower() >= GetUtil.getTotalPower(card))
                         CollectCardList.add(card);
                 }
@@ -1124,7 +1124,7 @@ public class InstructionHandler {
                 for (int i = 0; i < CollectCardList.size(); i++) {
                     String msgT;
                     int zone = CollectCardList.get(i).GridPosition().getZone();
-                    if ((zone == 0 || zone == 3) || (zone == 7 && zone == 10)) {
+                    if ((zone == 0 || zone == 3) || (zone == 7 || zone == 10)) {
                         InactiveCard card = (InactiveCard) CollectCardList.get(i);
                         InstructionSet Cinstruction = new InstructionSet(Sinstruction);
                         if (zone == 0 || zone == 3) {
@@ -1166,7 +1166,7 @@ public class InstructionHandler {
                 for (int i = 0; i < CollectCardList.size(); i++) {
                     String msgT;
                     int zone = CollectCardList.get(i).GridPosition().getZone();
-                    if ((zone >= 0 && zone <= 3) || (zone >= 7 && zone <= 10)) {
+                    if ((zone == 0 || zone == 3) || (zone == 7 || zone == 10)) {
                         InactiveCard card = (InactiveCard) CollectCardList.get(i);
                         InstructionSet Cinstruction = new InstructionSet(Sinstruction);
                         if (zone >= 0 && zone <= 3) {

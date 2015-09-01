@@ -16,4 +16,5 @@ public class InstructionID {
     public static String FlagSpreading = "FlagSpreading";
     public static String SilentSkill = "SilentSkill";
     public static String TapAbility = "TapAbility";
+    public static String BlockedSetAttrAbility = "BlockedSetAttrAbility";
 }

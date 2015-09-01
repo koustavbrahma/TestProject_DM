@@ -80,6 +80,13 @@ public class GetUtil {
             return false;
     }
 
+    public static boolean IsDummyTapped(InactiveCard card) {
+        if ((card.getflagAttributes().GetAttribute("DummyTapped")) > 0)
+            return true;
+        else
+            return false;
+    }
+
     public static boolean CantAttack(InactiveCard card) {
         if (card.getflagAttributes().GetAttribute("CantAttack") > 0)
             return true;
@@ -230,7 +237,7 @@ public class GetUtil {
         if(CantBeAttacked(attacking, attacked))
             return false;
 
-        if (IsTapped(attacked)){
+        if (IsTapped(attacked) || IsDummyTapped(attacked)){
             attr = "AttackTappedCardCivilization" + attacked.getCivilization();
             if(attacking.getflagAttributes().GetAttribute("ChangeableAttackTappedCard") > 0)
                 return true;
@@ -384,6 +391,20 @@ public class GetUtil {
             return false;
     }
 
+    public static boolean IsUsedBlockedSetAttrAbility(InactiveCard card) {
+        if (card.getflagAttributes().GetAttribute("UsedBlockedSetAttrAbility") > 0)
+            return true;
+        else
+            return false;
+    }
+
+    public static boolean IsSlayerWhenBlocked(InactiveCard card) {
+        if (card.getflagAttributes().GetAttribute("SlayerWhenBlocked") > 0)
+            return true;
+        else
+            return false;
+    }
+
     public static int getTotalManaCost(InactiveCard card) {
         return (card.getCost() + ManaCost(card) - NManaCost(card));
     }
@@ -465,7 +486,7 @@ public class GetUtil {
         return status;
     }
 
-    public static int AttackEvaluation(InactiveCard AttackingCard, InactiveCard AttackedCard) {
+    public static int AttackEvaluation(InactiveCard AttackingCard, InactiveCard AttackedCard, boolean IsBlocked) {
         int powerCompare = GetUtil.ComparePower(AttackingCard, AttackedCard);
         /*
         1 destroy Attacked card 0 means both -1 means attacking card 2 means nothing happened after battle
@@ -480,7 +501,8 @@ public class GetUtil {
         } else if (powerCompare == 0) {
             return 0;
         } else {
-            if (GetUtil.GoingToSlay(AttackingCard,AttackedCard) || GetUtil.DestroyAfterBattle(AttackedCard)) {
+            if (GetUtil.GoingToSlay(AttackingCard,AttackedCard) || GetUtil.DestroyAfterBattle(AttackedCard) ||
+                    (IsBlocked && GetUtil.IsSlayerWhenBlocked(AttackingCard))) {
                 return 0;
             }else {
                 return -1;
@@ -503,13 +525,13 @@ public class GetUtil {
         return status;
     }
 
-    public static boolean OpponentHasABlocker(World world, InactiveCard Attacker) {
+    public static boolean OpponentHasABlocker(World world, InactiveCard Attacker, InactiveCard Attacked) {
         InactiveCard card;
         boolean status = false;
         Zone zone = world.getMaze().getZoneList().get(7);
         for (int i = 0; i < zone.zoneSize(); i++) {
             card = (InactiveCard) zone.getZoneArray().get(i);
-            if (GetUtil.IsBlocker(card, Attacker)) {
+            if (GetUtil.IsBlocker(card, Attacker) && (Attacked == null || Attacked != card)) {
                 status = true;
                 break;
             }

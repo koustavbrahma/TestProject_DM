@@ -146,7 +146,7 @@ EndDummy3
 BeginDummy4
 BeginSlotAttributes
 Dummy4
-1
+8
 LiquidPeople
 3
 1
@@ -173,7 +173,7 @@ EndDummy4
 BeginDummy5
 BeginSlotAttributes
 Dummy5
-1
+16
 LiquidPeople
 3
 1

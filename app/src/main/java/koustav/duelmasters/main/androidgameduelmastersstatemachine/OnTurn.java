@@ -329,12 +329,13 @@ public class OnTurn {
         if (count >1)
             throw new IllegalArgumentException("More than one mode is on");
 
-        if (GetUtil.OpponentHasABlocker(world, (InactiveCard) world.getFetchCard())) {
-            String CollectAttackMarkedCard = InstSetUtil.GenerateCopyCardToTempZoneBasedOnAttribute("MarkedCard", 2);
-            InstructionSet CollectInst = new InstructionSet(CollectAttackMarkedCard);
-            world.getInstructionHandler().setCardAndInstruction((InactiveCard) world.getFetchCard(), CollectInst);
-            world.getInstructionHandler().execute();
-            ArrayList<Cards> CollectedCardList = world.getMaze().getZoneList().get(6).getZoneArray();
+        String CollectAttackMarkedCard = InstSetUtil.GenerateCopyCardToTempZoneBasedOnAttribute("MarkedCard", 2);
+        InstructionSet CollectInst = new InstructionSet(CollectAttackMarkedCard);
+        world.getInstructionHandler().setCardAndInstruction((InactiveCard) world.getFetchCard(), CollectInst);
+        world.getInstructionHandler().execute();
+        ArrayList<Cards> CollectedCardList = world.getMaze().getZoneList().get(6).getZoneArray();
+        InactiveCard Attacked = (CollectedCardList.size() > 0) ? (InactiveCard) CollectedCardList.get(0) : null;
+        if (GetUtil.OpponentHasABlocker(world, (InactiveCard) world.getFetchCard(), Attacked)) {
             int zone = world.getFetchCard().GridPosition().getZone() + 7;
             if (CollectedCardList.size() !=1) {
                 String msg = zone + " " + world.getFetchCard().GridPosition().getGridIndex() + " " +
@@ -487,6 +488,7 @@ public class OnTurn {
  S13
  */
     private boolean CreatureBattleUpdate() {
+        boolean WasBlocked = world.getWorldFlag(WorldFlags.WasBlocked);
         ActiveCard AttackingCard = (ActiveCard) world.getFetchCard();
         String CollectAttackMarkedCard = InstSetUtil.GenerateCopyCardToTempZoneBasedOnAttribute("MarkedCard", 2);
         InstructionSet CollectInst = new InstructionSet(CollectAttackMarkedCard);
@@ -542,9 +544,26 @@ public class OnTurn {
                 }
                 CollectedCardList.clear();
             }
+
+            Zone Tzone = world.getMaze().getZoneList().get(0);
+
+            for (int i = 0; i < Tzone.zoneSize(); i++) {
+                ActiveCard card = (ActiveCard) Tzone.getZoneArray().get(i);
+                if (!GetUtil.IsUsedBlockedSetAttrAbility(card)) {
+                    ArrayList<InstructionSet> instructions = card.getPrimaryInstructionForTheInstructionID(InstructionID.BlockedSetAttrAbility);
+                    if (instructions != null) {
+                        for (int j = 0; j < instructions.size(); j++) {
+                            world.getInstructionHandler().setCardAndInstruction(card, instructions.get(j));
+                            world.getInstructionHandler().execute();
+                        }
+                    }
+                    if (instructions != null)
+                        SetUnsetUtil.SetUsedBlockedSetAttrAbility(card);
+                }
+            }
         }
 
-        int AttackResult = GetUtil.AttackEvaluation(AttackingCard, AttackedCard);
+        int AttackResult = GetUtil.AttackEvaluation(AttackingCard, AttackedCard, WasBlocked);
         if (!GetUtil.IsTapped(AttackingCard)) {
             SetUnsetUtil.SetTappedAttr(AttackingCard);
             world.getEventLog().registerEvent(AttackingCard, false, 0 , "Tapped", true ,1);

@@ -166,6 +166,11 @@ public class SetUnsetUtil {
         card.getflagAttributes().SetAttribute("UsedTurboRushSetAttr", 1);
     }
 
+    public static void SetUsedBlockedSetAttrAbility(InactiveCard card) {
+        card.getflagAttributes().ClearAttribute("UsedBlockedSetAttrAbility");
+        card.getflagAttributes().SetAttribute("UsedBlockedSetAttrAbility", 1);
+    }
+
     public static void SetTurboRushSetAttr(World world) {
         Zone zone = world.getMaze().getZoneList().get(0);
 
@@ -173,9 +178,12 @@ public class SetUnsetUtil {
             ActiveCard card = (ActiveCard) zone.getZoneArray().get(i);
             if (GetUtil.IsActiveTurboRush(card) && !GetUtil.IsUsedTurboRushSetAttr(card)) {
                 ArrayList<InstructionSet> instructions = card.getPrimaryInstructionForTheInstructionID(InstructionID.TurboRushSetAttrAbility);
-                world.getInstructionIteratorHandler().setCard(card);
-                world.getInstructionIteratorHandler().setInstructions(instructions);
-                while (!world.getInstructionIteratorHandler().update()) ;
+                if (instructions != null) {
+                    for (int j = 0; j < instructions.size(); j++) {
+                        world.getInstructionHandler().setCardAndInstruction(card, instructions.get(j));
+                        world.getInstructionHandler().execute();
+                    }
+                }
                 if (instructions != null)
                     SetUnsetUtil.SetUsedTurboRushSetAttr(card);
             }

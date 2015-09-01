@@ -1,3 +1,7 @@
+CrimsonHammer
+CreepingPlague
+ChiliasTheOracle
+ChaosStrike
 CandyDrop
 BurningPower
 BronzeArmTribe
@@ -5,5 +9,3 @@ BrawlerZyler
 BrainSerum
 BolshackDragon
 BlackFeatherShadowOfRage
-AuraBlast
-AquaHulcus
