@@ -106,7 +106,7 @@ public class OnTurn {
  S1
  */
     private boolean IdealOnTurn() {
-        if (UIUtil.TouchedSkippedButton(world)) {
+        if (GetUtil.IsAllowedToEndTurn(world) && UIUtil.TouchedSkippedButton(world)) {
             if (!NetworkUtil.sendDirectiveUpdates(world, DirectiveHeader.EndOfTurn, null, null)) {
                 //handle the case when socket is closed
             }
@@ -135,12 +135,6 @@ public class OnTurn {
 
             if (zone == 0) {
                 if (!GetUtil.IsTapped(card)) {
-                    if (GetUtil.IsAllowedToAttack(card, world)) {
-                        this.S = OnTurnState.S3;
-                        world.getMaze().getZoneList().get(6).getZoneArray().clear();
-                        world.setWorldFlag(WorldFlags.AttackSelectMode);
-                    }
-                } else if (GetUtil.EachTurnIfAble(card)) {
                     if (GetUtil.IsAllowedToAttack(card, world)) {
                         this.S = OnTurnState.S3;
                         world.getMaze().getZoneList().get(6).getZoneArray().clear();

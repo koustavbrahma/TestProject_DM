@@ -25,6 +25,7 @@ public class InstructionHandler {
         S1,
         S2,
         S3,
+        S4,
     }
 
     InstructionState State;
@@ -53,6 +54,10 @@ public class InstructionHandler {
 
     public InactiveCard getCurrentCard() {
         return this.CurrentCard;
+    }
+
+    public ArrayList<Cards> getCollectCardList() {
+        return CollectCardList;
     }
 /*
  execute instruction API. Only public function through which all engines can be used.
@@ -178,14 +183,27 @@ public class InstructionHandler {
             collectCards();
             CheckActionZoneConsistencyForChoose();
             world.getMaze().getZoneList().get(6).getZoneArray().clear();
-            State = InstructionState.S2;
-            world.setWorldFlag(WorldFlags.CardSelectingMode);
-            if (CanSkip)
-                world.setWorldFlag(WorldFlags.MaySkipCardSelectingMode);
+            int zone = 0;
+            if (CollectCardList.size() > 0)
+                zone = CollectCardList.get(0).GridPosition().getZone();
+
+            if (zone == 4 || zone == 5 || zone == 11 || zone == 12) {
+                State = InstructionState.S4;
+                world.setWorldFlag(WorldFlags.CardSearchSelectingMode);
+            } else {
+                State = InstructionState.S2;
+                world.setWorldFlag(WorldFlags.CardSelectingMode);
+                if (CanSkip)
+                    world.setWorldFlag(WorldFlags.MaySkipCardSelectingMode);
+            }
         }
 
         if (State == InstructionState.S2) {
             UserSelectingCard(CanSkip);
+        }
+
+        if (State == InstructionState.S4) {
+            UserSearchAndSelectCard();
         }
 
         if (State == InstructionState.S3) {
@@ -249,6 +267,71 @@ public class InstructionHandler {
 
         if (!CollectCardList.contains(SelectedCard))
             return;
+
+        if (TempZone.contains(SelectedCard)) {
+            UIUtil.TrackSelectedCardsWhenUserIsChoosing(TempZone, CollectCardList, SelectedCard);
+            world.clearWorldFlag(WorldFlags.AcceptCardSelectingMode);
+            return;
+        }
+
+        if (!(TempZone.size() < filtercount))
+            return;
+
+        UIUtil.TrackSelectedCardsWhenUserIsChoosing(TempZone, CollectCardList, SelectedCard);
+        if (filtercount == TempZone.size())
+            world.setWorldFlag(WorldFlags.AcceptCardSelectingMode);
+    }
+/*
+    This API is used to search and select card in a stack like deck or graveyard
+     */
+    private void UserSearchAndSelectCard() {
+        int filtercount;
+        if(instruction.getCount() !=0) {
+            filtercount = instruction.getCount();
+        } else {
+            filtercount = instruction.getConditionCount();
+        }
+        filtercount = (CollectCardList.size() > filtercount) ? filtercount : CollectCardList.size();
+        if (filtercount == 0) {
+            this.State = InstructionState.S3;
+            world.clearWorldFlag(WorldFlags.CardSearchSelectingMode);
+            world.clearWorldFlag(WorldFlags.AcceptCardSelectingMode);
+            return;
+        }
+        Cards card;
+        int size = CollectCardList.size() - 1;
+        ArrayList<Cards> TempZone = world.getMaze().getZoneList().get(6).getZoneArray();
+
+        if (TempZone.size() == filtercount) {
+            if (UIUtil.TouchedInfoTabBackButton(world)) {
+                CollectCardList.clear();
+                for (int i =0; i< TempZone.size(); i++) {
+                    CollectCardList.add(TempZone.get(i));
+                }
+                TempZone.clear();
+                this.State = InstructionState.S3;
+                world.clearWorldFlag(WorldFlags.CardSearchSelectingMode);
+                world.clearWorldFlag(WorldFlags.AcceptCardSelectingMode);
+                return;
+            }
+        }
+
+        if (UIUtil.TouchedAcceptButton(world)) {
+            card = CollectCardList.remove(size);
+            CollectCardList.add(0 , card);
+        }
+
+        if (UIUtil.TouchedDeclineButton(world)) {
+            card = CollectCardList.remove(0);
+            CollectCardList.add(card);
+        }
+
+        Cards SelectedCard;
+        if (UIUtil.TouchedMaze(world)) {
+            SelectedCard = CollectCardList.get(0);
+        } else {
+            return;
+        }
 
         if (TempZone.contains(SelectedCard)) {
             UIUtil.TrackSelectedCardsWhenUserIsChoosing(TempZone, CollectCardList, SelectedCard);
@@ -1001,6 +1084,9 @@ public class InstructionHandler {
 
         if (count > 1)
             throw new IllegalArgumentException("Failed Action zone consistency test");
+
+        if (ActionZone[4] == 3 || ActionZone[5] == 3)
+            throw new IllegalArgumentException("Failed Action zone consistency test");
     }
 /*
  Checks consistency while shuffle.
@@ -1011,26 +1097,38 @@ public class InstructionHandler {
 
         if (ActionZone[0] != 0) {
            count++;
+            if (ActionZone[0] == 3)
+                count++;
         }
 
         if (ActionZone[1] != 0) {
             count++;
+            if (ActionZone[1] == 3)
+                count++;
         }
 
         if (ActionZone[2] != 0) {
             count++;
+            if (ActionZone[2] == 3)
+                count++;
         }
 
         if (ActionZone[3] != 0) {
             count++;
+            if (ActionZone[3] == 3)
+                count++;
         }
 
         if (ActionZone[4] != 0) {
             count++;
+            if (ActionZone[4] == 3)
+                count++;
         }
 
         if (ActionZone[5] != 0) {
             count++;
+            if (ActionZone[5] == 3)
+                count++;
         }
 
         if (ActionZone[6] != 0) {

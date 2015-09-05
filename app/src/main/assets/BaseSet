@@ -1,3 +1,4 @@
+#1
 BeginAquaHulcus
 BeginSlotAttributes
 AquaHulcus
@@ -26,7 +27,7 @@ EndCrossInstructionIndex
 BeginCrossInstruction
 EndCrossInstruction
 EndAquaHulcus
-#
+#2
 BeginAquaKnight
 BeginSlotAttributes
 AquaKnight
@@ -55,7 +56,7 @@ BeginCrossInstruction
 3 0 0 0 0 0 0 0 0 3 0 0 0 0 0 0 0 0
 EndCrossInstruction
 EndAquaKnight
-#
+#3
 BeginAquaSniper
 BeginSlotAttributes
 AquaSniper
@@ -84,7 +85,7 @@ EndCrossInstructionIndex
 BeginCrossInstruction
 EndCrossInstruction
 EndAquaSniper
-#
+#4
 BeginAquaSoldier
 BeginSlotAttributes
 AquaSoldier
@@ -113,7 +114,7 @@ BeginCrossInstruction
 3 0 0 0 0 0 0 0 0 3 0 0 0 0 0 0 0 0
 EndCrossInstruction
 EndAquaSoldier
-#
+#5
 BeginAquaVehicle
 BeginSlotAttributes
 AquaVehicle
@@ -140,7 +141,7 @@ EndCrossInstructionIndex
 BeginCrossInstruction
 EndCrossInstruction
 EndAquaVehicle
-#
+#6
 BeginArmoredWalkerUrherion
 BeginSlotAttributes
 ArmoredWalkerUrherion
@@ -169,7 +170,7 @@ BeginCrossInstruction
 5 1 0 1 12 Human 0 0 0 0 2 PowerAttacker 2000 0 0 0 0 0
 EndCrossInstruction
 EndArmoredWalkerUrherion
-#
+#7
 BeginArtisanPicora
 BeginSlotAttributes
 ArtisanPicora
@@ -198,7 +199,7 @@ EndCrossInstructionIndex
 BeginCrossInstruction
 EndCrossInstruction
 EndArtisanPicora
-#
+#8
 BeginAstrocometDragon
 BeginSlotAttributes
 AstrocometDragon
@@ -228,7 +229,7 @@ EndCrossInstructionIndex
 BeginCrossInstruction
 EndCrossInstruction
 EndAstrocometDragon
-#
+#9
 BeginAuraBlast
 BeginSlotAttributes
 AuraBlast
@@ -255,7 +256,7 @@ EndCrossInstructionIndex
 BeginCrossInstruction
 EndCrossInstruction
 EndAuraBlast
-#
+#10
 BeginBlackFeatherShadowOfRage
 BeginSlotAttributes
 BlackFeatherShadowOfRage
@@ -284,7 +285,7 @@ EndCrossInstructionIndex
 BeginCrossInstruction
 EndCrossInstruction
 EndBlackFeatherShadowOfRage
-#
+#11
 BeginBloodySquito
 BeginSlotAttributes
 BloodySquito
@@ -311,7 +312,7 @@ EndCrossInstructionIndex
 BeginCrossInstruction
 EndCrossInstruction
 EndBloodySquito
-#
+#12
 BeginBolshackDragon
 BeginSlotAttributes
 BolshackDragon
@@ -340,7 +341,7 @@ BeginCrossInstruction
 6 10000 0 1 1 2 0 0 0 0 0 PowerAttacker 1000 0 0 0 0 0
 EndCrossInstruction
 EndBolshackDragon
-#
+#13
 BeginBoneAssassinTheRipper
 BeginSlotAttributes
 BoneAssassinTheRipper
@@ -368,7 +369,7 @@ EndCrossInstructionIndex
 BeginCrossInstruction
 EndCrossInstruction
 EndBoneAssassinTheRipper
-#
+#14
 BeginBoneSpider
 BeginSlotAttributes
 BoneSpider
@@ -396,7 +397,7 @@ EndCrossInstructionIndex
 BeginCrossInstruction
 EndCrossInstruction
 EndBoneSpider
-#
+#15
 BeginBrainSerum
 BeginSlotAttributes
 BrainSerum
@@ -423,7 +424,7 @@ EndCrossInstructionIndex
 BeginCrossInstruction
 EndCrossInstruction
 EndBrainSerum
-#
+#16
 BeginBrawlerZyler
 BeginSlotAttributes
 BrawlerZyler
@@ -451,7 +452,7 @@ EndCrossInstructionIndex
 BeginCrossInstruction
 EndCrossInstruction
 EndBrawlerZyler
-#
+#17
 BeginBronzeArmTribe
 BeginSlotAttributes
 BronzeArmTribe
@@ -480,7 +481,7 @@ EndCrossInstructionIndex
 BeginCrossInstruction
 EndCrossInstruction
 EndBronzeArmTribe
-#
+#18
 BeginBurningMane
 BeginSlotAttributes
 BurningMane
@@ -507,7 +508,7 @@ EndCrossInstructionIndex
 BeginCrossInstruction
 EndCrossInstruction
 EndBurningMane
-#
+#19
 BeginBurningPower
 BeginSlotAttributes
 BurningPower
@@ -534,7 +535,7 @@ EndCrossInstructionIndex
 BeginCrossInstruction
 EndCrossInstruction
 EndBurningPower
-#
+#20
 BeginCandyDrop
 BeginSlotAttributes
 CandyDrop
@@ -562,7 +563,7 @@ EndCrossInstructionIndex
 BeginCrossInstruction
 EndCrossInstruction
 EndCandyDrop
-#
+#21
 BeginChaosStrike
 BeginSlotAttributes
 ChaosStrike
@@ -589,7 +590,7 @@ EndCrossInstructionIndex
 BeginCrossInstruction
 EndCrossInstruction
 EndChaosStrike
-#
+#22
 BeginChiliasTheOracle
 BeginSlotAttributes
 ChiliasTheOracle
@@ -618,7 +619,7 @@ BeginCrossInstruction
 3 0 0 0 0 0 0 0 0 3 0 0 0 0 0 0 0 0
 EndCrossInstruction
 EndChiliasTheOracle
-#
+#23
 BeginCoilingVines
 BeginSlotAttributes
 CoilingVines
@@ -647,7 +648,7 @@ BeginCrossInstruction
 3 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0
 EndCrossInstruction
 EndCoilingVines
-#
+#24
 BeginCreepingPlague
 BeginSlotAttributes
 CreepingPlague
@@ -674,34 +675,7 @@ EndCrossInstructionIndex
 BeginCrossInstruction
 EndCrossInstruction
 EndCreepingPlague
-#
-BeginCreepingPlague
-BeginSlotAttributes
-CreepingPlague
-16
-Nil
-1
-3
-0
-0
-0
-EndSlotAttributes
-BeginFlagAttributes
-NotYetSpread 1
-EndFlagAttributes
-BeginPrimaryInstructionIndex
-SummonOrCastAbility 1
-EndPrimaryInstructionIndex
-BeginPrimaryInstructions
-14 1 1 0 0 0 0 0 0 0 0 SlayerWhenBlocked 1 1 2 0 0 0
-8 0 0 0 0 0 0 0 0 0 0 SlayerWhenBlocked 1 0 0 0 0 0
-EndPrimaryInstructions
-BeginCrossInstructionIndex
-EndCrossInstructionIndex
-BeginCrossInstruction
-EndCrossInstruction
-EndCreepingPlague
-#
+#25
 BeginCrimsonHammer
 BeginSlotAttributes
 CrimsonHammer
@@ -727,3 +701,223 @@ EndCrossInstructionIndex
 BeginCrossInstruction
 EndCrossInstruction
 EndCrimsonHammer
+#26
+BeginCrystalMemory
+BeginSlotAttributes
+CrystalMemory
+1
+Nil
+4
+3
+0
+0
+0
+EndSlotAttributes
+BeginFlagAttributes
+ShieldTrigger 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+SummonOrCastAbility 1
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+1 100000 1 0 0 0 0 0 1 3 0 0 0 0 0 3 2 0
+10 100000 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndCrystalMemory
+#27
+BeginDarkClown
+BeginSlotAttributes
+DarkClown
+16
+Brain_Jacker
+4
+1
+6000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+Blocker 31
+DestroyAfterBattle 1
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndDarkClown
+#28
+BeginDarkRavenShadowOfGrief
+BeginSlotAttributes
+DarkRavenShadowOfGrief
+16
+Ghost
+4
+1
+1000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+Blocker 31
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndDarkRavenShadowOfGrief
+#29
+BeginDarkReversal
+BeginSlotAttributes
+DarkReversal
+16
+Nil
+2
+3
+0
+0
+0
+EndSlotAttributes
+BeginFlagAttributes
+ShieldTrigger 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+SummonOrCastAbility 1
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+1 10000 1 0 0 0 0 0 1 3 0 0 0 0 0 0 0 0
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndDarkReversal
+#30
+BeginDeadlyFighterBraidClaw
+BeginSlotAttributes
+DeadlyFighterBraidClaw
+2
+Dragonoid
+1
+1
+1000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+EachTurnIfAble 1
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndDeadlyFighterBraidClaw
+#31
+BeginDeathSmoke
+BeginSlotAttributes
+DeathSmoke
+16
+Nil
+4
+3
+0
+0
+0
+EndSlotAttributes
+BeginFlagAttributes
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+SummonOrCastAbility 1
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+1 2 0 1 7 Tapped 0 0 1 4 0 0 0 0 0 0 0 0
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndDeathSmoke
+#32
+BeginDeathbladeBeetle
+BeginSlotAttributes
+DeadlyFighterBraidClaw
+4
+Deathblade_Beetle
+5
+1
+3000
+2
+0
+EndSlotAttributes
+BeginFlagAttributes
+PowerAttacker 4000
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndDeathbladeBeetle
+#33
+BeginDeathligerLionOfChaos
+BeginSlotAttributes
+DeathligerLionOfChaos
+16
+Demon_Command
+7
+1
+9000
+2
+0
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndDeathligerLionOfChaos
+#34

@@ -58,10 +58,6 @@ public class GraphicUtil {
                 if (GetUtil.IsAllowedToAttack(card, world)) {
                     status = true;
                 }
-            } else if (GetUtil.EachTurnIfAble(card)) {
-                if (GetUtil.IsAllowedToAttack(card, world)) {
-                    status = true;
-                }
             }
         }
 
@@ -453,6 +449,29 @@ public class GraphicUtil {
             String attrAndvalue = flagattr + " " + card.getflagAttributes().GetAttribute(flagattr);
             h1 = h1 + 10;
             g.drawText(attrAndvalue,0, h1, 8, Color.BLACK);
+        }
+    }
+
+    public static void presentCardInfoUserSearchSelect(World world) {
+        if (!world.getWorldFlag(WorldFlags.CardSearchSelectingMode)) {
+            return;
+        }
+
+        Graphics g = world.getGame().getGraphics();
+        int w = world.getframeBufferWidht()/8;
+        int h = world.getframeBufferHeight()/10;
+        if  (world.getWorldFlag(WorldFlags.AcceptCardSelectingMode)) {
+            g.drawPixmap(Assets.Button, w * 7, 0);
+        }
+        g.drawPixmap(Assets.Button, w * 4, 0);
+        g.drawPixmap(Assets.Button, w * 2, 0);
+        g.drawPixmap(Assets.InfoBackground, 0, h, 0, 0, 320, 432);
+        ArrayList<Cards> TempZone = world.getMaze().getZoneList().get(6).getZoneArray();
+        Cards card = world.getInstructionHandler().getCollectCardList().get(0);
+        int h1 = h+8;
+        g.drawText(card.getNameID(),0, h1, 8, Color.BLACK);
+        if (TempZone.contains(card)) {
+            g.drawRect(w * 4, h * 5, 4, 4, Color.BLACK);
         }
     }
 }

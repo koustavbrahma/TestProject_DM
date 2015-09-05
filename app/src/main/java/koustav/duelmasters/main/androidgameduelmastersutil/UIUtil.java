@@ -254,6 +254,21 @@ public class UIUtil {
         return status;
     }
 
+    public static boolean TouchedMaze(World world) {
+        boolean status = false;
+        int h = world.getframeBufferHeight()/10;
+        List<TouchEvent> touchEvents = world.getTouchEvents();
+        for(int i = 0; i<touchEvents.size(); i++) {
+            TouchEvent event = touchEvents.get(i);
+            if (event.type == TouchEvent.TOUCH_UP) {
+                if (event.y > h) {
+                    status = true;
+                }
+            }
+        }
+        return status;
+    }
+
     public static Integer ZoneIndexToYCoordinateTransform(int zone, int height) {
         int h = height / 10;
         if (zone == 0)

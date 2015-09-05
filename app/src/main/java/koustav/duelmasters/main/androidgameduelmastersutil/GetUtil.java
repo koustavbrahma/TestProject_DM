@@ -539,4 +539,20 @@ public class GetUtil {
 
         return status;
     }
+
+    public static boolean IsAllowedToEndTurn(World world) {
+        boolean status = true;
+
+        Zone zone = world.getMaze().getZoneList().get(0);
+        for (int i = 0; i < zone.zoneSize(); i++) {
+            InactiveCard card = (InactiveCard) zone.getZoneArray().get(i);
+            if (!GetUtil.IsTapped(card) && GetUtil.EachTurnIfAble(card)) {
+                if (GetUtil.IsAllowedToAttack(card, world)) {
+                    status = false;
+                    break;
+                }
+            }
+        }
+        return status;
+    }
 }

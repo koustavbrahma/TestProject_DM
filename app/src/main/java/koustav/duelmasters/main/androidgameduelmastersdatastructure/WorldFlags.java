@@ -20,4 +20,5 @@ public class WorldFlags {
     public static String BlockerSelectMode = "BlockerSelectMode";
     public static String ShieldTriggerMode = "ShieldTriggerMode";
     public static String WasBlocked = "WasBlocked";
+    public static String CardSearchSelectingMode = "CardSearchSelectingMode";
 }

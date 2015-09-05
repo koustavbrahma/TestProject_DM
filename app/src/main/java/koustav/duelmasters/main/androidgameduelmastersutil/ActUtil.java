@@ -152,7 +152,7 @@ public class ActUtil {
         int Zonesize = CardList.size();
 
         for (int i = 0; i < Zonesize; i++){
-            if (world.getMaze().getZoneList().get(z).getZoneArray().get(i) == CardList.get(i))
+            if (world.getMaze().getZoneList().get(z).getZoneArray().get(i) != CardList.get(i))
                 throw new IllegalArgumentException("Card didn't match which is invalid");
         }
         int tempindex;

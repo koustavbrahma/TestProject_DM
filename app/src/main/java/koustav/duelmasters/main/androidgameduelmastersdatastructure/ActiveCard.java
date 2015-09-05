@@ -89,7 +89,7 @@ public class ActiveCard extends InactiveCard {
         for (int i = 0; i < PrimaryInstructions.size(); i++) {
             InstructionSet instruction = PrimaryInstructions.get(i);
             if (instruction.getCascadeIndex() > 0) {
-                instruction.setNextInst(PrimaryInstructions.get(instruction.getCascadeIndex() - 1));
+                instruction.setNextInst(getPrimaryInstructionBasedOnIndex(instruction.getCascadeIndex()));
             }
         }
     }
