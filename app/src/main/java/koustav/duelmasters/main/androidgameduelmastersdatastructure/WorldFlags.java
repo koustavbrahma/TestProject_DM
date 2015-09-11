@@ -7,6 +7,7 @@ public class WorldFlags {
     public static String CantDrawCard = "CantDrawCard";
     public static String CantAddToMana = "CantAddToMana";
     public static String DisplayInfo = "DisplayInfo";
+    public static String DisplayDeckCard = "DisplayDeckCard";
     public static String ManaSelectMode = "ManaSelectMode";
     public static String AttackSelectMode = "AttackSelectMode";
     public static String ShieldSelectMode = "ShieldSelectMode";

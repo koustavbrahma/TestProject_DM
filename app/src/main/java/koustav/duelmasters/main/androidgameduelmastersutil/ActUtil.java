@@ -240,7 +240,7 @@ public class ActUtil {
                 world.getInstructionHandler().execute();
             }
 
-            if (!eventField[5].equals("0")) {
+            if (!eventField[5].equals("0") && !eventField[5].equals("MarkedCard")) {
                 if (set) {
                     String setAttrInstruction = InstSetUtil.GenerateSelfSetAttributeInstruction(eventField[5], Integer.parseInt(eventField[7]));
                     InstructionSet instruction = new InstructionSet(setAttrInstruction);

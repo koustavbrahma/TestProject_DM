@@ -92,6 +92,12 @@ public class InstructionSet {
                 case "19":
                     type = InstructionType.MayChooseFromBegin;
                     break;
+                case "20":
+                    type = InstructionType.ShowCardToYourOpponent;
+                    break;
+                case "21":
+                    type = InstructionType.SendDeckShuffleUpdate;
+                    break;
                 default:
                     throw new IllegalArgumentException("Invalid instruction type");
             }

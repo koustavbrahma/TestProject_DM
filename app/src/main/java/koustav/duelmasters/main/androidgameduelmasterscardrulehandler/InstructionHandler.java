@@ -169,6 +169,15 @@ public class InstructionHandler {
             status = PassControl();
         }
 
+        if (instruction.getInstructionType() == InstructionType.ShowCardToYourOpponent) {
+            status = ShowCardToYourOpponent();
+        }
+
+        if (instruction.getInstructionType() == InstructionType.SendDeckShuffleUpdate) {
+            SendDeckShuffleUpdate();
+            status = true;
+        }
+
         status = PerformCascade(status);
         SetCleanupInst(status);
 
@@ -190,6 +199,8 @@ public class InstructionHandler {
             if (zone == 4 || zone == 5 || zone == 11 || zone == 12) {
                 State = InstructionState.S4;
                 world.setWorldFlag(WorldFlags.CardSearchSelectingMode);
+                if (CanSkip)
+                    world.setWorldFlag(WorldFlags.MaySkipCardSelectingMode);
             } else {
                 State = InstructionState.S2;
                 world.setWorldFlag(WorldFlags.CardSelectingMode);
@@ -203,7 +214,7 @@ public class InstructionHandler {
         }
 
         if (State == InstructionState.S4) {
-            UserSearchAndSelectCard();
+            UserSearchAndSelectCard(CanSkip);
         }
 
         if (State == InstructionState.S3) {
@@ -284,7 +295,7 @@ public class InstructionHandler {
 /*
     This API is used to search and select card in a stack like deck or graveyard
      */
-    private void UserSearchAndSelectCard() {
+    private void UserSearchAndSelectCard(boolean CanSkip) {
         int filtercount;
         if(instruction.getCount() !=0) {
             filtercount = instruction.getCount();
@@ -296,6 +307,8 @@ public class InstructionHandler {
             this.State = InstructionState.S3;
             world.clearWorldFlag(WorldFlags.CardSearchSelectingMode);
             world.clearWorldFlag(WorldFlags.AcceptCardSelectingMode);
+            if (CanSkip)
+                world.clearWorldFlag(WorldFlags.MaySkipCardSelectingMode);
             return;
         }
         Cards card;
@@ -312,8 +325,20 @@ public class InstructionHandler {
                 this.State = InstructionState.S3;
                 world.clearWorldFlag(WorldFlags.CardSearchSelectingMode);
                 world.clearWorldFlag(WorldFlags.AcceptCardSelectingMode);
+                if (CanSkip)
+                    world.clearWorldFlag(WorldFlags.MaySkipCardSelectingMode);
                 return;
             }
+        }
+
+        if (CanSkip && UIUtil.TouchedAttackShieldOrPlayerButton(world)){
+            this.State = InstructionState.S3;
+            TempZone.clear();
+            CollectCardList.clear();
+            world.clearWorldFlag(WorldFlags.CardSearchSelectingMode);
+            world.clearWorldFlag(WorldFlags.MaySkipCardSelectingMode);
+            world.clearWorldFlag(WorldFlags.AcceptCardSelectingMode);
+            return;
         }
 
         if (UIUtil.TouchedAcceptButton(world)) {
@@ -520,6 +545,9 @@ public class InstructionHandler {
         InactiveCard card;
         String msg = new String("");
         for (int i = 0; i < CollectCardList.size(); i++) {
+            if (CollectCardList.get(i).GridPosition().getZone() == 4 || CollectCardList.get(i).GridPosition().getZone() == 5 ||
+                    CollectCardList.get(i).GridPosition().getZone() == 11 || CollectCardList.get(i).GridPosition().getZone() == 12)
+                throw new IllegalArgumentException("Invalid zone to set temp spreading inst");
             card = (InactiveCard) CollectCardList.get(i);
             InstructionSet Spreadinstruction = new InstructionSet(SpreadinstructionStr);
             card.AddTemporarySpreadingInst(Spreadinstruction);
@@ -534,10 +562,13 @@ public class InstructionHandler {
             String tmp = zone + " " + card.GridPosition().getGridIndex() +
                     " " + card.getNameID();
             msg = msg.concat(tmp);
-            msg = msg.concat("$");
+            msg = msg.concat("%");
             msg = msg.concat(SpreadinstructionStr);
             msg = msg.concat("#");
         }
+
+        if (!(msg.length() > 0))
+            msg = null;
 
         NetworkUtil.sendDirectiveUpdates(world,DirectiveHeader.SetTmpSpreadingInst, msg, null);
     }
@@ -807,6 +838,85 @@ public class InstructionHandler {
             status = true;
         }
         return status;
+    }
+/*
+ Pass card to opponent to show the info
+ */
+    private boolean ShowCardToYourOpponent() {
+        boolean status = false;
+        if (State == InstructionState.S1) {
+            collectCards();
+            world.setWorldFlag(WorldFlags.CardSelectingMode);
+            world.setWorldFlag(WorldFlags.AcceptCardSelectingMode);
+            State = InstructionState.S2;
+        }
+
+        if (State == InstructionState.S2) {
+            if (UIUtil.TouchedAcceptButton(world) || (CollectCardList.size() == 0)){
+                State = InstructionState.S3;
+                world.clearWorldFlag(WorldFlags.AcceptCardSelectingMode);
+                String msg = new String();
+                for (int i = 0; i < CollectCardList.size(); i++) {
+                    Cards card = CollectCardList.get(i);
+                    int zone = card.GridPosition().getZone();
+                    if (zone < 4)
+                        zone = zone + 7;
+                    else
+                        throw new IllegalArgumentException("I am not expecting zone to be greater than 4");
+                    String tmp = zone + " " + card.GridPosition().getGridIndex() + " " + card.getNameID();
+                    msg = msg.concat(tmp);
+                    if (i < (CollectCardList.size() - 1))
+                        msg = msg.concat("#");
+                }
+                if (!(msg.length() > 0))
+                    msg = null;
+                NetworkUtil.sendDirectiveUpdates(world, DirectiveHeader.SeeOpponentPassedCards, msg, null);
+                if (msg == null)
+                    State = InstructionState.S4;
+            }
+        }
+
+        if (State == InstructionState.S3) {
+            if (world.getGame().getNetwork().getSocket() == null || world.getGame().getNetwork().getSocket().isClosed()) {
+                State = InstructionState.S4;
+                // for now this but later handle it properly
+                return status;
+            }
+            if (world.getGame().getNetwork().getreceivedDirectiveSize() == 0)
+                return status;
+
+            String directive = world.getGame().getNetwork().getreceivedDirectiveMsg();
+            String [] splitdirective = directive.split("@");
+
+            if (splitdirective[0].equals(DirectiveHeader.SeeOpponentPassedCards)) {
+                State = InstructionState.S4;
+            }
+        }
+
+        if (State == InstructionState.S4) {
+            world.clearWorldFlag(WorldFlags.CardSelectingMode);
+            State = InstructionState.S1;
+            status = true;
+        }
+        return status;
+    }
+/*
+ This API send the Update of the present deck update
+ */
+    private void SendDeckShuffleUpdate() {
+        Zone zone = world.getMaze().getZoneList().get(5);
+        String msg = new String();
+
+        for (int i = 0; i < zone.zoneSize(); i++) {
+            Cards card =  zone.getZoneArray().get(i);
+            String tmp = card.getNameID();
+            msg = msg.concat(tmp);
+            if (i < (zone.zoneSize() - 1))
+                msg = msg.concat("#");
+        }
+        if (!(msg.length() > 0))
+            msg = null;
+        NetworkUtil.sendDirectiveUpdates(world, DirectiveHeader.SendDeckShuffleUpdate, msg, null);
     }
 /*
  This API is used to collect card from zones. Sometimes based on condition also.

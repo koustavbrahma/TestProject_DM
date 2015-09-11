@@ -9,6 +9,7 @@ import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.InactiveCard;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.World;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.WorldFlags;
+import koustav.duelmasters.main.androidgameduelmastersdatastructure.Zone;
 import koustav.duelmasters.main.androidgameduelmastersnetworkmodule.DirectiveHeader;
 import koustav.duelmasters.main.androidgameduelmastersutil.ActUtil;
 import koustav.duelmasters.main.androidgameduelmastersutil.GetUtil;
@@ -31,6 +32,8 @@ public class WorldUpdateOffTurn {
         S6,
         S7,
         S8,
+        S9,
+        S10,
         SX,
         SY,
     }
@@ -82,6 +85,14 @@ public class WorldUpdateOffTurn {
 
         if (S == WorldUpdateoffTurnState.S8) {
             ExecutePassInstruction();
+        }
+
+        if (S == WorldUpdateoffTurnState.S9) {
+            SeeOpponentCards();
+        }
+
+        if (S == WorldUpdateoffTurnState.S10) {
+            UpdateDeckOrder();
         }
 
         if (S == WorldUpdateoffTurnState.SX) {
@@ -173,6 +184,37 @@ public class WorldUpdateOffTurn {
             if (world.getEventLog().getRecording() == true)
                 throw new IllegalArgumentException("I am not expecting this to be ON at this point");
             world.getEventLog().setRecording(true);
+            return;
+        }
+
+        if (splitdirective[0].equals(DirectiveHeader.SeeOpponentPassedCards) && (splitdirective.length > 2)) {
+            S = WorldUpdateoffTurnState.S9;
+            String[] eventString = splitdirective[1].split("#");
+            ArrayList<Cards> TempZone = world.getMaze().getZoneList().get(6).getZoneArray();
+            TempZone.clear();
+
+            for (int i =0; i < eventString.length; i++) {
+                String[] eventField = eventString[i].split(" ");
+
+                if (eventField.length != 3)
+                    throw new IllegalArgumentException("Invalid see opponent card info");
+
+                int Cardzone = Integer.parseInt(eventField[0]);
+                int GridIndex = Integer.parseInt(eventField[1]);
+
+                if (Cardzone == 4 || Cardzone == 5 || Cardzone == 11 || Cardzone == 12)
+                    throw new IllegalArgumentException("Invalid zone to show info");
+
+                InactiveCard card = (InactiveCard) world.getGridIndexTrackingTable().getCardMappedToGivenGridPosition(Cardzone, GridIndex);
+                if (!card.getNameID().equals(eventField[2]))
+                    throw new IllegalArgumentException("Data inconsistency");
+                TempZone.add(card);
+            }
+            return;
+        }
+
+        if (splitdirective[0].equals(DirectiveHeader.SendDeckShuffleUpdate) && (splitdirective.length > 2)){
+            S = WorldUpdateoffTurnState.S10;
             return;
         }
     }
@@ -350,7 +392,7 @@ public class WorldUpdateOffTurn {
         String[] msg = splitdirective[1].split("#");
 
         for (int i = 0 ; i < msg.length; i++) {
-            String[] msgField = msg[i].split("$");
+            String[] msgField = msg[i].split("%");
 
             if (msgField.length != 2)
                 throw new  IllegalArgumentException("Invalid Set spreadingInst directive 1");
@@ -388,6 +430,65 @@ public class WorldUpdateOffTurn {
             world.getEventLog().setRecording(false);
             S = WorldUpdateoffTurnState.SY;
         }
+    }
+
+    private void SeeOpponentCards() {
+        Cards card;
+        ArrayList<Cards> TempZone = world.getMaze().getZoneList().get(6).getZoneArray();
+        int size = TempZone.size() - 1;
+        world.setWorldFlag(WorldFlags.DisplayInfoUserSelect);
+        if (UIUtil.TouchedInfoTabBackButton(world) || (size == -1)) {
+            world.clearWorldFlag(WorldFlags.DisplayInfoUserSelect);
+            TempZone.clear();
+            S = WorldUpdateoffTurnState.S1;
+            NetworkUtil.sendDirectiveUpdates(world, DirectiveHeader.SeeOpponentPassedCards, null, null);
+            return;
+        }
+        if (UIUtil.TouchedAcceptButton(world)) {
+            card = TempZone.remove(size);
+            TempZone.add(0, card);
+        }
+
+        if (UIUtil.TouchedDeclineButton(world)) {
+            card = TempZone.remove(0);
+            TempZone.add(card);
+        }
+    }
+
+    private void UpdateDeckOrder() {
+        String[] msg = splitdirective[1].split("#");
+        Zone zone = world.getMaze().getZoneList().get(12);
+        int size = zone.zoneSize();
+        ArrayList<Cards> TempZone = world.getMaze().getZoneList().get(6).getZoneArray();
+        TempZone.clear();
+        Cards card;
+
+        if (!(zone.zoneSize() > 0)) {
+            S = WorldUpdateoffTurnState.S1;
+            return;
+        }
+
+        for (int i = 0 ; i < msg.length; i++) {
+            for (int j = 0; j <zone.zoneSize(); j++) {
+                card = zone.getZoneArray().get(j);
+                if (card.getNameID().equals(msg[i])) {
+                    TempZone.add(card);
+                    zone.getZoneArray().remove(card);
+                    break;
+                }
+            }
+        }
+
+        if (size != TempZone.size())
+            throw new IllegalArgumentException("Something went wrong during reordering of Deck");
+
+        zone.getZoneArray().clear();
+
+        for (int i = 0; i < TempZone.size(); i++) {
+            zone.getZoneArray().add(TempZone.get(i));
+        }
+
+        S = WorldUpdateoffTurnState.S1;
     }
 
     private void ResumeTurnControl() {

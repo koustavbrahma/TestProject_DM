@@ -251,6 +251,10 @@ public class UIUtil {
                 }
             }
         }
+        if (status) {
+            touchEvents = world.getGame().getInput().getTouchEvents();
+            world.setTouchEvents(touchEvents);
+        }
         return status;
     }
 

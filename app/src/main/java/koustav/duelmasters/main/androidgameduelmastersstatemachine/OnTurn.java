@@ -42,7 +42,6 @@ public class OnTurn {
         S13,
         S14,
         S15,
-        S16,
         SX,
     }
     OnTurnState S;
@@ -97,6 +96,8 @@ public class OnTurn {
             status = CreatureBattleUpdate();
         if (S == OnTurnState.S14)
             status = ShieldBreakingUpdate();
+        if (S == OnTurnState.S15)
+            ShowDeckCards();
         if (S == OnTurnState.SX)
             FlagSpreadingUpdate();
         return status;
@@ -120,6 +121,12 @@ public class OnTurn {
         if ((world.getFetchCard() != null) && UIUtil.TouchedInfoTabEnterButton(world)) {
             this.S = OnTurnState.S7;
             world.setWorldFlag(WorldFlags.DisplayInfo);
+            return false;
+        }
+
+        if (UIUtil.TouchedAttackShieldOrPlayerButton(world)) {
+            this.S = OnTurnState.S15;
+            world.setWorldFlag(WorldFlags.DisplayDeckCard);
             return false;
         }
 
@@ -1136,6 +1143,9 @@ public class OnTurn {
                     world.getInstructionHandler().execute();
                 }
             }
+            // send event
+            String msg = world.getEventLog().getAndClearEvents();
+            NetworkUtil.sendDirectiveUpdates(world, DirectiveHeader.ApplyEvents, msg, null);
             S = OnTurnState.S1;
             world.setFetchCard(null);
             world.getEventLog().setRecording(false);
@@ -1149,6 +1159,13 @@ public class OnTurn {
         }
     }
 
+/* S15 */
+    private void ShowDeckCards() {
+        if (UIUtil.TouchedAttackShieldOrPlayerButton(world)) {
+            this.S =OnTurnState.S1;
+            world.clearWorldFlag(WorldFlags.DisplayDeckCard);
+        }
+    }
     private void TapAbilityUpdate() {
         if (world.getInstructionIteratorHandler().update()) {
             S = OnTurnState.S1;

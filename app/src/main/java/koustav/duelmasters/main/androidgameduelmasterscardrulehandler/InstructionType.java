@@ -23,4 +23,6 @@ public enum InstructionType {
     ChooseRandom,
     PassControlToOpponent,
     MayChooseFromBegin,
+    ShowCardToYourOpponent,
+    SendDeckShuffleUpdate,
 }

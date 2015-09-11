@@ -266,7 +266,8 @@ Description: After battle Destroy the creature.
 ****************************************************************************************************
 FlagAttribute name: MarkedCard   (*) +
 Description: This attribute is for internal use. Don't use while writing library. This attribute
-             tracks which are selected by user.
+             tracks which are selected by user. If your are using it with library make sure you write
+             a clean up to clean it.
 ****************************************************************************************************
 FlagAttribute name: SummonOnAllManaMatch  (P)  +
 Description: With this attribute a creature/spell can only be summon or cast if all the cards in mana

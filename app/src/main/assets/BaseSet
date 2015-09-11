@@ -719,10 +719,12 @@ NotYetSpread 1
 EndFlagAttributes
 BeginPrimaryInstructionIndex
 SummonOrCastAbility 1
+SummonOrCastAbility 3
 EndPrimaryInstructionIndex
 BeginPrimaryInstructions
-1 100000 1 0 0 0 0 0 1 3 0 0 0 0 0 3 2 0
+11 100000 1 0 0 0 0 0 1 3 0 0 0 0 0 3 2 0
 10 100000 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+21 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
 EndPrimaryInstructions
 BeginCrossInstructionIndex
 EndCrossInstructionIndex
@@ -921,3 +923,63 @@ BeginCrossInstruction
 EndCrossInstruction
 EndDeathligerLionOfChaos
 #34
+BeginDiaNorkMoonlightGuardian
+BeginSlotAttributes
+DiaNorkMoonlightGuardian
+8
+Guardian
+4
+1
+5000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+Blocker 31
+CanAttack 1
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndDiaNorkMoonlightGuardian
+#35
+BeginDimensionGate
+BeginSlotAttributes
+DimensionGate
+4
+Nil
+3
+3
+0
+0
+0
+EndSlotAttributes
+BeginFlagAttributes
+ShieldTrigger 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+SummonOrCastAbility 1
+SummonOrCastAbility 4
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+11 100000 1 0 0 0 0 0 1 3 0 0 0 0 0 3 2 0
+10 100000 1 0 0 0 0 0 0 0 0 0 0 0 0 3 3 0
+14 1000 0 1 6 NotYetSpread 0 0 0 0 0 MarkedCard 1 0 0 0 0 0
+20 1000 0 1 6 MarkedCard 0 0 0 0 0 0 0 0 0 3 5 0
+9 1000 0 1 6 MarkedCard 0 0 0 0 0 MarkedCard 1 0 0 3 6 0
+21 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndDimensionGate

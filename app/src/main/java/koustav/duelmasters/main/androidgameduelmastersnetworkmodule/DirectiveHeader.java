@@ -15,4 +15,6 @@ public class DirectiveHeader {
     public static String ShieldTriggerInfo = "ShieldTriggerInfo";
     public static String SetTmpSpreadingInst = "SetTmpSpreadingInst";
     public static String PassControl = "PassControl";
+    public static String SendDeckShuffleUpdate = "SendDeckShuffleUpdate";
+    public static String SeeOpponentPassedCards = "SeeOpponentPassedCards";
 }
