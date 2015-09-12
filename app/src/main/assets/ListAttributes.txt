@@ -279,6 +279,9 @@ Description: When ever this creature is blocked break one shield in random. 1 yo
 FlagAttribute name: UntapAtEndOfTheTurn  (C) +
 Description: At the end of the turn untap the creature.
 ****************************************************************************************************
+FlagAttribute name: MayUntapAtEndOfTheTurn (P) +
+Description: At the end of the turn user can untap this creature
+****************************************************************************************************
 FlagAttribute name: UsedBlockedSetAttrAbility (C) +
 Description: tells that BlockedSetAttrAbility is used for this turn.
 ****************************************************************************************************

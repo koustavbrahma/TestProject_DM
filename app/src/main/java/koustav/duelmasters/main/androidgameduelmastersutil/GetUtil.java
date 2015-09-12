@@ -87,6 +87,13 @@ public class GetUtil {
             return false;
     }
 
+    public static boolean IsMayUntapAtEndOfTheTurn(InactiveCard card) {
+        if ((card.getflagAttributes().GetAttribute("MayUntapAtEndOfTheTurn")) > 0)
+            return true;
+        else
+            return false;
+    }
+
     public static boolean CantAttack(InactiveCard card) {
         if (card.getflagAttributes().GetAttribute("CantAttack") > 0)
             return true;

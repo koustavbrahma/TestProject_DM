@@ -353,6 +353,9 @@ public class PreTurn {
                     world.getInstructionHandler().execute();
                 }
             }
+            //sendeventlog
+            String msg = world.getEventLog().getAndClearEvents();
+            NetworkUtil.sendDirectiveUpdates(world,DirectiveHeader.ApplyEvents, msg, null);
             S = State.S2b;
             world.setWorldFlag(WorldFlags.ShieldTriggerMode);
         }

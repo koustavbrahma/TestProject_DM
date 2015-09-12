@@ -121,6 +121,7 @@ public class TestScreen extends Screen {
         GraphicUtil.presentCardInfoUserSelect(world);
         GraphicUtil.presentBlockerSelect(world);
         GraphicUtil.presentCardInfoUserSearchSelect(world);
+        GraphicUtil.presentUserDecisionMakingMode(world);
     }
 
     @Override

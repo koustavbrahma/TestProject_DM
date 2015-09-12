@@ -62,7 +62,7 @@ BeginDummy1
 BeginSlotAttributes
 Dummy1
 2
-Human
+Angel_Command
 3
 1
 4000

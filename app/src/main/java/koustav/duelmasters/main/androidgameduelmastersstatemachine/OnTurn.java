@@ -43,6 +43,8 @@ public class OnTurn {
         S14,
         S15,
         SX,
+        SY,
+        SY2,
     }
     OnTurnState S;
     World world;
@@ -63,7 +65,7 @@ public class OnTurn {
     public boolean update(){
         boolean status = false;
         if (S == OnTurnState.S1)
-            status = IdealOnTurn();
+            IdealOnTurn();
         if (S == OnTurnState.S2)
             SummonOrCastUpdate();
         if (S == OnTurnState.S3)
@@ -100,44 +102,66 @@ public class OnTurn {
             ShowDeckCards();
         if (S == OnTurnState.SX)
             FlagSpreadingUpdate();
+        if (S == OnTurnState.SY)
+            MayUnTapAtTheEndOfTurnCreatureUpdate();
+        if (S == OnTurnState.SY2)
+            status = TurnEnding();
+
         return status;
     }
 /*
  This is the Ideal state when User make decision what he/she is going to do next (attack,summon,cast,draw card etc.)
  S1
  */
-    private boolean IdealOnTurn() {
+    private void IdealOnTurn() {
         if (GetUtil.IsAllowedToEndTurn(world) && UIUtil.TouchedSkippedButton(world)) {
-            if (!NetworkUtil.sendDirectiveUpdates(world, DirectiveHeader.EndOfTurn, null, null)) {
-                //handle the case when socket is closed
+            String CollectAttackMarkedCard = InstSetUtil.GenerateCopyCardToTempZoneBasedOnAttribute("Tapped", 1);
+            InstructionSet CollectInst = new InstructionSet(CollectAttackMarkedCard);
+            world.getInstructionHandler().setCardAndInstruction(null, CollectInst);
+            world.getInstructionHandler().execute();
+            ArrayList<Cards> CollectedCardList = world.getMaze().getZoneList().get(6).getZoneArray();
+            ArrayList<Cards> tmplist = new ArrayList<Cards>();
+            for (int i =0; i < CollectedCardList.size(); i++) {
+                InactiveCard card = (InactiveCard) CollectedCardList.get(i);
+                if (GetUtil.IsMayUntapAtEndOfTheTurn(card)) {
+                    tmplist.add(card);
+                }
             }
-            return true;
+            CollectedCardList.clear();
+            for (int i = 0; i < tmplist.size(); i++) {
+                CollectedCardList.add(tmplist.get(i));
+            }
+            world.setWorldFlag(WorldFlags.UserDecisionMakingMode);
+            world.setWorldFlag(WorldFlags.AcceptCardSelectingMode);
+            world.setWorldFlag(WorldFlags.MaySkipCardSelectingMode);
+            S = OnTurnState.SY;
+            return;
         }
 
         if (UIUtil.WorldFetchCard(world)) {
-            return false;
+            return;
         }
 
         if ((world.getFetchCard() != null) && UIUtil.TouchedInfoTabEnterButton(world)) {
             this.S = OnTurnState.S7;
             world.setWorldFlag(WorldFlags.DisplayInfo);
-            return false;
+            return;
         }
 
         if (UIUtil.TouchedAttackShieldOrPlayerButton(world)) {
             this.S = OnTurnState.S15;
             world.setWorldFlag(WorldFlags.DisplayDeckCard);
-            return false;
+            return;
         }
 
         if (UIUtil.TouchedLeftPlayButton(world)) {
             InactiveCard card = (InactiveCard) world.getFetchCard();
             if (card == null) {
-                return false;
+                return;
             }
             int zone = card.GridPosition().getZone();
             if (zone != 0 && zone != 3) {
-                return false;
+                return;
             }
 
             if (zone == 0) {
@@ -149,7 +173,7 @@ public class OnTurn {
                     }
                 }
 
-                return false;
+                return;
             }
 
             if (zone == 3) {
@@ -160,18 +184,18 @@ public class OnTurn {
                     world.getEventLog().setRecording(true);
                 }
 
-                return false;
+                return;
             }
         }
 
         if (UIUtil.TouchedRightPlayButton(world)) {
             InactiveCard card = (InactiveCard) world.getFetchCard();
             if (card == null){
-                return false;
+                return;
             }
             int zone = card.GridPosition().getZone();
             if (zone !=0 && zone != 3){
-                return false;
+                return;
             }
 
             if (zone == 0) {
@@ -186,10 +210,10 @@ public class OnTurn {
                         SetUnsetUtil.SetTappedAttr(Acard);
                         world.getEventLog().registerEvent(Acard, false, 0 , "Tapped", true ,1);
                         this.S = OnTurnState.S8;
-                        return false;
+                        return;
                     }
                 } else {
-                    return false;
+                    return;
                 }
             }
 
@@ -199,7 +223,7 @@ public class OnTurn {
                     world.getEventLog().setRecording(true);
                 }
 
-                return false;
+                return;
             }
         }
 
@@ -210,10 +234,44 @@ public class OnTurn {
                 world.getEventLog().setRecording(true);
             }
 
-            return false;
+            return;
         }
 
-        return false;
+        return;
+    }
+/*
+  This API update the creature that can be UnTapped at the end of turn
+  SY
+ */
+    private void MayUnTapAtTheEndOfTurnCreatureUpdate() {
+        ArrayList<Cards> CollectedCardList = world.getMaze().getZoneList().get(6).getZoneArray();
+        if (CollectedCardList.size() > 0) {
+            InactiveCard card = (InactiveCard) CollectedCardList.get(0);
+            if (UIUtil.TouchedAcceptButton(world)) {
+                SetUnsetUtil.UnSetTappedAttr(card);
+                CollectedCardList.remove(card);
+            }
+
+            if (UIUtil.TouchedDeclineButton(world)) {
+                CollectedCardList.remove(card);
+            }
+        } else {
+            world.clearWorldFlag(WorldFlags.UserDecisionMakingMode);
+            world.clearWorldFlag(WorldFlags.AcceptCardSelectingMode);
+            world.clearWorldFlag(WorldFlags.MaySkipCardSelectingMode);
+            this.S = OnTurnState.SY2;
+        }
+    }
+/*
+   This API end the turn
+   SY2
+     */
+    private boolean TurnEnding() {
+        if (!NetworkUtil.sendDirectiveUpdates(world, DirectiveHeader.EndOfTurn, null, null)) {
+            //handle the case when socket is closed
+        }
+        this.S = OnTurnState.S1;
+        return true;
     }
 /*
  This API is called when user decides to attack. Here user makes decision what he/she must attack (creature, shield or opponent)

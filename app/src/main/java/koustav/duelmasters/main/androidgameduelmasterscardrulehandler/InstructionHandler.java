@@ -33,11 +33,13 @@ public class InstructionHandler {
     InstructionSet instruction;
     World world;
     ArrayList<Cards> CollectCardList;
+    boolean InstructionSkipped;
 
     public InstructionHandler(World world){
         this.world = world;
         this.State = InstructionState.S1;
         CollectCardList = new ArrayList<Cards>();
+        InstructionSkipped = false;
     }
 
     public void setCardAndInstruction(InactiveCard card, InstructionSet instruction) {
@@ -268,6 +270,7 @@ public class InstructionHandler {
             world.clearWorldFlag(WorldFlags.CardSelectingMode);
             world.clearWorldFlag(WorldFlags.MaySkipCardSelectingMode);
             world.clearWorldFlag(WorldFlags.AcceptCardSelectingMode);
+            InstructionSkipped = true;
             return;
         }
 
@@ -338,6 +341,7 @@ public class InstructionHandler {
             world.clearWorldFlag(WorldFlags.CardSearchSelectingMode);
             world.clearWorldFlag(WorldFlags.MaySkipCardSelectingMode);
             world.clearWorldFlag(WorldFlags.AcceptCardSelectingMode);
+            InstructionSkipped = true;
             return;
         }
 
@@ -622,7 +626,7 @@ public class InstructionHandler {
             collectCards();
             CheckActionZoneConsistencyForChoose();
             State = InstructionState.S2;
-            world.setWorldFlag(WorldFlags.CardSelectingMode);
+            world.setWorldFlag(WorldFlags.UserDecisionMakingMode);
             world.setWorldFlag(WorldFlags.AcceptCardSelectingMode);
             if (CanSkip)
                 world.setWorldFlag(WorldFlags.MaySkipCardSelectingMode);
@@ -651,9 +655,10 @@ public class InstructionHandler {
             } else if (UIUtil.TouchedDeclineButton(world)) {
                 CollectCardList.clear();
                 State = InstructionState.S3;
-                world.clearWorldFlag(WorldFlags.CardSelectingMode);
+                world.clearWorldFlag(WorldFlags.UserDecisionMakingMode);
                 world.clearWorldFlag(WorldFlags.MaySkipCardSelectingMode);
                 world.clearWorldFlag(WorldFlags.AcceptCardSelectingMode);
+                InstructionSkipped = true;
                 return;
             } else {
                 return;
@@ -677,7 +682,7 @@ public class InstructionHandler {
             }
         }
         State = InstructionState.S3;
-        world.clearWorldFlag(WorldFlags.CardSelectingMode);
+        world.clearWorldFlag(WorldFlags.UserDecisionMakingMode);
         world.clearWorldFlag(WorldFlags.MaySkipCardSelectingMode);
         world.clearWorldFlag(WorldFlags.AcceptCardSelectingMode);
     }
@@ -846,7 +851,7 @@ public class InstructionHandler {
         boolean status = false;
         if (State == InstructionState.S1) {
             collectCards();
-            world.setWorldFlag(WorldFlags.CardSelectingMode);
+            world.setWorldFlag(WorldFlags.UserDecisionMakingMode);
             world.setWorldFlag(WorldFlags.AcceptCardSelectingMode);
             State = InstructionState.S2;
         }
@@ -894,7 +899,7 @@ public class InstructionHandler {
         }
 
         if (State == InstructionState.S4) {
-            world.clearWorldFlag(WorldFlags.CardSelectingMode);
+            world.clearWorldFlag(WorldFlags.UserDecisionMakingMode);
             State = InstructionState.S1;
             status = true;
         }
@@ -987,7 +992,8 @@ public class InstructionHandler {
         }
 
         if (!(instruction.getCondition().getConditionType() == ConditionType.NameId ||
-                instruction.getCondition().getConditionType() == ConditionType.Civilization) && (index == 4 || index == 5))
+                instruction.getCondition().getConditionType() == ConditionType.Civilization ||
+                 instruction.getCondition().getConditionType() == ConditionType.TypeOfCard) && (index == 4 || index == 5))
             throw new IllegalArgumentException("deck and graveyard cannot be collected based on condition (1)");
 
         if (instruction.getConditionCount() != 0) {
@@ -1013,7 +1019,8 @@ public class InstructionHandler {
         }
 
         if (!(instruction.getCondition().getConditionType() == ConditionType.NameId ||
-                instruction.getCondition().getConditionType() == ConditionType.Civilization) && (index == 4 || index == 5))
+                instruction.getCondition().getConditionType() == ConditionType.Civilization ||
+                instruction.getCondition().getConditionType() == ConditionType.TypeOfCard) && (index == 4 || index == 5))
             throw new IllegalArgumentException("deck and graveyard cannot be collected based on condition (2)");
 
         if (instruction.getConditionCount() != 0) {
@@ -1060,11 +1067,11 @@ public class InstructionHandler {
                 }
             }
         } else if (instruction.getCondition().getConditionType() == ConditionType.TypeOfCard) {
-            InactiveCard card;
+            Cards card;
             switch (instruction.getCondition().getValue()) {
                 case "1":
                     for (int i = 0; i < zone.zoneSize(); i++) {
-                        card = (InactiveCard) zone.getZoneArray().get(i);
+                        card = zone.getZoneArray().get(i);
                         if (card.getType() == TypeOfCard.Creature) {
                             CollectCardList.add(card);
                         }
@@ -1072,7 +1079,7 @@ public class InstructionHandler {
                     break;
                 case "2":
                     for (int i = 0; i < zone.zoneSize(); i++) {
-                        card = (InactiveCard) zone.getZoneArray().get(i);
+                        card = zone.getZoneArray().get(i);
                         if (card.getType() == TypeOfCard.Evolution) {
                             CollectCardList.add(card);
                         }
@@ -1080,7 +1087,7 @@ public class InstructionHandler {
                     break;
                 case "3":
                     for (int i = 0; i < zone.zoneSize(); i++) {
-                        card = (InactiveCard) zone.getZoneArray().get(i);
+                        card = zone.getZoneArray().get(i);
                         if (card.getType() == TypeOfCard.Spell) {
                             CollectCardList.add(card);
                         }
@@ -1088,7 +1095,7 @@ public class InstructionHandler {
                     break;
                 case "4":
                     for (int i = 0; i < zone.zoneSize(); i++) {
-                        card = (InactiveCard) zone.getZoneArray().get(i);
+                        card = zone.getZoneArray().get(i);
                         if (card.getType() == TypeOfCard.Creature || card.getType() == TypeOfCard.Evolution) {
                             CollectCardList.add(card);
                         }
@@ -1258,19 +1265,24 @@ public class InstructionHandler {
             return false;
 
         int count = (instruction.getCount() > 0) ? instruction.getCount() : instruction.getConditionCount();
-        if (instruction.getCascadeCondition() == CascadeType.Nil)
+        if (instruction.getCascadeCondition() == CascadeType.Nil) {
+            InstructionSkipped = false;
             return true;
+        }
 
         if (instruction.getCascadeCondition() == CascadeType.AlwaysCascade && instruction.getNextInst() != null) {
             instruction = instruction.getNextInst();
+            InstructionSkipped = false;
             return false;
         }
 
         if (instruction.getCascadeCondition() == CascadeType.IfTempZoneIsNonEmptyWithLessValue && instruction.getNextInst() != null) {
             if (world.getMaze().getZoneList().get(6).zoneSize() > 0 && world.getMaze().getZoneList().get(6).zoneSize() <= count) {
                 instruction = instruction.getNextInst();
+                InstructionSkipped = false;
                 return false;
             } else {
+                InstructionSkipped = false;
                 return true;
             }
         }
@@ -1278,8 +1290,10 @@ public class InstructionHandler {
         if (instruction.getCascadeCondition() == CascadeType.IfTempZoneIsEmpty && instruction.getNextInst() != null) {
             if (world.getMaze().getZoneList().get(6).zoneSize() == 0) {
                 instruction = instruction.getNextInst();
+                InstructionSkipped = false;
                 return false;
             } else {
+                InstructionSkipped = false;
                 return true;
             }
         }
@@ -1288,8 +1302,10 @@ public class InstructionHandler {
         if (instruction.getCascadeCondition() == CascadeType.IfTempZoneIsNonEmptyWithMoreOrEqualValue && instruction.getNextInst() != null) {
             if (world.getMaze().getZoneList().get(6).zoneSize() >= count) {
                 instruction = instruction.getNextInst();
+                InstructionSkipped = false;
                 return false;
             } else {
+                InstructionSkipped = false;
                 return true;
             }
         }
@@ -1298,12 +1314,25 @@ public class InstructionHandler {
             if (world.getMaze().getZoneList().get(6).zoneSize() > 0) {
                 instruction.getNextInst().setCount(world.getMaze().getZoneList().get(6).zoneSize());
                 instruction = instruction.getNextInst();
+                InstructionSkipped = false;
                 return false;
             } else {
+                InstructionSkipped = false;
                 return true;
             }
         }
 
+        if (instruction.getCascadeCondition() == CascadeType.IfInstructionIsSkipped && instruction.getNextInst() != null) {
+            if (InstructionSkipped) {
+                instruction = instruction.getNextInst();
+                InstructionSkipped = false;
+                return false;
+            } else {
+                InstructionSkipped = false;
+                return true;
+            }
+        }
+        InstructionSkipped = false;
         return true;
     }
 

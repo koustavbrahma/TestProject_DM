@@ -1,9 +1,13 @@
-DimensionGate
+IocantTheOracle
+HolyAwe
+Gigargon
+Gigaberos
+GhostTouch
+FreiVizierOfAir
+FatalAttackerHorvath
+ExplosiveFighterUcarn
 CrystalMemory
-DeadlyFighterBraidClaw
-CrimsonHammer
 CreepingPlague
-ChiliasTheOracle
 ChaosStrike
 CandyDrop
 BurningPower

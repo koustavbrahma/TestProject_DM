@@ -22,7 +22,8 @@ public class GraphicUtil {
                 world.getWorldFlag(WorldFlags.AttackSelectMode) || world.getWorldFlag(WorldFlags.SilentSkillMode) ||
                 world.getWorldFlag(WorldFlags.CardSelectingMode) || world.getWorldFlag(WorldFlags.BlockerSelectMode)||
                 world.getWorldFlag(WorldFlags.ShieldTriggerMode) || world.getWorldFlag(WorldFlags.ShieldTriggerFound) ||
-                world.getWorldFlag(WorldFlags.CardSearchSelectingMode) || !world.getTurn())
+                world.getWorldFlag(WorldFlags.CardSearchSelectingMode) || world.getWorldFlag(WorldFlags.UserDecisionMakingMode) ||
+                !world.getTurn())
             return true;
         else
             return false;
@@ -380,6 +381,20 @@ public class GraphicUtil {
         int w = world.getframeBufferWidht()/8;
         g.drawPixmap(Assets.Button, w * 4, 0);
         g.drawPixmap(Assets.Button, w * 2, 0);
+    }
+
+    public static void presentUserDecisionMakingMode(World world) {
+        if (!world.getWorldFlag(WorldFlags.UserDecisionMakingMode))
+            return;
+
+        Graphics g = world.getGame().getGraphics();
+        int w = world.getframeBufferWidht()/8;
+        if (world.getWorldFlag(WorldFlags.AcceptCardSelectingMode)) {
+            g.drawPixmap(Assets.Button, w * 4, 0);
+        }
+        if (world.getWorldFlag(WorldFlags.MaySkipCardSelectingMode)) {
+            g.drawPixmap(Assets.Button, w * 2, 0);
+        }
     }
 
     public static void presentCardSelectMode(World world) {

@@ -10,4 +10,5 @@ public enum CascadeType {
     AlwaysCascade,
     IfTempZoneIsNonEmptyWithMoreOrEqualValue,
     IfTempZoneIsNonEmptyAndSetCount,
+    IfInstructionIsSkipped,
 }

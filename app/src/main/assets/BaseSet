@@ -806,7 +806,7 @@ BeginPrimaryInstructionIndex
 SummonOrCastAbility 1
 EndPrimaryInstructionIndex
 BeginPrimaryInstructions
-1 10000 1 0 0 0 0 0 1 3 0 0 0 0 0 0 0 0
+1 10000 0 1 5 4 0 0 1 3 0 0 0 0 0 0 0 0
 EndPrimaryInstructions
 BeginCrossInstructionIndex
 EndCrossInstructionIndex
@@ -983,3 +983,703 @@ EndCrossInstructionIndex
 BeginCrossInstruction
 EndCrossInstruction
 EndDimensionGate
+#36
+BeginDomeShell
+BeginSlotAttributes
+DomeShell
+4
+Colony_Beetle
+4
+1
+3000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+PowerAttacker 2000
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndDomeShell
+#37
+BeginDraglide
+BeginSlotAttributes
+Draglide
+2
+Armored_Wyvern
+5
+1
+5000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+EachTurnIfAble 1
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndDraglide
+#38
+BeginEmeraldGrass
+BeginSlotAttributes
+EmeraldGrass
+8
+StarLight_Tree
+2
+1
+3000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+Blocker 31
+CanAttack 1
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndEmeraldGrass
+#39
+BeginExplosiveFighterUcarn
+BeginSlotAttributes
+ExplosiveFighterUcarn
+2
+Dragonoid
+5
+1
+9000
+2
+0
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+SummonOrCastAbility 1
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+1 10 2 0 0 0 0 0 1 4 0 0 0 0 0 0 0 0
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndExplosiveFighterUcarn
+#40
+BeginFaerieChild
+BeginSlotAttributes
+FaerieChild
+1
+Cyber_Virus
+4
+1
+2000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+AttackUnBlockable 255
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndFaerieChild
+#41
+BeginFatalAttackerHorvath
+BeginSlotAttributes
+FatalAttackerHorvath
+2
+Human
+3
+1
+2000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+FlagSpreading 1
+EndCrossInstructionIndex
+BeginCrossInstruction
+5 1 0 1 12 Armorloid 0 0 0 0 2 PowerAttacker 2000 0 0 0 0 0
+EndCrossInstruction
+EndFatalAttackerHorvath
+#42
+BeginFearFang
+BeginSlotAttributes
+FearFang
+4
+Beast_Folk
+3
+1
+3000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndFearFang
+#43
+BeginFireSweeperBurningHellion
+BeginSlotAttributes
+FireSweeperBurningHellion
+2
+Dragonoid
+4
+1
+3000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+PowerAttacker 3000
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndFireSweeperBurningHellion
+#44
+BeginForestHornet
+BeginSlotAttributes
+ForestHornet
+4
+Giant_Insect
+4
+1
+4000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndForestHornet
+#45
+BeginFreiVizierOfAir
+BeginSlotAttributes
+FreiVizierOfAir
+8
+Initiate
+4
+1
+3000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+MayUntapAtEndOfTheTurn 1
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndFreiVizierOfAir
+#46
+BeginGatlingSkyterror
+BeginSlotAttributes
+GatlingSkyterror
+2
+Armored_Wyvern
+7
+1
+7000
+2
+0
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+AttackUntappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndGatlingSkyterror
+#47
+BeginGhostTouch
+BeginSlotAttributes
+GhostTouch
+16
+Nil
+2
+3
+0
+0
+0
+EndSlotAttributes
+BeginFlagAttributes
+ShieldTrigger 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+SummonOrCastAbility 1
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+17 2000 1 0 0 0 0 0 1 4 0 0 0 0 0 0 0 0
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndGhostTouch
+#48
+BeginGigaberos
+BeginSlotAttributes
+Gigaberos
+16
+Chimera
+5
+1
+8000
+2
+0
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+SummonOrCastAbility 1
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+11 1 2 0 0 0 0 0 1 4 0 0 0 0 0 6 2 0
+3 0 0 0 0 0 0 0 0 4 0 0 0 0 0 0 0 0
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndGigaberos
+#49
+BeginGigagiele
+BeginSlotAttributes
+Gigagiele
+16
+Chimera
+5
+1
+3000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+Slayer 31
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndGigagiele
+#50
+BeginGigargon
+BeginSlotAttributes
+Gigargon
+16
+Chimera
+8
+1
+3000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+SummonOrCastAbility 1
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+1 10000 0 2 5 4 0 0 1 3 0 0 0 0 0 0 0 0
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndGigargon
+#51
+BeginGoldenWingStriker
+BeginSlotAttributes
+GoldenWingStriker
+4
+Beast_Folk
+3
+1
+2000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+PowerAttacker 2000
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndGoldenWingStriker
+#52
+BeginGranGureSpaceGuardian
+BeginSlotAttributes
+GranGureSpaceGuardian
+8
+Guardian
+6
+1
+9000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+Blocker 31
+CanAttack 1
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndGranGureSpaceGuardian
+#53
+BeginHanusaRadianceElemental
+BeginSlotAttributes
+HanusaRadianceElemental
+8
+Angel_Command
+7
+1
+9500
+2
+0
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndHanusaRadianceElemental
+#54
+BeginHolyAwe
+BeginSlotAttributes
+HolyAwe
+8
+Nil
+6
+3
+0
+0
+0
+EndSlotAttributes
+BeginFlagAttributes
+ShieldTrigger 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+SummonOrCastAbility 1
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+14 2 0 1 7 Tapped 0 0 2 0 0 Tapped 1 0 0 0 0 0
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndHolyAwe
+#55
+BeginHunterFish
+BeginSlotAttributes
+HunterFish
+1
+Fish
+2
+1
+3000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+Blocker 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndHunterFish
+#56
+BeginIereVizierOfBullets
+BeginSlotAttributes
+IereVizierOfBullets
+8
+Initiate
+3
+1
+3000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndIereVizierOfBullets
+#57
+BeginIllusionaryMerfolk
+BeginSlotAttributes
+IllusionaryMerfolk
+1
+Gel_Fish
+5
+1
+4000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+SummonOrCastAbility 1
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+13 1 0 1 3 Cyber_Lord 0 0 0 0 0 0 0 0 0 4 2 0
+2 100000 3 0 0 0 0 0 1 3 0 0 0 0 0 0 0 0
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndIllusionaryMerfolk
+#58
+BeginImmortalBaronVorg
+BeginSlotAttributes
+ImmortalBaronVorg
+2
+Human
+2
+1
+2000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndImmortalBaronVorg
+#59
+BeginIocantTheOracle
+BeginSlotAttributes
+IocantTheOracle
+8
+Light_Bringer
+2
+1
+2000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+Blocker 31
+CanAttack 1
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+FlagSpreading 1
+EndCrossInstructionIndex
+BeginCrossInstruction
+5 1 0 1 12 Angel_Command 0 0 0 0 2 Power 2000 0 0 0 0 0
+EndCrossInstruction
+EndIocantTheOracle
+#60
+BeginKingCoral
+BeginSlotAttributes
+KingCoral
+1
+Leviathan
+3
+1
+1000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+Blocker 31
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndKingCoral

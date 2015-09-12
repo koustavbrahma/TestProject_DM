@@ -259,6 +259,9 @@ public class InstructionSet {
                  case "5":
                      CascadeCondition = CascadeType.IfTempZoneIsNonEmptyAndSetCount;
                      break;
+                 case "6":
+                     CascadeCondition = CascadeType.IfInstructionIsSkipped;
+                     break;
                  default:
                      throw new IllegalArgumentException("Invalid Cascade type");
             }

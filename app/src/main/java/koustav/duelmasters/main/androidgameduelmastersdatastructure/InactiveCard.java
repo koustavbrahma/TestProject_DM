@@ -55,6 +55,7 @@ public class InactiveCard extends Cards {
         return cost;
     }
 
+    @Override
     public TypeOfCard getType() {
         return type;
     }

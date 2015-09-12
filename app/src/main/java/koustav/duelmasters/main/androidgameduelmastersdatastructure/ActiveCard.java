@@ -88,7 +88,7 @@ public class ActiveCard extends InactiveCard {
     protected void LinkCascadeInst() {
         for (int i = 0; i < PrimaryInstructions.size(); i++) {
             InstructionSet instruction = PrimaryInstructions.get(i);
-            if (instruction.getCascadeIndex() > 0) {
+            if (instruction.getCascadeIndex() > -1) {
                 instruction.setNextInst(getPrimaryInstructionBasedOnIndex(instruction.getCascadeIndex()));
             }
         }

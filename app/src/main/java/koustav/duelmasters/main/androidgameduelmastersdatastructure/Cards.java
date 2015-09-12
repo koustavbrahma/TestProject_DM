@@ -24,6 +24,24 @@ public class Cards {
     public int getCivilization() {
         return Integer.parseInt(cardinfo.SlotAttributes.get(1));
     }
+    public TypeOfCard getType() {
+        TypeOfCard type;
+        switch (cardinfo.SlotAttributes.get(4)) {
+            case "1":
+                type = TypeOfCard.Creature;
+                break;
+            case "2":
+                type = TypeOfCard.Evolution;
+                break;
+            case "3":
+                type = TypeOfCard.Spell;
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid Type for " + cardinfo.SlotAttributes.get(0));
+
+        }
+        return type;
+    }
     public PackedCardInfo ExtractCardInfo() {
         PackedCardInfo A;
         A = cardinfo;
