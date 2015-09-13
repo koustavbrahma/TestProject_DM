@@ -1,6 +1,7 @@
+MagmaGazer
+LaserWing
 IocantTheOracle
 HolyAwe
-Gigargon
 Gigaberos
 GhostTouch
 FreiVizierOfAir

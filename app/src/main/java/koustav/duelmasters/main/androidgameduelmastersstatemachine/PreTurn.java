@@ -101,6 +101,8 @@ public class PreTurn {
         world.getInstructionHandler().execute();
         world.getInstructionHandler().setCardAndInstruction(null, UsedTurboRushSetAttrCleanup);
         world.getInstructionHandler().execute();
+        world.getInstructionHandler().setCardAndInstruction(null, NewSummonedCreatureCleanUp);
+        world.getInstructionHandler().execute();
 
         Zone MyBattleZone = world.getMaze().getZoneList().get(0);
 

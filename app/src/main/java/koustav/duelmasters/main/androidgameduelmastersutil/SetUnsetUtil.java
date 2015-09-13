@@ -18,6 +18,9 @@ public class SetUnsetUtil {
         if (attr.equals("MaskDestroyDst") && GetUtil.MaskDestroyDstVal(card) > 0)
             return;
 
+        if (attr.equals("Breaker") && card.getflagAttributes().GetAttribute("Breaker") > 0)
+            return;
+
         int val = instruction.getAttr().getValue();
         int val2;
 
@@ -41,6 +44,9 @@ public class SetUnsetUtil {
         if (attr.equals("MaskDestroyDst") && GetUtil.MaskDestroyDstVal(card) > 0)
             return;
 
+        if (attr.equals("Breaker") && card.getflagAttributes().GetAttribute("Breaker") > 0)
+            return;
+
         int val = instruction.getAttr().getValue();
         int val2;
         val2 = card.getflagAttributes().GetAttribute(attr);
@@ -52,7 +58,7 @@ public class SetUnsetUtil {
 
     public static void SetUnsetBoostFlagAttr(InactiveCard card, InstructionSet instruction, boolean boost) {
         String attr = instruction.getAttr().getFlag();
-        if (attr.equals("MaskDestroyDst"))
+        if (attr.equals("MaskDestroyDst") || attr.equals("Breaker"))
             throw new IllegalArgumentException("Invalid attribute to boost");
 
         int val = instruction.getAttr().getValue();
@@ -81,7 +87,7 @@ public class SetUnsetUtil {
 
     public static void SetUnsetBoostMultiplierFlagAttr(InactiveCard card, InstructionSet instruction, int boost){
         String attr = instruction.getAttr().getFlag();
-        if (attr.equals("MaskDestroyDst"))
+        if (attr.equals("MaskDestroyDst") || attr.equals("Breaker"))
             throw new IllegalArgumentException("Invalid attribute to boost");
 
         int val = instruction.getAttr().getValue();

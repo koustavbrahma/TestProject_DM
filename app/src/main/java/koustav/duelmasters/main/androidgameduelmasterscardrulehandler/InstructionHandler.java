@@ -180,8 +180,9 @@ public class InstructionHandler {
             status = true;
         }
 
-        status = PerformCascade(status);
+
         SetCleanupInst(status);
+        status = PerformCascade(status);
 
         return status;
     }
