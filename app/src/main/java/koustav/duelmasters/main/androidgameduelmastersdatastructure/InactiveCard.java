@@ -87,7 +87,7 @@ public class InactiveCard extends Cards {
         int size = cardinfo.SlotAttributes.size();
 
         if(size != 8) {
-            throw new IllegalArgumentException("SlotAttributes should be equal to 7.");
+            throw new IllegalArgumentException("SlotAttributes should be equal to 8.");
         } else {
             nameID = new String(cardinfo.SlotAttributes.get(0));
             try {

@@ -147,22 +147,22 @@ BeginDummy4
 BeginSlotAttributes
 Dummy4
 8
-LiquidPeople
+Nil
+6
 3
-1
-2000
-1
+0
+0
 0
 EndSlotAttributes
 BeginFlagAttributes
-CanAttack 3
-AttackTappedCard 31
-NewSummonedCreature 1
+ShieldTrigger 1
 NotYetSpread 1
 EndFlagAttributes
 BeginPrimaryInstructionIndex
+SummonOrCastAbility 1
 EndPrimaryInstructionIndex
 BeginPrimaryInstructions
+1 2 1 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0
 EndPrimaryInstructions
 BeginCrossInstructionIndex
 EndCrossInstructionIndex

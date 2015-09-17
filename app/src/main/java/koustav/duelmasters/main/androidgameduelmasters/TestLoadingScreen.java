@@ -22,8 +22,8 @@ public class TestLoadingScreen extends Screen {
         Assets.cardbackside = g.newPixmap("cardbackside.png", PixmapFormat.RGB565);
         Assets.Button = g.newPixmap("Button.png", PixmapFormat.RGB565);
         Assets.InfoBackground = g.newPixmap("InfoBackground.png", PixmapFormat.RGB565);
-        //game.setScreen(new TestScreen(game));
-        game.setScreen(new MenuScreen(game));
+        game.setScreen(new TestScreen(game));
+        //game.setScreen(new MenuScreen(game));
     }
 
     @Override

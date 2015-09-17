@@ -314,6 +314,7 @@ public class PreTurn {
 
             if (card.getType() == TypeOfCard.Spell) {
                 world.getInstructionIteratorHandler().setCard(card);
+                SetUnsetUtil.SetMarkedCard(card);
                 ArrayList<InstructionSet> instructions = card.getPrimaryInstructionForTheInstructionID(InstructionID.SummonOrCastAbility);
                 world.getInstructionIteratorHandler().setInstructions(instructions);
                 S = State.S2d;
@@ -336,7 +337,15 @@ public class PreTurn {
 
     private void ShieldTriggerCastUpdate() {
         if (world.getInstructionIteratorHandler().update()) {
-            InactiveCard card = world.getInstructionIteratorHandler().getCard();
+            String CollectAttackMarkedCard = InstSetUtil.GenerateCopyCardToTempZoneBasedOnAttribute("MarkedCard", 1000);
+            InstructionSet CollectInst = new InstructionSet(CollectAttackMarkedCard);
+            world.getInstructionHandler().setCardAndInstruction(null, CollectInst);
+            world.getInstructionHandler().execute();
+            ArrayList<Cards> CollectedCardList = world.getMaze().getZoneList().get(6).getZoneArray();
+            if (CollectedCardList.size() != 1)
+                throw new IllegalArgumentException("Something went wrong with the creature to attack");
+            InactiveCard card = (InactiveCard) CollectedCardList.get(0);
+            SetUnsetUtil.UnSetMarkedCard(card);
             if (GetUtil.MaskDestroyDstVal(card) > 0) {
                 String DestroyDstInst = InstSetUtil.GenerateSelfChangeZoneInstruction(GetUtil.MaskDestroyDstVal(card) - 1);
                 InstructionSet instruction = new InstructionSet(DestroyDstInst);

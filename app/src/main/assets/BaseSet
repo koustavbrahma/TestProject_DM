@@ -1970,3 +1970,278 @@ EndCrossInstructionIndex
 BeginCrossInstruction
 EndCrossInstruction
 EndMeteosaur
+#71
+BeginMieleVizierOfLightning
+BeginSlotAttributes
+MieleVizierOfLightning
+8
+Initiate
+3
+1
+1000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+SummonOrCastAbility 1
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+11 2 0 1 7 Tapped 0 0 2 0 0 Tapped 1 0 0 0 0 0
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndMieleVizierOfLightning
+#72
+BeginMightyShouter
+BeginSlotAttributes
+MightyShouter
+4
+Beast_Folk
+3
+1
+2000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+DestroyDst 1
+EndCrossInstructionIndex
+BeginCrossInstruction
+3 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0
+EndCrossInstruction
+EndMightyShouter
+#73
+BeginMoonlightFlash
+BeginSlotAttributes
+MoonlightFlash
+8
+Nil
+4
+3
+0
+0
+0
+EndSlotAttributes
+BeginFlagAttributes
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+SummonOrCastAbility 1
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+1 2 0 2 7 Tapped 0 0 2 0 0 Tapped 1 0 0 0 0 0
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndMoonlightFlash
+#74
+BeginNaturalSnare
+BeginSlotAttributes
+NaturalSnare
+4
+Nil
+6
+3
+0
+0
+0
+EndSlotAttributes
+BeginFlagAttributes
+ShieldTrigger 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+SummonOrCastAbility 1
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+1 2 1 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndNaturalSnare
+#75
+BeginNightMasterShadowOfDecay
+BeginSlotAttributes
+NightMasterShadowOfDecay
+16
+Ghost
+6
+1
+3000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+Blocker 31
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndNightMasterShadowOfDecay
+#76
+BeginNomadHeroGigio
+BeginSlotAttributes
+NomadHeroGigio
+2
+Machine_Eater
+5
+1
+3000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+AttackUntappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndNomadHeroGigio
+#77
+BeginOnslaughterTriceps
+BeginSlotAttributes
+OnslaughterTriceps
+2
+Dragonoid
+3
+1
+5000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+SummonOrCastAbility 1
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+1 10 1 0 0 0 0 0 1 4 0 0 0 0 0 0 0 0
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndOnslaughterTriceps
+#78
+BeginPangaea'sSong
+BeginSlotAttributes
+Pangaea'sSong
+4
+Nil
+1
+3
+0
+0
+0
+EndSlotAttributes
+BeginFlagAttributes
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+SummonOrCastAbility 1
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+1 1 1 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndPangaea'sSong
+#79
+BeginPhantomFish
+BeginSlotAttributes
+PhantomFish
+1
+Gel_Fish
+3
+1
+4000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+Blocker 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndPhantomFish
+#80
+BeginPoisonousDahlia
+BeginSlotAttributes
+PoisonousDahlia
+4
+Tree_Folk
+4
+1
+5000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 1
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndPoisonousDahlia
