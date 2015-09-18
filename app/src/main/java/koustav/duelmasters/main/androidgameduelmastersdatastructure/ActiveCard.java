@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 
 import koustav.duelmasters.main.androidgameduelmasterscardrulehandler.InstructionSet;
+import koustav.duelmasters.main.androidgameduelmasterscardrulehandler.InstructionType;
 
 /**
  * Created by Koustav on 2/19/2015.
@@ -11,12 +12,14 @@ import koustav.duelmasters.main.androidgameduelmasterscardrulehandler.Instructio
 public class ActiveCard extends InactiveCard {
     ArrayList<InstructionSet> PrimaryInstructions;
     Hashtable<String, ArrayList<Integer>> PrimaryInstructionTrackingTable;
+    ArrayList<String> PassControlCache;
 
 
     public ActiveCard (PackedCardInfo cardinfo, GridPositionIndex GridPosition) {
         super(cardinfo, GridPosition);
         PrimaryInstructions = new ArrayList<InstructionSet>();
         PrimaryInstructionTrackingTable = new Hashtable<String, ArrayList<Integer>>();
+        PassControlCache = new ArrayList<String>();
         unpackInstruction();
     }
 
@@ -24,6 +27,11 @@ public class ActiveCard extends InactiveCard {
         unpackPrimaryInstructionTrackingTable();
         unpackPrimaryInstruction();
         LinkCascadeInst();
+        CachePassControlInst();
+    }
+
+    public ArrayList<String> getPassControlCache() {
+        return PassControlCache;
     }
 
     protected void unpackPrimaryInstructionTrackingTable() {
@@ -90,6 +98,19 @@ public class ActiveCard extends InactiveCard {
             InstructionSet instruction = PrimaryInstructions.get(i);
             if (instruction.getCascadeIndex() > -1) {
                 instruction.setNextInst(getPrimaryInstructionBasedOnIndex(instruction.getCascadeIndex()));
+            }
+        }
+    }
+
+    protected void CachePassControlInst() {
+        for (int i = 0; i < PrimaryInstructions.size(); i++) {
+            InstructionSet instruction = PrimaryInstructions.get(i);
+            if (instruction.getInstructionType() == InstructionType.PassControlToOpponent) {
+                String inst = cardinfo.PrimaryInstruction.get(instruction.getAttrCountOrIndex() - 1);
+                for (int j = PassControlCache.size(); j < instruction.getAttrCountOrIndex() - 1; j++) {
+                    PassControlCache.add("Nil");
+                }
+                PassControlCache.add(new String(inst));
             }
         }
     }

@@ -98,6 +98,9 @@ public class InstructionSet {
                 case "21":
                     type = InstructionType.SendDeckShuffleUpdate;
                     break;
+                case "22":
+                    type = InstructionType.ChooseIncludeCurrentCard;
+                    break;
                 default:
                     throw new IllegalArgumentException("Invalid instruction type");
             }

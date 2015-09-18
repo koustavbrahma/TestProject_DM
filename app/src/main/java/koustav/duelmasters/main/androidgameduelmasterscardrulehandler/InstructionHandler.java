@@ -69,7 +69,8 @@ public class InstructionHandler {
             return true;
 
         boolean status = false;
-        if (instruction.getInstructionType() == InstructionType.Choose) {
+        if (instruction.getInstructionType() == InstructionType.Choose ||
+                instruction.getInstructionType() == InstructionType.ChooseIncludeCurrentCard) {
             status = ChooseAnyNCard(false);
         }
 
@@ -812,8 +813,14 @@ public class InstructionHandler {
             if (CurrentCard == null)
                 throw new IllegalArgumentException("Current card cannot be null for this instruction");
 
-            String instructionStr = ((ActiveCard)CurrentCard).cardInfo().PrimaryInstruction.get(instruction.getAttrCountOrIndex() - 1);
+            String instructionStr;
+            if (CurrentCard.cardInfo() != null) {
+                instructionStr = ((ActiveCard) CurrentCard).cardInfo().PrimaryInstruction.get(instruction.getAttrCountOrIndex() - 1);
+            } else {
+                instructionStr = ((ActiveCard) CurrentCard).getPassControlCache().get(instruction.getAttrCountOrIndex() - 1);
+            }
             NetworkUtil.sendDirectiveUpdates(world,DirectiveHeader.PassControl, instructionStr, null);
+            world.setWorldFlag(WorldFlags.UserDecisionMakingMode);
             State = InstructionState.S2;
         }
 
@@ -830,6 +837,7 @@ public class InstructionHandler {
             String [] splitdirective = directive.split("@");
 
             if (splitdirective[0].equals(DirectiveHeader.PassControl)) {
+                world.clearWorldFlag(WorldFlags.UserDecisionMakingMode);
                 State = InstructionState.S3;
             }
 
@@ -970,7 +978,8 @@ public class InstructionHandler {
                 }
             }
         }
-        if (CollectCardList.size() > 0 && CurrentCard != null) {
+        if (instruction.type != InstructionType.ChooseIncludeCurrentCard && CollectCardList.size() > 0
+                && CurrentCard != null) {
             int index = CollectCardList.indexOf(CurrentCard);
             if (index != -1) {
                 CollectCardList.remove(index);

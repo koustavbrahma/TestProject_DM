@@ -278,7 +278,7 @@ BeginPrimaryInstructionIndex
 SummonOrCastAbility 1
 EndPrimaryInstructionIndex
 BeginPrimaryInstructions
-1 1 1 0 0 0 0 0 1 4 0 0 0 0 0 0 0 0
+22 1 1 0 0 0 0 0 1 4 0 0 0 0 0 0 0 0
 EndPrimaryInstructions
 BeginCrossInstructionIndex
 EndCrossInstructionIndex
@@ -971,7 +971,7 @@ SummonOrCastAbility 1
 SummonOrCastAbility 4
 EndPrimaryInstructionIndex
 BeginPrimaryInstructions
-11 100000 1 0 0 0 0 0 1 3 0 0 0 0 0 3 2 0
+11 100000 0 1 5 4 0 0 1 3 0 0 0 0 0 3 2 0
 10 100000 1 0 0 0 0 0 0 0 0 0 0 0 0 3 3 0
 14 1000 0 1 6 NotYetSpread 0 0 0 0 0 MarkedCard 1 0 0 0 0 0
 20 1000 0 1 6 MarkedCard 0 0 0 0 0 0 0 0 0 3 5 0
@@ -2245,3 +2245,297 @@ EndCrossInstructionIndex
 BeginCrossInstruction
 EndCrossInstruction
 EndPoisonousDahlia
+#81
+BeginPoisonousMushroom
+BeginSlotAttributes
+PoisonousMushroom
+4
+Balloon_Mushroom
+2
+1
+1000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+SummonOrCastAbility 1
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+11 1000 1 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndPoisonousMushroom
+#82
+BeginRaylaTruthEnforcer
+BeginSlotAttributes
+RaylaTruthEnforcer
+8
+Berserker
+6
+1
+3000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+SummonOrCastAbility 1
+SummonOrCastAbility 4
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+11 100000 0 1 5 3 0 0 1 3 0 0 0 0 0 3 2 0
+10 100000 1 0 0 0 0 0 0 0 0 0 0 0 0 3 3 0
+14 1000 0 1 6 NotYetSpread 0 0 0 0 0 MarkedCard 1 0 0 0 0 0
+20 1000 0 1 6 MarkedCard 0 0 0 0 0 0 0 0 0 3 5 0
+9 1000 0 1 6 MarkedCard 0 0 0 0 0 MarkedCard 1 0 0 3 6 0
+21 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndRaylaTruthEnforcer
+#83
+BeginRed-EyeScorpion
+BeginSlotAttributes
+Red-EyeScorpion
+4
+Giant_Insect
+5
+1
+4000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+DestroyDst 1
+EndCrossInstructionIndex
+BeginCrossInstruction
+3 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0
+EndCrossInstruction
+EndRed-EyeScorpion
+#84
+BeginReusolTheOracle
+BeginSlotAttributes
+ReusolTheOracle
+8
+Light_Bringer
+2
+1
+2000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndReusolTheOracle
+#85
+BeginRevolverFish
+BeginSlotAttributes
+RevolverFish
+1
+Gel_Fish
+4
+1
+5000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+Blocker 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndRevolverFish
+#86
+BeginRoaringGreat-Horn
+BeginSlotAttributes
+RoaringGreat-Horn
+4
+Horned_Beast
+7
+1
+8000
+2
+0
+EndSlotAttributes
+BeginFlagAttributes
+PowerAttacker 2000
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndRoaringGreat-Horn
+#87
+BeginRothusTheTraveler
+BeginSlotAttributes
+RothusTheTraveler
+2
+Armorloid
+4
+1
+4000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+SummonOrCastAbility 1
+SummonOrCastAbility 2
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+22 1 1 0 0 0 0 0 1 4 0 0 0 0 0 0 0 0
+18 0 0 0 0 0 0 0 0 0 3 0 0 0 0 0 0 0
+1 1 1 0 0 0 0 0 1 4 0 0 0 0 0 0 0 0
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndRothusTheTraveler
+#88
+BeginRubyGrass
+BeginSlotAttributes
+RubyGrass
+8
+StarLight_Tree
+3
+1
+3000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+MayUntapAtEndOfTheTurn 1
+Blocker 31
+CanAttack 1
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndRubyGrass
+#89
+BeginSaucer-HeadShark
+BeginSlotAttributes
+Saucer-HeadShark
+1
+Gel_Fish
+5
+1
+3000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+SummonOrCastAbility 1
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+4 3 0 1 8 0 0 2000 0 3 0 0 0 0 0 0 0 0
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndSaucer-HeadShark
+#90
+BeginScarletSkyterror
+BeginSlotAttributes
+ScarletSkyterror
+2
+Armored_Wyvern
+8
+1
+3000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+SummonOrCastAbility 1
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+4 3 0 1 6 Blocker 0 0 0 4 0 0 0 0 0 3 2 0
+4 3 0 1 6 ChangeableBlocker 0 0 0 4 0 0 0 0 0 0 0 0
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndScarletSkyterror

@@ -390,10 +390,10 @@ public class GraphicUtil {
         Graphics g = world.getGame().getGraphics();
         int w = world.getframeBufferWidht()/8;
         if (world.getWorldFlag(WorldFlags.AcceptCardSelectingMode)) {
-            g.drawPixmap(Assets.Button, w * 4, 0);
+            g.drawPixmap(Assets.Button, w * 2, 0);
         }
         if (world.getWorldFlag(WorldFlags.MaySkipCardSelectingMode)) {
-            g.drawPixmap(Assets.Button, w * 2, 0);
+            g.drawPixmap(Assets.Button, w * 4, 0);
         }
     }
 
