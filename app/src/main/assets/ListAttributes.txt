@@ -282,6 +282,9 @@ Description: At the end of the turn untap the creature.
 FlagAttribute name: MayUntapAtEndOfTheTurn (P) +
 Description: At the end of the turn user can untap this creature
 ****************************************************************************************************
+FlagAttribute name: MayUntapAllAtEndOfTheTurn (P) +
+Description: At the end of the turn user can uptap all his creature
+****************************************************************************************************
 FlagAttribute name: UsedBlockedSetAttrAbility (C) +
 Description: tells that BlockedSetAttrAbility is used for this turn.
 ****************************************************************************************************

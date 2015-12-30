@@ -82,6 +82,7 @@ public class InstructionIteratorHandler {
                 for (int i = 0; i < events.size(); i++) {
                     ActUtil.ApplyEventsInt(events.get(i), world);
                 }
+                world.getEventLog().setRecording(true);
             }
             ArrayList<InstructionSet> CleanUpInst = world.getEventLog().getHoldCleanUp();
             if (CleanUpInst != null) {

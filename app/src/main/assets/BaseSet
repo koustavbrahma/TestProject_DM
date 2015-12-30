@@ -1,3 +1,4 @@
+####################################################################################################
 #1
 BeginAquaHulcus
 BeginSlotAttributes
@@ -2539,3 +2540,846 @@ EndCrossInstructionIndex
 BeginCrossInstruction
 EndCrossInstruction
 EndScarletSkyterror
+#91
+BeginSeamine
+BeginSlotAttributes
+Seamine
+1
+Fish
+6
+1
+4000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+Blocker 31
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndSeamine
+#92
+BeginSenatineJadeTree
+BeginSlotAttributes
+SenatineJadeTree
+8
+StarLight_Tree
+3
+1
+4000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+Blocker 31
+CanAttack 1
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndSenatineJadeTree
+#93
+BeginSkeletonSoldierTheDefiled
+BeginSlotAttributes
+SkeletonSoldierTheDefiled
+16
+Living_Dead
+4
+1
+3000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndSkeletonSoldierTheDefiled
+#94
+BeginSolarRay
+BeginSlotAttributes
+SolarRay
+8
+Nil
+2
+3
+0
+0
+0
+EndSlotAttributes
+BeginFlagAttributes
+ShieldTrigger 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+SummonOrCastAbility 1
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+1 2 0 1 7 Tapped 0 0 2 0 0 Tapped 1 0 0 0 0 0
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndSolarRay
+#95
+BeginSonicWing
+BeginSlotAttributes
+SonicWing
+8
+Nil
+3
+3
+0
+0
+0
+EndSlotAttributes
+BeginFlagAttributes
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+SummonOrCastAbility 1
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+1 1 1 0 0 0 0 0 2 0 0 MarkedCard 1 0 0 3 2 0
+14 1 0 1 6 MarkedCard 0 0 0 0 0 StealthPlayer 1 1 6 3 3 0
+14 1 0 1 6 MarkedCard 0 0 0 0 0 StealthShield 1 1 7 3 4 0
+14 1 0 1 6 MarkedCard 0 0 0 0 0 StealthCreature 1 1 8 3 5 0
+9 1 0 1 6 MarkedCard 0 0 0 0 0 MarkedCard 1 0 0 0 0 0
+8 0 0 0 0 0 0 0 0 0 0 StealthPlayer 1 0 0 0 0 0
+8 0 0 0 0 0 0 0 0 0 0 StealthShield 1 0 0 0 0 0
+8 0 0 0 0 0 0 0 0 0 0 StealthCreature 1 0 0 0 0 0
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndSonicWing
+#96
+BeginSpiralGate
+BeginSlotAttributes
+SpiralGate
+1
+Nil
+2
+3
+0
+0
+0
+EndSlotAttributes
+BeginFlagAttributes
+ShieldTrigger 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+SummonOrCastAbility 1
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+1 3 1 0 0 0 0 0 1 3 0 0 0 0 0 0 0 0
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndSpiralGate
+#97
+BeginStampedingLonghorn
+BeginSlotAttributes
+StampedingLonghorn
+4
+Horned_Beast
+5
+1
+4000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+LowerPowerLevelToBeBlocked 3000
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndStampedingLonghorn
+#98
+BeginSteelSmasher
+BeginSlotAttributes
+SteelSmasher
+4
+Beast_Folk
+2
+1
+3000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 1
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndSteelSmasher
+#99
+BeginStingerWorm
+BeginSlotAttributes
+StingerWorm
+16
+Parasite_Worm
+3
+1
+5000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+SummonOrCastAbility 1
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+22 1 1 0 0 0 0 0 1 4 0 0 0 0 0 0 0 0
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndStingerWorm
+#100
+BeginStonesaur
+BeginSlotAttributes
+Stonesaur
+2
+Rock_Beast
+5
+1
+4000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+PowerAttacker 2000
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndStonesaur
+#101
+BeginStormShell
+BeginSlotAttributes
+StormShell
+4
+Colony_Beetle
+7
+1
+2000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+SummonOrCastAbility 1
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+18 0 0 0 0 0 0 0 0 0 2 0 0 0 0 0 0 0
+1 1 1 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndStormShell
+#102
+BeginSuperExplosiveVolcanodon
+BeginSlotAttributes
+SuperExplosiveVolcanodon
+2
+Dragonoid
+4
+1
+2000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+PowerAttacker 4000
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndSuperExplosiveVolcanodon
+#103
+BeginSwampWorm
+BeginSlotAttributes
+SwampWorm
+16
+Parasite_Worm
+7
+1
+2000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+SummonOrCastAbility 1
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+18 0 0 0 0 0 0 0 0 0 2 0 0 0 0 0 0 0
+1 1 1 0 0 0 0 0 1 4 0 0 0 0 0 0 0 0
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndSwampWorm
+#104
+BeginSzubsKinTwilightGuardian
+BeginSlotAttributes
+SzubsKinTwilightGuardian
+8
+Guardian
+5
+1
+6000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+Blocker 31
+CanAttack 1
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndSzubsKinTwilightGuardian
+#105
+BeginTeleportation
+BeginSlotAttributes
+Teleportation
+1
+Nil
+5
+3
+0
+0
+0
+EndSlotAttributes
+BeginFlagAttributes
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+SummonOrCastAbility 1
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+1 3 2 0 0 0 0 0 1 3 0 0 0 0 0 0 0 0
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndTeleportation
+#106
+BeginTerrorPit
+BeginSlotAttributes
+TerrorPit
+16
+Nil
+6
+3
+0
+0
+0
+EndSlotAttributes
+BeginFlagAttributes
+ShieldTrigger 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+SummonOrCastAbility 1
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+1 2 1 0 0 0 0 0 1 4 0 0 0 0 0 0 0 0
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndTerrorPit
+#107
+BeginThornyMandra
+BeginSlotAttributes
+ThornyMandra
+4
+Tree_Folk
+5
+1
+4000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+SummonOrCastAbility 1
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+11 10000 1 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndThornyMandra
+#108
+BeginToelVizierOfHope
+BeginSlotAttributes
+ToelVizierOfHope
+8
+Initiate
+5
+1
+2000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+MayUntapAllAtEndOfTheTurn 1
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndToelVizierOfHope
+#109
+BeginTornadoFlame
+BeginSlotAttributes
+TornadoFlame
+2
+Nil
+5
+3
+0
+0
+0
+EndSlotAttributes
+BeginFlagAttributes
+ShieldTrigger 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+SummonOrCastAbility 1
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+1 2 0 1 8 0 0 4000 1 4 0 0 0 0 0 0 0 0
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndTornadoFlame
+#110
+BeginTowerShell
+BeginSlotAttributes
+TowerShell
+4
+Colony_Beetle
+6
+1
+5000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+LowerPowerLevelToBeBlocked 4000
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndTowerShell
+#111
+BeginTri-hornShepherd
+BeginSlotAttributes
+Tri-hornShepherd
+4
+Horned_Beast
+5
+1
+5000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndTri-hornShepherd
+#112
+BeginTropico
+BeginSlotAttributes
+Tropico
+1
+Cyber_Lord
+5
+1
+3000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+FlagSpreading 1
+FlagSpreading 2
+FlagSpreading 3
+EndCrossInstructionIndex
+BeginCrossInstruction
+5 1 0 2 5 4 0 0 0 0 4 StealthPlayer 1 0 0 0 0 0
+5 1 0 2 5 4 0 0 0 0 4 StealthShield 1 0 0 0 0 0
+5 1 0 2 5 4 0 0 0 0 4 StealthCreature 1 0 0 0 0 0
+EndCrossInstruction
+EndTropico
+#113
+BeginUltimateForce
+BeginSlotAttributes
+UltimateForce
+4
+Nil
+5
+3
+0
+0
+0
+EndSlotAttributes
+BeginFlagAttributes
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+SummonOrCastAbility 1
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+2 100000 2 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndUltimateForce
+#114
+BeginUnicornFish
+BeginSlotAttributes
+UnicornFish
+1
+Fish
+4
+1
+1000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+SummonOrCastAbility 1
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+11 3 1 0 0 0 0 0 1 3 0 0 0 0 0 0 0 0
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndUnicornFish
+#115
+BeginUrthPurifyingElemental
+BeginSlotAttributes
+UrthPurifyingElemental
+8
+Angel_Command
+6
+1
+6000
+2
+0
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+MayUntapAtEndOfTheTurn 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndUrthPurifyingElemental
+#116
+BeginVampireSilphy
+BeginSlotAttributes
+VampireSilphy
+16
+Dark_Lord
+8
+1
+4000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+SummonOrCastAbility 1
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+4 3 0 1 8 0 0 3000 0 4 0 0 0 0 0 0 0 0
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndVampireSilphy
+#117
+BeginVirtualTripwire
+BeginSlotAttributes
+VirtualTripwire
+1
+Nil
+3
+3
+0
+0
+0
+EndSlotAttributes
+BeginFlagAttributes
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+SummonOrCastAbility 1
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+1 2 0 1 7 Tapped 0 0 2 0 0 Tapped 1 0 0 0 0 0
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndVirtualTripwire
+#118
+BeginWanderingBraineater
+BeginSlotAttributes
+WanderingBraineater
+16
+Living_Dead
+2
+1
+2000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+Blocker 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndWanderingBraineater
+#119
+BeginWrithingBoneGhoul
+BeginSlotAttributes
+WrithingBoneGhoul
+16
+Living_Dead
+2
+1
+2000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndWrithingBoneGhoul
+#120
+BeginZagaanKnightOfDarkness
+BeginSlotAttributes
+ZagaanKnightOfDarkness
+16
+Demon_Command
+6
+1
+7000
+2
+0
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndZagaanKnightOfDarkness
+####################################################################################################
+#FinishBaseSet

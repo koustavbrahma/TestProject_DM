@@ -49,7 +49,9 @@ public class OnTurn {
     OnTurnState S;
     World world;
     InstructionSet NotYetSpreadCleanup;
+    InstructionSet UnTapCreaturesInstruction;
     boolean SummonTapped;
+    boolean UnTapAllAtEndOfTurn;
 
 
     public OnTurn(World world) {
@@ -57,7 +59,10 @@ public class OnTurn {
         S = OnTurnState.S1;
         String instruction = InstSetUtil.GenerateAttributeCleanUpInstruction(3333, "NotYetSpread", 1);
         NotYetSpreadCleanup = new InstructionSet(instruction);
+        String instruction2 = InstSetUtil.GenerateAttributeCleanUpInstruction(1, "Tapped", 1);
+        UnTapCreaturesInstruction = new InstructionSet(instruction2);
         SummonTapped = false;
+        UnTapAllAtEndOfTurn = false;
     }
 /*
  Main API which controls the states and calls other API according to 'S' value
@@ -131,6 +136,7 @@ public class OnTurn {
             for (int i = 0; i < tmplist.size(); i++) {
                 CollectedCardList.add(tmplist.get(i));
             }
+            UnTapAllAtEndOfTurn = GetUtil.IsUnTapAllAtEndOfTurn(world);
             world.setWorldFlag(WorldFlags.UserDecisionMakingMode);
             world.setWorldFlag(WorldFlags.AcceptCardSelectingMode);
             world.setWorldFlag(WorldFlags.MaySkipCardSelectingMode);
@@ -245,7 +251,19 @@ public class OnTurn {
  */
     private void MayUnTapAtTheEndOfTurnCreatureUpdate() {
         ArrayList<Cards> CollectedCardList = world.getMaze().getZoneList().get(6).getZoneArray();
-        if (CollectedCardList.size() > 0) {
+
+        if (UnTapAllAtEndOfTurn) {
+            if (UIUtil.TouchedAcceptButton(world)) {
+                world.getInstructionHandler().setCardAndInstruction(null, UnTapCreaturesInstruction);
+                world.getInstructionHandler().execute();
+                CollectedCardList.clear();
+                UnTapAllAtEndOfTurn = false;
+            }
+
+            if (UIUtil.TouchedDeclineButton(world)) {
+                UnTapAllAtEndOfTurn = false;
+            }
+        }else if (CollectedCardList.size() > 0) {
             InactiveCard card = (InactiveCard) CollectedCardList.get(0);
             if (UIUtil.TouchedAcceptButton(world)) {
                 SetUnsetUtil.UnSetTappedAttr(card);
@@ -256,6 +274,7 @@ public class OnTurn {
                 CollectedCardList.remove(card);
             }
         } else {
+            UnTapAllAtEndOfTurn = false;
             world.clearWorldFlag(WorldFlags.UserDecisionMakingMode);
             world.clearWorldFlag(WorldFlags.AcceptCardSelectingMode);
             world.clearWorldFlag(WorldFlags.MaySkipCardSelectingMode);

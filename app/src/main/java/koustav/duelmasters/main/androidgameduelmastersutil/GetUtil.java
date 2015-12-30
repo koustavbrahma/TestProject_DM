@@ -94,6 +94,13 @@ public class GetUtil {
             return false;
     }
 
+    public static boolean IsMayUntapAllAtEndOfTheTurn(InactiveCard card) {
+        if ((card.getflagAttributes().GetAttribute("MayUntapAllAtEndOfTheTurn")) > 0)
+            return true;
+        else
+            return false;
+    }
+
     public static boolean CantAttack(InactiveCard card) {
         if (card.getflagAttributes().GetAttribute("CantAttack") > 0)
             return true;
@@ -558,6 +565,20 @@ public class GetUtil {
                     status = false;
                     break;
                 }
+            }
+        }
+        return status;
+    }
+
+    public static boolean IsUnTapAllAtEndOfTurn(World world) {
+        boolean status = false;
+
+        Zone zone = world.getMaze().getZoneList().get(0);
+        for (int i = 0; i < zone.zoneSize(); i++) {
+            InactiveCard card = (InactiveCard) zone.getZoneArray().get(i);
+            if (GetUtil.IsMayUntapAllAtEndOfTheTurn(card)) {
+                status = true;
+                break;
             }
         }
         return status;
