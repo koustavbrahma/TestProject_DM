@@ -336,7 +336,8 @@ public class GraphicUtil {
     }
 
     public static void presentAttackedCard(World world) {
-        if (!world.getWorldFlag(WorldFlags.ShieldSelectMode) && !world.getWorldFlag(WorldFlags.AttackSelectMode)) {
+        if ((!world.getWorldFlag(WorldFlags.ShieldSelectMode) && !world.getWorldFlag(WorldFlags.AttackSelectMode)) ||
+                (world.getWorldFlag(WorldFlags.CardSelectingMode) || world.getWorldFlag(WorldFlags.CardSearchSelectingMode))) {
             return;
         }
         Graphics g = world.getGame().getGraphics();

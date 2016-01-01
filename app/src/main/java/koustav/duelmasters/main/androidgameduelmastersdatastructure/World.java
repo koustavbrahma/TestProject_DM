@@ -131,13 +131,20 @@ public class World {
         try {
             InputStream DeckList = game.getFileIO().readAsset("Deck.txt");
             BufferedReader bufferedReaderDeckList = new BufferedReader(new InputStreamReader(DeckList));
+            String SetName;
             String CardName;
             while ((CardName = bufferedReaderDeckList.readLine()) != null ) {
+                String[] SplitVal = CardName.split("#");
+                if (SplitVal.length != 2) {
+                    throw new IllegalArgumentException("Invalid Card Name in Deck");
+                }
+                CardName = SplitVal[0];
+                SetName = SplitVal[1];
                 GridPositionIndex gridPosition = new GridPositionIndex(5, 0);
                 Cards card = new Cards(new PackedCardInfo(), gridPosition);
                 String CardTitle = "Begin";
                 CardTitle = CardTitle.concat(CardName);
-                InputStream CardLibList = game.getFileIO().readAsset("BaseSet");
+                InputStream CardLibList = game.getFileIO().readAsset(SetName);
                 BufferedReader bufferedReaderCardLibList = new BufferedReader(new InputStreamReader(CardLibList));
                 String CardPackedInfo;
                 while (!CardTitle.equals(CardPackedInfo = bufferedReaderCardLibList.readLine()) && CardPackedInfo != null);
@@ -186,13 +193,20 @@ public class World {
         try {
             InputStream DeckList = game.getFileIO().readAsset("Deck.txt");
             BufferedReader bufferedReaderDeckList = new BufferedReader(new InputStreamReader(DeckList));
+            String SetName;
             String CardName;
             while ((CardName = bufferedReaderDeckList.readLine()) != null ) {
+                String[] SplitVal = CardName.split("#");
+                if (SplitVal.length != 2) {
+                    throw new IllegalArgumentException("Invalid Card Name in Deck");
+                }
+                CardName = SplitVal[0];
+                SetName = SplitVal[1];
                 GridPositionIndex gridPosition = new GridPositionIndex(12, 0);
                 Cards card = new Cards(new PackedCardInfo(), gridPosition);
                 String CardTitle = "Begin";
                 CardTitle = CardTitle.concat(CardName);
-                InputStream CardLibList = game.getFileIO().readAsset("BaseSet");
+                InputStream CardLibList = game.getFileIO().readAsset(SetName);
                 BufferedReader bufferedReaderCardLibList = new BufferedReader(new InputStreamReader(CardLibList));
                 String CardPackedInfo;
                 while (!CardTitle.equals(CardPackedInfo = bufferedReaderCardLibList.readLine()) && CardPackedInfo != null);

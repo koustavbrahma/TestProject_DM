@@ -94,7 +94,7 @@ public class EventLog {
         ArrayList<InstructionSet> holdCleanUP = null;
         if (HoldCleanUp.size() != 0) {
             holdCleanUP = new ArrayList<InstructionSet>();
-            for (int i = 0; i < holdCleanUP.size(); i++) {
+            for (int i = 0; i < HoldCleanUp.size(); i++) {
                 holdCleanUP.add(HoldCleanUp.get(i));
             }
         }

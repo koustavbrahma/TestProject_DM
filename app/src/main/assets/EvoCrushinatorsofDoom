@@ -1,105 +1,133 @@
-BeginAquaHulcus
+####################################################################################################
+#1
+BeginAmberPiercer
 BeginSlotAttributes
-AquaHulcus
-1
-LiquidPeople
-3
-1
-2000
-1
-0
-EndSlotAttributes
-BeginFlagAttributes
-CanAttack 3
-AttackTappedCard 31
-HasTapAbility 1
-NewSummonedCreature 1
-NotYetSpread 1
-EndFlagAttributes
-BeginPrimaryInstructionIndex
-SummonOrCastAbility 1
-TapAbility 2
-EndPrimaryInstructionIndex
-BeginPrimaryInstructions
-1 1 1 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0
-1 300 1 0 0 0 0 0 4 0 0 0 0 0 0 0 0 0
-EndPrimaryInstructions
-BeginCrossInstructionIndex
-EndCrossInstructionIndex
-BeginCrossInstruction
-EndCrossInstruction
-EndAquaHulcus
-#
-BeginAquaHulcus2
-BeginSlotAttributes
-AquaHulcus2
-1
-LiquidPeople
-3
-2
-2000
-1
-LiquidPeople
-EndSlotAttributes
-BeginFlagAttributes
-CanAttack 3
-AttackTappedCard 31
-MaskDestroyDst 2
-NewSummonedCreature 1
-NotYetSpread 1
-EndFlagAttributes
-BeginPrimaryInstructionIndex
-EndPrimaryInstructionIndex
-BeginPrimaryInstructions
-EndPrimaryInstructions
-BeginCrossInstructionIndex
-EndCrossInstructionIndex
-BeginCrossInstruction
-EndCrossInstruction
-EndAquaHulcus2
-#
-BeginDummy1
-BeginSlotAttributes
-Dummy1
-2
-Angel_Command
-3
-1
-4000
-1
-0
-EndSlotAttributes
-BeginFlagAttributes
-EvolutionCompatible 1
-CanAttack 3
-AttackTappedCard 31
-Blocker 31
-NewSummonedCreature 1
-NotYetSpread 1
-ShieldTrigger 1
-EndFlagAttributes
-BeginPrimaryInstructionIndex
-SummonOrCastAbility 1
-EndPrimaryInstructionIndex
-BeginPrimaryInstructions
-1 2 1 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0
-EndPrimaryInstructions
-BeginCrossInstructionIndex
-EndCrossInstructionIndex
-BeginCrossInstruction
-EndCrossInstruction
-EndDummy1
-#
-BeginDummy2
-BeginSlotAttributes
-Dummy2
+AmberPiercer
+16
+Brain_Jacker
 4
+1
+2000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+IfAttacked 1
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+11 10000 0 1 5 4 0 0 1 3 0 0 0 0 0 0 0 0
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndAmberPiercer
+#2
+BeginAquaBouncer
+BeginSlotAttributes
+AquaBouncer
+1
+Liquid_People
+6
+1
+1000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+Blocker 31
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+SummonOrCastAbility 1
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+11 3 1 0 0 0 0 0 1 3 0 0 0 0 0 0 0 0
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndAquaBouncer
+#3
+BeginAquaShooter
+BeginSlotAttributes
+AquaShooter
+1
+Liquid_People
+4
+1
+2000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+Blocker 31
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndAquaShooter
+#4
+BeginArmoredBlasterValdios
+BeginSlotAttributes
+ArmoredBlasterValdios
+2
+Human
+4
+2
+6000
+2
+Human
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+FlagSpreading 1
+CleanUp 2
+EndCrossInstructionIndex
+BeginCrossInstruction
+7 1 0 1 12 Human 0 0 0 0 0 Power 1000 0 0 0 0 0
+9 1 0 1 12 Human 0 0 0 0 0 Power 1000 0 0 0 0 0
+EndCrossInstruction
+EndArmoredBlasterValdios
+#5
+BeginArmoredCannonBalbaro
+BeginSlotAttributes
+ArmoredCannonBalbaro
+2
 Human
 3
-1
-6000
-1
-0
+2
+3000
+2
+Human
 EndSlotAttributes
 BeginFlagAttributes
 CanAttack 3
@@ -112,88 +140,10 @@ EndPrimaryInstructionIndex
 BeginPrimaryInstructions
 EndPrimaryInstructions
 BeginCrossInstructionIndex
+FlagSpreading 1
 EndCrossInstructionIndex
 BeginCrossInstruction
+6 3 0 1 12 Human 0 0 0 0 0 PowerAttacker 1000 0 0 0 0 0
 EndCrossInstruction
-EndDummy2
-#
-BeginDummy3
-BeginSlotAttributes
-Dummy3
-1
-LiquidPeople
-3
-1
-2000
-1
-0
-EndSlotAttributes
-BeginFlagAttributes
-CanAttack 3
-AttackTappedCard 31
-NewSummonedCreature 1
-NotYetSpread 1
-EndFlagAttributes
-BeginPrimaryInstructionIndex
-EndPrimaryInstructionIndex
-BeginPrimaryInstructions
-EndPrimaryInstructions
-BeginCrossInstructionIndex
-EndCrossInstructionIndex
-BeginCrossInstruction
-EndCrossInstruction
-EndDummy3
-#
-BeginDummy4
-BeginSlotAttributes
-Dummy4
-8
-Nil
-6
-3
-0
-0
-0
-EndSlotAttributes
-BeginFlagAttributes
-ShieldTrigger 1
-NotYetSpread 1
-EndFlagAttributes
-BeginPrimaryInstructionIndex
-SummonOrCastAbility 1
-EndPrimaryInstructionIndex
-BeginPrimaryInstructions
-1 2 1 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0
-EndPrimaryInstructions
-BeginCrossInstructionIndex
-EndCrossInstructionIndex
-BeginCrossInstruction
-EndCrossInstruction
-EndDummy4
-#
-BeginDummy5
-BeginSlotAttributes
-Dummy5
-16
-LiquidPeople
-3
-1
-2000
-1
-0
-EndSlotAttributes
-BeginFlagAttributes
-CanAttack 3
-AttackTappedCard 31
-NewSummonedCreature 1
-NotYetSpread 1
-EndFlagAttributes
-BeginPrimaryInstructionIndex
-EndPrimaryInstructionIndex
-BeginPrimaryInstructions
-EndPrimaryInstructions
-BeginCrossInstructionIndex
-EndCrossInstructionIndex
-BeginCrossInstruction
-EndCrossInstruction
-EndDummy5
+EndArmoredCannonBalbaro
+#6

@@ -476,7 +476,7 @@ public class GetUtil {
             return true;
         if (CantAttack(card))
             return false;
-        if (NewSummonedCreature(card) && !NoSummoningSickness(card))
+        if (NewSummonedCreature(card) && !NoSummoningSickness(card) && card.getType() != TypeOfCard.Evolution)
             return false;
 
         if (world.getMaze().getZoneList().get(9).zoneSize() > 0) {
