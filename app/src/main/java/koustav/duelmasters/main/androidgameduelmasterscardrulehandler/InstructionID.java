@@ -5,6 +5,7 @@ package koustav.duelmasters.main.androidgameduelmasterscardrulehandler;
  */
 public class InstructionID {
     public static String CleanUp = "CleanUp";
+    public static String CleanUpConditional = "CleanUpCondition";
     public static String IfAttacked = "IfAttacked";
     public static String IfUnblocked = "IfUnblocked";
     public static String TurboRushIfAttacked = "TurboRushIfAttacked";
@@ -14,6 +15,7 @@ public class InstructionID {
     public static String WaveStrikerSummonOrCastAbility = "WaveStrikerSummonOrCastAbility";
     public static String DestroyDst = "DestroyDst";
     public static String FlagSpreading = "FlagSpreading";
+    public static String FlagSpreadingConditional = "FlagSpreadingConditional";
     public static String SilentSkill = "SilentSkill";
     public static String TapAbility = "TapAbility";
     public static String BlockedSetAttrAbility = "BlockedSetAttrAbility";

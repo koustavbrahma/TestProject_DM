@@ -181,6 +181,10 @@ public class InstructionHandler {
             status = true;
         }
 
+        if (instruction.getInstructionType() == InstructionType.ComputeCondition) {
+            ComputeCondition();
+            status = true;
+        }
 
         SetCleanupInst(status);
         status = PerformCascade(status);
@@ -931,6 +935,25 @@ public class InstructionHandler {
         if (!(msg.length() > 0))
             msg = null;
         NetworkUtil.sendDirectiveUpdates(world, DirectiveHeader.SendDeckShuffleUpdate, msg, null);
+    }
+/*
+ This API computes and checks whether a particular scenario exist and then does what needs to be
+ done
+ */
+    private void ComputeCondition() {
+        if (instruction.getCount() == 0 && instruction.getConditionCount() == 0) {
+            if (instruction.getCondition().getConditionType() == ConditionType.Attribute) {
+                if (CurrentCard.getflagAttributes().GetAttribute(instruction.getCondition().getValue()) > 0) {
+                    SetUnsetUtil.SetUnsetBoostFlagAttr(CurrentCard, instruction, true);
+                } else {
+                    SetUnsetUtil.SetUnsetBoostFlagAttr(CurrentCard, instruction, false);
+                }
+            } else {
+                throw new IllegalArgumentException("condition type is Illegal");
+            }
+        } else {
+            throw new IllegalArgumentException("Not Valid scenario");
+        }
     }
 /*
  This API is used to collect card from zones. Sometimes based on condition also.

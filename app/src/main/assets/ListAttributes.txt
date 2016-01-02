@@ -290,3 +290,6 @@ Description: tells that BlockedSetAttrAbility is used for this turn.
 ****************************************************************************************************
 FlagAttribute name: SlayerWhenBlocked  (C)  +
 Description: This creature is Slayer only when it is blocked.
+****************************************************************************************************
+FlagAttribute name: ActiveConditionalFlagSpreading (C) +
+Description: Tells whether the Conditional spreading ability can be used.

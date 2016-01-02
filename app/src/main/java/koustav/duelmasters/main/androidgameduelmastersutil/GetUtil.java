@@ -419,6 +419,13 @@ public class GetUtil {
             return false;
     }
 
+    public static boolean IsActiveConditionalFlagSpreading(InactiveCard card) {
+        if (card.getflagAttributes().GetAttribute("ActiveConditionalFlagSpreading") > 0)
+            return true;
+        else
+            return false;
+    }
+
     public static int getTotalManaCost(InactiveCard card) {
         return (card.getCost() + ManaCost(card) - NManaCost(card));
     }

@@ -21,7 +21,13 @@ public class ActUtil {
         if (card.GridPosition().getZone() == 0 || card.GridPosition().getZone() == 7) {
             ArrayList<InstructionSet> CleanUpInst = ((InactiveCard)card).getCrossInstructionForTheInstructionID(InstructionID.CleanUp);
             if (CleanUpInst != null) {
-                world.getEventLog().AddHoldCleanUp(CleanUpInst);
+                world.getEventLog().AddHoldCleanUp(card, CleanUpInst);
+            }
+            if (GetUtil.IsActiveConditionalFlagSpreading((InactiveCard) card)) {
+                CleanUpInst = ((InactiveCard)card).getCrossInstructionForTheInstructionID(InstructionID.CleanUpConditional);
+                if (CleanUpInst != null) {
+                    world.getEventLog().AddHoldCleanUp(card, CleanUpInst);
+                }
             }
         }
         if (gridPosition.getZone() >= 0 && gridPosition.getZone() <= 5) {

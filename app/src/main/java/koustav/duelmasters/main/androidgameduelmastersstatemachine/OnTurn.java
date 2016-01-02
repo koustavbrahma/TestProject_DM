@@ -671,13 +671,7 @@ public class OnTurn {
             world.getInstructionHandler().execute();
         }
 
-        ArrayList<InstructionSet> CleanUpInst = world.getEventLog().getHoldCleanUp();
-        if (CleanUpInst != null) {
-            for (int i = 0; i < CleanUpInst.size(); i++) {
-                world.getInstructionHandler().setCardAndInstruction(null, CleanUpInst.get(i));
-                world.getInstructionHandler().execute();
-            }
-        }
+        SetUnsetUtil.PerformCleanUpForMovedCard(world);
 
         //send Eventlog
         String msg = world.getEventLog().getAndClearEvents();

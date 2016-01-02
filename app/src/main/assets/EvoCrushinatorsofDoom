@@ -147,3 +147,93 @@ BeginCrossInstruction
 EndCrossInstruction
 EndArmoredCannonBalbaro
 #6
+BeginBarkwhipTheSmasher
+BeginSlotAttributes
+BarkwhipTheSmasher
+4
+Beast_Folk
+2
+2
+5000
+1
+Beast_Folk
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+FlagSpreading 1
+FlagSpreadingConditional 2
+CleanUpCondition 3
+EndCrossInstructionIndex
+BeginCrossInstruction
+23 0 0 0 6 Tapped 0 0 0 0 0 ActiveConditionalFlagSpreading 1 0 0 0 0 0
+7 1 0 1 12 Beast_Folk 0 0 0 0 0 Power 2000 0 0 0 0 0
+9 1 0 1 12 Beast_Folk 0 0 0 0 0 Power 2000 0 0 0 0 0
+EndCrossInstruction
+EndBarkwhipTheSmasher
+#7
+BeginBolzardDragon
+BeginSlotAttributes
+BolzardDragon
+2
+Armored_Dragon
+6
+1
+5000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+IfAttacked 1
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+1 20 1 0 0 0 0 0 1 4 0 0 0 0 0 0 0 0
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndBolzardDragon
+#8
+BeginBolzardDragon
+BeginSlotAttributes
+BolzardDragon
+2
+Armored_Dragon
+6
+1
+5000
+1
+0
+EndSlotAttributes
+BeginFlagAttributes
+CanAttack 3
+AttackTappedCard 31
+NewSummonedCreature 1
+NotYetSpread 1
+EndFlagAttributes
+BeginPrimaryInstructionIndex
+IfAttacked 1
+EndPrimaryInstructionIndex
+BeginPrimaryInstructions
+1 20 1 0 0 0 0 0 1 4 0 0 0 0 0 0 0 0
+EndPrimaryInstructions
+BeginCrossInstructionIndex
+EndCrossInstructionIndex
+BeginCrossInstruction
+EndCrossInstruction
+EndBolzardDragon

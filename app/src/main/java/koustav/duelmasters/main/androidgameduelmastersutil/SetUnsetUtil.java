@@ -1,10 +1,12 @@
 package koustav.duelmasters.main.androidgameduelmastersutil;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import koustav.duelmasters.main.androidgameduelmasterscardrulehandler.InstructionID;
 import koustav.duelmasters.main.androidgameduelmasterscardrulehandler.InstructionSet;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.ActiveCard;
+import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.InactiveCard;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.World;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Zone;
@@ -209,6 +211,7 @@ public class SetUnsetUtil {
                     world.getInstructionHandler().execute();
                 }
             }
+            SpreadConditionalFlagSpreadOrUnSpreadAttr(world, card);
         }
 
         for (int i = 0; i < OpponentBattleZone.zoneSize(); i++) {
@@ -220,6 +223,7 @@ public class SetUnsetUtil {
                     world.getInstructionHandler().execute();
                 }
             }
+            SpreadConditionalFlagSpreadOrUnSpreadAttr(world, card);
         }
 
         for (int i = 0; i <MyBattleZone.zoneSize(); i++) {
@@ -243,5 +247,40 @@ public class SetUnsetUtil {
                 }
             }
         }
+    }
+
+    public static void SpreadConditionalFlagSpreadOrUnSpreadAttr(World world, InactiveCard card) {
+        ArrayList<InstructionSet> setinstructions = card.getCrossInstructionForTheInstructionID(InstructionID.FlagSpreadingConditional);
+        ArrayList<InstructionSet> unsetinstructions = card.getCrossInstructionForTheInstructionID(InstructionID.CleanUpConditional);
+        if (setinstructions != null) {
+            if (setinstructions.size() != unsetinstructions.size()) {
+                throw new IllegalArgumentException("Numbers must match");
+            }
+            for (int j = 0; j < setinstructions.size(); j++) {
+                if (GetUtil.IsActiveConditionalFlagSpreading(card)) {
+                    world.getInstructionHandler().setCardAndInstruction(card, setinstructions.get(j));
+                    world.getInstructionHandler().execute();
+                } else if (setinstructions.get(j).getResult()) {
+                    setinstructions.get(j).setResult(false);
+                    world.getInstructionHandler().setCardAndInstruction(card, unsetinstructions.get(j));
+                    world.getInstructionHandler().execute();
+                }
+            }
+        }
+    }
+
+    public static void PerformCleanUpForMovedCard(World world) {
+        Iterator<Cards> iterator = world.getEventLog().getHoldCleanUpKey();
+        while (iterator.hasNext()) {
+            Cards tcard = iterator.next();
+            ArrayList<InstructionSet> CleanUpInst = world.getEventLog().getHoldCleanUp(tcard);
+            if (CleanUpInst != null) {
+                for (int i = 0; i < CleanUpInst.size(); i++) {
+                    world.getInstructionHandler().setCardAndInstruction((InactiveCard) tcard, CleanUpInst.get(i));
+                    world.getInstructionHandler().execute();
+                }
+            }
+        }
+        world.getEventLog().clearHoldCleanUp();
     }
 }

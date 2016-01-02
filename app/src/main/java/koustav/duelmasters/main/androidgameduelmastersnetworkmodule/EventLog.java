@@ -1,6 +1,8 @@
 package koustav.duelmasters.main.androidgameduelmastersnetworkmodule;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Iterator;
 
 import koustav.duelmasters.main.androidgameduelmasterscardrulehandler.InstructionSet;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
@@ -13,14 +15,14 @@ import koustav.duelmasters.main.androidgamesframework.Screen;
 public class EventLog {
     ArrayList<String> events;
     ArrayList<String> HoldMsg;
-    ArrayList<InstructionSet> HoldCleanUp;
+    Hashtable<Cards, ArrayList<InstructionSet>> HoldCleanUp;
     ArrayList<String> EventsToExecute;
     boolean recording;
 
     public EventLog() {
         events = new ArrayList<String>();
         HoldMsg = new ArrayList<String>();
-        HoldCleanUp = new ArrayList<InstructionSet>();
+        HoldCleanUp = new Hashtable<Cards, ArrayList<InstructionSet>>();
         EventsToExecute = new ArrayList<String>();
         recording = false;
     }
@@ -84,24 +86,32 @@ public class EventLog {
         return holdmsg;
     }
 
-    public void AddHoldCleanUp(ArrayList<InstructionSet> Inst) {
-        for (int i = 0 ; i < Inst.size(); i++) {
-            HoldCleanUp.add(Inst.get(i));
-        }
-    }
-
-    public ArrayList<InstructionSet> getHoldCleanUp() {
-        ArrayList<InstructionSet> holdCleanUP = null;
-        if (HoldCleanUp.size() != 0) {
-            holdCleanUP = new ArrayList<InstructionSet>();
-            for (int i = 0; i < HoldCleanUp.size(); i++) {
-                holdCleanUP.add(HoldCleanUp.get(i));
+    public void AddHoldCleanUp(Cards card, ArrayList<InstructionSet> Inst) {
+        if (HoldCleanUp.get(card) == null) {
+            ArrayList<InstructionSet> list = new ArrayList<InstructionSet>();
+            for (int i = 0; i < Inst.size(); i++) {
+                list.add(Inst.get(i));
+            }
+            HoldCleanUp.put(card, list);
+        } else {
+            ArrayList<InstructionSet> list = HoldCleanUp.get(card);
+            for (int i = 0; i < Inst.size(); i++) {
+                list.add(Inst.get(i));
             }
         }
-        HoldCleanUp.clear();
-        return holdCleanUP;
     }
 
+    public ArrayList<InstructionSet> getHoldCleanUp(Cards card) {
+        return HoldCleanUp.get(card);
+    }
+
+    public Iterator<Cards> getHoldCleanUpKey() {
+        return HoldCleanUp.keySet().iterator();
+    }
+
+    public void clearHoldCleanUp() {
+        HoldCleanUp.clear();
+    }
     public void AddEventsToExecute(String [] events){
         for (int i = 0; i < events.length; i++) {
             EventsToExecute.add(events[i]);

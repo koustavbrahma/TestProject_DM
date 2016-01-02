@@ -94,7 +94,7 @@ BeginDummy2
 BeginSlotAttributes
 Dummy2
 4
-Human
+Beast_Folk
 3
 1
 6000

@@ -101,6 +101,9 @@ public class InstructionSet {
                 case "22":
                     type = InstructionType.ChooseIncludeCurrentCard;
                     break;
+                case "23":
+                    type = InstructionType.ComputeCondition;
+                    break;
                 default:
                     throw new IllegalArgumentException("Invalid instruction type");
             }

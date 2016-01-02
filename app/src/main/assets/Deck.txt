@@ -1,4 +1,5 @@
-ArmoredCannonBalbaro#EvoCrushinatorsofDoom
+BolzardDragon#EvoCrushinatorsofDoom
+BarkwhipTheSmasher#EvoCrushinatorsofDoom
 Saucer-HeadShark#BaseSet
 RubyGrass#BaseSet
 RothusTheTraveler#BaseSet

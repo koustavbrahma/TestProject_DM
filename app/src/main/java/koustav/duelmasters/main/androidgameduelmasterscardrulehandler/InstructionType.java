@@ -26,4 +26,5 @@ public enum InstructionType {
     ShowCardToYourOpponent,
     SendDeckShuffleUpdate,
     ChooseIncludeCurrentCard,
+    ComputeCondition
 }
