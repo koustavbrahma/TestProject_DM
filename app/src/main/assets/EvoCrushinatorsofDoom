@@ -209,12 +209,12 @@ BeginCrossInstruction
 EndCrossInstruction
 EndBolzardDragon
 #8
-BeginBolzardDragon
+BeginBombersaur
 BeginSlotAttributes
-BolzardDragon
+Bombersaur
 2
-Armored_Dragon
-6
+Rock_Beast
+5
 1
 5000
 1
@@ -236,4 +236,4 @@ BeginCrossInstructionIndex
 EndCrossInstructionIndex
 BeginCrossInstruction
 EndCrossInstruction
-EndBolzardDragon
+EndBombersaur

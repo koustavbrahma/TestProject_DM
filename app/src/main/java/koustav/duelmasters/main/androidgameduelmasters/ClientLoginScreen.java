@@ -121,8 +121,8 @@ public class ClientLoginScreen extends Screen {
                 game.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        game.getRenderView().resume();
-                        game.setContentView(game.getRenderView());
+                        game.getRenderObj().resume();
+                        game.setContentView(game.getViewObj());
                     }
                 });
             } else {
@@ -144,7 +144,7 @@ public class ClientLoginScreen extends Screen {
         game.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                game.getRenderView().pause();
+                game.getRenderObj().pause();
             }
         });
     }

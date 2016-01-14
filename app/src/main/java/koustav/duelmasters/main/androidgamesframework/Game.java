@@ -1,5 +1,7 @@
 package koustav.duelmasters.main.androidgamesframework;
 
+import android.view.View;
+
 import java.net.Socket;
 
 import koustav.duelmasters.main.androidgamesframeworkimpl.AndroidNetwork;
@@ -21,4 +23,6 @@ public interface Game {
     public int getframeBufferHeight();
     public void setTurn(boolean val);
     public boolean getTurn();
+    public RenderView getRenderObj();
+    public View getViewObj();
 }

@@ -23,7 +23,7 @@ public class MenuScreen extends Screen {
         game.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                game.getRenderView().pause();
+                game.getRenderObj().pause();
                 game.setContentView(R.layout.activity_menu);
 
                 buttonHost = (Button)game.findViewById(R.id.host);
@@ -68,7 +68,7 @@ public class MenuScreen extends Screen {
         game.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                game.getRenderView().pause();
+                game.getRenderObj().pause();
             }
         });
     }

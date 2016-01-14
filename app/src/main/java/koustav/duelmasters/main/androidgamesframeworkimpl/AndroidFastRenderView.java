@@ -7,10 +7,12 @@ import android.graphics.Rect;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import koustav.duelmasters.main.androidgamesframework.RenderView;
+
 /**
  * Created by Koustav on 2/12/2015.
  */
-public class AndroidFastRenderView extends SurfaceView implements Runnable {
+public class AndroidFastRenderView extends SurfaceView implements Runnable, RenderView {
     AndroidGame game;
     Bitmap framebuffer;
     Thread renderThread = null;
@@ -24,10 +26,12 @@ public class AndroidFastRenderView extends SurfaceView implements Runnable {
         this.holder = getHolder();
     }
 
+    @Override
     public void resume() {
         running = true;
         renderThread = new Thread(this);
         renderThread.start();
+        game.getCurrentScreen().resume();
     }
 
     public void run() {
@@ -49,8 +53,10 @@ public class AndroidFastRenderView extends SurfaceView implements Runnable {
         }
     }
 
+    @Override
     public void pause() {
         running = false;
+        game.getCurrentScreen().pause();
         while (true) {
             try {
                 renderThread.join();

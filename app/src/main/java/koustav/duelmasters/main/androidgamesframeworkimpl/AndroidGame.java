@@ -19,6 +19,7 @@ import koustav.duelmasters.main.androidgamesframework.FileIO;
 import koustav.duelmasters.main.androidgamesframework.Game;
 import koustav.duelmasters.main.androidgamesframework.Graphics;
 import koustav.duelmasters.main.androidgamesframework.Input;
+import koustav.duelmasters.main.androidgamesframework.RenderView;
 import koustav.duelmasters.main.androidgamesframework.Screen;
 
 /**
@@ -26,7 +27,9 @@ import koustav.duelmasters.main.androidgamesframework.Screen;
  */
 public abstract class AndroidGame extends Activity implements Game {
     AndroidFastRenderView renderView;
+    AndroidOpenGLRenderView GLrenderView;
     Graphics graphics;
+    AndroidGLGraphics glGraphics;
     Audio audio;
     Input input;
     FileIO fileIO;
@@ -36,6 +39,7 @@ public abstract class AndroidGame extends Activity implements Game {
     int frameBufferHeight;
     WakeLock wakeLock;
     boolean TURN;
+    boolean UseGLRenderView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -48,6 +52,7 @@ public abstract class AndroidGame extends Activity implements Game {
         frameBufferWidth = 320;
         frameBufferHeight = 480;
         TURN = true;
+        UseGLRenderView = false;
         Bitmap frameBuffer = Bitmap.createBitmap(frameBufferWidth,
                 frameBufferHeight, Bitmap.Config.RGB_565);
 
@@ -55,13 +60,15 @@ public abstract class AndroidGame extends Activity implements Game {
         float scaleY = (float)frameBufferHeight/getWindowManager().getDefaultDisplay().getHeight();
 
         renderView = new AndroidFastRenderView(this, frameBuffer);
+        GLrenderView = new AndroidOpenGLRenderView(this);
         graphics = new AndroidGraphics(getAssets(), frameBuffer);
+        glGraphics = new AndroidGLGraphics(GLrenderView);
         fileIO = new AndroidFileIO(this);
         //add audio
-        input = new AndroidInput(this, renderView, scaleX, scaleY);
+        input = new AndroidInput(this, getViewObj(), scaleX, scaleY);
         screen = getStartScreen();
         network = new AndroidNetwork(this);
-        setContentView(renderView);
+        setContentView(getViewObj());
 
         //getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         PowerManager powerManager = (PowerManager)
@@ -75,19 +82,15 @@ public abstract class AndroidGame extends Activity implements Game {
         super.onResume();
         //getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         wakeLock.acquire();
-        screen.resume();
-        renderView.resume();
+        getRenderObj().resume();
     }
 
     @Override
     public void onPause() {
-        super.onPause();
         //getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         wakeLock.release();
-        renderView.pause();
-        screen.pause();
-        if(isFinishing())
-            screen.dispose();
+        getRenderObj().pause();
+        super.onPause();
     }
 
     @Override
@@ -128,7 +131,7 @@ public abstract class AndroidGame extends Activity implements Game {
 
     @Override
     public Graphics getGraphics() {
-        return graphics;
+        return UseGLRenderView ? glGraphics : graphics;
     }
 
     @Override
@@ -178,7 +181,11 @@ public abstract class AndroidGame extends Activity implements Game {
         return TURN;
     }
 
-    public AndroidFastRenderView getRenderView() {
-        return renderView;
+    @Override
+    public RenderView getRenderObj() {
+        return UseGLRenderView ? GLrenderView: renderView;
     }
+
+    @Override
+    public View getViewObj() {return UseGLRenderView ? GLrenderView: renderView;}
 }

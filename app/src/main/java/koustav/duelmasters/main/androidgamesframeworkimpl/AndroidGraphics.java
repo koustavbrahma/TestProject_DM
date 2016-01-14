@@ -147,4 +147,14 @@ public class AndroidGraphics implements Graphics {
     public int getHeight() {
         return frameBuffer.getHeight();
     }
+
+    @Override
+    public int getuColorLocation() {
+        return 0;
+    }
+
+    @Override
+    public int getaPositionLocation() {
+        return 0;
+    }
 }
