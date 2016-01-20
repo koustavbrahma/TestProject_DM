@@ -8,7 +8,7 @@ import koustav.duelmasters.main.androidgameduelmastersdatastructure.InactiveCard
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.World;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.WorldFlags;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Zone;
-import koustav.duelmasters.main.androidgameduelmastersnetworkmodule.DirectiveHeader;
+import koustav.duelmasters.main.androidgameduelmasterseventlogmodule.DirectiveHeader;
 import koustav.duelmasters.main.androidgameduelmastersutil.InstSetUtil;
 import koustav.duelmasters.main.androidgameduelmastersutil.NetworkUtil;
 import koustav.duelmasters.main.androidgameduelmastersutil.SetUnsetUtil;

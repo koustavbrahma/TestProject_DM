@@ -20,7 +20,4 @@ public interface Graphics {
     public void drawText(String text,int x,int y,int size, int color);
     public int getWidth();
     public int getHeight();
-    public int getuColorLocation();
-    public int getaPositionLocation();
-
 }

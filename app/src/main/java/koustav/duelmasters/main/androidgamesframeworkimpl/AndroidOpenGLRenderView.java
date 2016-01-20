@@ -11,10 +11,12 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import koustav.duelmasters.R;
+import koustav.duelmasters.main.androidgameopenglutil.MatrixHelper;
 import koustav.duelmasters.main.androidgamesframework.RenderView;
-import koustav.duelmasters.main.androidgamesframework.ShaderHelper;
-
+import koustav.duelmasters.main.androidgameopenglutil.ShaderHelper;
 import static android.opengl.GLES20.*;
+import static android.opengl.GLUtils.*;
+import static android.opengl.Matrix.*;
 
 /**
  * Created by Koustav on 1/3/2016.
@@ -31,11 +33,8 @@ public class AndroidOpenGLRenderView extends GLSurfaceView implements GLSurfaceV
     GLGameState state;
     Object stateChanged = new Object();
     long startTime = System.nanoTime();
-    private int program;
-    private static final String U_COLOR = "u_Color";
-    private int uColorLocation;
-    private static final String A_POSITION = "a_Position";
-    private int aPositionLocation;
+    private final float[] projectionMatrix = new float[16];
+    private final float[] modelMatrix = new float[16];
 
     public AndroidOpenGLRenderView(AndroidGame game) {
         super(game);
@@ -67,16 +66,7 @@ public class AndroidOpenGLRenderView extends GLSurfaceView implements GLSurfaceV
 
     @Override
     public void onSurfaceCreated(GL10 glUnused, EGLConfig config) {
-        glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
-        String vertexShaderSource = game.getFileIO().readTextFileFromResource(R.raw.vertex_shader);
-        String fragmentShaderSource = game.getFileIO().readTextFileFromResource(R.raw.fragment_shader);
-        int vertexShader = ShaderHelper.compileVertexShader(vertexShaderSource);
-        int fragmentShader = ShaderHelper.compileFragmentShader(fragmentShaderSource);
-        program = ShaderHelper.linkProgram(vertexShader, fragmentShader);
-        ShaderHelper.validateProgram(program);
-        glUseProgram(program);
-        uColorLocation = glGetUniformLocation(program, U_COLOR);
-        aPositionLocation = glGetAttribLocation(program, A_POSITION);
+        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         synchronized (stateChanged) {
             game.getCurrentScreen().resume();
             this.state = GLGameState.Running;
@@ -87,6 +77,13 @@ public class AndroidOpenGLRenderView extends GLSurfaceView implements GLSurfaceV
     public void onSurfaceChanged(GL10 glUnused, int width, int height) {
         // Set the OpenGL viewport to fill the entire surface.
         glViewport(0, 0, width, height);
+        MatrixHelper.perspectiveM(projectionMatrix, 45, (float) width / (float) height, 1f, 10f);
+        setIdentityM(modelMatrix, 0);
+        translateM(modelMatrix, 0, 0f, 0f, -2.7f);
+        rotateM(modelMatrix, 0, -60f, 1f, 0f, 0f);
+        final float[] temp = new float[16];
+        multiplyMM(temp, 0, projectionMatrix, 0, modelMatrix, 0);
+        System.arraycopy(temp, 0, projectionMatrix, 0, temp.length);
     }
 
     @Override
@@ -122,7 +119,6 @@ public class AndroidOpenGLRenderView extends GLSurfaceView implements GLSurfaceV
                 stateChanged.notifyAll();
             }
         }
-        //glClear(GL_COLOR_BUFFER_BIT);
     }
 
     @Override
@@ -151,11 +147,7 @@ public class AndroidOpenGLRenderView extends GLSurfaceView implements GLSurfaceV
         this.onPause();
     }
 
-    public int getuColorLocation() {
-        return uColorLocation;
-    }
-
-    public int getaPositionLocation() {
-        return aPositionLocation;
+    public float [] getProjectionMatrix() {
+        return projectionMatrix;
     }
 }

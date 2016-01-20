@@ -29,7 +29,6 @@ public abstract class AndroidGame extends Activity implements Game {
     AndroidFastRenderView renderView;
     AndroidOpenGLRenderView GLrenderView;
     Graphics graphics;
-    AndroidGLGraphics glGraphics;
     Audio audio;
     Input input;
     FileIO fileIO;
@@ -52,7 +51,7 @@ public abstract class AndroidGame extends Activity implements Game {
         frameBufferWidth = 320;
         frameBufferHeight = 480;
         TURN = true;
-        UseGLRenderView = false;
+        UseGLRenderView = true;
         Bitmap frameBuffer = Bitmap.createBitmap(frameBufferWidth,
                 frameBufferHeight, Bitmap.Config.RGB_565);
 
@@ -62,7 +61,6 @@ public abstract class AndroidGame extends Activity implements Game {
         renderView = new AndroidFastRenderView(this, frameBuffer);
         GLrenderView = new AndroidOpenGLRenderView(this);
         graphics = new AndroidGraphics(getAssets(), frameBuffer);
-        glGraphics = new AndroidGLGraphics(GLrenderView);
         fileIO = new AndroidFileIO(this);
         //add audio
         input = new AndroidInput(this, getViewObj(), scaleX, scaleY);
@@ -131,7 +129,7 @@ public abstract class AndroidGame extends Activity implements Game {
 
     @Override
     public Graphics getGraphics() {
-        return UseGLRenderView ? glGraphics : graphics;
+        return graphics;
     }
 
     @Override

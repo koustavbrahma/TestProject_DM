@@ -1,13 +1,11 @@
 package koustav.duelmasters.main.androidgameduelmastersstatemachine;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import koustav.duelmasters.main.androidgameduelmasterscardrulehandler.InstructionSet;
-import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.InactiveCard;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.World;
-import koustav.duelmasters.main.androidgameduelmastersnetworkmodule.DirectiveHeader;
+import koustav.duelmasters.main.androidgameduelmasterseventlogmodule.DirectiveHeader;
 import koustav.duelmasters.main.androidgameduelmastersutil.ActUtil;
 import koustav.duelmasters.main.androidgameduelmastersutil.InstSetUtil;
 import koustav.duelmasters.main.androidgameduelmastersutil.NetworkUtil;

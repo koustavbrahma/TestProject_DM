@@ -1,4 +1,4 @@
-package koustav.duelmasters.main.androidgameduelmastersnetworkmodule;
+package koustav.duelmasters.main.androidgameduelmasterseventlogmodule;
 
 /**
  * Created by Koustav on 7/15/2015.

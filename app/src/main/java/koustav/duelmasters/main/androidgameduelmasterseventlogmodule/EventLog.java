@@ -1,4 +1,4 @@
-package koustav.duelmasters.main.androidgameduelmastersnetworkmodule;
+package koustav.duelmasters.main.androidgameduelmasterseventlogmodule;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -6,8 +6,6 @@ import java.util.Iterator;
 
 import koustav.duelmasters.main.androidgameduelmasterscardrulehandler.InstructionSet;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
-import koustav.duelmasters.main.androidgameduelmastersdatastructure.World;
-import koustav.duelmasters.main.androidgamesframework.Screen;
 
 /**
  * Created by Koustav on 7/7/2015.

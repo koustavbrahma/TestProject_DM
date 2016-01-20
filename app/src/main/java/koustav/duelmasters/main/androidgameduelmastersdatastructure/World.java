@@ -8,7 +8,7 @@ import java.util.Hashtable;
 import java.util.List;
 
 import koustav.duelmasters.main.androidgameduelmasterscardrulehandler.InstructionHandler;
-import koustav.duelmasters.main.androidgameduelmastersnetworkmodule.EventLog;
+import koustav.duelmasters.main.androidgameduelmasterseventlogmodule.EventLog;
 import koustav.duelmasters.main.androidgameduelmastersstatemachine.InstructionIteratorHandler;
 import koustav.duelmasters.main.androidgameduelmastersstatemachine.WorldUpdateOffTurn;
 import koustav.duelmasters.main.androidgameduelmastersstatemachine.WorldUpdateOnTurn;
