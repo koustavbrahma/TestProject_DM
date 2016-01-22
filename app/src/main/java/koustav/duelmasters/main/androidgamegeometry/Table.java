@@ -1,11 +1,10 @@
-package koustav.duelmasters.main.androidgameopenglobjects;
+package koustav.duelmasters.main.androidgamegeometry;
 
 import koustav.duelmasters.main.androidgameopenglutil.VertexArray;
 import koustav.duelmasters.main.androidgameshaderprogram.TextureShaderProgram;
 
 import static android.opengl.GLES20.*;
-import static android.opengl.GLUtils.*;
-import static android.opengl.Matrix.*;
+
 /**
  * Created by Koustav on 1/18/2016.
  */

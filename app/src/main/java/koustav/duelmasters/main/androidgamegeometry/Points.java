@@ -1,4 +1,4 @@
-package koustav.duelmasters.main.androidgameopenglobjects;
+package koustav.duelmasters.main.androidgamegeometry;
 
 import koustav.duelmasters.main.androidgameopenglutil.VertexArray;
 import koustav.duelmasters.main.androidgameshaderprogram.ColorShaderProgram;
