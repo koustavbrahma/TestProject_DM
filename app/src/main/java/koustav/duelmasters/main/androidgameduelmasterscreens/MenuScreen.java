@@ -1,4 +1,4 @@
-package koustav.duelmasters.main.androidgameduelmasters;
+package koustav.duelmasters.main.androidgameduelmasterscreens;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;

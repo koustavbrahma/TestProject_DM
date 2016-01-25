@@ -1,14 +1,10 @@
-package koustav.duelmasters.main.androidgameduelmasters;
+package koustav.duelmasters.main.androidgameduelmasterscreens;
 
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.ServerSocket;

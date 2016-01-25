@@ -1,4 +1,4 @@
-package koustav.duelmasters.main.androidgameduelmastersutil;
+package koustav.duelmasters.main.androidgameduelmastersutillegacycode;
 
 import android.graphics.Color;
 
@@ -11,6 +11,8 @@ import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.World;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.WorldFlags;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Zone;
+import koustav.duelmasters.main.androidgameduelmastersutil.GetUtil;
+import koustav.duelmasters.main.androidgameduelmastersutillegacycode.UIUtil;
 import koustav.duelmasters.main.androidgamesframework.Graphics;
 
 /**

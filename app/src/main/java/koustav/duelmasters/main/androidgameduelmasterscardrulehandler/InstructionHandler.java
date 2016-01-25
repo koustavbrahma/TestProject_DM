@@ -15,7 +15,7 @@ import koustav.duelmasters.main.androidgameduelmastersutil.ActUtil;
 import koustav.duelmasters.main.androidgameduelmastersutil.GetUtil;
 import koustav.duelmasters.main.androidgameduelmastersutil.NetworkUtil;
 import koustav.duelmasters.main.androidgameduelmastersutil.SetUnsetUtil;
-import koustav.duelmasters.main.androidgameduelmastersutil.UIUtil;
+import koustav.duelmasters.main.androidgameduelmastersutillegacycode.UIUtil;
 
 /**
  * Created by Koustav on 4/17/2015.

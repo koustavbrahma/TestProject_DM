@@ -1,4 +1,4 @@
-package koustav.duelmasters.main.androidgameduelmasters;
+package koustav.duelmasters.main.androidgameduelmasterscreens;
 
 import koustav.duelmasters.main.androidgamegeometry.Mallet;
 import koustav.duelmasters.main.androidgamegeometry.Points;

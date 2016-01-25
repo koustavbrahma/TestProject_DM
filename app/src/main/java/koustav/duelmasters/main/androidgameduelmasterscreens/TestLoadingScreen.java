@@ -1,7 +1,6 @@
-package koustav.duelmasters.main.androidgameduelmasters;
+package koustav.duelmasters.main.androidgameduelmasterscreens;
 
 import koustav.duelmasters.main.androidgameduelmastersassets.Assets;
-import koustav.duelmasters.main.androidgamesframework.Game;
 import koustav.duelmasters.main.androidgamesframework.Graphics;
 import koustav.duelmasters.main.androidgamesframework.Graphics.PixmapFormat;
 import koustav.duelmasters.main.androidgamesframework.Screen;
@@ -24,7 +23,8 @@ public class TestLoadingScreen extends Screen {
         Assets.InfoBackground = g.newPixmap("InfoBackground.png", PixmapFormat.RGB565);
         //game.setScreen(new TestScreen(game));
         //game.setScreen(new MenuScreen(game));
-        game.setScreen(new GlTestScreen(game));
+        //game.setScreen(new GlTestScreen(game));
+        game.setScreen(new TestScreen2(game));
     }
 
     @Override

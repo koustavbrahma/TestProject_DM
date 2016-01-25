@@ -1,9 +1,11 @@
 package koustav.duelmasters.main.androidgamesframeworkimpl;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Point;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
@@ -39,14 +41,25 @@ public abstract class AndroidGame extends Activity implements Game {
     WakeLock wakeLock;
     boolean TURN;
     boolean UseGLRenderView;
+    private int currentApiVersion;
 
     @Override
+    @SuppressLint("NewApi")
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        currentApiVersion = android.os.Build.VERSION.SDK_INT;
+
+        if(currentApiVersion >= Build.VERSION_CODES.KITKAT) {
+            int uiOptions = View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+
+            View decorView = getWindow().getDecorView();
+            decorView.setSystemUiVisibility(uiOptions);
+        }
 
         frameBufferWidth = 320;
         frameBufferHeight = 480;

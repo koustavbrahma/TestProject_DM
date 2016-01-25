@@ -1,4 +1,4 @@
-package koustav.duelmasters.main.androidgameduelmastersutil;
+package koustav.duelmasters.main.androidgameduelmastersutillegacycode;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,6 +11,7 @@ import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.GridPositionIndex;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.PackedCardInfo;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.World;
+import koustav.duelmasters.main.androidgameduelmastersutil.SetUnsetUtil;
 
 /**
  * Created by Koustav on 5/20/2015.

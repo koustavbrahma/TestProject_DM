@@ -1,4 +1,4 @@
-package koustav.duelmasters.main.androidgameduelmastersutil;
+package koustav.duelmasters.main.androidgameduelmastersutillegacycode;
 
 import java.util.ArrayList;
 import java.util.List;

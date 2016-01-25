@@ -1,12 +1,11 @@
-package koustav.duelmasters.main.androidgameduelmasters;
+package koustav.duelmasters.main.androidgameduelmasterscreens;
 
 import java.util.List;
 
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.World;
 import koustav.duelmasters.main.androidgameduelmastersassets.Assets;
-import koustav.duelmasters.main.androidgameduelmastersutil.CreateScenarioUtil;
-import koustav.duelmasters.main.androidgameduelmastersutil.GraphicUtil;
-import koustav.duelmasters.main.androidgamesframework.Game;
+import koustav.duelmasters.main.androidgameduelmastersutillegacycode.CreateScenarioUtil;
+import koustav.duelmasters.main.androidgameduelmastersutillegacycode.GraphicUtil;
 import koustav.duelmasters.main.androidgamesframework.Graphics;
 import koustav.duelmasters.main.androidgamesframework.Input.TouchEvent;
 import koustav.duelmasters.main.androidgamesframework.Screen;

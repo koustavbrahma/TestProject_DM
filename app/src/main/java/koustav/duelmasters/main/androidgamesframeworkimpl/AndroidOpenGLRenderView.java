@@ -35,12 +35,16 @@ public class AndroidOpenGLRenderView extends GLSurfaceView implements GLSurfaceV
     long startTime = System.nanoTime();
     private float[] viewMatrix;
     private float[] projectionMatrix;
+    private float[] viewProjectionMatrix;
+    private final float[] invertedViewProjectionMatrix;
 
     public AndroidOpenGLRenderView(AndroidGame game) {
         super(game);
         this.game = game;
         viewMatrix = new float[16];
         projectionMatrix = new float[16];
+        viewProjectionMatrix = new float[16];
+        invertedViewProjectionMatrix = new float[16];
         ActivityManager activityManager =
                 (ActivityManager) game.getSystemService(game.ACTIVITY_SERVICE);
         ConfigurationInfo configurationInfo =
@@ -79,8 +83,10 @@ public class AndroidOpenGLRenderView extends GLSurfaceView implements GLSurfaceV
     public void onSurfaceChanged(GL10 glUnused, int width, int height) {
         // Set the OpenGL viewport to fill the entire surface.
         glViewport(0, 0, width, height);
-        MatrixHelper.perspectiveM(projectionMatrix, 45, (float) width / (float) height, 1f, 10f);
-        setLookAtM(viewMatrix, 0, 0f, 1.2f, 2.2f, 0f, 0f, 0f, 0f, 1f, 0f);
+        MatrixHelper.perspectiveM(projectionMatrix, 18, (float) width / (float) height, 1f, 10f);
+        setLookAtM(viewMatrix, 0, 0f, 1.2f, 2.4f, 0f, 0f, 0.2f, 0f, 1f, 0f);
+        multiplyMM(viewProjectionMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
+        invertM(invertedViewProjectionMatrix, 0, viewProjectionMatrix, 0);
     }
 
     @Override
@@ -150,5 +156,13 @@ public class AndroidOpenGLRenderView extends GLSurfaceView implements GLSurfaceV
 
     public float [] getViewMatrix() {
         return viewMatrix;
+    }
+
+    public float [] getViewProjectionMatrix() {
+        return viewProjectionMatrix;
+    }
+
+    public float [] getInvertedViewProjectionMatrix() {
+        return invertedViewProjectionMatrix;
     }
 }
