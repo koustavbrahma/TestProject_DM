@@ -33,10 +33,11 @@ public class AndroidOpenGLRenderView extends GLSurfaceView implements GLSurfaceV
     GLGameState state;
     Object stateChanged = new Object();
     long startTime = System.nanoTime();
+    long presentTime= System.nanoTime();
     private float[] viewMatrix;
     private float[] projectionMatrix;
     private float[] viewProjectionMatrix;
-    private final float[] invertedViewProjectionMatrix;
+    private float[] invertedViewProjectionMatrix;
 
     public AndroidOpenGLRenderView(AndroidGame game) {
         super(game);
@@ -87,6 +88,8 @@ public class AndroidOpenGLRenderView extends GLSurfaceView implements GLSurfaceV
         setLookAtM(viewMatrix, 0, 0f, 1.2f, 2.4f, 0f, 0f, 0.2f, 0f, 1f, 0f);
         multiplyMM(viewProjectionMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
         invertM(invertedViewProjectionMatrix, 0, viewProjectionMatrix, 0);
+        //glEnable(GL_DEPTH_TEST);
+        //glDepthFunc(GL_LEQUAL);
     }
 
     @Override
@@ -99,11 +102,13 @@ public class AndroidOpenGLRenderView extends GLSurfaceView implements GLSurfaceV
         }
 
         if (glstate == GLGameState.Running) {
-            float deltaTime = (System.nanoTime() - startTime) / 1000000000.0f;
-            startTime = System.nanoTime();
+            float deltaTime = (System.nanoTime() - presentTime) / 1000000000.0f;
+            presentTime = System.nanoTime();
 
-            game.getCurrentScreen().update(deltaTime);
-            game.getCurrentScreen().present(deltaTime);
+            float totalTime = (presentTime - startTime) / 1000000000.0f;
+
+            game.getCurrentScreen().update(deltaTime, totalTime);
+            game.getCurrentScreen().present(deltaTime, totalTime);
         }
 
         if (glstate == GLGameState.Pasued) {

@@ -15,7 +15,7 @@ public class TestLoadingScreen extends Screen {
     }
 
     @Override
-    public void update(float deltaTime) {
+    public void update(float deltaTime, float totalTime) {
         Graphics g = game.getGraphics();
         Assets.background = g.newPixmap("duelmaze.png", PixmapFormat.RGB565);
         Assets.cardbackside = g.newPixmap("cardbackside.png", PixmapFormat.RGB565);
@@ -28,7 +28,7 @@ public class TestLoadingScreen extends Screen {
     }
 
     @Override
-    public void present(float deltaTime) {
+    public void present(float deltaTime, float totalTime) {
     }
 
     @Override

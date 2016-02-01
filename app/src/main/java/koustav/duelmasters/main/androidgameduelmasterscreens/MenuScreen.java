@@ -64,7 +64,7 @@ public class MenuScreen extends Screen {
     }
 
     @Override
-    public void update(float deltaTime) {
+    public void update(float deltaTime, float totalTime) {
         game.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -74,7 +74,7 @@ public class MenuScreen extends Screen {
     }
 
     @Override
-    public void present(float deltaTime) {
+    public void present(float deltaTime, float totalTime) {
     }
 
     @Override

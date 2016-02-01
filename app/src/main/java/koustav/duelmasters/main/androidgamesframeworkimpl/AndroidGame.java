@@ -68,8 +68,8 @@ public abstract class AndroidGame extends Activity implements Game {
         Bitmap frameBuffer = Bitmap.createBitmap(frameBufferWidth,
                 frameBufferHeight, Bitmap.Config.RGB_565);
 
-        float scaleX = (float)frameBufferWidth/getWindowManager().getDefaultDisplay().getWidth();
-        float scaleY = (float)frameBufferHeight/getWindowManager().getDefaultDisplay().getHeight();
+        float scaleX = UseGLRenderView? 1 : (float)frameBufferWidth/getWindowManager().getDefaultDisplay().getWidth();
+        float scaleY = UseGLRenderView? 1 : (float)frameBufferHeight/getWindowManager().getDefaultDisplay().getHeight();
 
         renderView = new AndroidFastRenderView(this, frameBuffer);
         GLrenderView = new AndroidOpenGLRenderView(this);
@@ -157,7 +157,7 @@ public abstract class AndroidGame extends Activity implements Game {
         this.screen.pause();
         this.screen.dispose();
         screen.resume();
-        screen.update(0);
+        screen.update(0, 0);
         this.screen = screen;
     }
 

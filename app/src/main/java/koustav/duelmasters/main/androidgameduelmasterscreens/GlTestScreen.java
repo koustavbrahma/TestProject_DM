@@ -1,14 +1,12 @@
 package koustav.duelmasters.main.androidgameduelmasterscreens;
 
-import koustav.duelmasters.main.androidgamegeometry.Mallet;
-import koustav.duelmasters.main.androidgamegeometry.Points;
-import koustav.duelmasters.main.androidgamegeometry.Puck;
-import koustav.duelmasters.main.androidgamegeometry.Table;
+import koustav.duelmasters.main.androidgameopenglobjects.Mallet;
+import koustav.duelmasters.main.androidgameopenglobjects.Puck;
+import koustav.duelmasters.main.androidgameopenglobjects.Table;
 import koustav.duelmasters.main.androidgameopenglutil.TextureHelper;
 import koustav.duelmasters.main.androidgamesframework.Screen;
 import koustav.duelmasters.main.androidgamesframeworkimpl.AndroidGame;
 import koustav.duelmasters.main.androidgamesframeworkimpl.AndroidOpenGLRenderView;
-import koustav.duelmasters.main.androidgameshaderprogram.ColorShaderProgram;
 import koustav.duelmasters.main.androidgameshaderprogram.TextureShaderProgram;
 import koustav.duelmasters.main.androidgameshaderprogram.UniformColorShaderProgram;
 
@@ -43,11 +41,11 @@ public class GlTestScreen extends Screen {
     }
 
     @Override
-    public void update(float deltaTime) {
+    public void update(float deltaTime, float totalTime) {
     }
 
     @Override
-    public void present(float deltaTime) {
+    public void present(float deltaTime, float totalTime) {
         // Clear the rendering surface.
         glClear(GL_COLOR_BUFFER_BIT);
         projectionMatrix = ((AndroidOpenGLRenderView)game.getRenderObj()).getProjectionMatrix();

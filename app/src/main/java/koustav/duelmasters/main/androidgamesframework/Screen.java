@@ -13,8 +13,8 @@ public abstract class Screen {
         this.game = game;
     }
 
-    public abstract void update(float deltaTime);
-    public abstract void present(float deltaTime);
+    public abstract void update(float deltaTime, float totalTime);
+    public abstract void present(float deltaTime, float totalTime);
     public abstract void pause();
     public abstract void resume();
     public abstract void dispose();

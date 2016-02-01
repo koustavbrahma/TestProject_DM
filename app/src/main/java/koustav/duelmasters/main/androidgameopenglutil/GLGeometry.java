@@ -14,6 +14,10 @@ public class GLGeometry {
         public GLPoint translateY(float distance) {
             return new GLPoint(x, y + distance, z);
         }
+
+        public GLPoint translate(GLVector vector) {
+            return new GLPoint(x + vector.x, y + vector.y, z + vector.z);
+        }
     }
 
     public static class GLCircle {
@@ -37,5 +41,45 @@ public class GLGeometry {
             this.radius = radius;
             this.height = height;
         }
+    }
+
+    public static class GLVector {
+        public final float x, y, z;
+        public GLVector(float x, float y, float z) {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
+    }
+
+    public static class GLRay {
+        public final GLPoint point;
+        public final GLVector vector;
+        public GLRay(GLPoint point, GLVector vector) {
+            this.point = point;
+            this.vector = vector;
+        }
+    }
+
+    public static GLVector GLVectorBetween(GLPoint from, GLPoint to) {
+        return new GLVector(
+                to.x - from.x,
+                to.y - from.y,
+                to.z - from.z);
+    }
+
+
+
+    public static GLPoint GLRayIntersectionWithXZPlane(GLRay ray) {
+        GLPoint nearPointRay = ray.point;
+        GLPoint farPointRay = ray.point.translate(ray.vector);
+
+        float x = (-nearPointRay.y/(farPointRay.y - nearPointRay.y)) * (farPointRay.x - nearPointRay.x)
+                + nearPointRay.x;
+
+        float z = (-nearPointRay.y/(farPointRay.y - nearPointRay.y)) * (farPointRay.z - nearPointRay.z)
+                + nearPointRay.z;
+
+        return new GLPoint(x, 0f, z);
     }
 }

@@ -33,7 +33,7 @@ public class TestScreen extends Screen {
     }
 
     @Override
-    public void update(float deltaTime) {
+    public void update(float deltaTime, float totalTime) {
         if(state == GameState.Loading)
             updateLoading();
         if(state == GameState.Ready)
@@ -99,7 +99,7 @@ public class TestScreen extends Screen {
     }
 
     @Override
-    public void present(float deltaTime) {
+    public void present(float deltaTime, float totalTime) {
         Graphics g = game.getGraphics();
         g.drawPixmap(Assets.background, 0, 0);
         g.drawPixmap(Assets.Button, 0, 0);

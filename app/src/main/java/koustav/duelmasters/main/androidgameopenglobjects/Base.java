@@ -1,4 +1,4 @@
-package koustav.duelmasters.main.androidgamegeometry;
+package koustav.duelmasters.main.androidgameopenglobjects;
 
 import koustav.duelmasters.main.androidgameopenglutil.VertexArray;
 import koustav.duelmasters.main.androidgameshaderprogram.TextureShaderProgram;
@@ -7,9 +7,9 @@ import static android.opengl.GLES20.GL_TRIANGLE_FAN;
 import static android.opengl.GLES20.glDrawArrays;
 
 /**
- * Created by Koustav on 1/25/2016.
+ * Created by Koustav on 1/24/2016.
  */
-public class CardProjection {
+public class Base {
     private static final int BYTES_PER_FLOAT = 4;
     private static final int POSITION_COMPONENT_COUNT = 2;
     private static final int TEXTURE_COORDINATES_COMPONENT_COUNT = 2;
@@ -20,15 +20,15 @@ public class CardProjection {
             // Order of coordinates: X, Y, S, T
             // Triangle Fan
             0f, 0f, 0.5f, 0.5f,
-            -0.04f, -0.06f, 0f, 1.0f,
-            0.04f, -0.06f, 1f, 1.0f,
-            0.04f, 0.06f, 1f, 0.0f,
-            -0.04f, 0.06f, 0f, 0.0f,
-            -0.04f, -0.06f, 0f, 1.0f };
+            -1.0f, -1.0f, 0f, 1.0f,
+            1.0f, -1.0f, 1f, 1.0f,
+            1.0f, 1.0f, 1f, 0.0f,
+            -1.0f, 1.0f, 0f, 0.0f,
+            -1.0f, -1.0f, 0f, 1.0f };
 
     private final VertexArray vertexArray;
 
-    public CardProjection() {
+    public Base() {
         vertexArray = new VertexArray(VERTEX_DATA);
     }
 
