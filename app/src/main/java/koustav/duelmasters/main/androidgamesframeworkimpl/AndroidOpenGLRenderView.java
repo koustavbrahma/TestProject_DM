@@ -88,8 +88,8 @@ public class AndroidOpenGLRenderView extends GLSurfaceView implements GLSurfaceV
         setLookAtM(viewMatrix, 0, 0f, 1.2f, 2.4f, 0f, 0f, 0.2f, 0f, 1f, 0f);
         multiplyMM(viewProjectionMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
         invertM(invertedViewProjectionMatrix, 0, viewProjectionMatrix, 0);
-        //glEnable(GL_DEPTH_TEST);
-        //glDepthFunc(GL_LEQUAL);
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LEQUAL);
     }
 
     @Override
