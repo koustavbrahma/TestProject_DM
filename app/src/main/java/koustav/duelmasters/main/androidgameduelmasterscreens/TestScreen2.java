@@ -10,6 +10,7 @@ import koustav.duelmasters.main.androidgameopenglanimation.ParticleShooter;
 import koustav.duelmasters.main.androidgameopenglanimation.ParticleSystem;
 import koustav.duelmasters.main.androidgameopenglobjects.Base;
 import koustav.duelmasters.main.androidgameopenglobjects.Puck;
+import koustav.duelmasters.main.androidgameopenglobjects.Sphere;
 import koustav.duelmasters.main.androidgameopenglobjects.Table;
 import koustav.duelmasters.main.androidgameopenglobjects.XZRectangle;
 import koustav.duelmasters.main.androidgameopenglutil.GLGeometry;
@@ -25,6 +26,7 @@ import koustav.duelmasters.main.androidgamesframeworkimpl.AndroidOpenGLRenderVie
 import koustav.duelmasters.main.androidgameshaderprogram.ParticleShaderProgram;
 import koustav.duelmasters.main.androidgameshaderprogram.TextureShaderProgram;
 import koustav.duelmasters.main.androidgameshaderprogram.TextureShaderProgramLight;
+import koustav.duelmasters.main.androidgameshaderprogram.UniformColorShaderLightProgram;
 import koustav.duelmasters.main.androidgameshaderprogram.UniformColorShaderProgram;
 
 import static android.opengl.GLES20.GL_COLOR_BUFFER_BIT;
@@ -39,11 +41,12 @@ public class TestScreen2 extends Screen {
     private Base base;
     private XZRectangle table;
     private Puck puck;
+    private Sphere sphere;
     private XZRectangle cardProjection;
     private XZRectangle invCardProjection;
 
     private TextureShaderProgram textureProgram;
-    private UniformColorShaderProgram colorProgram;
+    private UniformColorShaderLightProgram colorProgram;
     private ParticleShaderProgram particleProgram;
     private TextureShaderProgramLight textureShaderProgramLight;
 
@@ -108,6 +111,7 @@ public class TestScreen2 extends Screen {
         base = new Base();
         table = new XZRectangle(1.2f, 1.6f, 0);
         puck = new Puck(0.02f, 0.02f, 32);
+        sphere = new Sphere(0.05f, 32);
         cardProjection = new XZRectangle(0.08f, 0.12f, 0);
         invCardProjection = new XZRectangle(0.08f, 0.12f, 2);
         particleSystem = new ParticleSystem(10000);
@@ -229,9 +233,18 @@ public class TestScreen2 extends Screen {
         // Draw the puck.
         colorProgram.useProgram();
         positionObjectInScenetmp(tmpx, puck.height / 2f, tmpz);
-        colorProgram.setUniforms(modelViewProjectionMatrix, 0.8f, 0.8f, 1f);
+        colorProgram.setUniforms(modelViewMatrix, it_modelViewMatrix,
+                modelViewProjectionMatrix, Light.size(), Light, Material, new float[] {0.8f, 0.8f, 1f, 1f});
         puck.bindData(colorProgram);
         puck.draw();
+
+        colorProgram.useProgram();
+        positionObjectInScenetmp(0.5f, 0.1f, 0.1f);
+        colorProgram.setUniforms(modelViewMatrix, it_modelViewMatrix,
+                modelViewProjectionMatrix, Light.size(), Light, Material, new float[] {0.8f, 0.8f, 1f, 1f});
+        sphere.bindData(colorProgram);
+        sphere.draw();
+
 
         // particle system
 
@@ -256,7 +269,7 @@ public class TestScreen2 extends Screen {
     @Override
     public void resume() {
         textureProgram = new TextureShaderProgram(game);
-        colorProgram = new UniformColorShaderProgram(game);
+        colorProgram = new UniformColorShaderLightProgram(game);
         particleProgram = new ParticleShaderProgram(game);
         textureShaderProgramLight = new TextureShaderProgramLight(game);
         basetexture = TextureHelper.loadTexture(game, "Base_1.png");

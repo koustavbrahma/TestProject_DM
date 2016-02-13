@@ -58,6 +58,7 @@ public class GlTestScreen extends Screen {
         table.bindData(textureProgram);
         table.draw();
         // Draw the mallets.
+        /*
         positionObjectInScene(0f, mallet.height / 2f, -0.4f);
         colorProgram.useProgram();
         colorProgram.setUniforms(modelViewProjectionMatrix, 1f, 0f, 0f);
@@ -73,7 +74,7 @@ public class GlTestScreen extends Screen {
         positionObjectInScene(0f, puck.height / 2f, 0f);
         colorProgram.setUniforms(modelViewProjectionMatrix, 0.8f, 0.8f, 1f);
         puck.bindData(colorProgram);
-        puck.draw();
+        puck.draw();*/
     }
 
     @Override

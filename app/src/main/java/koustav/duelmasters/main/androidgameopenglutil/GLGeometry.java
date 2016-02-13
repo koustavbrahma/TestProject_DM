@@ -43,6 +43,19 @@ public class GLGeometry {
         }
     }
 
+    public static class GLConicalFrustum {
+        public final GLPoint center;
+        public final float topradius;
+        public final float botradius;
+        public final float height;
+        public GLConicalFrustum(GLPoint center, float topradius, float botradius, float height) {
+            this.center = center;
+            this.topradius = topradius;
+            this.botradius = botradius;
+            this.height = height;
+        }
+    }
+
     public static class GLVector {
         public final float x, y, z;
         public GLVector(float x, float y, float z) {

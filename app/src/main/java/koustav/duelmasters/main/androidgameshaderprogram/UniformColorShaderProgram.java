@@ -33,7 +33,4 @@ public class UniformColorShaderProgram extends ShaderProgram {
     public int getPositionAttributeLocation() {
         return aPositionLocation;
     }
-    public int getColorAttributeLocation() {
-        return uColorLocation;
-    }
 }

@@ -6,13 +6,18 @@ import koustav.duelmasters.main.androidgameopenglutil.ObjectBuilder;
 import koustav.duelmasters.main.androidgameopenglutil.VertexArray;
 import koustav.duelmasters.main.androidgameopenglutil.ObjectBuilder.*;
 import koustav.duelmasters.main.androidgameopenglutil.GLGeometry.*;
+import koustav.duelmasters.main.androidgameshaderprogram.UniformColorShaderLightProgram;
 import koustav.duelmasters.main.androidgameshaderprogram.UniformColorShaderProgram;
 
 /**
  * Created by Koustav on 1/23/2016.
  */
 public class Mallet {
+    private static final int BYTES_PER_FLOAT = 4;
     private static final int POSITION_COMPONENT_COUNT = 3;
+    private static final int NORMAL_COMPONENT_COUNT = 3;
+    private static final int STRIDE =
+            (POSITION_COMPONENT_COUNT + NORMAL_COMPONENT_COUNT) * BYTES_PER_FLOAT;
     public final float radius;
     public final float height;
     private final VertexArray vertexArray;
@@ -27,10 +32,15 @@ public class Mallet {
         drawList = generatedData.drawList;
     }
 
-    public void bindData(UniformColorShaderProgram colorProgram) {
+    public void bindData(UniformColorShaderLightProgram colorProgram) {
         vertexArray.setVertexAttribPointer(0,
                 colorProgram.getPositionAttributeLocation(),
-                POSITION_COMPONENT_COUNT, 0);
+                POSITION_COMPONENT_COUNT, STRIDE);
+        vertexArray.setVertexAttribPointer(
+                POSITION_COMPONENT_COUNT,
+                colorProgram.getNormalAttributeLocation(),
+                NORMAL_COMPONENT_COUNT,
+                STRIDE);
     }
     public void draw() {
         for (DrawCommand drawCommand : drawList) {
