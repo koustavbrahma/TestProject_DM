@@ -13,11 +13,16 @@ public class ShaderProgram {
     // Uniform constants
     protected static final String U_MATRIX = "u_Matrix";
     protected static final String U_TEXTURE_UNIT = "u_TextureUnit";
+    protected static final String U_TEXTURE_UNIT2 = "u_TextureUnit_2";
     protected static final String U_COLOR = "u_Color";
     protected static final String U_TIME = "u_Time";
     protected static final String U_MV_MATRIX = "u_MVMatrix";
     protected static final String U_IT_MV_MATRIX = "u_IT_MVMatrix";
     protected static final String U_MVP_MATRIX = "u_MVPMatrix";
+    protected static final String U_WIDTH = "u_Width";
+    protected static final String U_HEIGHT = "u_Height";
+    protected static final String U_WEIGHT_COUNT = "u_Weight_Count";
+    protected static final String U_PASS = "u_Pass";
 
     protected static final String U_MATERIAL_KA = "u_Material.Ka";
     protected static final String U_MATERIAL_KD = "u_Material.Kd";
@@ -71,5 +76,9 @@ public class ShaderProgram {
 
     protected String U_LIGHT_CUTOFF(int i) {
         return "u_Light[" + i + "].Cutoff";
+    }
+
+    protected String U_WEIGHT(int i) {
+        return "u_Weight[" + i + "]";
     }
 }

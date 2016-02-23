@@ -20,14 +20,14 @@ public class UIHelper {
         }
     }
 
-    public static GLNormalized2DPoint ConvertTouchEventToNormalized2DPoint(Game game, TouchEvent event) {
+    public static GLNormalized2DPoint ConvertTouchEventToNormalized2DPoint(Game game, int event_x, int event_y) {
         // Convert touch coordinates into normalized device
         // coordinates, keeping in mind that Android's Y
         // coordinates are inverted.
         final float normalizedX =
-                (event.x / (float)game.getViewObj().getWidth()) * 2 - 1;
+                (event_x / (float)game.getViewObj().getWidth()) * 2 - 1;
         final float normalizedY =
-                -((event.y / (float) game.getViewObj().getHeight()) * 2 - 1);
+                -((event_y / (float) game.getViewObj().getHeight()) * 2 - 1);
         return new GLNormalized2DPoint(normalizedX, normalizedY);
     }
 

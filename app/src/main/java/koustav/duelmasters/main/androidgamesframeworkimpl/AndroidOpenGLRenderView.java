@@ -34,18 +34,12 @@ public class AndroidOpenGLRenderView extends GLSurfaceView implements GLSurfaceV
     Object stateChanged = new Object();
     long startTime = System.nanoTime();
     long presentTime= System.nanoTime();
-    private float[] viewMatrix;
-    private float[] projectionMatrix;
-    private float[] viewProjectionMatrix;
-    private float[] invertedViewProjectionMatrix;
+    int width;
+    int height;
 
     public AndroidOpenGLRenderView(AndroidGame game) {
         super(game);
         this.game = game;
-        viewMatrix = new float[16];
-        projectionMatrix = new float[16];
-        viewProjectionMatrix = new float[16];
-        invertedViewProjectionMatrix = new float[16];
         ActivityManager activityManager =
                 (ActivityManager) game.getSystemService(game.ACTIVITY_SERVICE);
         ConfigurationInfo configurationInfo =
@@ -84,12 +78,8 @@ public class AndroidOpenGLRenderView extends GLSurfaceView implements GLSurfaceV
     public void onSurfaceChanged(GL10 glUnused, int width, int height) {
         // Set the OpenGL viewport to fill the entire surface.
         glViewport(0, 0, width, height);
-        MatrixHelper.perspectiveM(projectionMatrix, 18, (float) width / (float) height, 1f, 10f);
-        setLookAtM(viewMatrix, 0, 0f, 1.2f, 2.4f, 0f, 0f, 0.2f, 0f, 1f, 0f);
-        multiplyMM(viewProjectionMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
-        invertM(invertedViewProjectionMatrix, 0, viewProjectionMatrix, 0);
-        glEnable(GL_DEPTH_TEST);
-        glDepthFunc(GL_LEQUAL);
+        this.width = width;
+        this.height = height;
     }
 
     @Override
@@ -155,19 +145,11 @@ public class AndroidOpenGLRenderView extends GLSurfaceView implements GLSurfaceV
         this.onPause();
     }
 
-    public float [] getProjectionMatrix() {
-        return projectionMatrix;
+    public int get_width () {
+        return width;
     }
 
-    public float [] getViewMatrix() {
-        return viewMatrix;
-    }
-
-    public float [] getViewProjectionMatrix() {
-        return viewProjectionMatrix;
-    }
-
-    public float [] getInvertedViewProjectionMatrix() {
-        return invertedViewProjectionMatrix;
+    public int get_height() {
+        return height;
     }
 }

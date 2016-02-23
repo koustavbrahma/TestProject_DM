@@ -2,6 +2,7 @@ package koustav.duelmasters.main.androidgameopenglobjects;
 
 import java.util.List;
 
+import koustav.duelmasters.main.androidgameopenglutil.GLMaterial;
 import koustav.duelmasters.main.androidgameopenglutil.ObjectBuilder;
 import koustav.duelmasters.main.androidgameopenglutil.ObjectBuilder.*;
 import koustav.duelmasters.main.androidgameopenglutil.VertexArray;
@@ -12,7 +13,7 @@ import koustav.duelmasters.main.androidgameshaderprogram.UniformColorShaderProgr
 /**
  * Created by Koustav on 1/23/2016.
  */
-public class Puck {
+public class Puck extends GLObject{
     private static final int BYTES_PER_FLOAT = 4;
     private static final int POSITION_COMPONENT_COUNT = 3;
     private static final int NORMAL_COMPONENT_COUNT = 3;
@@ -22,7 +23,8 @@ public class Puck {
     private final VertexArray vertexArray;
     private final List<DrawCommand> drawList;
 
-    public Puck(float radius, float height, int numPointsAroundPuck) {
+    public Puck(GLMaterial Material, float radius, float height, int numPointsAroundPuck) {
+        super(Material);
         GeneratedData generatedData = ObjectBuilder.createPuck(new GLCylinder(
                 new GLPoint(0f, 0f, 0f), radius, height), numPointsAroundPuck);
 
@@ -32,14 +34,14 @@ public class Puck {
         drawList = generatedData.drawList;
     }
 
-    public void bindData(UniformColorShaderLightProgram colorProgram) {
+    public void bindData(int aPositionLocation, int aNormalLocation) {
         vertexArray.setVertexAttribPointer(0,
-                colorProgram.getPositionAttributeLocation(),
+                aPositionLocation,
                 POSITION_COMPONENT_COUNT,
                 STRIDE);
         vertexArray.setVertexAttribPointer(
                 POSITION_COMPONENT_COUNT,
-                colorProgram.getNormalAttributeLocation(),
+                aNormalLocation,
                 NORMAL_COMPONENT_COUNT,
                 STRIDE);
     }

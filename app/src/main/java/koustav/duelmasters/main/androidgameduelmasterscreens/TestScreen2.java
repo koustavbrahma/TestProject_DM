@@ -2,6 +2,7 @@ package koustav.duelmasters.main.androidgameduelmasterscreens;
 
 import android.graphics.Color;
 
+import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,25 +14,26 @@ import koustav.duelmasters.main.androidgameopenglobjects.Puck;
 import koustav.duelmasters.main.androidgameopenglobjects.Sphere;
 import koustav.duelmasters.main.androidgameopenglobjects.Table;
 import koustav.duelmasters.main.androidgameopenglobjects.XZRectangle;
+import koustav.duelmasters.main.androidgameopenglutil.FrameBufferObject;
 import koustav.duelmasters.main.androidgameopenglutil.GLGeometry;
 import koustav.duelmasters.main.androidgameopenglutil.GLGeometry.*;
 import koustav.duelmasters.main.androidgameopenglutil.GLLight;
 import koustav.duelmasters.main.androidgameopenglutil.GLMaterial;
+import koustav.duelmasters.main.androidgameopenglutil.MathHelper;
+import koustav.duelmasters.main.androidgameopenglutil.MatrixHelper;
 import koustav.duelmasters.main.androidgameopenglutil.TextureHelper;
 import koustav.duelmasters.main.androidgameopenglutil.UIHelper;
 import koustav.duelmasters.main.androidgamesframework.Input;
 import koustav.duelmasters.main.androidgamesframework.Screen;
 import koustav.duelmasters.main.androidgamesframeworkimpl.AndroidGame;
 import koustav.duelmasters.main.androidgamesframeworkimpl.AndroidOpenGLRenderView;
+import koustav.duelmasters.main.androidgameshaderprogram.BloomingShaderProgram;
+import koustav.duelmasters.main.androidgameshaderprogram.GaussianBlurShaderProgram;
 import koustav.duelmasters.main.androidgameshaderprogram.ParticleShaderProgram;
 import koustav.duelmasters.main.androidgameshaderprogram.TextureShaderProgram;
 import koustav.duelmasters.main.androidgameshaderprogram.TextureShaderProgramLight;
 import koustav.duelmasters.main.androidgameshaderprogram.UniformColorShaderLightProgram;
-import koustav.duelmasters.main.androidgameshaderprogram.UniformColorShaderProgram;
 
-import static android.opengl.GLES20.GL_COLOR_BUFFER_BIT;
-import static android.opengl.GLES20.GL_DEPTH_BUFFER_BIT;
-import static android.opengl.GLES20.glClear;
 import static android.opengl.Matrix.*;
 
 /**
@@ -49,13 +51,20 @@ public class TestScreen2 extends Screen {
     private UniformColorShaderLightProgram colorProgram;
     private ParticleShaderProgram particleProgram;
     private TextureShaderProgramLight textureShaderProgramLight;
+    private GaussianBlurShaderProgram gaussianBlurShaderProgram;
+    private BloomingShaderProgram bloomingShaderProgram;
 
     private int basetexture;
     private int tabletexture;
     private int cardbackside;
 
+    private FrameBufferObject FBO;
+    private FrameBufferObject FBO2;
+    private FrameBufferObject FBO3;
+
     private float[] viewMatrix;
     private float[] projectionMatrix;
+    private float[] viewProjectionMatrix;
     private float[] invertedViewProjectionMatrix;
 
     private float[] modelMatrix;
@@ -86,6 +95,8 @@ public class TestScreen2 extends Screen {
     final float[] positionToLight3 = {-1.0f, 1.0f, -1.0f, 1.0f};
     final float[] positionToLight4= {-1.0f, 1.0f, 1.0f, 1.0f};
 
+    final float[] weights;
+
   /*
     final float[] vectorToLight = {0.30f, 0.35f, -0.89f, 0f};
 
@@ -102,6 +113,11 @@ public class TestScreen2 extends Screen {
 
     public TestScreen2(AndroidGame game) {
         super(game);
+        viewMatrix = new float[16];
+        projectionMatrix = new float[16];
+        viewProjectionMatrix = new float[16];
+        invertedViewProjectionMatrix = new float[16];
+
         modelMatrix = new float[16];
         modelViewMatrix = new float[16];
         modelViewProjectionMatrix = new float[16];
@@ -109,16 +125,21 @@ public class TestScreen2 extends Screen {
         tempMatrix = new float[16];
 
         base = new Base();
-        table = new XZRectangle(1.2f, 1.6f, 0);
-        puck = new Puck(0.02f, 0.02f, 32);
-        sphere = new Sphere(0.05f, 32);
-        cardProjection = new XZRectangle(0.08f, 0.12f, 0);
-        invCardProjection = new XZRectangle(0.08f, 0.12f, 2);
+        table = new XZRectangle(new GLMaterial(new float[] {0.8f, 0.8f, 0.8f}, new float[] {0.8f, 0.8f, 0.8f},
+                new float[] {0.1f, 0.1f, 0.1f}, 10.0f), 1.2f, 1.6f, 0);
+        puck = new Puck(new GLMaterial(new float[] {0.8f, 0.8f, 0.8f}, new float[] {0.8f, 0.8f, 0.8f},
+                new float[] {0.1f, 0.1f, 0.1f}, 10.0f), 0.02f, 0.02f, 32);
+        sphere = new Sphere(new GLMaterial(new float[] {0.5f, 0.5f, 0.5f}, new float[] {0.5f, 0.5f, 0.5f},
+                new float[] {0.8f, 0.8f, 0.8f}, 3.0f), 0.05f, 32);
+        cardProjection = new XZRectangle(new GLMaterial(new float[] {0.8f, 0.8f, 0.8f}, new float[] {0.8f, 0.8f, 0.8f},
+                new float[] {0.1f, 0.1f, 0.1f}, 10.0f), 0.08f, 0.12f, 0);
+        invCardProjection = new XZRectangle(new GLMaterial(new float[] {0.8f, 0.8f, 0.8f}, new float[] {0.8f, 0.8f, 0.8f},
+                new float[] {0.1f, 0.1f, 0.1f}, 10.0f), 0.08f, 0.12f, 2);
         particleSystem = new ParticleSystem(10000);
 
         GLVector particleDirection = new GLVector(0.0f, -0.5f, 0f);
         redParticleShooter = new ParticleShooter(
-                new GLPoint(0.0f, 1.0f, 0.6f),
+                new GLPoint(0.0f, 1.0f, 0.0f),
                 particleDirection,
                 Color.rgb(255, 50, 5),
                 angleVarianceInDegrees,
@@ -132,40 +153,68 @@ public class TestScreen2 extends Screen {
         spotPositionsInEyeSpace2 = new float[4];
         spotPositionsInEyeSpace3 = new float[4];
         spotPositionsInEyeSpace4 = new float[4];
+        weights = new float[10];
+        generateWeights();
+    }
+
+    private void generateWeights() {
+        float sum = 0;
+        float sigma2 = 4.0f;
+        weights[0] = MathHelper.GaussFun1D(0, sigma2);
+        sum = weights[0];
+        for (int i = 1; i  < weights.length; i++) {
+            weights[i] = MathHelper.GaussFun1D(i, sigma2);
+            sum += 2 * weights[i];
+        }
+
+        for (int i = 0; i < weights.length; i++) {
+            weights[i] = weights[i]/sum;
+        }
     }
 
     @Override
     public void update(float deltaTime, float totalTime) {
-        List<Input.TouchEvent> touchEvents = game.getInput().getTouchEvents();
-        invertedViewProjectionMatrix = ((AndroidOpenGLRenderView)game.getRenderObj()).getInvertedViewProjectionMatrix();
         GLRay ray;
+        /*
+        List<Input.TouchEvent> touchEvents = game.getInput().getTouchEvents();
         game.getInput().getKeyEvents();
         int len = touchEvents.size();
         for(int i = 0; i<len; i++) {
             Input.TouchEvent event = touchEvents.get(i);
             if (event.type == Input.TouchEvent.TOUCH_UP) {
-                UIHelper.GLNormalized2DPoint Npoint = UIHelper.ConvertTouchEventToNormalized2DPoint(game, event);
+                UIHelper.GLNormalized2DPoint Npoint = UIHelper.ConvertTouchEventToNormalized2DPoint(game, event.x, event.y);
                 ray = UIHelper.convertNormalized2DPointToRay(invertedViewProjectionMatrix, Npoint.normalizedX, Npoint.normalizedY);
                 GLPoint point = GLGeometry.GLRayIntersectionWithXZPlane(ray);
                 tmpx = point.x;
                 tmpz = point.z;
                 break;
             }
+        } */
+        if (game.getInput().isTouchDown(0)) {
+            UIHelper.GLNormalized2DPoint Npoint = UIHelper.ConvertTouchEventToNormalized2DPoint(game, game.getInput().getTouchX(0),
+                    game.getInput().getTouchY(0));
+            ray = UIHelper.convertNormalized2DPointToRay(invertedViewProjectionMatrix, Npoint.normalizedX, Npoint.normalizedY);
+            GLPoint point = GLGeometry.GLRayIntersectionWithXZPlane(ray);
+            tmpx = point.x;
+            tmpz = point.z;
         }
     }
 
     @Override
     public void present(float deltaTime, float totalTime) {
         // Clear the rendering surface.
+        //glViewport(0, 0, 512, 512);
+        glBindFramebuffer(GL_FRAMEBUFFER, FBO.getfboHandle());
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LEQUAL);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         //glClear(GL_COLOR_BUFFER_BIT);
-        viewMatrix = ((AndroidOpenGLRenderView)game.getRenderObj()).getViewMatrix();
-        projectionMatrix = ((AndroidOpenGLRenderView)game.getRenderObj()).getProjectionMatrix();
+
         // Draw the table.
         positionObjectInXZScene(0f, 0f, 0f);
         textureProgram.useProgram();
         textureProgram.setUniforms(modelViewProjectionMatrix, basetexture);
-        base.bindData(textureProgram);
+        base.bindData(textureProgram.getPositionAttributeLocation(), textureProgram.getTextureCoordinatesAttributeLocation());
         base.draw();
 
         /*
@@ -176,9 +225,6 @@ public class TestScreen2 extends Screen {
         multiplyMV(pointPositionsInEyeSpace, 4, viewMatrix, 0, pointLightPositions, 4);
         multiplyMV(pointPositionsInEyeSpace, 8, viewMatrix, 0, pointLightPositions, 8);
 */
-
-        GLMaterial Material = new GLMaterial(new float[] {0.8f, 0.8f, 0.8f}, new float[] {0.8f, 0.8f, 0.8f},
-                new float[] {0.1f, 0.1f, 0.1f}, 10.0f);
 
 
         multiplyMV(spotLightDirectionInEyeSpace, 0, viewMatrix, 0, vectorToLight, 0);
@@ -210,23 +256,29 @@ public class TestScreen2 extends Screen {
         positionObjectInScenetmp(0f, 0f, 0f);
         textureShaderProgramLight.useProgram();
         textureShaderProgramLight.setUniforms(modelViewMatrix, it_modelViewMatrix,
-                modelViewProjectionMatrix, Light.size(), Light, Material, tabletexture);
+                modelViewProjectionMatrix, Light, table.getMaterial(), tabletexture);
 
-        table.bindData(textureShaderProgramLight);
+        table.bindData(textureShaderProgramLight.getPositionAttributeLocation(),
+                textureShaderProgramLight.getNormalAttributeLocation(),
+                textureShaderProgramLight.getTextureCoordinatesAttributeLocation());
         table.draw();
 
-        positionObjectInScenetmp(0f, 0.01f, 0.6f);
+        positionObjectInScenetmp2(0f, 0.01f, 0.6f, totalTime);
         textureShaderProgramLight.setUniforms(modelViewMatrix, it_modelViewMatrix,
-                modelViewProjectionMatrix, Light.size(), Light, Material, cardbackside);
+                modelViewProjectionMatrix, Light, cardProjection.getMaterial(), cardbackside);
 
-        cardProjection.bindData(textureShaderProgramLight);
+        cardProjection.bindData(textureShaderProgramLight.getPositionAttributeLocation(),
+                textureShaderProgramLight.getNormalAttributeLocation(),
+                textureShaderProgramLight.getTextureCoordinatesAttributeLocation());
         cardProjection.draw();
 
         positionObjectInScenetmp(0f, 0.01f, -0.6f);
         textureShaderProgramLight.setUniforms(modelViewMatrix, it_modelViewMatrix,
-                modelViewProjectionMatrix, Light.size(), Light, Material, cardbackside);
+                modelViewProjectionMatrix, Light, invCardProjection.getMaterial(), cardbackside);
 
-        invCardProjection.bindData(textureShaderProgramLight);
+        invCardProjection.bindData(textureShaderProgramLight.getPositionAttributeLocation(),
+                textureShaderProgramLight.getNormalAttributeLocation(),
+                textureShaderProgramLight.getTextureCoordinatesAttributeLocation());
         invCardProjection.draw();
 
 
@@ -234,15 +286,15 @@ public class TestScreen2 extends Screen {
         colorProgram.useProgram();
         positionObjectInScenetmp(tmpx, puck.height / 2f, tmpz);
         colorProgram.setUniforms(modelViewMatrix, it_modelViewMatrix,
-                modelViewProjectionMatrix, Light.size(), Light, Material, new float[] {0.8f, 0.8f, 1f, 1f});
-        puck.bindData(colorProgram);
+                modelViewProjectionMatrix, Light, puck.getMaterial(), new float[] {0.8f, 0.8f, 1f, 1f});
+        puck.bindData(colorProgram.getPositionAttributeLocation(), colorProgram.getNormalAttributeLocation());
         puck.draw();
 
         colorProgram.useProgram();
         positionObjectInScenetmp(0.5f, 0.1f, 0.1f);
         colorProgram.setUniforms(modelViewMatrix, it_modelViewMatrix,
-                modelViewProjectionMatrix, Light.size(), Light, Material, new float[] {0.8f, 0.8f, 1f, 1f});
-        sphere.bindData(colorProgram);
+                modelViewProjectionMatrix, Light, sphere.getMaterial(), new float[] {0.8f, 0.8f, 1f, 1f});
+        sphere.bindData(colorProgram.getPositionAttributeLocation(), colorProgram.getNormalAttributeLocation());
         sphere.draw();
 
 
@@ -260,6 +312,40 @@ public class TestScreen2 extends Screen {
         particleSystem.draw();
         glDisable(GL_BLEND);
         glDepthMask(true);
+
+        glViewport(0, 0, 512, 512);
+        glBindFramebuffer(GL_FRAMEBUFFER, FBO2.getfboHandle());
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        textureShaderProgramLight.useProgram();
+        positionObjectInScenetmp2(0f, 0.01f, 0.6f, totalTime);
+        textureShaderProgramLight.setUniforms(modelViewMatrix, it_modelViewMatrix,
+                modelViewProjectionMatrix, Light, cardProjection.getMaterial(), cardbackside);
+
+        cardProjection.bindData(textureShaderProgramLight.getPositionAttributeLocation(),
+                textureShaderProgramLight.getNormalAttributeLocation(),
+                textureShaderProgramLight.getTextureCoordinatesAttributeLocation());
+        cardProjection.draw();
+
+        glBindFramebuffer(GL_FRAMEBUFFER, FBO3.getfboHandle());
+        glDisable(GL_DEPTH_TEST);
+        glClear(GL_COLOR_BUFFER_BIT);
+        bloomingShaderProgram.useProgram();
+        bloomingShaderProgram.setUniforms(FBO2.getrenderTex(), FBO.getrenderTex(), 512, 512,
+                weights, totalTime);
+        bloomingShaderProgram.setPass(1);
+        base.bindData(bloomingShaderProgram.getPositionAttributeLocation(),
+                bloomingShaderProgram.getTextureCoordinatesAttributeLocation());
+        base.draw();
+
+        glViewport(0, 0, game.getframeBufferWidth(), game.getframeBufferHeight());
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glClear(GL_COLOR_BUFFER_BIT);
+        bloomingShaderProgram.setUniforms(FBO3.getrenderTex(), FBO.getrenderTex(), 512, 512,
+                weights, totalTime);
+        bloomingShaderProgram.setPass(2);
+        base.bindData(bloomingShaderProgram.getPositionAttributeLocation(),
+                bloomingShaderProgram.getTextureCoordinatesAttributeLocation());
+        base.draw();
     }
 
     @Override
@@ -268,13 +354,24 @@ public class TestScreen2 extends Screen {
 
     @Override
     public void resume() {
+        CreateV_P_IVPMatrix();
         textureProgram = new TextureShaderProgram(game);
         colorProgram = new UniformColorShaderLightProgram(game);
         particleProgram = new ParticleShaderProgram(game);
         textureShaderProgramLight = new TextureShaderProgramLight(game);
+        gaussianBlurShaderProgram = new GaussianBlurShaderProgram(game);
+        bloomingShaderProgram = new BloomingShaderProgram(game);
+
         basetexture = TextureHelper.loadTexture(game, "Base_1.png");
         tabletexture = TextureHelper.loadTexture(game, "duelmaze.png");
         cardbackside = TextureHelper.loadTexture(game, "cardbackside.png");
+
+         // The handle to the FBO
+         // Generate and bind the framebuffer
+        //FBO = new FrameBufferObject(512, 512);
+        FBO = new FrameBufferObject(game.getframeBufferWidth(), game.getframeBufferHeight());
+        FBO2 = new FrameBufferObject(512, 512);
+        FBO3 = new FrameBufferObject(512, 512);
     }
 
     @Override
@@ -302,6 +399,24 @@ public class TestScreen2 extends Screen {
         updateMvpMatrix();
     }
 
+    private void positionObjectInScenetmp2(float x, float y, float z, float time) {
+        setIdentityM(modelMatrix, 0);
+        translateM(modelMatrix, 0, x, y, z);
+        float d = (float) Math.toDegrees(Math.asin(Math.sin(time)));
+        rotateM(modelMatrix, 0, d, 0f, 1f, 0f);
+        updateMvpMatrix();
+    }
+
+    private void CreateV_P_IVPMatrix(){
+        CreatePMatrix(game.getframeBufferWidth(), game.getframeBufferHeight());
+        setLookAtM(viewMatrix, 0, 0f, 1.2f, 2.4f, 0f, 0f, 0.2f, 0f, 1f, 0f);
+        multiplyMM(viewProjectionMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
+        invertM(invertedViewProjectionMatrix, 0, viewProjectionMatrix, 0);
+    }
+
+    private void CreatePMatrix(int width, int height) {
+        MatrixHelper.perspectiveM(projectionMatrix, 18, (float) width / (float) height, 1f, 10f);
+    }
     private void updateMvpMatrix() {
         multiplyMM(modelViewMatrix, 0, viewMatrix, 0, modelMatrix, 0);
         invertM(tempMatrix, 0, modelViewMatrix, 0);

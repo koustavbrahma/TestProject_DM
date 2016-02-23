@@ -1,5 +1,6 @@
 package koustav.duelmasters.main.androidgameopenglobjects;
 
+import koustav.duelmasters.main.androidgameopenglutil.GLMaterial;
 import koustav.duelmasters.main.androidgameopenglutil.VertexArray;
 import koustav.duelmasters.main.androidgameshaderprogram.TextureShaderProgramLight;
 
@@ -9,7 +10,7 @@ import static android.opengl.GLES20.glDrawArrays;
 /**
  * Created by Koustav on 2/2/2016.
  */
-public class XZRectangle {
+public class XZRectangle extends GLObject{
     private static final int BYTES_PER_FLOAT = 4;
     private static final int POSITION_COMPONENT_COUNT = 3;
     private static final int NORMAL_COMPONENT_COUNT = 3;
@@ -20,7 +21,8 @@ public class XZRectangle {
 
     private final VertexArray vertexArray;
 
-    public XZRectangle(float width, float height, int orientation) {
+    public XZRectangle(GLMaterial Material, float width, float height, int orientation) {
+        super(Material);
 
         orientation = orientation % 4;
 
@@ -54,20 +56,20 @@ public class XZRectangle {
         vertexArray = new VertexArray(VERTEX_DATA);
     }
 
-    public void bindData(TextureShaderProgramLight textureProgram) {
+    public void bindData(int aPositionLocation, int aNormalLocation, int aTextureCoordinatesLocation) {
         vertexArray.setVertexAttribPointer(
                 0,
-                textureProgram.getPositionAttributeLocation(),
+                aPositionLocation,
                 POSITION_COMPONENT_COUNT,
                 STRIDE);
         vertexArray.setVertexAttribPointer(
                 POSITION_COMPONENT_COUNT,
-                textureProgram.getNormalAttributeLocation(),
+                aNormalLocation,
                 NORMAL_COMPONENT_COUNT,
                 STRIDE);
         vertexArray.setVertexAttribPointer(
                 POSITION_COMPONENT_COUNT + NORMAL_COMPONENT_COUNT,
-                textureProgram.getTextureCoordinatesAttributeLocation(),
+                aTextureCoordinatesLocation,
                 TEXTURE_COORDINATES_COMPONENT_COUNT,
                 STRIDE);
     }

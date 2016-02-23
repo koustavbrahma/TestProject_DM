@@ -20,11 +20,11 @@ public class Base {
             // Order of coordinates: X, Y, S, T
             // Triangle Fan
             0f, 0f, 0.5f, 0.5f,
-            -1.0f, -1.0f, 0f, 1.0f,
-            1.0f, -1.0f, 1f, 1.0f,
-            1.0f, 1.0f, 1f, 0.0f,
-            -1.0f, 1.0f, 0f, 0.0f,
-            -1.0f, -1.0f, 0f, 1.0f };
+            -1.0f, -1.0f, 0f, 0.0f,
+            1.0f, -1.0f, 1f, 0.0f,
+            1.0f, 1.0f, 1f, 1.0f,
+            -1.0f, 1.0f, 0f, 1.0f,
+            -1.0f, -1.0f, 0f, 0.0f };
 
     private final VertexArray vertexArray;
 
@@ -32,15 +32,15 @@ public class Base {
         vertexArray = new VertexArray(VERTEX_DATA);
     }
 
-    public void bindData(TextureShaderProgram textureProgram) {
+    public void bindData(int aPositionLocation, int aTextureCoordinatesLocation) {
         vertexArray.setVertexAttribPointer(
                 0,
-                textureProgram.getPositionAttributeLocation(),
+                aPositionLocation,
                 POSITION_COMPONENT_COUNT,
                 STRIDE);
         vertexArray.setVertexAttribPointer(
                 POSITION_COMPONENT_COUNT,
-                textureProgram.getTextureCoordinatesAttributeLocation(),
+                aTextureCoordinatesLocation,
                 TEXTURE_COORDINATES_COMPONENT_COUNT,
                 STRIDE);
     }

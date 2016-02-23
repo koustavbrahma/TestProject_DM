@@ -174,12 +174,12 @@ public abstract class AndroidGame extends Activity implements Game {
 
     @Override
     public int getframeBufferWidth() {
-        return frameBufferWidth;
+        return UseGLRenderView? GLrenderView.get_width() : frameBufferWidth;
     }
 
     @Override
     public int getframeBufferHeight(){
-        return frameBufferHeight;
+        return UseGLRenderView? GLrenderView.get_height() : frameBufferHeight;
     }
 
     @Override

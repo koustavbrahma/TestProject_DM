@@ -3,6 +3,7 @@ package koustav.duelmasters.main.androidgameduelmasterscreens;
 import koustav.duelmasters.main.androidgameopenglobjects.Mallet;
 import koustav.duelmasters.main.androidgameopenglobjects.Puck;
 import koustav.duelmasters.main.androidgameopenglobjects.Table;
+import koustav.duelmasters.main.androidgameopenglutil.GLMaterial;
 import koustav.duelmasters.main.androidgameopenglutil.TextureHelper;
 import koustav.duelmasters.main.androidgamesframework.Screen;
 import koustav.duelmasters.main.androidgamesframeworkimpl.AndroidGame;
@@ -36,8 +37,10 @@ public class GlTestScreen extends Screen {
         modelViewProjectionMatrix = new float[16];
 
         table = new Table();
-        mallet = new Mallet(0.08f, 0.15f, 32);
-        puck = new Puck(0.06f, 0.02f, 32);
+        mallet = new Mallet(new GLMaterial(new float[] {0.8f, 0.8f, 0.8f}, new float[] {0.8f, 0.8f, 0.8f},
+                new float[] {0.1f, 0.1f, 0.1f}, 10.0f), 0.08f, 0.15f, 32);
+        puck = new Puck(new GLMaterial(new float[] {0.8f, 0.8f, 0.8f}, new float[] {0.8f, 0.8f, 0.8f},
+                new float[] {0.1f, 0.1f, 0.1f}, 10.0f), 0.06f, 0.02f, 32);
     }
 
     @Override
@@ -48,8 +51,8 @@ public class GlTestScreen extends Screen {
     public void present(float deltaTime, float totalTime) {
         // Clear the rendering surface.
         glClear(GL_COLOR_BUFFER_BIT);
-        projectionMatrix = ((AndroidOpenGLRenderView)game.getRenderObj()).getProjectionMatrix();
-        viewMatrix = ((AndroidOpenGLRenderView)game.getRenderObj()).getViewMatrix();
+        //projectionMatrix = ((AndroidOpenGLRenderView)game.getRenderObj()).getProjectionMatrix();
+        //viewMatrix = ((AndroidOpenGLRenderView)game.getRenderObj()).getViewMatrix();
         multiplyMM(viewProjectionMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
         // Draw the table.
         positionTableInScene();

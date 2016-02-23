@@ -96,9 +96,11 @@ public class UniformColorShaderLightProgram extends ShaderProgram{
         aNormalLocation = glGetAttribLocation(program, A_NORMAL);
     }
 
-    private void setLight(int LightCount, ArrayList<GLLight> Light) {
-        glUniform1i(uLightCount, LightCount);
-        for (int i = 0; i < LightCount; i++) {
+    private void setLight(ArrayList<GLLight> Light) {
+        if (Light.size() > 8)
+            throw new IllegalArgumentException("More than eight light not supported for this Shader");
+        glUniform1i(uLightCount, Light.size());
+        for (int i = 0; i < Light.size(); i++) {
             glUniform1i(uLightType[i], Light.get(i).getLightType());
             glUniform4fv(uLightPosition[i], 1, Light.get(i).Position, 0);
             glUniform3fv(uLightDirection[i], 1, Light.get(i).Direction, 0);
@@ -111,7 +113,6 @@ public class UniformColorShaderLightProgram extends ShaderProgram{
     public void setUniforms(float[] mvMatrix,
                             float[] it_mvMatrix,
                             float[] mvpMatrix,
-                            int LightCount,
                             ArrayList<GLLight> Light,
                             GLMaterial Material,
                             float[] Color) {
@@ -126,7 +127,7 @@ public class UniformColorShaderLightProgram extends ShaderProgram{
         glUniform1f(uMaterialShininess, Material.Shininess);
         glUniform4f(uColorLocation, Color[0], Color[1], Color[2], Color[3]);
 
-        setLight(LightCount, Light);
+        setLight(Light);
     }
 
     public int getPositionAttributeLocation() {

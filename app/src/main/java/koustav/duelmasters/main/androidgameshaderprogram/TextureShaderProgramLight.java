@@ -90,9 +90,11 @@ public class TextureShaderProgramLight extends ShaderProgram {
                 glGetAttribLocation(program, A_TEXTURE_COORDINATES);
     }
 
-    private void setLight(int LightCount, ArrayList<GLLight> Light) {
-        glUniform1i(uLightCount, LightCount);
-        for (int i = 0; i < LightCount; i++) {
+    private void setLight(ArrayList<GLLight> Light) {
+        if (Light.size() > 8)
+            throw new IllegalArgumentException("More than eight light not supported for this Shader");
+        glUniform1i(uLightCount, Light.size());
+        for (int i = 0; i < Light.size(); i++) {
             glUniform1i(uLightType[i], Light.get(i).getLightType());
             glUniform4fv(uLightPosition[i], 1, Light.get(i).Position, 0);
             glUniform3fv(uLightDirection[i], 1, Light.get(i).Direction, 0);
@@ -105,7 +107,6 @@ public class TextureShaderProgramLight extends ShaderProgram {
     public void setUniforms(float[] mvMatrix,
                             float[] it_mvMatrix,
                             float[] mvpMatrix,
-                            int LightCount,
                             ArrayList<GLLight> Light,
                             GLMaterial Material,
                             int textureId) {
@@ -126,7 +127,7 @@ public class TextureShaderProgramLight extends ShaderProgram {
         // Tell the texture uniform sampler to use this texture in the shader by
         // telling it to read from texture unit 0.
         glUniform1i(uTextureUnitLocation, 0);
-        setLight(LightCount, Light);
+        setLight(Light);
     }
 
     public int getPositionAttributeLocation() {
