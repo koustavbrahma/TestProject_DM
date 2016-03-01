@@ -11,11 +11,15 @@ import static android.opengl.GLES20.*;
  * Created by Koustav on 2/20/2016.
  */
 public class FrameBufferObject {
-    private int[] fboHandle;
-    private int[] renderTex;
-    private int[] depthBuf;
+    private final int[] fboHandle;
+    private final int[] renderTex;
+    private final int[] depthBuf;
+    private final int width;
+    private final int height;
 
     public FrameBufferObject(int width, int height) {
+        this.width = width;
+        this.height = height;
         fboHandle = new int[1];
         renderTex = new int[1];
         depthBuf = new int[1];
@@ -44,7 +48,7 @@ public class FrameBufferObject {
         // check status
         int status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
         if (status != GL_FRAMEBUFFER_COMPLETE)
-            throw new IllegalArgumentException("FBO failure"+ status);
+            throw new RuntimeException("FBO failure"+ status);
 
         // Unbind the framebuffer, and revert to default framebuffer
         glBindTexture(GL_TEXTURE_2D, 0);
@@ -57,5 +61,13 @@ public class FrameBufferObject {
 
     public int getrenderTex() {
         return renderTex[0];
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
     }
 }

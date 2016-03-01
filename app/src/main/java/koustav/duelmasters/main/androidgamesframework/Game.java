@@ -23,6 +23,4 @@ public interface Game {
     public int getframeBufferHeight();
     public void setTurn(boolean val);
     public boolean getTurn();
-    public RenderView getRenderObj();
-    public View getViewObj();
 }

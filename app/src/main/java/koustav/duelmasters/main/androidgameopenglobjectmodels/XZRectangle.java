@@ -1,8 +1,7 @@
-package koustav.duelmasters.main.androidgameopenglobjects;
+package koustav.duelmasters.main.androidgameopenglobjectmodels;
 
 import koustav.duelmasters.main.androidgameopenglutil.GLMaterial;
 import koustav.duelmasters.main.androidgameopenglutil.VertexArray;
-import koustav.duelmasters.main.androidgameshaderprogram.TextureShaderProgramLight;
 
 import static android.opengl.GLES20.GL_TRIANGLE_FAN;
 import static android.opengl.GLES20.glDrawArrays;

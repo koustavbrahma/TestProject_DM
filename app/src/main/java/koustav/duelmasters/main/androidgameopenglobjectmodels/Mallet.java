@@ -1,4 +1,4 @@
-package koustav.duelmasters.main.androidgameopenglobjects;
+package koustav.duelmasters.main.androidgameopenglobjectmodels;
 
 import java.util.List;
 
@@ -7,8 +7,6 @@ import koustav.duelmasters.main.androidgameopenglutil.ObjectBuilder;
 import koustav.duelmasters.main.androidgameopenglutil.VertexArray;
 import koustav.duelmasters.main.androidgameopenglutil.ObjectBuilder.*;
 import koustav.duelmasters.main.androidgameopenglutil.GLGeometry.*;
-import koustav.duelmasters.main.androidgameshaderprogram.UniformColorShaderLightProgram;
-import koustav.duelmasters.main.androidgameshaderprogram.UniformColorShaderProgram;
 
 /**
  * Created by Koustav on 1/23/2016.

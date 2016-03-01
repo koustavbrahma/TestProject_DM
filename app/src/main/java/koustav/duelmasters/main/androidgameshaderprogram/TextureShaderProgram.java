@@ -4,12 +4,14 @@ import android.content.Context;
 
 import koustav.duelmasters.R;
 import static android.opengl.GLES20.*;
+import static android.opengl.GLES20.glGetUniformLocation;
 
 /**
  * Created by Koustav on 1/18/2016.
  */
 public class TextureShaderProgram extends ShaderProgram{
     // Uniform locations
+    private final int uSkipColor;
     private final int uMatrixLocation;
     private final int uTextureUnitLocation;
     // Attribute locations
@@ -19,6 +21,7 @@ public class TextureShaderProgram extends ShaderProgram{
     public TextureShaderProgram(Context context) {
         super(context, R.raw.texture_vertex_shader, R.raw.texture_fragment_shader);
         // Retrieve uniform locations for the shader program.
+        uSkipColor = glGetUniformLocation(program, U_SKIP_COLOR);
         uMatrixLocation = glGetUniformLocation(program, U_MATRIX);
         uTextureUnitLocation = glGetUniformLocation(program, U_TEXTURE_UNIT);
         // Retrieve attribute locations for the shader program.
@@ -29,6 +32,7 @@ public class TextureShaderProgram extends ShaderProgram{
 
     public void setUniforms(float[] matrix, int textureId) {
         // Pass the matrix into the shader program.
+        glUniform1i(uSkipColor, game.getGLFragColoring());
         glUniformMatrix4fv(uMatrixLocation, 1, false, matrix, 0);
         // Set the active texture unit to texture unit 0.
         glActiveTexture(GL_TEXTURE0);

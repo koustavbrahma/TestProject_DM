@@ -9,6 +9,7 @@ import koustav.duelmasters.main.androidgameopenglutil.GLLight;
 import koustav.duelmasters.main.androidgameopenglutil.GLMaterial;
 
 import static android.opengl.GLES20.GL_TEXTURE0;
+import static android.opengl.GLES20.GL_TEXTURE1;
 import static android.opengl.GLES20.GL_TEXTURE_2D;
 import static android.opengl.GLES20.glActiveTexture;
 import static android.opengl.GLES20.glBindTexture;
@@ -26,10 +27,14 @@ import static android.opengl.GLES20.glUniformMatrix4fv;
  */
 public class UniformColorShaderLightProgram extends ShaderProgram{
     // Uniform locations
+    private final int uSkipColor;
+    private final int uShadowEnable;
     private final int uMVMatrixLocation;
     private final int uIT_MVMatrixLocation;
     private final int uMVPMatrixLocation;
+    private final int uShadowMatrixLocation;
     private final int uColorLocation;
+    private final int uShadowMapLocation;
 
     private final int uMaterialKa;
     private final int uMaterialKd;
@@ -51,15 +56,19 @@ public class UniformColorShaderLightProgram extends ShaderProgram{
     public UniformColorShaderLightProgram(Context context) {
         super(context, R.raw.vertex_shader_light, R.raw.fragment_shader_light);
         // Retrieve uniform locations for the shader program.
+        uSkipColor = glGetUniformLocation(program, U_SKIP_COLOR);
+        uShadowEnable = glGetUniformLocation(program, U_SHADOW_ENABLE);
         uMVMatrixLocation = glGetUniformLocation(program, U_MV_MATRIX);
         uIT_MVMatrixLocation = glGetUniformLocation(program, U_IT_MV_MATRIX);
         uMVPMatrixLocation = glGetUniformLocation(program, U_MVP_MATRIX);
+        uShadowMatrixLocation = glGetUniformLocation(program, U_SHADOW_MATRIX);
 
         uMaterialKa = glGetUniformLocation(program, U_MATERIAL_KA);
         uMaterialKd = glGetUniformLocation(program, U_MATERIAL_KD);
         uMaterialKs = glGetUniformLocation(program, U_MATERIAL_KS);
         uMaterialShininess = glGetUniformLocation(program, U_MATERIAL_SHININESS);
         uColorLocation = glGetUniformLocation(program, U_COLOR);
+        uShadowMapLocation = glGetUniformLocation(program, U_SHADOW_MAP);
 
         uLightCount = glGetUniformLocation(program, U_LIGHT_COUNT);
         uLightType = new int[8];
@@ -113,13 +122,21 @@ public class UniformColorShaderLightProgram extends ShaderProgram{
     public void setUniforms(float[] mvMatrix,
                             float[] it_mvMatrix,
                             float[] mvpMatrix,
+                            float[] ShadowMatrix,
                             ArrayList<GLLight> Light,
                             GLMaterial Material,
-                            float[] Color) {
+                            float[] Color,
+                            int ShadowMap,
+                            boolean ShadowEnable) {
         // Pass the matrix into the shader program.
+        glUniform1i(uSkipColor, game.getGLFragColoring());
+        glUniform1i(uShadowEnable, ShadowEnable ? 1 : 0);
         glUniformMatrix4fv(uMVMatrixLocation, 1, false, mvMatrix, 0);
         glUniformMatrix4fv(uIT_MVMatrixLocation, 1, false, it_mvMatrix, 0);
         glUniformMatrix4fv(uMVPMatrixLocation, 1, false, mvpMatrix, 0);
+        if (ShadowEnable) {
+            glUniformMatrix4fv(uShadowMatrixLocation, 1, false, ShadowMatrix, 0);
+        }
 
         glUniform3fv(uMaterialKa, 1, Material.Ka, 0);
         glUniform3fv(uMaterialKd, 1, Material.Kd, 0);
@@ -127,6 +144,12 @@ public class UniformColorShaderLightProgram extends ShaderProgram{
         glUniform1f(uMaterialShininess, Material.Shininess);
         glUniform4f(uColorLocation, Color[0], Color[1], Color[2], Color[3]);
 
+        glActiveTexture(GL_TEXTURE0);
+        // Bind the texture to this unit.
+        glBindTexture(GL_TEXTURE_2D, ShadowMap);
+        // Tell the texture uniform sampler to use this texture in the shader by
+        // telling it to read from texture unit 0.
+        glUniform1i(uShadowMapLocation, 0);
         setLight(Light);
     }
 

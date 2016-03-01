@@ -2,18 +2,16 @@ package koustav.duelmasters.main.androidgameduelmasterscreens;
 
 import android.graphics.Color;
 
-import java.nio.IntBuffer;
 import java.util.ArrayList;
-import java.util.List;
 
 import static android.opengl.GLES20.*;
 import koustav.duelmasters.main.androidgameopenglanimation.ParticleShooter;
 import koustav.duelmasters.main.androidgameopenglanimation.ParticleSystem;
-import koustav.duelmasters.main.androidgameopenglobjects.Base;
-import koustav.duelmasters.main.androidgameopenglobjects.Puck;
-import koustav.duelmasters.main.androidgameopenglobjects.Sphere;
-import koustav.duelmasters.main.androidgameopenglobjects.Table;
-import koustav.duelmasters.main.androidgameopenglobjects.XZRectangle;
+import koustav.duelmasters.main.androidgameopenglmotionmodel.GLDynamics;
+import koustav.duelmasters.main.androidgameopenglobjectmodels.XYRectangle;
+import koustav.duelmasters.main.androidgameopenglobjectmodels.Puck;
+import koustav.duelmasters.main.androidgameopenglobjectmodels.Sphere;
+import koustav.duelmasters.main.androidgameopenglobjectmodels.XZRectangle;
 import koustav.duelmasters.main.androidgameopenglutil.FrameBufferObject;
 import koustav.duelmasters.main.androidgameopenglutil.GLGeometry;
 import koustav.duelmasters.main.androidgameopenglutil.GLGeometry.*;
@@ -23,10 +21,8 @@ import koustav.duelmasters.main.androidgameopenglutil.MathHelper;
 import koustav.duelmasters.main.androidgameopenglutil.MatrixHelper;
 import koustav.duelmasters.main.androidgameopenglutil.TextureHelper;
 import koustav.duelmasters.main.androidgameopenglutil.UIHelper;
-import koustav.duelmasters.main.androidgamesframework.Input;
 import koustav.duelmasters.main.androidgamesframework.Screen;
 import koustav.duelmasters.main.androidgamesframeworkimpl.AndroidGame;
-import koustav.duelmasters.main.androidgamesframeworkimpl.AndroidOpenGLRenderView;
 import koustav.duelmasters.main.androidgameshaderprogram.BloomingShaderProgram;
 import koustav.duelmasters.main.androidgameshaderprogram.GaussianBlurShaderProgram;
 import koustav.duelmasters.main.androidgameshaderprogram.ParticleShaderProgram;
@@ -35,12 +31,13 @@ import koustav.duelmasters.main.androidgameshaderprogram.TextureShaderProgramLig
 import koustav.duelmasters.main.androidgameshaderprogram.UniformColorShaderLightProgram;
 
 import static android.opengl.Matrix.*;
+import static android.opengl.Matrix.multiplyMM;
 
 /**
  * Created by Koustav on 1/24/2016.
  */
 public class TestScreen2 extends Screen {
-    private Base base;
+    private XYRectangle xy_rectangle;
     private XZRectangle table;
     private Puck puck;
     private Sphere sphere;
@@ -61,6 +58,7 @@ public class TestScreen2 extends Screen {
     private FrameBufferObject FBO;
     private FrameBufferObject FBO2;
     private FrameBufferObject FBO3;
+    private FrameBufferObject SFBO;
 
     private float[] viewMatrix;
     private float[] projectionMatrix;
@@ -73,6 +71,10 @@ public class TestScreen2 extends Screen {
     private float[] modelViewProjectionMatrix;
     private float[] tempMatrix;
 
+    private float[] depthVPMatrix;
+    private float[] depthMVPMatrix;
+    private float[] depthbiasVPMatrix;
+    private float[] shadowMatrix;
 
     private ParticleSystem particleSystem;
     private ParticleShooter redParticleShooter;
@@ -96,6 +98,8 @@ public class TestScreen2 extends Screen {
     final float[] positionToLight4= {-1.0f, 1.0f, 1.0f, 1.0f};
 
     final float[] weights;
+
+    GLDynamics motion;
 
   /*
     final float[] vectorToLight = {0.30f, 0.35f, -0.89f, 0f};
@@ -123,8 +127,12 @@ public class TestScreen2 extends Screen {
         modelViewProjectionMatrix = new float[16];
         it_modelViewMatrix = new  float[16];
         tempMatrix = new float[16];
+        depthVPMatrix = new float[16];
+        depthMVPMatrix = new float[16];
+        depthbiasVPMatrix = new float[16];
+        shadowMatrix = new float[16];
 
-        base = new Base();
+        xy_rectangle = new XYRectangle();
         table = new XZRectangle(new GLMaterial(new float[] {0.8f, 0.8f, 0.8f}, new float[] {0.8f, 0.8f, 0.8f},
                 new float[] {0.1f, 0.1f, 0.1f}, 10.0f), 1.2f, 1.6f, 0);
         puck = new Puck(new GLMaterial(new float[] {0.8f, 0.8f, 0.8f}, new float[] {0.8f, 0.8f, 0.8f},
@@ -155,6 +163,12 @@ public class TestScreen2 extends Screen {
         spotPositionsInEyeSpace4 = new float[4];
         weights = new float[10];
         generateWeights();
+
+        motion = new GLDynamics();
+        motion.setCentrePosition(0f, 0.01f, 0.6f);
+        motion.setVelocity(0f, 0.5f, -0.5f);
+        motion.setAcceleration(0f, -1.0f, 0f);
+        motion.setAngularVelocity(0f, 1.0f, 0f);
     }
 
     private void generateWeights() {
@@ -204,29 +218,6 @@ public class TestScreen2 extends Screen {
     public void present(float deltaTime, float totalTime) {
         // Clear the rendering surface.
         //glViewport(0, 0, 512, 512);
-        glBindFramebuffer(GL_FRAMEBUFFER, FBO.getfboHandle());
-        glEnable(GL_DEPTH_TEST);
-        glDepthFunc(GL_LEQUAL);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        //glClear(GL_COLOR_BUFFER_BIT);
-
-        // Draw the table.
-        positionObjectInXZScene(0f, 0f, 0f);
-        textureProgram.useProgram();
-        textureProgram.setUniforms(modelViewProjectionMatrix, basetexture);
-        base.bindData(textureProgram.getPositionAttributeLocation(), textureProgram.getTextureCoordinatesAttributeLocation());
-        base.draw();
-
-        /*
-        final float[] vectorToLightInEyeSpace = new float[4];
-        final float[] pointPositionsInEyeSpace = new float[12];
-        multiplyMV(vectorToLightInEyeSpace, 0, viewMatrix, 0, vectorToLight, 0);
-        multiplyMV(pointPositionsInEyeSpace, 0, viewMatrix, 0, pointLightPositions, 0);
-        multiplyMV(pointPositionsInEyeSpace, 4, viewMatrix, 0, pointLightPositions, 4);
-        multiplyMV(pointPositionsInEyeSpace, 8, viewMatrix, 0, pointLightPositions, 8);
-*/
-
-
         multiplyMV(spotLightDirectionInEyeSpace, 0, viewMatrix, 0, vectorToLight, 0);
         multiplyMV(spotPositionsInEyeSpace, 0, viewMatrix, 0, positionToLight, 0);
         multiplyMV(spotPositionsInEyeSpace2, 0, viewMatrix, 0, positionToLight2, 0);
@@ -238,7 +229,7 @@ public class TestScreen2 extends Screen {
         //GLLight Exp_light = new GLLight(GLLight.LightType.Spot, spotPositionsInEyeSpace, spotLightDirectionInEyeSpace,
         //        new float[] {0.5f, 0.5f, 0.5f}, 2.0f, 40.0f);
 //        GLLight Exp_light2 = new GLLight(GLLight.LightType.Directional, new float[] {0, 0, 0, 0}, spotLightDirectionInEyeSpace,
-  //              new float[] {0.7f, 0.7f, 0.7f}, 0, 0);
+        //              new float[] {0.7f, 0.7f, 0.7f}, 0, 0);
         GLLight Exp_light3 = new GLLight(GLLight.LightType.Point, spotPositionsInEyeSpace, new float[] {0, 0, 0},
                 new float[] {0.2f, 0.2f, 0.2f}, 0, 0);
         GLLight Exp_light4 = new GLLight(GLLight.LightType.Point, spotPositionsInEyeSpace2, new float[] {0, 0, 0},
@@ -248,24 +239,60 @@ public class TestScreen2 extends Screen {
         GLLight Exp_light6 = new GLLight(GLLight.LightType.Point, spotPositionsInEyeSpace4, new float[] {0, 0, 0},
                 new float[] {0.2f, 0.2f, 0.2f}, 0, 0);
         //Light.add(Exp_light);
-  //      Light.add(Exp_light2);
+        //      Light.add(Exp_light2);
         Light.add(Exp_light3);
         Light.add(Exp_light4);
         Light.add(Exp_light5);
         Light.add(Exp_light6);
+        motion.update(deltaTime);
+        GLPoint position = motion.getPosition();
+        if (position.y < 0) {
+            motion.setCentrePosition(0f, 0.01f, 0.6f);
+            motion.setVelocity(0f, 0.5f, -0.5f);
+        }
+
+        float angle = motion.getAngleOfRotation();
+        GLVector axis= motion.getAxisOfRotation();
+
+        game.setGLFragColoring(false);
+        glBindFramebuffer(GL_FRAMEBUFFER, SFBO.getfboHandle());
+        glViewport(0, 0, SFBO.getWidth(), SFBO.getHeight());
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LEQUAL);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        //glClear(GL_COLOR_BUFFER_BIT);
+        // Draw the table.
+        positionObjectInXZScene(0f, 0f, 0f);
+        textureProgram.useProgram();
+        textureProgram.setUniforms(depthMVPMatrix, basetexture);
+        xy_rectangle.bindData(textureProgram.getPositionAttributeLocation(), textureProgram.getTextureCoordinatesAttributeLocation());
+        xy_rectangle.draw();
+
+
+        //final float[] vectorToLightInEyeSpace = new float[4];
+        //final float[] pointPositionsInEyeSpace = new float[12];
+        //multiplyMV(vectorToLightInEyeSpace, 0, viewMatrix, 0, vectorToLight, 0);
+        //multiplyMV(pointPositionsInEyeSpace, 0, viewMatrix, 0, pointLightPositions, 0);
+        //multiplyMV(pointPositionsInEyeSpace, 4, viewMatrix, 0, pointLightPositions, 4);
+        //multiplyMV(pointPositionsInEyeSpace, 8, viewMatrix, 0, pointLightPositions, 8);
+
+
+
+
         positionObjectInScenetmp(0f, 0f, 0f);
         textureShaderProgramLight.useProgram();
         textureShaderProgramLight.setUniforms(modelViewMatrix, it_modelViewMatrix,
-                modelViewProjectionMatrix, Light, table.getMaterial(), tabletexture);
+                depthMVPMatrix, null, Light, table.getMaterial(), tabletexture, 0, false);
 
         table.bindData(textureShaderProgramLight.getPositionAttributeLocation(),
                 textureShaderProgramLight.getNormalAttributeLocation(),
                 textureShaderProgramLight.getTextureCoordinatesAttributeLocation());
         table.draw();
 
-        positionObjectInScenetmp2(0f, 0.01f, 0.6f, totalTime);
+        //positionObjectInScenetmp2(0f, 0.01f, 0.6f, totalTime);
+        positionObjectInScenetmp3(position, angle, axis);
         textureShaderProgramLight.setUniforms(modelViewMatrix, it_modelViewMatrix,
-                modelViewProjectionMatrix, Light, cardProjection.getMaterial(), cardbackside);
+                depthMVPMatrix, null, Light, cardProjection.getMaterial(), cardbackside, 0 , false);
 
         cardProjection.bindData(textureShaderProgramLight.getPositionAttributeLocation(),
                 textureShaderProgramLight.getNormalAttributeLocation(),
@@ -274,7 +301,7 @@ public class TestScreen2 extends Screen {
 
         positionObjectInScenetmp(0f, 0.01f, -0.6f);
         textureShaderProgramLight.setUniforms(modelViewMatrix, it_modelViewMatrix,
-                modelViewProjectionMatrix, Light, invCardProjection.getMaterial(), cardbackside);
+                depthMVPMatrix, null, Light, invCardProjection.getMaterial(), cardbackside, 0, false);
 
         invCardProjection.bindData(textureShaderProgramLight.getPositionAttributeLocation(),
                 textureShaderProgramLight.getNormalAttributeLocation(),
@@ -286,14 +313,74 @@ public class TestScreen2 extends Screen {
         colorProgram.useProgram();
         positionObjectInScenetmp(tmpx, puck.height / 2f, tmpz);
         colorProgram.setUniforms(modelViewMatrix, it_modelViewMatrix,
-                modelViewProjectionMatrix, Light, puck.getMaterial(), new float[] {0.8f, 0.8f, 1f, 1f});
+                depthMVPMatrix, null, Light, puck.getMaterial(), new float[] {0.8f, 0.8f, 1f, 1f}, 0, false);
         puck.bindData(colorProgram.getPositionAttributeLocation(), colorProgram.getNormalAttributeLocation());
         puck.draw();
 
         colorProgram.useProgram();
+        //positionObjectInScenetmp2(0.5f, 0.1f, 0.1f, totalTime);
         positionObjectInScenetmp(0.5f, 0.1f, 0.1f);
         colorProgram.setUniforms(modelViewMatrix, it_modelViewMatrix,
-                modelViewProjectionMatrix, Light, sphere.getMaterial(), new float[] {0.8f, 0.8f, 1f, 1f});
+                depthMVPMatrix, null, Light, sphere.getMaterial(), new float[] {0.8f, 0.8f, 1f, 1f}, 0 , false);
+        sphere.bindData(colorProgram.getPositionAttributeLocation(), colorProgram.getNormalAttributeLocation());
+        sphere.draw();
+
+
+        game.setGLFragColoring(true);
+        glBindFramebuffer(GL_FRAMEBUFFER, FBO.getfboHandle());
+        glViewport(0, 0, FBO.getWidth(), FBO.getHeight());
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        // Draw the table.
+        positionObjectInXZScene(0f, 0f, 0f);
+        textureProgram.useProgram();
+        textureProgram.setUniforms(modelViewProjectionMatrix, basetexture);
+        xy_rectangle.bindData(textureProgram.getPositionAttributeLocation(), textureProgram.getTextureCoordinatesAttributeLocation());
+        xy_rectangle.draw();
+
+
+        positionObjectInScenetmp(0f, 0f, 0f);
+        textureShaderProgramLight.useProgram();
+        textureShaderProgramLight.setUniforms(modelViewMatrix, it_modelViewMatrix,
+                modelViewProjectionMatrix, shadowMatrix, Light, table.getMaterial(), tabletexture, SFBO.getrenderTex(), true);
+
+        table.bindData(textureShaderProgramLight.getPositionAttributeLocation(),
+                textureShaderProgramLight.getNormalAttributeLocation(),
+                textureShaderProgramLight.getTextureCoordinatesAttributeLocation());
+        table.draw();
+
+        //positionObjectInScenetmp2(0f, 0.01f, 0.6f, totalTime);
+        positionObjectInScenetmp3(position, angle, axis);
+        textureShaderProgramLight.setUniforms(modelViewMatrix, it_modelViewMatrix,
+                modelViewProjectionMatrix, shadowMatrix, Light, cardProjection.getMaterial(), cardbackside, SFBO.getrenderTex() , true);
+
+        cardProjection.bindData(textureShaderProgramLight.getPositionAttributeLocation(),
+                textureShaderProgramLight.getNormalAttributeLocation(),
+                textureShaderProgramLight.getTextureCoordinatesAttributeLocation());
+        cardProjection.draw();
+
+        positionObjectInScenetmp(0f, 0.01f, -0.6f);
+        textureShaderProgramLight.setUniforms(modelViewMatrix, it_modelViewMatrix,
+                modelViewProjectionMatrix, shadowMatrix, Light, invCardProjection.getMaterial(), cardbackside, SFBO.getrenderTex(), true);
+
+        invCardProjection.bindData(textureShaderProgramLight.getPositionAttributeLocation(),
+                textureShaderProgramLight.getNormalAttributeLocation(),
+                textureShaderProgramLight.getTextureCoordinatesAttributeLocation());
+        invCardProjection.draw();
+
+
+        // Draw the puck.
+        colorProgram.useProgram();
+        positionObjectInScenetmp(tmpx, puck.height / 2f, tmpz);
+        colorProgram.setUniforms(modelViewMatrix, it_modelViewMatrix,
+                modelViewProjectionMatrix, shadowMatrix, Light, puck.getMaterial(), new float[] {0.8f, 0.8f, 1f, 1f}, SFBO.getrenderTex(), true);
+        puck.bindData(colorProgram.getPositionAttributeLocation(), colorProgram.getNormalAttributeLocation());
+        puck.draw();
+
+        colorProgram.useProgram();
+        //positionObjectInScenetmp2(0.5f, 0.1f, 0.1f, totalTime);
+        positionObjectInScenetmp(0.5f, 0.1f, 0.1f);
+        colorProgram.setUniforms(modelViewMatrix, it_modelViewMatrix,
+                modelViewProjectionMatrix, shadowMatrix, Light, sphere.getMaterial(), new float[] {0.8f, 0.8f, 1f, 1f}, SFBO.getrenderTex() , true);
         sphere.bindData(colorProgram.getPositionAttributeLocation(), colorProgram.getNormalAttributeLocation());
         sphere.draw();
 
@@ -313,13 +400,13 @@ public class TestScreen2 extends Screen {
         glDisable(GL_BLEND);
         glDepthMask(true);
 
-        glViewport(0, 0, 512, 512);
+        glViewport(0, 0, FBO2.getWidth(), FBO2.getHeight());
         glBindFramebuffer(GL_FRAMEBUFFER, FBO2.getfboHandle());
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         textureShaderProgramLight.useProgram();
         positionObjectInScenetmp2(0f, 0.01f, 0.6f, totalTime);
         textureShaderProgramLight.setUniforms(modelViewMatrix, it_modelViewMatrix,
-                modelViewProjectionMatrix, Light, cardProjection.getMaterial(), cardbackside);
+                modelViewProjectionMatrix, null, Light, cardProjection.getMaterial(), cardbackside, 0 , false);
 
         cardProjection.bindData(textureShaderProgramLight.getPositionAttributeLocation(),
                 textureShaderProgramLight.getNormalAttributeLocation(),
@@ -333,9 +420,9 @@ public class TestScreen2 extends Screen {
         bloomingShaderProgram.setUniforms(FBO2.getrenderTex(), FBO.getrenderTex(), 512, 512,
                 weights, totalTime);
         bloomingShaderProgram.setPass(1);
-        base.bindData(bloomingShaderProgram.getPositionAttributeLocation(),
+        xy_rectangle.bindData(bloomingShaderProgram.getPositionAttributeLocation(),
                 bloomingShaderProgram.getTextureCoordinatesAttributeLocation());
-        base.draw();
+        xy_rectangle.draw();
 
         glViewport(0, 0, game.getframeBufferWidth(), game.getframeBufferHeight());
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -343,9 +430,9 @@ public class TestScreen2 extends Screen {
         bloomingShaderProgram.setUniforms(FBO3.getrenderTex(), FBO.getrenderTex(), 512, 512,
                 weights, totalTime);
         bloomingShaderProgram.setPass(2);
-        base.bindData(bloomingShaderProgram.getPositionAttributeLocation(),
+        xy_rectangle.bindData(bloomingShaderProgram.getPositionAttributeLocation(),
                 bloomingShaderProgram.getTextureCoordinatesAttributeLocation());
-        base.draw();
+        xy_rectangle.draw();
     }
 
     @Override
@@ -355,6 +442,7 @@ public class TestScreen2 extends Screen {
     @Override
     public void resume() {
         CreateV_P_IVPMatrix();
+        CreateDepthVPMatrix();
         textureProgram = new TextureShaderProgram(game);
         colorProgram = new UniformColorShaderLightProgram(game);
         particleProgram = new ParticleShaderProgram(game);
@@ -372,6 +460,7 @@ public class TestScreen2 extends Screen {
         FBO = new FrameBufferObject(game.getframeBufferWidth(), game.getframeBufferHeight());
         FBO2 = new FrameBufferObject(512, 512);
         FBO3 = new FrameBufferObject(512, 512);
+        SFBO = new FrameBufferObject(game.getframeBufferWidth(), game.getframeBufferHeight());
     }
 
     @Override
@@ -391,12 +480,14 @@ public class TestScreen2 extends Screen {
         translateM(modelMatrix, 0, x, y, z);
         rotateM(modelMatrix, 0, -90f, 1f, 0f, 0f);
         updateMvpMatrix();
+        updateShadowMatrix();
     }
 
     private void positionObjectInScenetmp(float x, float y, float z) {
         setIdentityM(modelMatrix, 0);
         translateM(modelMatrix, 0, x, y, z);
         updateMvpMatrix();
+        updateShadowMatrix();
     }
 
     private void positionObjectInScenetmp2(float x, float y, float z, float time) {
@@ -405,10 +496,20 @@ public class TestScreen2 extends Screen {
         float d = (float) Math.toDegrees(Math.asin(Math.sin(time)));
         rotateM(modelMatrix, 0, d, 0f, 1f, 0f);
         updateMvpMatrix();
+        updateShadowMatrix();
+    }
+
+    private void positionObjectInScenetmp3(GLPoint position, float angle, GLVector axis) {
+        setIdentityM(modelMatrix, 0);
+        translateM(modelMatrix, 0, position.x, position.y, position.z);
+        rotateM(modelMatrix, 0, angle, axis.x, axis.y, axis.z);
+        updateMvpMatrix();
+        updateShadowMatrix();
     }
 
     private void CreateV_P_IVPMatrix(){
         CreatePMatrix(game.getframeBufferWidth(), game.getframeBufferHeight());
+        //setLookAtM(viewMatrix, 0, 0f, 2.5f, 0.0f, 0f, 0f, 0.0f, 0f, 0f, -1.0f);
         setLookAtM(viewMatrix, 0, 0f, 1.2f, 2.4f, 0f, 0f, 0.2f, 0f, 1f, 0f);
         multiplyMM(viewProjectionMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
         invertM(invertedViewProjectionMatrix, 0, viewProjectionMatrix, 0);
@@ -416,6 +517,23 @@ public class TestScreen2 extends Screen {
 
     private void CreatePMatrix(int width, int height) {
         MatrixHelper.perspectiveM(projectionMatrix, 18, (float) width / (float) height, 1f, 10f);
+        //MatrixHelper.perspectiveM(projectionMatrix, 26, (float) width / (float) height, 1f, 10f);
+    }
+
+    private void CreateDepthVPMatrix() {
+        float[] viewMatrixtmp = new float[16];
+        float[] projectionMatrixtmp = new float[16];
+        setLookAtM(viewMatrixtmp, 0, 0f, 2.5f, 0.0f, 0f, 0f, 0.0f, 0f, 0f, -1.0f);
+        MatrixHelper.perspectiveM(projectionMatrixtmp, 26, (float) game.getframeBufferWidth() / (float) game.getframeBufferHeight(), 1f, 10f);
+        multiplyMM(depthVPMatrix, 0 , projectionMatrixtmp,0, viewMatrixtmp, 0);
+        /*float[] bias = {
+                0.5f, 0.0f, 0.0f, 0.0f,
+                0.0f, 0.5f, 0.0f, 0.0f,
+                0.0f, 0.0f, 0.5f, 0.0f,
+                0.5f, 0.5f, 0.5f, 1.0f}; */
+        float[] bias = new float[16];
+        setIdentityM(bias, 0);
+        multiplyMM(depthbiasVPMatrix, 0, bias, 0, depthVPMatrix, 0);
     }
     private void updateMvpMatrix() {
         multiplyMM(modelViewMatrix, 0, viewMatrix, 0, modelMatrix, 0);
@@ -425,5 +543,10 @@ public class TestScreen2 extends Screen {
                 modelViewProjectionMatrix, 0,
                 projectionMatrix, 0,
                 modelViewMatrix, 0);
+    }
+
+    private void updateShadowMatrix() {
+        multiplyMM(shadowMatrix, 0, depthbiasVPMatrix, 0, modelMatrix, 0);
+        multiplyMM(depthMVPMatrix, 0, depthVPMatrix, 0 , modelMatrix, 0);
     }
 }

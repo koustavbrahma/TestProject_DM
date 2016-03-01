@@ -1,4 +1,4 @@
-package koustav.duelmasters.main.androidgameopenglobjects;
+package koustav.duelmasters.main.androidgameopenglobjectmodels;
 
 import koustav.duelmasters.main.androidgameopenglutil.GLMaterial;
 

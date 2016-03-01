@@ -41,7 +41,8 @@ public abstract class AndroidGame extends Activity implements Game {
     WakeLock wakeLock;
     boolean TURN;
     boolean UseGLRenderView;
-    private int currentApiVersion;
+    int currentApiVersion;
+    boolean GLFragColor;
 
     @Override
     @SuppressLint("NewApi")
@@ -65,6 +66,7 @@ public abstract class AndroidGame extends Activity implements Game {
         frameBufferHeight = 480;
         TURN = true;
         UseGLRenderView = true;
+        GLFragColor = true;
         Bitmap frameBuffer = Bitmap.createBitmap(frameBufferWidth,
                 frameBufferHeight, Bitmap.Config.RGB_565);
 
@@ -192,11 +194,17 @@ public abstract class AndroidGame extends Activity implements Game {
         return TURN;
     }
 
-    @Override
     public RenderView getRenderObj() {
         return UseGLRenderView ? GLrenderView: renderView;
     }
 
-    @Override
     public View getViewObj() {return UseGLRenderView ? GLrenderView: renderView;}
+
+    public void setGLFragColoring(boolean val) {
+        GLFragColor = val;
+    }
+
+    public int getGLFragColoring() {
+        return GLFragColor? 0 : 1;
+    }
 }

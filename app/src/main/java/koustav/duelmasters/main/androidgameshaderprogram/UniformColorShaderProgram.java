@@ -10,6 +10,7 @@ import static android.opengl.GLES20.*;
  */
 public class UniformColorShaderProgram extends ShaderProgram {
     // Uniform locations
+    private final int uSkipColor;
     private final int uMatrixLocation;
     // Attribute locations
     private final int aPositionLocation;
@@ -19,6 +20,7 @@ public class UniformColorShaderProgram extends ShaderProgram {
         super(context, R.raw.simple_vertex_shader,
                 R.raw.simple_fragment_shader);
         // Retrieve uniform locations for the shader program.
+        uSkipColor = glGetUniformLocation(program, U_SKIP_COLOR);
         uMatrixLocation = glGetUniformLocation(program, U_MATRIX);
         // Retrieve attribute locations for the shader program.
         aPositionLocation = glGetAttribLocation(program, A_POSITION);
@@ -26,6 +28,7 @@ public class UniformColorShaderProgram extends ShaderProgram {
     }
 
     public void setUniforms(float[] matrix, float r, float g, float b) {
+        glUniform1i(uSkipColor, game.getGLFragColoring());
         glUniformMatrix4fv(uMatrixLocation, 1, false, matrix, 0);
         glUniform4f(uColorLocation, r, g, b, 1f);
     }

@@ -11,12 +11,25 @@ public class GLGeometry {
             this.y = y;
             this.z = z;
         }
+
+        public GLPoint translateX(float distance) {
+            return new GLPoint(x + distance, y, z);
+        }
+
         public GLPoint translateY(float distance) {
             return new GLPoint(x, y + distance, z);
         }
 
+        public GLPoint translateZ(float distance) {
+            return new GLPoint(x, y, z + distance);
+        }
+
         public GLPoint translate(GLVector vector) {
             return new GLPoint(x + vector.x, y + vector.y, z + vector.z);
+        }
+
+        public GLVector getVector() {
+            return new GLVector(x, y, z);
         }
     }
 
@@ -62,6 +75,15 @@ public class GLGeometry {
             this.x = x;
             this.y = y;
             this.z = z;
+        }
+
+        public float getMagnitude() {
+            return (float) Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2));
+        }
+
+        public GLVector getDirection() {
+            float abs = getMagnitude();
+            return new GLVector(x/abs, y/abs, z/abs);
         }
     }
 

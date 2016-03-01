@@ -2,6 +2,7 @@ package koustav.duelmasters.main.androidgameopenglutil;
 
 import koustav.duelmasters.main.androidgamesframework.Game;
 import koustav.duelmasters.main.androidgamesframework.Input.TouchEvent;
+import koustav.duelmasters.main.androidgamesframeworkimpl.AndroidGame;
 import koustav.duelmasters.main.androidgamesframeworkimpl.AndroidOpenGLRenderView;
 import koustav.duelmasters.main.androidgameopenglutil.GLGeometry.*;
 import static android.opengl.Matrix.*;
@@ -20,7 +21,7 @@ public class UIHelper {
         }
     }
 
-    public static GLNormalized2DPoint ConvertTouchEventToNormalized2DPoint(Game game, int event_x, int event_y) {
+    public static GLNormalized2DPoint ConvertTouchEventToNormalized2DPoint(AndroidGame game, int event_x, int event_y) {
         // Convert touch coordinates into normalized device
         // coordinates, keeping in mind that Android's Y
         // coordinates are inverted.
