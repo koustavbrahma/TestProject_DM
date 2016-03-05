@@ -8,6 +8,7 @@ import static android.opengl.GLES20.*;
 import koustav.duelmasters.main.androidgameopenglanimation.ParticleShooter;
 import koustav.duelmasters.main.androidgameopenglanimation.ParticleSystem;
 import koustav.duelmasters.main.androidgameopenglmotionmodel.GLDynamics;
+import koustav.duelmasters.main.androidgameopenglobjectmodels.Cube;
 import koustav.duelmasters.main.androidgameopenglobjectmodels.XYRectangle;
 import koustav.duelmasters.main.androidgameopenglobjectmodels.Puck;
 import koustav.duelmasters.main.androidgameopenglobjectmodels.Sphere;
@@ -24,6 +25,7 @@ import koustav.duelmasters.main.androidgameopenglutil.UIHelper;
 import koustav.duelmasters.main.androidgamesframework.Screen;
 import koustav.duelmasters.main.androidgamesframeworkimpl.AndroidGame;
 import koustav.duelmasters.main.androidgameshaderprogram.BloomingShaderProgram;
+import koustav.duelmasters.main.androidgameshaderprogram.CubeTextureShaderProgramLight;
 import koustav.duelmasters.main.androidgameshaderprogram.GaussianBlurShaderProgram;
 import koustav.duelmasters.main.androidgameshaderprogram.ParticleShaderProgram;
 import koustav.duelmasters.main.androidgameshaderprogram.TextureShaderProgram;
@@ -41,6 +43,7 @@ public class TestScreen2 extends Screen {
     private XZRectangle table;
     private Puck puck;
     private Sphere sphere;
+    private Cube cube;
     private XZRectangle cardProjection;
     private XZRectangle invCardProjection;
 
@@ -50,6 +53,7 @@ public class TestScreen2 extends Screen {
     private TextureShaderProgramLight textureShaderProgramLight;
     private GaussianBlurShaderProgram gaussianBlurShaderProgram;
     private BloomingShaderProgram bloomingShaderProgram;
+    private CubeTextureShaderProgramLight cubeTextureShaderProgramLight;
 
     private int basetexture;
     private int tabletexture;
@@ -99,6 +103,7 @@ public class TestScreen2 extends Screen {
 
     final float[] weights;
 
+    int[] textureArrays;
     GLDynamics motion;
 
   /*
@@ -139,10 +144,12 @@ public class TestScreen2 extends Screen {
                 new float[] {0.1f, 0.1f, 0.1f}, 10.0f), 0.02f, 0.02f, 32);
         sphere = new Sphere(new GLMaterial(new float[] {0.5f, 0.5f, 0.5f}, new float[] {0.5f, 0.5f, 0.5f},
                 new float[] {0.8f, 0.8f, 0.8f}, 3.0f), 0.05f, 32);
+        cube = new Cube(new GLMaterial(new float[] {0.5f, 0.5f, 0.5f}, new float[] {0.5f, 0.5f, 0.5f},
+                new float[] {0.8f, 0.8f, 0.8f}, 3.0f), 0.05f, 0.05f, 0.05f, true);
         cardProjection = new XZRectangle(new GLMaterial(new float[] {0.8f, 0.8f, 0.8f}, new float[] {0.8f, 0.8f, 0.8f},
                 new float[] {0.1f, 0.1f, 0.1f}, 10.0f), 0.08f, 0.12f, 0);
         invCardProjection = new XZRectangle(new GLMaterial(new float[] {0.8f, 0.8f, 0.8f}, new float[] {0.8f, 0.8f, 0.8f},
-                new float[] {0.1f, 0.1f, 0.1f}, 10.0f), 0.08f, 0.12f, 2);
+                new float[] {0.1f, 0.1f, 0.1f}, 10.0f), 0.08f, 0.12f, 1);
         particleSystem = new ParticleSystem(10000);
 
         GLVector particleDirection = new GLVector(0.0f, -0.5f, 0f);
@@ -163,6 +170,8 @@ public class TestScreen2 extends Screen {
         spotPositionsInEyeSpace4 = new float[4];
         weights = new float[10];
         generateWeights();
+
+        textureArrays = new int[6];
 
         motion = new GLDynamics();
         motion.setCentrePosition(0f, 0.01f, 0.6f);
@@ -299,7 +308,7 @@ public class TestScreen2 extends Screen {
                 textureShaderProgramLight.getTextureCoordinatesAttributeLocation());
         cardProjection.draw();
 
-        positionObjectInScenetmp(0f, 0.01f, -0.6f);
+        positionObjectInScenetmp(0f, 0.01f, 0.3f);
         textureShaderProgramLight.setUniforms(modelViewMatrix, it_modelViewMatrix,
                 depthMVPMatrix, null, Light, invCardProjection.getMaterial(), cardbackside, 0, false);
 
@@ -325,6 +334,14 @@ public class TestScreen2 extends Screen {
         sphere.bindData(colorProgram.getPositionAttributeLocation(), colorProgram.getNormalAttributeLocation());
         sphere.draw();
 
+        cubeTextureShaderProgramLight.useProgram();
+        //positionObjectInScenetmp2(0.5f, 0.1f, 0.1f, totalTime);
+        positionObjectInScenetmp(0.5f, 0.025f, 0.5f);
+        cubeTextureShaderProgramLight.setUniforms(modelViewMatrix, it_modelViewMatrix,
+                depthMVPMatrix, null, Light, invCardProjection.getMaterial(), textureArrays, 0, false);
+        cube.bindData(cubeTextureShaderProgramLight.getPositionAttributeLocation(), cubeTextureShaderProgramLight.getNormalAttributeLocation(),
+                cubeTextureShaderProgramLight.getTextureCoordinatesAttributeLocation());
+        cube.draw();
 
         game.setGLFragColoring(true);
         glBindFramebuffer(GL_FRAMEBUFFER, FBO.getfboHandle());
@@ -358,7 +375,7 @@ public class TestScreen2 extends Screen {
                 textureShaderProgramLight.getTextureCoordinatesAttributeLocation());
         cardProjection.draw();
 
-        positionObjectInScenetmp(0f, 0.01f, -0.6f);
+        positionObjectInScenetmp(0f, 0.01f, 0.3f);
         textureShaderProgramLight.setUniforms(modelViewMatrix, it_modelViewMatrix,
                 modelViewProjectionMatrix, shadowMatrix, Light, invCardProjection.getMaterial(), cardbackside, SFBO.getrenderTex(), true);
 
@@ -384,6 +401,14 @@ public class TestScreen2 extends Screen {
         sphere.bindData(colorProgram.getPositionAttributeLocation(), colorProgram.getNormalAttributeLocation());
         sphere.draw();
 
+        cubeTextureShaderProgramLight.useProgram();
+        //positionObjectInScenetmp2(0.5f, 0.1f, 0.1f, totalTime);
+        positionObjectInScenetmp(0.5f, 0.025f, 0.5f);
+        cubeTextureShaderProgramLight.setUniforms(modelViewMatrix, it_modelViewMatrix,
+                modelViewProjectionMatrix, shadowMatrix, Light, invCardProjection.getMaterial(), textureArrays, SFBO.getrenderTex(), true);
+        cube.bindData(cubeTextureShaderProgramLight.getPositionAttributeLocation(), cubeTextureShaderProgramLight.getNormalAttributeLocation(),
+                cubeTextureShaderProgramLight.getTextureCoordinatesAttributeLocation());
+        cube.draw();
 
         // particle system
 
@@ -449,10 +474,17 @@ public class TestScreen2 extends Screen {
         textureShaderProgramLight = new TextureShaderProgramLight(game);
         gaussianBlurShaderProgram = new GaussianBlurShaderProgram(game);
         bloomingShaderProgram = new BloomingShaderProgram(game);
+        cubeTextureShaderProgramLight = new CubeTextureShaderProgramLight(game);
 
         basetexture = TextureHelper.loadTexture(game, "Base_1.png");
-        tabletexture = TextureHelper.loadTexture(game, "duelmaze.png");
+        tabletexture = TextureHelper.loadTexture(game, "Base_3.png");
         cardbackside = TextureHelper.loadTexture(game, "cardbackside.png");
+
+        for (int i = 0; i< 6; i++) {
+            textureArrays[i] = cardbackside;
+        }
+
+        textureArrays[3] = tabletexture;
 
          // The handle to the FBO
          // Generate and bind the framebuffer

@@ -56,6 +56,18 @@ public class GLGeometry {
         }
     }
 
+    public static class GLCube {
+        public final GLPoint center;
+        public final float width;
+        public final float length;
+        public final float height;
+        public GLCube(GLPoint center, float width, float length, float height) {
+            this.center = center;
+            this.width = width;
+            this.length = length;
+            this.height = height;
+        }
+    }
     public static class GLConicalFrustum {
         public final GLPoint center;
         public final float topradius;
@@ -65,6 +77,31 @@ public class GLGeometry {
             this.center = center;
             this.topradius = topradius;
             this.botradius = botradius;
+            this.height = height;
+        }
+    }
+
+    public static class GLArch {
+        public final GLPoint center;
+        public final float angle;
+        public final float radius;
+        public final float fallhieght;
+        public GLArch(GLPoint center, float angle, float radius, float fallhieght) {
+            this.center = center;
+            this.angle = angle;
+            this.radius = radius;
+            this.fallhieght = fallhieght;
+        }
+    }
+
+    public static class GLRectangle {
+        public final GLPoint center;
+        public final float width;
+        public final float height;
+
+        public GLRectangle(GLPoint center, float width, float height) {
+            this.center = center;
+            this.width = width;
             this.height = height;
         }
     }

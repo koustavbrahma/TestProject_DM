@@ -7,27 +7,23 @@ import koustav.duelmasters.main.androidgameopenglutil.GLMaterial;
 import koustav.duelmasters.main.androidgameopenglutil.ObjectBuilder;
 import koustav.duelmasters.main.androidgameopenglutil.VertexArray;
 
-
 /**
- * Created by Koustav on 2/2/2016.
+ * Created by Koustav on 3/5/2016.
  */
-public class XZRectangle extends GLObject{
+public class Cube extends GLObject {
     private static final int BYTES_PER_FLOAT = 4;
     private static final int POSITION_COMPONENT_COUNT = 3;
     private static final int NORMAL_COMPONENT_COUNT = 3;
-    private static final int TEXTURE_COORDINATES_COMPONENT_COUNT = 2;
+    private static final int TEXTURE_COORDINATES_COMPONENT_COUNT = 3;
     private static final int STRIDE =
-            (POSITION_COMPONENT_COUNT + NORMAL_COMPONENT_COUNT +TEXTURE_COORDINATES_COMPONENT_COUNT) * BYTES_PER_FLOAT;
-
-
+            (POSITION_COMPONENT_COUNT + NORMAL_COMPONENT_COUNT + TEXTURE_COORDINATES_COMPONENT_COUNT) * BYTES_PER_FLOAT;
     private final VertexArray vertexArray;
     private final List<ObjectBuilder.DrawCommand> drawList;
-
-    public XZRectangle(GLMaterial Material, float width, float height, int orientation) {
+    public Cube(GLMaterial Material, float width, float length, float height, boolean texture) {
         super(Material);
-        GLRectangle rectangle = new GLRectangle(new GLPoint(0f, 0f, 0f), width, height);
+        GLCube cube = new GLCube(new GLPoint(0f, 0f, 0f), width, length, height);
         ObjectBuilder.GeneratedData generatedData =
-                ObjectBuilder.createRectangle(rectangle, true, 0.5f, 0.5f, 1.0f , 1.0f, orientation);
+                ObjectBuilder.createCube(cube, texture);
         vertexArray = new VertexArray(generatedData.vertexData);
         drawList = generatedData.drawList;
     }

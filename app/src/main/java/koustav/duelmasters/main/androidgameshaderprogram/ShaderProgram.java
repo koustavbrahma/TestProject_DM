@@ -87,4 +87,8 @@ public class ShaderProgram {
     protected String U_WEIGHT(int i) {
         return "u_Weight[" + i + "]";
     }
+
+    protected String U_TEXTUREUNIT_ARRAY(int i) {
+        return "u_TextureUnit_Array[" + i + "]";
+    }
 }
