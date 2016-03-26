@@ -3,14 +3,19 @@ package koustav.duelmasters.main.androidgamesframeworkimpl;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.content.Context;
 import android.view.MotionEvent;
 import android.view.View;
 
+import koustav.duelmasters.main.androidgameopenglutil.GLGeometry.*;
+import koustav.duelmasters.main.androidgameopenglutil.UIHelper;
 import koustav.duelmasters.main.androidgamesframework.Input;
 import koustav.duelmasters.main.androidgamesframework.Pool;
 import koustav.duelmasters.main.androidgamesframework.Input.TouchEvent;
 import koustav.duelmasters.main.androidgamesframework.Pool.PoolObjectFactory;
 import koustav.duelmasters.main.androidgamesframework.TouchHandler;
+
+import static android.opengl.Matrix.multiplyMV;
 
 
 /**
@@ -18,26 +23,40 @@ import koustav.duelmasters.main.androidgamesframework.TouchHandler;
  * Abstract: Single touch handler class
  */
 public class SingleTouchHandler implements TouchHandler{
+    Context context;
+    View view;
     boolean isTouched;
     int touchX;
     int touchY;
+    GLPoint nearPoint;
+    GLPoint farPoint;
+    float[] invertedViewProjectionMatrix;
     Pool<TouchEvent> touchEventPool;
     List<TouchEvent> touchEvents = new ArrayList<TouchEvent>();
     List<TouchEvent> touchEventsBuffer = new ArrayList<TouchEvent>();
     float scaleX;
     float scaleY;
+    float[] nearP;
+    float[] farP;
 
-    public SingleTouchHandler(View view, float scaleX, float scaleY) {
+    public SingleTouchHandler(Context context, View view, float scaleX, float scaleY) {
         PoolObjectFactory<TouchEvent> factory = new PoolObjectFactory<TouchEvent>() {
             @Override
             public TouchEvent createObject() {
                 return new TouchEvent();
             }
         } ;
+        this.context = context;
+        this.view = view;
         touchEventPool = new Pool<TouchEvent>(factory, 100);
         view.setOnTouchListener(this);
         this.scaleX = scaleX;
         this.scaleY = scaleY;
+        invertedViewProjectionMatrix = null;
+        nearP = new float[4];
+        farP = new float[4];
+        nearPoint = new GLPoint(0, 0 ,0);
+        farPoint = new GLPoint(0, 0, 0);
     }
 
     @Override
@@ -62,8 +81,32 @@ public class SingleTouchHandler implements TouchHandler{
 
             touchEvent.x = touchX = (int)(event.getX()*scaleX);
             touchEvent.y = touchY = (int)(event.getY()*scaleY);
-            touchEventsBuffer.add(touchEvent);
 
+            if (invertedViewProjectionMatrix != null) {
+                float normalizedX =
+                        ((float) event.getX() / (float) view.getWidth()) * 2 - 1;
+                float normalizedY =
+                        -(((float)event.getY() / (float) view.getHeight()) * 2 - 1);
+                float[] nearPointNdc = {normalizedX, normalizedY, -1, 1};
+                float[] farPointNdc = {normalizedX, normalizedY, 1, 1};
+
+                multiplyMV(
+                        nearP, 0, invertedViewProjectionMatrix, 0, nearPointNdc, 0);
+                multiplyMV(
+                        farP, 0, invertedViewProjectionMatrix, 0, farPointNdc, 0);
+                UIHelper.divideByW(nearP);
+                UIHelper.divideByW(farP);
+
+                touchEvent.nearPoint.x = nearPoint.x = nearP[0];
+                touchEvent.nearPoint.y = nearPoint.y = nearP[1];
+                touchEvent.nearPoint.z = nearPoint.z = nearP[2];
+
+                touchEvent.farPoint.x = farPoint.x = farP[0];
+                touchEvent.farPoint.y = farPoint.y = farP[1];
+                touchEvent.farPoint.z = farPoint.z = farP[2];
+            }
+
+            touchEventsBuffer.add(touchEvent);
             return true;
         }
     }
@@ -105,4 +148,24 @@ public class SingleTouchHandler implements TouchHandler{
         }
     }
 
+    @Override
+    public GLPoint getNearPoint(int pointer) {
+        synchronized (this) {
+            return nearPoint;
+        }
+    }
+
+    @Override
+    public GLPoint getFarPoint(int pointer) {
+        synchronized (this) {
+            return farPoint;
+        }
+    }
+
+    @Override
+    public void setIVPMatrix(float[] Matrix) {
+        synchronized (this) {
+            this.invertedViewProjectionMatrix = Matrix;
+        }
+    }
 }

@@ -1,10 +1,5 @@
 package koustav.duelmasters.main.androidgameopenglutil;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-
 import static android.opengl.GLES20.*;
 
 /**
@@ -69,5 +64,14 @@ public class FrameBufferObject {
 
     public int getHeight() {
         return height;
+    }
+
+    public void freeFBO() {
+        //Delete resources
+        glDeleteTextures(1, renderTex, 0);
+        glDeleteRenderbuffers(1, depthBuf, 0);
+        //Bind 0, which means render to back buffer, as a result, fb is unbound
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glDeleteFramebuffers(1, fboHandle, 0);
     }
 }

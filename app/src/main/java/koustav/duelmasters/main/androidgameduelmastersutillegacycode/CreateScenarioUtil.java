@@ -8,9 +8,9 @@ import java.io.InputStreamReader;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.InactiveCard;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.ActiveCard;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
-import koustav.duelmasters.main.androidgameduelmastersdatastructure.GridPositionIndex;
+import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.GridPositionIndex;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.PackedCardInfo;
-import koustav.duelmasters.main.androidgameduelmastersdatastructure.World;
+import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.World;
 import koustav.duelmasters.main.androidgameduelmastersutil.SetUnsetUtil;
 
 /**

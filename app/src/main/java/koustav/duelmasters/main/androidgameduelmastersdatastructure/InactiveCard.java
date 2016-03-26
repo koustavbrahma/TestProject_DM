@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 
 import koustav.duelmasters.main.androidgameduelmasterscardrulehandler.InstructionSet;
+import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.GridPositionIndex;
 
 /**
  * Created by Koustav on 2/22/2015.

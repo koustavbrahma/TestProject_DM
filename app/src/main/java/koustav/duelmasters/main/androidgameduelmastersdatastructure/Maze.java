@@ -7,6 +7,20 @@ import java.util.Hashtable;
  * Created by Koustav on 2/16/2015.
  */
 public class Maze {
+    public static int battleZone = 0;
+    public static int manaZone = 1;
+    public static int shieldZone = 2;
+    public static int hand = 3;
+    public static int graveyard = 4;
+    public static int deck = 5;
+    public static int temporaryZone = 6;
+    public static int Opponent_battleZone= 7;
+    public static int Opponent_manaZone= 8;
+    public static int Opponent_shieldZone= 9;
+    public static int Opponent_hand= 10;
+    public static int Opponent_graveyard= 11;
+    public static int Opponent_deck= 12;
+
     ArrayList<Zone> zoneList;
 
     Zone BattleZone;
@@ -16,9 +30,9 @@ public class Maze {
     Zone Graveyard;
     Zone Deck;
 
-    Zone OShieldZone;
     Zone OBattleZone;
     Zone OManaZone;
+    Zone OShieldZone;
     Zone OHand;
     Zone OGraveyard;
     Zone ODeck;
@@ -38,9 +52,9 @@ public class Maze {
         Deck = new Zone();
 
 
-        OShieldZone = new Zone();
         OBattleZone = new Zone();
         OManaZone = new Zone();
+        OShieldZone = new Zone();
         OHand = new Zone();
         OGraveyard = new Zone();
         ODeck = new Zone();

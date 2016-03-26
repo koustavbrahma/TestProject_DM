@@ -9,7 +9,7 @@ import koustav.duelmasters.main.androidgameopenglanimation.ParticleShooter;
 import koustav.duelmasters.main.androidgameopenglanimation.ParticleSystem;
 import koustav.duelmasters.main.androidgameopenglmotionmodel.GLDynamics;
 import koustav.duelmasters.main.androidgameopenglobjectmodels.Cube;
-import koustav.duelmasters.main.androidgameopenglobjectmodels.XYRectangle;
+import koustav.duelmasters.main.androidgameopenglobjectmodels.FullScreenRectangle;
 import koustav.duelmasters.main.androidgameopenglobjectmodels.Puck;
 import koustav.duelmasters.main.androidgameopenglobjectmodels.Sphere;
 import koustav.duelmasters.main.androidgameopenglobjectmodels.XZRectangle;
@@ -39,7 +39,7 @@ import static android.opengl.Matrix.multiplyMM;
  * Created by Koustav on 1/24/2016.
  */
 public class TestScreen2 extends Screen {
-    private XYRectangle xy_rectangle;
+    private FullScreenRectangle xy_rectangle;
     private XZRectangle table;
     private Puck puck;
     private Sphere sphere;
@@ -137,7 +137,7 @@ public class TestScreen2 extends Screen {
         depthbiasVPMatrix = new float[16];
         shadowMatrix = new float[16];
 
-        xy_rectangle = new XYRectangle();
+        xy_rectangle = new FullScreenRectangle();
         table = new XZRectangle(new GLMaterial(new float[] {0.8f, 0.8f, 0.8f}, new float[] {0.8f, 0.8f, 0.8f},
                 new float[] {0.1f, 0.1f, 0.1f}, 10.0f), 1.2f, 1.6f, 0);
         puck = new Puck(new GLMaterial(new float[] {0.8f, 0.8f, 0.8f}, new float[] {0.8f, 0.8f, 0.8f},
@@ -217,7 +217,7 @@ public class TestScreen2 extends Screen {
             UIHelper.GLNormalized2DPoint Npoint = UIHelper.ConvertTouchEventToNormalized2DPoint(game, game.getInput().getTouchX(0),
                     game.getInput().getTouchY(0));
             ray = UIHelper.convertNormalized2DPointToRay(invertedViewProjectionMatrix, Npoint.normalizedX, Npoint.normalizedY);
-            GLPoint point = GLGeometry.GLRayIntersectionWithXZPlane(ray);
+            GLPoint point = GLGeometry.GLRayIntersectionWithXZPlane(ray, 0);
             tmpx = point.x;
             tmpz = point.z;
         }
@@ -323,7 +323,7 @@ public class TestScreen2 extends Screen {
         positionObjectInScenetmp(tmpx, puck.height / 2f, tmpz);
         colorProgram.setUniforms(modelViewMatrix, it_modelViewMatrix,
                 depthMVPMatrix, null, Light, puck.getMaterial(), new float[] {0.8f, 0.8f, 1f, 1f}, 0, false);
-        puck.bindData(colorProgram.getPositionAttributeLocation(), colorProgram.getNormalAttributeLocation());
+        puck.bindData(colorProgram.getPositionAttributeLocation(), colorProgram.getNormalAttributeLocation(), 0);
         puck.draw();
 
         colorProgram.useProgram();
@@ -331,7 +331,7 @@ public class TestScreen2 extends Screen {
         positionObjectInScenetmp(0.5f, 0.1f, 0.1f);
         colorProgram.setUniforms(modelViewMatrix, it_modelViewMatrix,
                 depthMVPMatrix, null, Light, sphere.getMaterial(), new float[] {0.8f, 0.8f, 1f, 1f}, 0 , false);
-        sphere.bindData(colorProgram.getPositionAttributeLocation(), colorProgram.getNormalAttributeLocation());
+        sphere.bindData(colorProgram.getPositionAttributeLocation(), colorProgram.getNormalAttributeLocation(), 0);
         sphere.draw();
 
         cubeTextureShaderProgramLight.useProgram();
@@ -390,7 +390,7 @@ public class TestScreen2 extends Screen {
         positionObjectInScenetmp(tmpx, puck.height / 2f, tmpz);
         colorProgram.setUniforms(modelViewMatrix, it_modelViewMatrix,
                 modelViewProjectionMatrix, shadowMatrix, Light, puck.getMaterial(), new float[] {0.8f, 0.8f, 1f, 1f}, SFBO.getrenderTex(), true);
-        puck.bindData(colorProgram.getPositionAttributeLocation(), colorProgram.getNormalAttributeLocation());
+        puck.bindData(colorProgram.getPositionAttributeLocation(), colorProgram.getNormalAttributeLocation(), 0);
         puck.draw();
 
         colorProgram.useProgram();
@@ -398,7 +398,7 @@ public class TestScreen2 extends Screen {
         positionObjectInScenetmp(0.5f, 0.1f, 0.1f);
         colorProgram.setUniforms(modelViewMatrix, it_modelViewMatrix,
                 modelViewProjectionMatrix, shadowMatrix, Light, sphere.getMaterial(), new float[] {0.8f, 0.8f, 1f, 1f}, SFBO.getrenderTex() , true);
-        sphere.bindData(colorProgram.getPositionAttributeLocation(), colorProgram.getNormalAttributeLocation());
+        sphere.bindData(colorProgram.getPositionAttributeLocation(), colorProgram.getNormalAttributeLocation(), 0);
         sphere.draw();
 
         cubeTextureShaderProgramLight.useProgram();

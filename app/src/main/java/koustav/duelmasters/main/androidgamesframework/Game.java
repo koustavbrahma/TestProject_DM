@@ -19,8 +19,4 @@ public interface Game {
     public Screen getCurrentScreen();
     public Screen getStartScreen();
     public AndroidNetwork getNetwork();
-    public int getframeBufferWidth();
-    public int getframeBufferHeight();
-    public void setTurn(boolean val);
-    public boolean getTurn();
 }

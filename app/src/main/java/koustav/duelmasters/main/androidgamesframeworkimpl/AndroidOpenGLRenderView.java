@@ -10,13 +10,8 @@ import android.widget.Toast;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import koustav.duelmasters.R;
-import koustav.duelmasters.main.androidgameopenglutil.MatrixHelper;
 import koustav.duelmasters.main.androidgamesframework.RenderView;
-import koustav.duelmasters.main.androidgameopenglutil.ShaderHelper;
 import static android.opengl.GLES20.*;
-import static android.opengl.GLUtils.*;
-import static android.opengl.Matrix.*;
 
 /**
  * Created by Koustav on 1/3/2016.

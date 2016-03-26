@@ -4,6 +4,8 @@ import java.util.List;
 
 import android.content.Context;
 import android.view.View;
+
+import koustav.duelmasters.main.androidgameopenglutil.GLGeometry;
 import koustav.duelmasters.main.androidgamesframework.Input;
 import koustav.duelmasters.main.androidgamesframework.TouchHandler;
 
@@ -17,7 +19,7 @@ public class AndroidInput implements Input {
 
     public AndroidInput (Context context, View view, float scaleX, float scaleY) {
         keyHandler = new KeyboardHandler(view);
-        touchHandler = new SingleTouchHandler(view, scaleX, scaleY);
+        touchHandler = new SingleTouchHandler(context, view, scaleX, scaleY);
     }
 
     @Override
@@ -43,5 +45,20 @@ public class AndroidInput implements Input {
     @Override
     public List<TouchEvent> getTouchEvents() {
         return touchHandler.getTouchEvents();
+    }
+
+    @Override
+    public GLGeometry.GLPoint getNearPoint(int pointer) {
+        return touchHandler.getNearPoint(pointer);
+    }
+
+    @Override
+    public GLGeometry.GLPoint getFarPoint(int pointer) {
+        return touchHandler.getFarPoint(pointer);
+    }
+
+    @Override
+    public void setIVPMatrix(float[] Matrix) {
+        touchHandler.setIVPMatrix(Matrix);
     }
 }

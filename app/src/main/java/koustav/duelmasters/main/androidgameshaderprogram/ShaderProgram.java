@@ -43,8 +43,10 @@ public class ShaderProgram {
     protected static final String A_PARTICLE_START_TIME = "a_ParticleStartTime";
 
     // Shader program
-    protected final int program;
+    protected int program;
     protected AndroidGame game;
+    int vertexShaderResourceId;
+    int fragmentShaderResourceId;
 
     protected ShaderProgram(Context context, int vertexShaderResourceId,
                             int fragmentShaderResourceId) {
@@ -53,6 +55,8 @@ public class ShaderProgram {
                 ((AndroidGame) context).getFileIO().readTextFileFromResource(vertexShaderResourceId),
                 ((AndroidGame) context).getFileIO().readTextFileFromResource(fragmentShaderResourceId));
         game = (AndroidGame) context;
+        this.vertexShaderResourceId = vertexShaderResourceId;
+        this.fragmentShaderResourceId = fragmentShaderResourceId;
     }
 
     public void useProgram() {
@@ -90,5 +94,12 @@ public class ShaderProgram {
 
     protected String U_TEXTUREUNIT_ARRAY(int i) {
         return "u_TextureUnit_Array[" + i + "]";
+    }
+
+    public void deleteProgram() {
+        if (program != 0) {
+            ShaderHelper.deleteProgram(program);
+        }
+        program = 0;
     }
 }

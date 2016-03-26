@@ -1,5 +1,7 @@
 package koustav.duelmasters.main.androidgameduelmastersdatastructure;
 
+import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.GridPositionIndex;
+
 /**
  * Created by Koustav on 2/16/2015.
  */

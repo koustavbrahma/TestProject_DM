@@ -2,6 +2,8 @@ package koustav.duelmasters.main.androidgamesframework;
 
 import java.util.List;
 
+import koustav.duelmasters.main.androidgameopenglutil.GLGeometry.*;
+
 /**
  * Created by: Koustav on 2/7/2015.
  * Abstract: Basic interface for Input.
@@ -24,6 +26,13 @@ public interface Input {
         public int type;
         public int x, y;
         public int pointer;
+        public GLPoint nearPoint;
+        public GLPoint farPoint;
+
+        public TouchEvent() {
+            nearPoint = new GLPoint(0, 0, 0);
+            farPoint = new GLPoint(0, 0, 0);
+        }
     }
 
     public  boolean isKeyPressed(int keyCode);
@@ -32,4 +41,7 @@ public interface Input {
     public  int getTouchX(int pointer);
     public  int getTouchY(int pointer);
     public List<TouchEvent> getTouchEvents();
+    public GLPoint getNearPoint(int pointer);
+    public GLPoint getFarPoint(int pointer);
+    public void setIVPMatrix(float[] Matrix);
 }

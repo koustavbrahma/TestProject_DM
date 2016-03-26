@@ -3,6 +3,7 @@ package koustav.duelmasters.main.androidgameopenglutil;
 import android.util.Log;
 
 import static android.opengl.GLES20.*;
+import static android.opengl.GLES20.glDeleteProgram;
 
 /**
  * Created by Koustav on 1/5/2016.
@@ -83,5 +84,9 @@ public class ShaderHelper {
         validateProgram(program);
 
         return program;
+    }
+
+    public static void deleteProgram(int program) {
+        glDeleteProgram(program);
     }
 }

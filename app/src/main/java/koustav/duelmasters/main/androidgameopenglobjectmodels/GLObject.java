@@ -5,7 +5,7 @@ import koustav.duelmasters.main.androidgameopenglutil.GLMaterial;
 /**
  * Created by Koustav on 2/16/2016.
  */
-public class GLObject {
+public abstract class GLObject {
     GLMaterial Material;
 
     public GLObject(GLMaterial Material) {
@@ -15,4 +15,8 @@ public class GLObject {
     public GLMaterial getMaterial() {
         return Material;
     }
+
+    public abstract void bindData(int aPositionLocation, int aNormalLocation, int aTextureCoordinatesLocation);
+
+    public abstract void draw();
 }

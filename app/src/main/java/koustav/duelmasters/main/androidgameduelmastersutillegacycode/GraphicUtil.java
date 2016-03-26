@@ -5,14 +5,13 @@ import android.graphics.Color;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import koustav.duelmasters.main.androidgameduelmastersassets.Assets;
+import koustav.duelmasters.main.androidgameduelmastersassetsandresourcesforscreen.AssetsAndResourceForPvP;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.InactiveCard;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
-import koustav.duelmasters.main.androidgameduelmastersdatastructure.World;
+import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.World;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.WorldFlags;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Zone;
 import koustav.duelmasters.main.androidgameduelmastersutil.GetUtil;
-import koustav.duelmasters.main.androidgameduelmastersutillegacycode.UIUtil;
 import koustav.duelmasters.main.androidgamesframework.Graphics;
 
 /**
@@ -39,11 +38,11 @@ public class GraphicUtil {
         int w = world.getframeBufferWidht()/8;
         int h = world.getframeBufferHeight()/10;
 
-        g.drawPixmap(Assets.Button, w *7, h *5);
+        g.drawPixmap(AssetsAndResourceForPvP.Button, w *7, h *5);
 
         if ((world.getMaze().getZoneList().get(5).zoneSize() > 0) &&
                 !world.getWorldFlag(WorldFlags.CantDrawCard)) {
-            g.drawPixmap(Assets.Button, w *6, h *5);
+            g.drawPixmap(AssetsAndResourceForPvP.Button, w *6, h *5);
         }
 
         boolean status = false;
@@ -71,7 +70,7 @@ public class GraphicUtil {
         }
 
         if (status){
-            g.drawPixmap(Assets.Button, 0, h * 5);
+            g.drawPixmap(AssetsAndResourceForPvP.Button, 0, h * 5);
         }
 
         status = false;
@@ -91,7 +90,7 @@ public class GraphicUtil {
         }
 
         if (status) {
-            g.drawPixmap(Assets.Button, w * 2 , h * 5);
+            g.drawPixmap(AssetsAndResourceForPvP.Button, w * 2 , h * 5);
         }
     }
 
@@ -100,11 +99,11 @@ public class GraphicUtil {
         int w = world.getframeBufferWidht()/8;
         int h = world.getframeBufferHeight()/10;
         if (world.getMaze().getZoneList().get(5).zoneSize() > 0) {
-            g.drawPixmap(Assets.cardbackside,(6 * w), (7 * h) );
+            g.drawPixmap(AssetsAndResourceForPvP.cardbackside,(6 * w), (7 * h) );
         }
 
         if (world.getMaze().getZoneList().get(4).zoneSize() > 0) {
-            g.drawPixmap(Assets.cardbackside, (7 * w), (7 * h));
+            g.drawPixmap(AssetsAndResourceForPvP.cardbackside, (7 * w), (7 * h));
         }
 
         if (world.getMaze().getZoneList().get(0).zoneSize() > 0) {
@@ -118,9 +117,9 @@ public class GraphicUtil {
                         world.getframeBufferWidht()) + 6;
                 if (y != null && x != null) {
                     if (!GetUtil.IsTapped(card)) {
-                        g.drawPixmap(Assets.cardbackside, x.intValue(), y.intValue());
+                        g.drawPixmap(AssetsAndResourceForPvP.cardbackside, x.intValue(), y.intValue());
                     } else {
-                        g.drawPixmap(Assets.cardbackside, x.intValue(), y.intValue(), 90);
+                        g.drawPixmap(AssetsAndResourceForPvP.cardbackside, x.intValue(), y.intValue(), 90);
                     }
                 }
             }
@@ -137,9 +136,9 @@ public class GraphicUtil {
                         world.getframeBufferWidht()) + 6;
                 if (y != null && x != null) {
                     if (!GetUtil.IsTapped(card)) {
-                        g.drawPixmap(Assets.cardbackside, x.intValue(), y.intValue());
+                        g.drawPixmap(AssetsAndResourceForPvP.cardbackside, x.intValue(), y.intValue());
                     } else {
-                        g.drawPixmap(Assets.cardbackside, x.intValue(), y.intValue(), 90);
+                        g.drawPixmap(AssetsAndResourceForPvP.cardbackside, x.intValue(), y.intValue(), 90);
                     }
                 }
             }
@@ -155,7 +154,7 @@ public class GraphicUtil {
                 x = UIUtil.GridPositionToXCoordinateTransform(card.GridPosition().getGridIndex(),
                         world.getframeBufferWidht()) + 6;
                 if (y != null && x != null) {
-                    g.drawPixmap(Assets.cardbackside, x.intValue(), y.intValue());
+                    g.drawPixmap(AssetsAndResourceForPvP.cardbackside, x.intValue(), y.intValue());
                 }
             }
         }
@@ -172,7 +171,7 @@ public class GraphicUtil {
                 if (x == null || x > (5 * w))
                     continue;
                 if (y != null ) {
-                    g.drawPixmap(Assets.cardbackside, x.intValue(), y.intValue());
+                    g.drawPixmap(AssetsAndResourceForPvP.cardbackside, x.intValue(), y.intValue());
                 }
             }
         }
@@ -183,11 +182,11 @@ public class GraphicUtil {
         int w = world.getframeBufferWidht()/8;
         int h = world.getframeBufferHeight()/10;
         if (world.getMaze().getZoneList().get(12).zoneSize() > 0) {
-            g.drawPixmap(Assets.cardbackside,(1 * w), (3 * h), 180 );
+            g.drawPixmap(AssetsAndResourceForPvP.cardbackside,(1 * w), (3 * h), 180 );
         }
 
         if (world.getMaze().getZoneList().get(11).zoneSize() > 0) {
-            g.drawPixmap(Assets.cardbackside, 0, (3 * h), 180);
+            g.drawPixmap(AssetsAndResourceForPvP.cardbackside, 0, (3 * h), 180);
         }
 
         if (world.getMaze().getZoneList().get(7).zoneSize() > 0) {
@@ -201,9 +200,9 @@ public class GraphicUtil {
                         world.getframeBufferWidht()) + 6;
                 if (y != null && x != null) {
                     if (!GetUtil.IsTapped(card)) {
-                        g.drawPixmap(Assets.cardbackside, x.intValue(), y.intValue(), 180);
+                        g.drawPixmap(AssetsAndResourceForPvP.cardbackside, x.intValue(), y.intValue(), 180);
                     } else {
-                        g.drawPixmap(Assets.cardbackside, x.intValue(), y.intValue(), 270);
+                        g.drawPixmap(AssetsAndResourceForPvP.cardbackside, x.intValue(), y.intValue(), 270);
                     }
                 }
             }
@@ -220,9 +219,9 @@ public class GraphicUtil {
                         world.getframeBufferWidht()) + 6;
                 if (y != null && x != null) {
                     if (!GetUtil.IsTapped(card)) {
-                        g.drawPixmap(Assets.cardbackside, x.intValue(), y.intValue(), 180);
+                        g.drawPixmap(AssetsAndResourceForPvP.cardbackside, x.intValue(), y.intValue(), 180);
                     } else {
-                        g.drawPixmap(Assets.cardbackside, x.intValue(), y.intValue(), 270);
+                        g.drawPixmap(AssetsAndResourceForPvP.cardbackside, x.intValue(), y.intValue(), 270);
                     }
                 }
             }
@@ -238,7 +237,7 @@ public class GraphicUtil {
                 x = UIUtil.GridPositionToXCoordinateTransform((7 - card.GridPosition().getGridIndex()),
                         world.getframeBufferWidht()) + 6;
                 if (y != null && x != null) {
-                    g.drawPixmap(Assets.cardbackside, x.intValue(), y.intValue(), 180);
+                    g.drawPixmap(AssetsAndResourceForPvP.cardbackside, x.intValue(), y.intValue(), 180);
                 }
             }
         }
@@ -255,7 +254,7 @@ public class GraphicUtil {
                 if (x == null || x < (2 * w))
                     continue;
                 if (y != null ) {
-                    g.drawPixmap(Assets.cardbackside, x.intValue(), y.intValue(), 180);
+                    g.drawPixmap(AssetsAndResourceForPvP.cardbackside, x.intValue(), y.intValue(), 180);
                 }
             }
         }
@@ -269,15 +268,15 @@ public class GraphicUtil {
         int w = world.getframeBufferWidht()/8;
         int h = world.getframeBufferHeight()/10;
         if (world.getFetchCard() != null) {
-            g.drawPixmap(Assets.Button, w * 4, h * 5);
+            g.drawPixmap(AssetsAndResourceForPvP.Button, w * 4, h * 5);
         }
 
         if (!world.getWorldFlag(WorldFlags.DisplayInfo)) {
-            g.drawPixmap(Assets.Button, w * 6, 0);
+            g.drawPixmap(AssetsAndResourceForPvP.Button, w * 6, 0);
         }
 
         if (world.getWorldFlag(WorldFlags.DisplayDeckCard)) {
-            g.drawPixmap(Assets.InfoBackground, 0, h, 0, 0, 320, 432);
+            g.drawPixmap(AssetsAndResourceForPvP.InfoBackground, 0, h, 0, 0, 320, 432);
             int h1 = h +8;
             Zone zone = world.getMaze().getZoneList().get(5);
             for (int i = 0; i < zone.zoneSize(); i++) {
@@ -295,8 +294,8 @@ public class GraphicUtil {
         }
 
         if (world.getWorldFlag(WorldFlags.DisplayInfo)) {
-            g.drawPixmap(Assets.Button, w * 7, 0);
-            g.drawPixmap(Assets.InfoBackground, 0, h, 0, 0, 320, 432);
+            g.drawPixmap(AssetsAndResourceForPvP.Button, w * 7, 0);
+            g.drawPixmap(AssetsAndResourceForPvP.InfoBackground, 0, h, 0, 0, 320, 432);
             InactiveCard card = (InactiveCard) world.getFetchCard();
             int h1 = h+8;
             g.drawText(card.getNameID(),0, h1, 8, Color.BLACK);
@@ -316,10 +315,10 @@ public class GraphicUtil {
         }
         Graphics g = world.getGame().getGraphics();
         int w = world.getframeBufferWidht()/8;
-        g.drawPixmap(Assets.Button, w *4, 0);
+        g.drawPixmap(AssetsAndResourceForPvP.Button, w *4, 0);
         InactiveCard Icard = (InactiveCard) world.getFetchCard();
         if (world.getMaze().getZoneList().get(6).zoneSize() == GetUtil.getTotalManaCost(Icard)) {
-            g.drawPixmap(Assets.Button, w *2, 0);
+            g.drawPixmap(AssetsAndResourceForPvP.Button, w *2, 0);
         }
         if (world.getMaze().getZoneList().get(6).zoneSize() > 0) {
             Zone zone = world.getMaze().getZoneList().get(6);
@@ -345,10 +344,10 @@ public class GraphicUtil {
         Graphics g = world.getGame().getGraphics();
         int w = world.getframeBufferWidht()/8;
         if (!world.getWorldFlag(WorldFlags.BlockerSelectMode)) {
-            g.drawPixmap(Assets.Button, w * 4, 0);
+            g.drawPixmap(AssetsAndResourceForPvP.Button, w * 4, 0);
         }
         if (!world.getWorldFlag(WorldFlags.ShieldSelectMode) && !world.getWorldFlag(WorldFlags.BlockerSelectMode)) {
-            g.drawPixmap(Assets.Button, w * 6, 0);
+            g.drawPixmap(AssetsAndResourceForPvP.Button, w * 6, 0);
         }
         InactiveCard Icard = (InactiveCard) world.getFetchCard();
         ArrayList<Cards> CollectedCardList = world.getMaze().getZoneList().get(6).getZoneArray();
@@ -358,7 +357,7 @@ public class GraphicUtil {
         if ((CollectedCardList.size() == 1 &&((InactiveCard) CollectedCardList.get(0)).GridPosition().getZone() == 7)
                 || (NumberOfBreakingShield != 0 && CollectedCardList.size() == NumberOfBreakingShield
                     && CollectedCardList.get(0).GridPosition().getZone() ==  9)) {
-            g.drawPixmap(Assets.Button, w *2, 0);
+            g.drawPixmap(AssetsAndResourceForPvP.Button, w *2, 0);
         }
         if (CollectedCardList.size() > 0) {
             Cards card;
@@ -382,8 +381,8 @@ public class GraphicUtil {
 
         Graphics g = world.getGame().getGraphics();
         int w = world.getframeBufferWidht()/8;
-        g.drawPixmap(Assets.Button, w * 4, 0);
-        g.drawPixmap(Assets.Button, w * 2, 0);
+        g.drawPixmap(AssetsAndResourceForPvP.Button, w * 4, 0);
+        g.drawPixmap(AssetsAndResourceForPvP.Button, w * 2, 0);
     }
 
     public static void presentUserDecisionMakingMode(World world) {
@@ -393,10 +392,10 @@ public class GraphicUtil {
         Graphics g = world.getGame().getGraphics();
         int w = world.getframeBufferWidht()/8;
         if (world.getWorldFlag(WorldFlags.AcceptCardSelectingMode)) {
-            g.drawPixmap(Assets.Button, w * 2, 0);
+            g.drawPixmap(AssetsAndResourceForPvP.Button, w * 2, 0);
         }
         if (world.getWorldFlag(WorldFlags.MaySkipCardSelectingMode)) {
-            g.drawPixmap(Assets.Button, w * 4, 0);
+            g.drawPixmap(AssetsAndResourceForPvP.Button, w * 4, 0);
         }
     }
 
@@ -408,10 +407,10 @@ public class GraphicUtil {
         int w = world.getframeBufferWidht()/8;
         ArrayList<Cards> CollectedCardList = world.getMaze().getZoneList().get(6).getZoneArray();
         if (world.getWorldFlag(WorldFlags.MaySkipCardSelectingMode)) {
-            g.drawPixmap(Assets.Button, w * 4, 0);
+            g.drawPixmap(AssetsAndResourceForPvP.Button, w * 4, 0);
         }
         if (world.getWorldFlag(WorldFlags.AcceptCardSelectingMode)) {
-            g.drawPixmap(Assets.Button, w * 2, 0);
+            g.drawPixmap(AssetsAndResourceForPvP.Button, w * 2, 0);
         }
 
         if (CollectedCardList.size() > 0) {
@@ -441,10 +440,10 @@ public class GraphicUtil {
         Graphics g = world.getGame().getGraphics();
         int w = world.getframeBufferWidht()/8;
         ArrayList<Cards> CollectedCardList = world.getMaze().getZoneList().get(6).getZoneArray();
-        g.drawPixmap(Assets.Button, w * 4, 0);
+        g.drawPixmap(AssetsAndResourceForPvP.Button, w * 4, 0);
 
         if (CollectedCardList.size() == 1) {
-            g.drawPixmap(Assets.Button, w * 2, 0);
+            g.drawPixmap(AssetsAndResourceForPvP.Button, w * 2, 0);
         }
 
         if (CollectedCardList.size() > 0) {
@@ -475,10 +474,10 @@ public class GraphicUtil {
         Graphics g = world.getGame().getGraphics();
         int w = world.getframeBufferWidht()/8;
         int h = world.getframeBufferHeight()/10;
-        g.drawPixmap(Assets.Button, w * 7, 0);
-        g.drawPixmap(Assets.Button, w * 4, 0);
-        g.drawPixmap(Assets.Button, w * 2, 0);
-        g.drawPixmap(Assets.InfoBackground, 0, h, 0, 0, 320, 432);
+        g.drawPixmap(AssetsAndResourceForPvP.Button, w * 7, 0);
+        g.drawPixmap(AssetsAndResourceForPvP.Button, w * 4, 0);
+        g.drawPixmap(AssetsAndResourceForPvP.Button, w * 2, 0);
+        g.drawPixmap(AssetsAndResourceForPvP.InfoBackground, 0, h, 0, 0, 320, 432);
         ArrayList<Cards> TempZone = world.getMaze().getZoneList().get(6).getZoneArray();
         InactiveCard card = (InactiveCard) TempZone.get(0);
         int h1 = h+8;
@@ -501,14 +500,14 @@ public class GraphicUtil {
         int w = world.getframeBufferWidht()/8;
         int h = world.getframeBufferHeight()/10;
         if  (world.getWorldFlag(WorldFlags.AcceptCardSelectingMode)) {
-            g.drawPixmap(Assets.Button, w * 7, 0);
+            g.drawPixmap(AssetsAndResourceForPvP.Button, w * 7, 0);
         }
         if (world.getWorldFlag(WorldFlags.MaySkipCardSelectingMode)) {
-            g.drawPixmap(Assets.Button, w * 6, 0);
+            g.drawPixmap(AssetsAndResourceForPvP.Button, w * 6, 0);
         }
-        g.drawPixmap(Assets.Button, w * 4, 0);
-        g.drawPixmap(Assets.Button, w * 2, 0);
-        g.drawPixmap(Assets.InfoBackground, 0, h, 0, 0, 320, 432);
+        g.drawPixmap(AssetsAndResourceForPvP.Button, w * 4, 0);
+        g.drawPixmap(AssetsAndResourceForPvP.Button, w * 2, 0);
+        g.drawPixmap(AssetsAndResourceForPvP.InfoBackground, 0, h, 0, 0, 320, 432);
         ArrayList<Cards> TempZone = world.getMaze().getZoneList().get(6).getZoneArray();
         Cards card = world.getInstructionHandler().getCollectCardList().get(0);
         int h1 = h+8;

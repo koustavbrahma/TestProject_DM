@@ -4,8 +4,9 @@ package koustav.duelmasters.main.androidgameopenglutil;
  * Created by Koustav on 1/22/2016.
  */
 public class GLGeometry {
+    // Static classes
     public static class GLPoint {
-        public final float x, y, z;
+        public float x, y, z;
         public GLPoint(float x, float y, float z) {
             this.x = x;
             this.y = y;
@@ -68,6 +69,7 @@ public class GLGeometry {
             this.height = height;
         }
     }
+
     public static class GLConicalFrustum {
         public final GLPoint center;
         public final float topradius;
@@ -107,7 +109,7 @@ public class GLGeometry {
     }
 
     public static class GLVector {
-        public final float x, y, z;
+        public float x, y, z;
         public GLVector(float x, float y, float z) {
             this.x = x;
             this.y = y;
@@ -122,17 +124,56 @@ public class GLGeometry {
             float abs = getMagnitude();
             return new GLVector(x/abs, y/abs, z/abs);
         }
+
+        public GLVector scale(float s) {
+            return new GLVector(s*x,s*y,s*z);
+        }
+
+        public GLVector crossProduct(GLVector other) {
+            return new GLVector(
+                    (y * other.z) - (z * other.y),
+                    (z * other.x) - (x * other.z),
+                    (x * other.y) - (y * other.x));
+        }
+
+        public float dotProduct(GLVector other) {
+            return (x * other.x) + (y * other.y) + (z * other.z);
+        }
     }
 
     public static class GLRay {
-        public final GLPoint point;
-        public final GLVector vector;
+        public static GLPoint point;
+        public static GLVector vector;
         public GLRay(GLPoint point, GLVector vector) {
             this.point = point;
             this.vector = vector;
         }
     }
 
+    public static class GLPlane {
+        public static GLPoint point;
+        public static GLVector normal;
+        public GLPlane(GLPoint point, GLVector vector) {
+            this.point = point;
+            this.normal = vector;
+        }
+    }
+
+    public static class GLAngularRotaion {
+        public float angle;
+        public float x;
+        public float y;
+        public float z;
+
+        public GLAngularRotaion(float angle, float x, float y, float z) {
+            this.angle = angle;
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
+    }
+
+    // APIs
     public static GLVector GLVectorBetween(GLPoint from, GLPoint to) {
         return new GLVector(
                 to.x - from.x,
@@ -140,18 +181,27 @@ public class GLGeometry {
                 to.z - from.z);
     }
 
-
-
-    public static GLPoint GLRayIntersectionWithXZPlane(GLRay ray) {
+    public static GLPoint GLRayIntersectionWithXZPlane(GLRay ray, float yOffset) {
         GLPoint nearPointRay = ray.point;
         GLPoint farPointRay = ray.point.translate(ray.vector);
 
-        float x = (-nearPointRay.y/(farPointRay.y - nearPointRay.y)) * (farPointRay.x - nearPointRay.x)
+        float x = (yOffset-nearPointRay.y/(farPointRay.y - nearPointRay.y)) * (farPointRay.x - nearPointRay.x)
                 + nearPointRay.x;
 
-        float z = (-nearPointRay.y/(farPointRay.y - nearPointRay.y)) * (farPointRay.z - nearPointRay.z)
+        float z = (yOffset-nearPointRay.y/(farPointRay.y - nearPointRay.y)) * (farPointRay.z - nearPointRay.z)
                 + nearPointRay.z;
 
-        return new GLPoint(x, 0f, z);
+        return new GLPoint(x, yOffset, z);
+    }
+
+    public static GLPoint GLRayIntersectionWithPlane(GLRay ray, GLPlane plane) {
+        GLPoint nearPoint = ray.point;
+        GLVector rayDirection = ray.vector;
+        GLPoint planePoint = plane.point;
+        GLVector planeNormal = plane.normal;
+
+        float t = (planeNormal.dotProduct(planePoint.getVector()) - planeNormal.dotProduct(nearPoint.getVector()))/planeNormal.dotProduct(rayDirection);
+        GLPoint pointOfIntersection = nearPoint.translate(rayDirection.scale(t));
+        return pointOfIntersection;
     }
 }

@@ -31,7 +31,8 @@ public class Sphere extends GLObject{
         drawList = generatedData.drawList;
     }
 
-    public void bindData(int aPositionLocation, int aNormalLocation) {
+    @Override
+    public void bindData(int aPositionLocation, int aNormalLocation, int aTextureCoordinatesLocation) {
         vertexArray.setVertexAttribPointer(0,
                 aPositionLocation,
                 POSITION_COMPONENT_COUNT, STRIDE);
@@ -42,6 +43,7 @@ public class Sphere extends GLObject{
                 STRIDE);
     }
 
+    @Override
     public void draw() {
         for (ObjectBuilder.DrawCommand drawCommand : drawList) {
             drawCommand.draw();

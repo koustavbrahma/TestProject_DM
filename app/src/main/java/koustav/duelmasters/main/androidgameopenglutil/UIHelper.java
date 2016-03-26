@@ -58,7 +58,7 @@ public class UIHelper {
                 GLGeometry.GLVectorBetween(nearPointRay, farPointRay));
     }
 
-    private static void divideByW(float[] vector) {
+    public static void divideByW(float[] vector) {
         vector[0] /= vector[3];
         vector[1] /= vector[3];
         vector[2] /= vector[3];

@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
-import koustav.duelmasters.main.androidgameduelmastersdatastructure.GridPositionIndex;
-import koustav.duelmasters.main.androidgameduelmastersdatastructure.World;
+import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.GridPositionIndex;
+import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.World;
 import koustav.duelmasters.main.androidgamesframework.Input.TouchEvent;
 
 /**

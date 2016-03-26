@@ -2,8 +2,8 @@ package koustav.duelmasters.main.androidgameduelmasterscreens;
 
 import java.util.List;
 
-import koustav.duelmasters.main.androidgameduelmastersdatastructure.World;
-import koustav.duelmasters.main.androidgameduelmastersassets.Assets;
+import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.World;
+import koustav.duelmasters.main.androidgameduelmastersassetsandresourcesforscreen.AssetsAndResourceForPvP;
 import koustav.duelmasters.main.androidgameduelmastersutillegacycode.CreateScenarioUtil;
 import koustav.duelmasters.main.androidgameduelmastersutillegacycode.GraphicUtil;
 import koustav.duelmasters.main.androidgamesframework.Graphics;
@@ -101,8 +101,8 @@ public class TestScreen extends Screen {
     @Override
     public void present(float deltaTime, float totalTime) {
         Graphics g = game.getGraphics();
-        g.drawPixmap(Assets.background, 0, 0);
-        g.drawPixmap(Assets.Button, 0, 0);
+        g.drawPixmap(AssetsAndResourceForPvP.background, 0, 0);
+        g.drawPixmap(AssetsAndResourceForPvP.Button, 0, 0);
 
         if (state == GameState.Running)
             drawRunningUI();

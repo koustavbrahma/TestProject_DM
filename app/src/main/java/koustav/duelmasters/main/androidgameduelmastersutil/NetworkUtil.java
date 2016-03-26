@@ -1,9 +1,7 @@
 package koustav.duelmasters.main.androidgameduelmastersutil;
 
-import java.util.Iterator;
-
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.InactiveCard;
-import koustav.duelmasters.main.androidgameduelmastersdatastructure.World;
+import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.World;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Zone;
 
 /**

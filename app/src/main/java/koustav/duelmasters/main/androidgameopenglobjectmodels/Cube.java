@@ -19,6 +19,10 @@ public class Cube extends GLObject {
             (POSITION_COMPONENT_COUNT + NORMAL_COMPONENT_COUNT + TEXTURE_COORDINATES_COMPONENT_COUNT) * BYTES_PER_FLOAT;
     private final VertexArray vertexArray;
     private final List<ObjectBuilder.DrawCommand> drawList;
+    public final float width;
+    public final float length;
+    public final float height;
+
     public Cube(GLMaterial Material, float width, float length, float height, boolean texture) {
         super(Material);
         GLCube cube = new GLCube(new GLPoint(0f, 0f, 0f), width, length, height);
@@ -26,8 +30,12 @@ public class Cube extends GLObject {
                 ObjectBuilder.createCube(cube, texture);
         vertexArray = new VertexArray(generatedData.vertexData);
         drawList = generatedData.drawList;
+        this.width = width;
+        this.length = length;
+        this.height = height;
     }
 
+    @Override
     public void bindData(int aPositionLocation, int aNormalLocation, int aTextureCoordinatesLocation) {
         vertexArray.setVertexAttribPointer(
                 0,
@@ -46,6 +54,7 @@ public class Cube extends GLObject {
                 STRIDE);
     }
 
+    @Override
     public void draw() {
         for (ObjectBuilder.DrawCommand drawCommand : drawList) {
             drawCommand.draw();

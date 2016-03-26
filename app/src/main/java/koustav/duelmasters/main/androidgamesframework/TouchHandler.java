@@ -1,5 +1,6 @@
 package koustav.duelmasters.main.androidgamesframework;
 
+import koustav.duelmasters.main.androidgameopenglutil.GLGeometry;
 import koustav.duelmasters.main.androidgamesframework.Input.TouchEvent;
 import java.util.List;
 import android.view.View.OnTouchListener;
@@ -13,4 +14,7 @@ public interface TouchHandler extends  OnTouchListener {
     public  int getTouchX(int pointer);
     public  int getTouchY(int pointer);
     public List<TouchEvent> getTouchEvents();
+    public GLGeometry.GLPoint getNearPoint(int pointer);
+    public GLGeometry.GLPoint getFarPoint(int pointer);
+    public void setIVPMatrix(float[] Matrix);
 }

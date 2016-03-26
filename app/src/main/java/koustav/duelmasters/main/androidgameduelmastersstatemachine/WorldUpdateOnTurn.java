@@ -1,6 +1,6 @@
 package koustav.duelmasters.main.androidgameduelmastersstatemachine;
 
-import koustav.duelmasters.main.androidgameduelmastersdatastructure.World;
+import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.World;
 
 /**
  * Created by Koustav on 3/28/2015.

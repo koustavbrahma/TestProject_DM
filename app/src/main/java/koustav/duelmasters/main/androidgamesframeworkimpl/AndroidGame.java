@@ -91,9 +91,17 @@ public abstract class AndroidGame extends Activity implements Game {
     }
 
     @Override
+    @SuppressLint("NewApi")
     public void onResume() {
         super.onResume();
         //getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        if(currentApiVersion >= Build.VERSION_CODES.KITKAT) {
+            int uiOptions = View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+
+            View decorView = getWindow().getDecorView();
+            decorView.setSystemUiVisibility(uiOptions);
+        }
         wakeLock.acquire();
         getRenderObj().resume();
     }
@@ -173,23 +181,18 @@ public abstract class AndroidGame extends Activity implements Game {
         return network;
     }
 
-
-    @Override
     public int getframeBufferWidth() {
         return UseGLRenderView? GLrenderView.get_width() : frameBufferWidth;
     }
 
-    @Override
     public int getframeBufferHeight(){
         return UseGLRenderView? GLrenderView.get_height() : frameBufferHeight;
     }
 
-    @Override
     public void setTurn(boolean val){
         this.TURN = val;
     }
 
-    @Override
     public boolean getTurn() {
         return TURN;
     }

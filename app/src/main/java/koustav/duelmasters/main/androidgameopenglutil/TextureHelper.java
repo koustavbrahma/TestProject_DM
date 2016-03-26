@@ -112,4 +112,10 @@ public class TextureHelper {
         }
         return textureObjectIds[0];
     }
+
+    public static void freeTexture(int textureObjectId) {
+        int[] textureObjectIds = new int[1];
+        textureObjectIds[0] = textureObjectId;
+        glDeleteTextures(1, textureObjectIds, 0);
+    }
 }

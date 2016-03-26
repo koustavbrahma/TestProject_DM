@@ -8,25 +8,7 @@ import koustav.duelmasters.R;
 import koustav.duelmasters.main.androidgameopenglutil.GLLight;
 import koustav.duelmasters.main.androidgameopenglutil.GLMaterial;
 
-import static android.opengl.GLES20.GL_TEXTURE0;
-import static android.opengl.GLES20.GL_TEXTURE1;
-import static android.opengl.GLES20.GL_TEXTURE2;
-import static android.opengl.GLES20.GL_TEXTURE3;
-import static android.opengl.GLES20.GL_TEXTURE4;
-import static android.opengl.GLES20.GL_TEXTURE5;
-import static android.opengl.GLES20.GL_TEXTURE6;
-import static android.opengl.GLES20.GL_TEXTURE7;
-import static android.opengl.GLES20.GL_TEXTURE_2D;
-import static android.opengl.GLES20.GL_TEXTURE_CUBE_MAP;
-import static android.opengl.GLES20.glActiveTexture;
-import static android.opengl.GLES20.glBindTexture;
-import static android.opengl.GLES20.glGetAttribLocation;
-import static android.opengl.GLES20.glGetUniformLocation;
-import static android.opengl.GLES20.glUniform1f;
-import static android.opengl.GLES20.glUniform1i;
-import static android.opengl.GLES20.glUniform3fv;
-import static android.opengl.GLES20.glUniform4fv;
-import static android.opengl.GLES20.glUniformMatrix4fv;
+import static android.opengl.GLES20.*;
 
 /**
  * Created by Koustav on 3/5/2016.

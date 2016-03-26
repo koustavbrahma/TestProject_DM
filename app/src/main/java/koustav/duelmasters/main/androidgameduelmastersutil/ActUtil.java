@@ -7,9 +7,10 @@ import koustav.duelmasters.main.androidgameduelmasterscardrulehandler.Instructio
 import koustav.duelmasters.main.androidgameduelmasterscardrulehandler.InstructionSet;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.ActiveCard;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
-import koustav.duelmasters.main.androidgameduelmastersdatastructure.GridPositionIndex;
+import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.GridPositionIndex;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.InactiveCard;
-import koustav.duelmasters.main.androidgameduelmastersdatastructure.World;
+import koustav.duelmasters.main.androidgameduelmastersdatastructure.Maze;
+import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.World;
 
 /**
  * Created by Koustav on 4/26/2015.
@@ -18,7 +19,7 @@ public class ActUtil {
     public static Cards ChangeZoneOperator(World world, Cards card, InstructionSet instruction) {
         GridPositionIndex gridPosition = card.GridPosition();
         Cards NewCard = null;
-        if (card.GridPosition().getZone() == 0 || card.GridPosition().getZone() == 7) {
+        if (card.GridPosition().getZone() == Maze.battleZone || card.GridPosition().getZone() == Maze.Opponent_battleZone) {
             ArrayList<InstructionSet> CleanUpInst = ((InactiveCard)card).getCrossInstructionForTheInstructionID(InstructionID.CleanUp);
             if (CleanUpInst != null) {
                 world.getEventLog().AddHoldCleanUp(card, CleanUpInst);
@@ -30,10 +31,10 @@ public class ActUtil {
                 }
             }
         }
-        if (gridPosition.getZone() >= 0 && gridPosition.getZone() <= 5) {
+        if (gridPosition.getZone() >= Maze.battleZone && gridPosition.getZone() <= Maze.deck) {
             int z = gridPosition.getZone();
             int d = instruction.getActionDestination();
-            if (z == 0 && d ==4) {
+            if (z == Maze.battleZone && d == Maze.graveyard) {
                 ArrayList<InstructionSet> DstInst = ((InactiveCard)card).getCrossInstructionForTheInstructionID(InstructionID.DestroyDst);
                 if (DstInst != null || GetUtil.MaskDestroyDstVal((InactiveCard)card) > 0) {
                     if (GetUtil.MaskDestroyDstVal((InactiveCard) card) > 0) {
@@ -44,15 +45,15 @@ public class ActUtil {
                     }
                 }
             }
-            if (d > 5)
+            if (d > Maze.deck)
                 throw new IllegalArgumentException("Invalid destination to transfer card (1)");
             world.getEventLog().registerEvent(card, true, d, null, false, 0);
             int i = world.getMaze().getZoneList().get(z).getZoneArray().indexOf(card);
             world.getMaze().getZoneList().get(z).getZoneArray().remove(i);
-            if (z-4 != 0 &&  z-5 != 0) {
+            if (z-Maze.graveyard != 0 &&  z- Maze.deck != 0) {
                 world.getGridIndexTrackingTable().clearGridIndex(card.GridPosition());
             }
-            if (d == 0 || d == 3) {
+            if (d == Maze.battleZone || d == Maze.hand) {
                 int GridIndex = world.getGridIndexTrackingTable().getNewGridIndex(d);
                 Cards Bcard = world.getMaze().GetBaseCard(card);
                 ActiveCard Acard = new ActiveCard(card.ExtractCardInfo(), new GridPositionIndex(d, GridIndex));
@@ -68,7 +69,7 @@ public class ActUtil {
                 }
             }
 
-            if (d == 1 || d == 2) {
+            if (d == Maze.manaZone || d == Maze.shieldZone) {
                 int GridIndex = world.getGridIndexTrackingTable().getNewGridIndex(d);
                 Cards Bcard = world.getMaze().GetBaseCard(card);
                 InactiveCard Icard = new InactiveCard(card.ExtractCardInfo(), new GridPositionIndex(d, GridIndex));
@@ -84,7 +85,7 @@ public class ActUtil {
                 }
             }
 
-            if (d == 4 || d == 5) {
+            if (d == Maze.graveyard || d == Maze.deck) {
                 Cards Bcard = world.getMaze().GetBaseCard(card);
                 Cards Dcard = new Cards(card.ExtractCardInfo(), new GridPositionIndex(d, 0));
                 world.getMaze().getZoneList().get(d).getZoneArray().add(0,Dcard);
@@ -94,10 +95,10 @@ public class ActUtil {
                     world.getMaze().getZoneList().get(d).getZoneArray().add(0, Dcard);
                 }
             }
-        } else if (gridPosition.getZone() >= 7 && gridPosition.getZone() <=12) {
+        } else if (gridPosition.getZone() >= Maze.Opponent_battleZone && gridPosition.getZone() <= Maze.Opponent_deck) {
             int z = gridPosition.getZone();
             int d = instruction.getActionDestination();
-            if (z == 7 && d == 4) {
+            if (z == Maze.Opponent_battleZone && d == Maze.graveyard) {
                 ArrayList<InstructionSet> DstInst = ((InactiveCard)card).getCrossInstructionForTheInstructionID(InstructionID.DestroyDst);
                 if (DstInst != null || GetUtil.MaskDestroyDstVal((InactiveCard)card) > 0) {
                     if (GetUtil.MaskDestroyDstVal((InactiveCard) card) > 0) {
@@ -108,15 +109,15 @@ public class ActUtil {
                     }
                 }
             }
-            if (d > 5)
+            if (d > Maze.deck)
                 throw new IllegalArgumentException("Invalid destination to transfer card (2)");
             world.getEventLog().registerEvent(card, true, d, null, false, 0);
             int i = world.getMaze().getZoneList().get(z).getZoneArray().indexOf(card);
             world.getMaze().getZoneList().get(z).getZoneArray().remove(i);
-            if (z != 11 &&  z != 12) {
+            if (z != Maze.Opponent_graveyard &&  z != Maze.Opponent_deck) {
                 world.getGridIndexTrackingTable().clearGridIndex(card.GridPosition());
             }
-            if (d >= 0 && d <= 3) {
+            if (d >= Maze.battleZone && d <= Maze.hand) {
                 int GridIndex = world.getGridIndexTrackingTable().getNewGridIndex(d+7);
                 Cards Bcard = world.getMaze().GetBaseCard(card);
                 InactiveCard Icard = new InactiveCard(card.ExtractCardInfo(), new GridPositionIndex(d+7, GridIndex));
@@ -132,7 +133,7 @@ public class ActUtil {
                 }
             }
 
-            if (d == 4 || d == 5) {
+            if (d == Maze.graveyard || d == Maze.deck) {
                 Cards Bcard = world.getMaze().GetBaseCard(card);
                 Cards Dcard = new Cards(card.ExtractCardInfo(), new GridPositionIndex(d+7, 0));
                 world.getMaze().getZoneList().get(d+7).getZoneArray().add(0,Dcard);

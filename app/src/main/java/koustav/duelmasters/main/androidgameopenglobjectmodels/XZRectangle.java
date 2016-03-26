@@ -22,6 +22,8 @@ public class XZRectangle extends GLObject{
 
     private final VertexArray vertexArray;
     private final List<ObjectBuilder.DrawCommand> drawList;
+    public final float width;
+    public final float height;
 
     public XZRectangle(GLMaterial Material, float width, float height, int orientation) {
         super(Material);
@@ -30,8 +32,11 @@ public class XZRectangle extends GLObject{
                 ObjectBuilder.createRectangle(rectangle, true, 0.5f, 0.5f, 1.0f , 1.0f, orientation);
         vertexArray = new VertexArray(generatedData.vertexData);
         drawList = generatedData.drawList;
+        this.width = width;
+        this.height = height;
     }
 
+    @Override
     public void bindData(int aPositionLocation, int aNormalLocation, int aTextureCoordinatesLocation) {
         vertexArray.setVertexAttribPointer(
                 0,
@@ -50,6 +55,7 @@ public class XZRectangle extends GLObject{
                 STRIDE);
     }
 
+    @Override
     public void draw() {
         for (ObjectBuilder.DrawCommand drawCommand : drawList) {
             drawCommand.draw();
