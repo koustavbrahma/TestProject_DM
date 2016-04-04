@@ -204,4 +204,8 @@ public class GLGeometry {
         GLPoint pointOfIntersection = nearPoint.translate(rayDirection.scale(t));
         return pointOfIntersection;
     }
+
+    public static boolean GLPlaneFacingPoint(GLPoint center, GLVector normal, GLPoint point) {
+        return (GLVectorBetween(center, point).dotProduct(normal) > 0) ? true: false;
+    }
 }

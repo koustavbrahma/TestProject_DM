@@ -35,6 +35,9 @@ public class AndroidOpenGLRenderView extends GLSurfaceView implements GLSurfaceV
     public AndroidOpenGLRenderView(AndroidGame game) {
         super(game);
         this.game = game;
+        this.width = this.getWidth();
+        this.height = this.getHeight();
+
         ActivityManager activityManager =
                 (ActivityManager) game.getSystemService(game.ACTIVITY_SERVICE);
         ConfigurationInfo configurationInfo =

@@ -91,7 +91,6 @@ public class Maze {
         return EvolutionTracker.remove(card);
     }
 
-
     public Cards GetBaseCard(Cards card) {
         return EvolutionTracker.get(card);
     }

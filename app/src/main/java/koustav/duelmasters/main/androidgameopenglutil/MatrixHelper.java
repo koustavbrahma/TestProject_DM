@@ -1,5 +1,16 @@
 package koustav.duelmasters.main.androidgameopenglutil;
 
+import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAndResource;
+import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.WidgetPosition;
+
+import static android.opengl.Matrix.invertM;
+import static android.opengl.Matrix.multiplyMM;
+import static android.opengl.Matrix.rotateM;
+import static android.opengl.Matrix.scaleM;
+import static android.opengl.Matrix.setIdentityM;
+import static android.opengl.Matrix.translateM;
+import static android.opengl.Matrix.transposeM;
+
 /**
  * Created by Koustav on 1/18/2016.
  */
@@ -24,5 +35,28 @@ public class MatrixHelper {
         m[13] = 0f;
         m[14] = -((2f * f * n) / (f - n));
         m[15] = 0f;
+    }
+
+    public static void setTranslateRotateScale(WidgetPosition position) {
+        setIdentityM(AssetsAndResource.modelMatrix, 0);
+        translateM(AssetsAndResource.modelMatrix, 0, position.Centerposition.x, position.Centerposition.y,
+                position.Centerposition.z);
+        if (position.rotaion.angle != 0) {
+            rotateM(AssetsAndResource.modelMatrix, 0, position.rotaion.angle, position.rotaion.x,
+                    position.rotaion.y, position.rotaion.z);
+        }
+        scaleM(AssetsAndResource.modelMatrix, 0, position.X_scale, position.Y_scale, position.Z_scale);
+        multiplyMM(AssetsAndResource.modelViewMatrix, 0, AssetsAndResource.viewMatrix, 0, AssetsAndResource.modelMatrix, 0);
+        invertM(AssetsAndResource.tempMatrix, 0, AssetsAndResource.modelViewMatrix, 0);
+        transposeM(AssetsAndResource.it_modelViewMatrix, 0, AssetsAndResource.tempMatrix, 0);
+        multiplyMM(
+                AssetsAndResource.modelViewProjectionMatrix, 0,
+                AssetsAndResource.projectionMatrix, 0,
+                AssetsAndResource.modelViewMatrix, 0);
+
+        multiplyMM(
+                AssetsAndResource.ShadowMatrix, 0,
+                AssetsAndResource.depthVPMatrix, 0,
+                AssetsAndResource.modelMatrix, 0);
     }
 }

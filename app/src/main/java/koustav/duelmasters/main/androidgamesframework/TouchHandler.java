@@ -16,5 +16,7 @@ public interface TouchHandler extends  OnTouchListener {
     public List<TouchEvent> getTouchEvents();
     public GLGeometry.GLPoint getNearPoint(int pointer);
     public GLGeometry.GLPoint getFarPoint(int pointer);
-    public void setIVPMatrix(float[] Matrix);
+    public float getNormalizedX(int pointer);
+    public float getNormalizedY(int pointer);
+    public void setMatrices(Object ...obj);
 }

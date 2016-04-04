@@ -42,6 +42,17 @@ public class AndroidInput implements Input {
     public  int getTouchY(int pointer) {
         return touchHandler.getTouchY(pointer);
     }
+
+    @Override
+    public float getNormalizedX(int pointer) {
+        return touchHandler.getNormalizedX(pointer);
+    }
+
+    @Override
+    public float getNormalizedY(int pointer) {
+        return touchHandler.getNormalizedY(pointer);
+    }
+
     @Override
     public List<TouchEvent> getTouchEvents() {
         return touchHandler.getTouchEvents();
@@ -58,7 +69,7 @@ public class AndroidInput implements Input {
     }
 
     @Override
-    public void setIVPMatrix(float[] Matrix) {
-        touchHandler.setIVPMatrix(Matrix);
+    public void setMatrices(Object ...obj) {
+        touchHandler.setMatrices(obj);
     }
 }

@@ -1,14 +1,18 @@
-package koustav.duelmasters.main.androidgameduelmastersassetsandresourcesforscreen;
+package koustav.duelmasters.main.androidgameassetsandresourcesallocator;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Set;
 
+import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.WidgetPosition;
+import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.WidgetTouchEvent;
 import koustav.duelmasters.main.androidgameopenglutil.FrameBufferObject;
+import koustav.duelmasters.main.androidgameopenglutil.GLGeometry;
 import koustav.duelmasters.main.androidgameopenglutil.GLLight;
 import koustav.duelmasters.main.androidgameopenglutil.MatrixHelper;
 import koustav.duelmasters.main.androidgameopenglutil.TextureHelper;
 import koustav.duelmasters.main.androidgamesframework.Pixmap;
+import koustav.duelmasters.main.androidgamesframework.Pool;
 import koustav.duelmasters.main.androidgamesframeworkimpl.AndroidGame;
 import koustav.duelmasters.main.androidgameshaderprogram.ColorShaderProgram;
 import koustav.duelmasters.main.androidgameshaderprogram.CubeTextureShaderProgramLight;
@@ -18,12 +22,13 @@ import koustav.duelmasters.main.androidgameshaderprogram.TextureShaderProgramLig
 import static android.opengl.Matrix.invertM;
 import static android.opengl.Matrix.multiplyMM;
 import static android.opengl.Matrix.multiplyMV;
+import static android.opengl.Matrix.orthoM;
 import static android.opengl.Matrix.setLookAtM;
 
 /**
  * Created by Koustav on 3/15/2015.
  */
-public class AssetsAndResourceForPvP {
+public class AssetsAndResource {
     public static class Count {
         public int val;
         public Count(int val) {
@@ -50,8 +55,10 @@ public class AssetsAndResourceForPvP {
     // Matrix Fixed
     public static float[] viewMatrix;
     public static float[] projectionMatrix;
+    public static float[] OrthoProjectionMatrix;
     public static float[] depthVPMatrix;
     public static float[] invertedViewProjectionMatrix;
+    public static float[] invertedOrthoProjectionMatrix;
 
     // Matrix Changeable
     public static float[] modelViewMatrix;
@@ -75,17 +82,29 @@ public class AssetsAndResourceForPvP {
     // Light
     public static ArrayList<GLLight> Light;
 
+    // Object Pools
+    public static Pool<WidgetPosition> widgetPositionPool;
+    public static Pool<WidgetTouchEvent> widgetTouchEventPool;
+
+    // Misc parameters
+    public static float CameraAngle;
+    public static float MazeWidth;
+    public static float MazeHeight;
+    public static GLGeometry.GLPoint CameraPosition;
+
     // APIs
 
     public static void Load(AndroidGame game) {
         // Store the game reference
-        AssetsAndResourceForPvP.game = game;
+        AssetsAndResource.game = game;
 
         // Matrix fixed
         viewMatrix = new float[16];
         projectionMatrix = new float[16];
+        OrthoProjectionMatrix = new float[16];
         depthVPMatrix = new float[16];
         invertedViewProjectionMatrix = new float[16];
+        invertedOrthoProjectionMatrix = new float[16];
 
         // Matrix Changeable
         modelViewMatrix = new float[16];
@@ -97,10 +116,30 @@ public class AssetsAndResourceForPvP {
 
         // Light
         Light = new ArrayList<GLLight>();
+
+        // Object Pools
+        Pool.PoolObjectFactory<WidgetPosition> factory = new Pool.PoolObjectFactory<WidgetPosition>() {
+            @Override
+            public WidgetPosition createObject() {
+                return new WidgetPosition();
+            }
+        };
+        widgetPositionPool = new Pool<WidgetPosition>(factory, 80);
+
+        Pool.PoolObjectFactory<WidgetTouchEvent> factory2 = new Pool.PoolObjectFactory<WidgetTouchEvent>() {
+            @Override
+            public WidgetTouchEvent createObject() {
+                return new WidgetTouchEvent();
+            }
+        };
+        widgetTouchEventPool = new Pool<WidgetTouchEvent>(factory2, 10);
+
+        // Misc Parameters
+        CameraPosition = new GLGeometry.GLPoint(0f, 1.2f, 0.8f);
     }
 
 
-    public static void InitializeAssetsAndResource() {
+    public static void InitializeAssetsAndResourceForPvP() {
         // Program initialization
         textureProgram = new TextureShaderProgram(game);
         textureShaderProgramLight = new TextureShaderProgramLight(game);
@@ -129,16 +168,32 @@ public class AssetsAndResourceForPvP {
 
         // Fixed Matrix initialization
         MatrixHelper.perspectiveM(projectionMatrix, 36, (float) game.getframeBufferWidth() / (float) game.getframeBufferHeight(), 1f, 10f);
-        setLookAtM(viewMatrix, 0, 0f, 1.2f, 0.8f, 0f, 0f, 0.1f, 0f, 1f, 0f);
+
+        // setup primary view
+        setLookAtM(viewMatrix, 0, CameraPosition.x, CameraPosition.y, CameraPosition.z, 0f, 0f, 0.1f, 0f, 1f, 0f);
         multiplyMM(tempMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
         invertM(invertedViewProjectionMatrix, 0, tempMatrix, 0);
 
+        // Camera Angle = 90 - (camera ray to center of focus is making with XZ plane)
+        CameraAngle = 90f - (float) Math.toDegrees(Math.atan((double) 1.2f/0.7f));
+        MazeWidth = (26.0f * 2.0f)/36.0f ;
+        MazeHeight = 1.0f;
+
+        // setup ortho projection matrix
+        orthoM(OrthoProjectionMatrix, 0, -(float) game.getframeBufferWidth() / (float) game.getframeBufferHeight(),
+                (float) game.getframeBufferWidth() / (float) game.getframeBufferHeight(), -1f,
+                1f, -1f, 1f);
+        invertM(invertedOrthoProjectionMatrix, 0, OrthoProjectionMatrix, 0);
+
+        setLookAtM(tempMatrix, 0, 0f, 2.5f, 0.0f, 0f, 0f, 0.0f, 0f, 0f, -1.0f);
+        multiplyMM(depthVPMatrix, 0, projectionMatrix, 0, tempMatrix, 0);
+
         // Setup IVP Matrix for UI
-        game.getInput().setIVPMatrix(AssetsAndResourceForPvP.invertedViewProjectionMatrix);
+        game.getInput().setMatrices(AssetsAndResource.invertedOrthoProjectionMatrix, AssetsAndResource.invertedViewProjectionMatrix);
 
         // Light initialization
         float [] spotLightDirectionInEyeSpace = new float[4];
-        multiplyMV(spotLightDirectionInEyeSpace, 0, AssetsAndResourceForPvP.viewMatrix, 0, new float[] {0f, -1.0f, 0f, 0f}, 0);
+        multiplyMV(spotLightDirectionInEyeSpace, 0, AssetsAndResource.viewMatrix, 0, new float[] {0f, -1.0f, 0f, 0f}, 0);
         GLLight DirectionalLight = new GLLight(GLLight.LightType.Directional, new float[] {0, 0, 0, 0}, spotLightDirectionInEyeSpace,
                 new float[] {0.7f, 0.7f, 0.7f}, 0, 0);
 
@@ -146,7 +201,7 @@ public class AssetsAndResourceForPvP {
     }
 
 
-    public static void FreeAssetsAndResources() {
+    public static void FreeAssetsAndResourcesForPvP() {
         // Programs free
         textureProgram.deleteProgram();
         textureShaderProgramLight.deleteProgram();
@@ -174,6 +229,10 @@ public class AssetsAndResourceForPvP {
 
         // Light free
         Light.clear();
+
+        // Object Pools
+        widgetPositionPool.clear();
+        widgetTouchEventPool.clear();
     }
 
     public static int getCardTexture(String CardName) {

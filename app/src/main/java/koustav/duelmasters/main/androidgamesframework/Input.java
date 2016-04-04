@@ -26,12 +26,17 @@ public interface Input {
         public int type;
         public int x, y;
         public int pointer;
-        public GLPoint nearPoint;
-        public GLPoint farPoint;
+        public GLPoint[] nearPoint;
+        public GLPoint[] farPoint;
+        public float normalizedX, normalizedY;
 
         public TouchEvent() {
-            nearPoint = new GLPoint(0, 0, 0);
-            farPoint = new GLPoint(0, 0, 0);
+            nearPoint = new GLPoint[4];
+            farPoint = new GLPoint[4];
+            for (int i=0 ; i < 4; i++) {
+                nearPoint[i] = new GLPoint(0, 0, 0);
+                farPoint[i] = new GLPoint(0, 0, 0);
+            }
         }
     }
 
@@ -43,5 +48,7 @@ public interface Input {
     public List<TouchEvent> getTouchEvents();
     public GLPoint getNearPoint(int pointer);
     public GLPoint getFarPoint(int pointer);
-    public void setIVPMatrix(float[] Matrix);
+    public float getNormalizedX(int pointer);
+    public float getNormalizedY(int pointer);
+    public void setMatrices(Object ...obj);
 }

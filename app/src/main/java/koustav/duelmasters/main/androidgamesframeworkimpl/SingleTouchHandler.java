@@ -28,9 +28,13 @@ public class SingleTouchHandler implements TouchHandler{
     boolean isTouched;
     int touchX;
     int touchY;
-    GLPoint nearPoint;
-    GLPoint farPoint;
-    float[] invertedViewProjectionMatrix;
+    GLPoint[] nearPoint;
+    GLPoint[] farPoint;
+    float normalizedX;
+    float normalizedY;
+
+    float[] invertedOrthoProjectionMatrix;
+    ArrayList<float[]> invertedViewProjectionMatrices;
     Pool<TouchEvent> touchEventPool;
     List<TouchEvent> touchEvents = new ArrayList<TouchEvent>();
     List<TouchEvent> touchEventsBuffer = new ArrayList<TouchEvent>();
@@ -52,11 +56,15 @@ public class SingleTouchHandler implements TouchHandler{
         view.setOnTouchListener(this);
         this.scaleX = scaleX;
         this.scaleY = scaleY;
-        invertedViewProjectionMatrix = null;
+        invertedViewProjectionMatrices = new ArrayList<float[]>();
         nearP = new float[4];
         farP = new float[4];
-        nearPoint = new GLPoint(0, 0 ,0);
-        farPoint = new GLPoint(0, 0, 0);
+        nearPoint = new GLPoint[4];
+        farPoint = new GLPoint[4];
+        for (int i=0 ; i < 4; i++) {
+            nearPoint[i] = new GLPoint(0, 0, 0);
+            farPoint[i] = new GLPoint(0, 0, 0);
+        }
     }
 
     @Override
@@ -82,28 +90,42 @@ public class SingleTouchHandler implements TouchHandler{
             touchEvent.x = touchX = (int)(event.getX()*scaleX);
             touchEvent.y = touchY = (int)(event.getY()*scaleY);
 
-            if (invertedViewProjectionMatrix != null) {
-                float normalizedX =
-                        ((float) event.getX() / (float) view.getWidth()) * 2 - 1;
-                float normalizedY =
-                        -(((float)event.getY() / (float) view.getHeight()) * 2 - 1);
-                float[] nearPointNdc = {normalizedX, normalizedY, -1, 1};
-                float[] farPointNdc = {normalizedX, normalizedY, 1, 1};
+            float LocalNormalizedX =
+                    ((float) event.getX() / (float) ((AndroidGame)context).getframeBufferWidth()) * 2 - 1;
+            float LocalNormalizedY =
+                    -(((float)event.getY() / (float) ((AndroidGame)context).getframeBufferHeight()) * 2 - 1);
 
+            float[] PointNdc = {LocalNormalizedX, LocalNormalizedY, 0, 1};
+
+            if (invertedOrthoProjectionMatrix != null) {
                 multiplyMV(
-                        nearP, 0, invertedViewProjectionMatrix, 0, nearPointNdc, 0);
-                multiplyMV(
-                        farP, 0, invertedViewProjectionMatrix, 0, farPointNdc, 0);
+                        nearP, 0, invertedOrthoProjectionMatrix, 0, PointNdc, 0);
                 UIHelper.divideByW(nearP);
-                UIHelper.divideByW(farP);
 
-                touchEvent.nearPoint.x = nearPoint.x = nearP[0];
-                touchEvent.nearPoint.y = nearPoint.y = nearP[1];
-                touchEvent.nearPoint.z = nearPoint.z = nearP[2];
+                touchEvent.normalizedX = normalizedX = nearP[0];
+                touchEvent.normalizedY = normalizedY = nearP[1];
+            }
 
-                touchEvent.farPoint.x = farPoint.x = farP[0];
-                touchEvent.farPoint.y = farPoint.y = farP[1];
-                touchEvent.farPoint.z = farPoint.z = farP[2];
+            if (invertedViewProjectionMatrices.size() > 0) {
+                for (int i = 0; i < invertedViewProjectionMatrices.size(); i++) {
+                    float[] nearPointNdc = {LocalNormalizedX, LocalNormalizedY, -1, 1};
+                    float[] farPointNdc = {LocalNormalizedX, LocalNormalizedY, 1, 1};
+
+                    multiplyMV(
+                            nearP, 0, invertedViewProjectionMatrices.get(i), 0, nearPointNdc, 0);
+                    multiplyMV(
+                            farP, 0, invertedViewProjectionMatrices.get(i), 0, farPointNdc, 0);
+                    UIHelper.divideByW(nearP);
+                    UIHelper.divideByW(farP);
+
+                    touchEvent.nearPoint[i].x = nearPoint[i].x = nearP[0];
+                    touchEvent.nearPoint[i].y = nearPoint[i].y = nearP[1];
+                    touchEvent.nearPoint[i].z = nearPoint[i].z = nearP[2];
+
+                    touchEvent.farPoint[i].x = farPoint[i].x = farP[0];
+                    touchEvent.farPoint[i].y = farPoint[i].y = farP[1];
+                    touchEvent.farPoint[i].z = farPoint[i].z = farP[2];
+                }
             }
 
             touchEventsBuffer.add(touchEvent);
@@ -151,21 +173,40 @@ public class SingleTouchHandler implements TouchHandler{
     @Override
     public GLPoint getNearPoint(int pointer) {
         synchronized (this) {
-            return nearPoint;
+            return nearPoint[pointer];
         }
     }
 
     @Override
     public GLPoint getFarPoint(int pointer) {
         synchronized (this) {
-            return farPoint;
+            return farPoint[pointer];
         }
     }
 
     @Override
-    public void setIVPMatrix(float[] Matrix) {
+    public float getNormalizedX(int pointer) {
         synchronized (this) {
-            this.invertedViewProjectionMatrix = Matrix;
+            return normalizedX;
+        }
+    }
+
+    @Override
+    public float getNormalizedY(int pointer) {
+        synchronized (this) {
+            return normalizedY;
+        }
+    }
+
+    @Override
+    public void setMatrices(Object ...obj) {
+        synchronized (this) {
+            // First argument must be inverted Ortho Projection matrix
+            this.invertedOrthoProjectionMatrix = (float[]) obj[0];
+            invertedViewProjectionMatrices.clear();
+            for (int i = 1; i < obj.length; i++) {
+                invertedViewProjectionMatrices.add((float[]) obj[i]);
+            }
         }
     }
 }

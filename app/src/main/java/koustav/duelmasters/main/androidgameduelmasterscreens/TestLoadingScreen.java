@@ -1,6 +1,6 @@
 package koustav.duelmasters.main.androidgameduelmasterscreens;
 
-import koustav.duelmasters.main.androidgameduelmastersassetsandresourcesforscreen.AssetsAndResourceForPvP;
+import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAndResource;
 import koustav.duelmasters.main.androidgamesframework.Graphics;
 import koustav.duelmasters.main.androidgamesframework.Graphics.PixmapFormat;
 import koustav.duelmasters.main.androidgamesframework.Screen;
@@ -17,10 +17,10 @@ public class TestLoadingScreen extends Screen {
     @Override
     public void update(float deltaTime, float totalTime) {
         Graphics g = game.getGraphics();
-        AssetsAndResourceForPvP.background = g.newPixmap("duelmaze.png", PixmapFormat.RGB565);
-        AssetsAndResourceForPvP.cardbackside = g.newPixmap("cardbackside.png", PixmapFormat.RGB565);
-        AssetsAndResourceForPvP.Button = g.newPixmap("Button.png", PixmapFormat.RGB565);
-        AssetsAndResourceForPvP.InfoBackground = g.newPixmap("InfoBackground.png", PixmapFormat.RGB565);
+        AssetsAndResource.background = g.newPixmap("duelmaze.png", PixmapFormat.RGB565);
+        AssetsAndResource.cardbackside = g.newPixmap("cardbackside.png", PixmapFormat.RGB565);
+        AssetsAndResource.Button = g.newPixmap("Button.png", PixmapFormat.RGB565);
+        AssetsAndResource.InfoBackground = g.newPixmap("InfoBackground.png", PixmapFormat.RGB565);
         //game.setScreen(new TestScreen(game));
         //game.setScreen(new MenuScreen(game));
         //game.setScreen(new GlTestScreen(game));
