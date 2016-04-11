@@ -1,15 +1,11 @@
 package koustav.duelmasters.main.androidgameopenglutil;
 
+import java.util.ArrayList;
+
 import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAndResource;
 import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.WidgetPosition;
 
-import static android.opengl.Matrix.invertM;
-import static android.opengl.Matrix.multiplyMM;
-import static android.opengl.Matrix.rotateM;
-import static android.opengl.Matrix.scaleM;
-import static android.opengl.Matrix.setIdentityM;
-import static android.opengl.Matrix.translateM;
-import static android.opengl.Matrix.transposeM;
+import static android.opengl.Matrix.*;
 
 /**
  * Created by Koustav on 1/18/2016.
@@ -58,5 +54,41 @@ public class MatrixHelper {
                 AssetsAndResource.ShadowMatrix, 0,
                 AssetsAndResource.depthVPMatrix, 0,
                 AssetsAndResource.modelMatrix, 0);
+    }
+
+    public static GLGeometry.GLAngularRotaion getCombinedRotation(ArrayList<GLGeometry.GLAngularRotaion> rotations) {
+        setIdentityM(AssetsAndResource.tempMatrix, 0);
+        int count = 0;
+        for (int i = rotations.size() -1; i >=0; i--) {
+            GLGeometry.GLAngularRotaion rotaion = rotations.get(i);
+            if (rotaion.angle != 0) {
+                rotateM(AssetsAndResource.tempMatrix, 0, rotaion.angle, rotaion.x, rotaion.y,
+                        rotaion.z);
+                count++;
+            }
+        }
+
+        if (count == 0) {
+            return new GLGeometry.GLAngularRotaion(0,0,0,0);
+        }
+
+        GLGeometry.GLAngularRotaion rotaionOut = new GLGeometry.GLAngularRotaion(0, 0, 0, 0);
+
+        float trace = AssetsAndResource.tempMatrix[0] + AssetsAndResource.tempMatrix[5] +
+                AssetsAndResource.tempMatrix[10];
+
+        rotaionOut.angle = (float) Math.toDegrees(Math.acos((trace - 1.0f)/2.0f));
+
+        rotaionOut.x = (AssetsAndResource.tempMatrix[6] -AssetsAndResource.tempMatrix[9])/(2.0f * (float) Math.sin(rotaionOut.angle));
+        rotaionOut.y = (AssetsAndResource.tempMatrix[8] -AssetsAndResource.tempMatrix[2])/(2.0f * (float) Math.sin(rotaionOut.angle));
+        rotaionOut.z = (AssetsAndResource.tempMatrix[1] -AssetsAndResource.tempMatrix[4])/(2.0f * (float) Math.sin(rotaionOut.angle));
+
+        float mag = (float) Math.sqrt((rotaionOut.x *rotaionOut.x) + (rotaionOut.y * rotaionOut.y) + (rotaionOut.z * rotaionOut.z));
+
+        rotaionOut.x = rotaionOut.x/mag;
+        rotaionOut.y = rotaionOut.y/mag;
+        rotaionOut.z = rotaionOut.z/mag;
+
+        return rotaionOut;
     }
 }

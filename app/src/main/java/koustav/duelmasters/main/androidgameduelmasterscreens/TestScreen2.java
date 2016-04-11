@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import static android.opengl.GLES20.*;
 import koustav.duelmasters.main.androidgameopenglanimation.ParticleShooter;
 import koustav.duelmasters.main.androidgameopenglanimation.ParticleSystem;
-import koustav.duelmasters.main.androidgameopenglmotionmodel.GLDynamics;
+import koustav.duelmasters.main.androidgameopenglmotionmodel.GLKinematic;
 import koustav.duelmasters.main.androidgameopenglobjectmodels.Cube;
 import koustav.duelmasters.main.androidgameopenglobjectmodels.FullScreenRectangle;
 import koustav.duelmasters.main.androidgameopenglobjectmodels.Puck;
@@ -104,7 +104,7 @@ public class TestScreen2 extends Screen {
     final float[] weights;
 
     int[] textureArrays;
-    GLDynamics motion;
+    GLKinematic motion;
 
   /*
     final float[] vectorToLight = {0.30f, 0.35f, -0.89f, 0f};
@@ -173,7 +173,7 @@ public class TestScreen2 extends Screen {
 
         textureArrays = new int[6];
 
-        motion = new GLDynamics();
+        motion = new GLKinematic();
         motion.setCentrePosition(0f, 0.01f, 0.6f);
         motion.setVelocity(0f, 0.5f, -0.5f);
         motion.setAcceleration(0f, -1.0f, 0f);

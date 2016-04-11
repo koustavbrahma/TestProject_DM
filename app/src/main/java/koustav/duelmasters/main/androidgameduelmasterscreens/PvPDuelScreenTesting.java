@@ -10,6 +10,7 @@ import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.WidgetP
 import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.World;
 import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.CardStackWidget;
 import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.CardWidget;
+import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.WidgetMode;
 import koustav.duelmasters.main.androidgameopenglobjectmodels.Cube;
 import koustav.duelmasters.main.androidgameopenglobjectmodels.FullScreenRectangle;
 import koustav.duelmasters.main.androidgameopenglobjectmodels.Points;
@@ -18,6 +19,7 @@ import koustav.duelmasters.main.androidgameopenglobjectmodels.XZRectangle;
 import koustav.duelmasters.main.androidgameopenglutil.GLGeometry;
 import koustav.duelmasters.main.androidgameopenglutil.GLGeometry.*;
 import koustav.duelmasters.main.androidgameopenglutil.GLMaterial;
+import koustav.duelmasters.main.androidgameopenglutil.MatrixHelper;
 import koustav.duelmasters.main.androidgamesframework.Input;
 import koustav.duelmasters.main.androidgamesframework.Screen;
 import koustav.duelmasters.main.androidgamesframeworkimpl.AndroidGame;
@@ -47,6 +49,7 @@ public class PvPDuelScreenTesting extends Screen{
     private XZRectangle glCard;
     private Points point;
     private Cube cube;
+    private Cube glcard2;
     private ScreenRectangle DisplayCard;
 
    // Matrix
@@ -94,6 +97,8 @@ public class PvPDuelScreenTesting extends Screen{
         point = new Points( new GLPoint(0f, 0f, 0f), 1f, 0f, 0f);
         cube = new Cube(new GLMaterial(new float[] {0.8f, 0.8f, 0.8f}, new float[] {0.8f, 0.8f, 0.8f},
                 new float[] {0.1f, 0.1f, 0.1f}, 10.0f), 0.08f, 0.05f, 0.12f, true);
+        glcard2 = new Cube(new GLMaterial(new float[] {0.8f, 0.8f, 0.8f}, new float[] {0.8f, 0.8f, 0.8f},
+                new float[] {0.1f, 0.1f, 0.1f}, 10.0f), 0.08f, 0.00125f, 0.12f, true);
         DisplayCard = new ScreenRectangle(0.4f, 0.6f);
 
         // Widget
@@ -161,10 +166,10 @@ public class PvPDuelScreenTesting extends Screen{
 
         GLVector tmp = new GLVector(0 - AssetsAndResource.CameraPosition.x, c * 0.3f - AssetsAndResource.CameraPosition.y, c * 0.2f - AssetsAndResource.CameraPosition.z);
         tmp = tmp.getDirection();
-        position.Centerposition.x = 0.02f + 0.01f * tmp.x;
-        position.Centerposition.y = c * 0.3f + 0.01f * tmp.y;
-        position.Centerposition.z = c * 0.2f + 0.01f* tmp.z;
-        position.rotaion.angle = AssetsAndResource.CameraAngle;
+        position.Centerposition.x = 0f;
+        position.Centerposition.y = 0f;
+        position.Centerposition.z = 0f;
+        position.rotaion.angle = 0;
         position.rotaion.y = 0f;
         position.rotaion.x = 1f;
         position.rotaion.z = 0f;
@@ -186,16 +191,31 @@ public class PvPDuelScreenTesting extends Screen{
         }
 
         CardWg2.setTranslateRotateScale(position);
-        //CardWg2.draw(deltaTime, totalTime);
+        CardWg2.draw(deltaTime, totalTime);
 
+        ArrayList<GLAngularRotaion> rotaions = new ArrayList<GLAngularRotaion>();
+        GLAngularRotaion rotaion= new GLAngularRotaion(90, 0, 1f, 0);
+        //GLAngularRotaion rotaion1 = new GLAngularRotaion(90, 1f, 0 , 0);
+
+        //rotaions.add(rotaion);
+        //rotaions.add(rotaion1);
+
+        //rotaion = MatrixHelper.getCombinedRotation(rotaions);
         WidgetPosition position1 = new WidgetPosition();
+        position1.Centerposition.x = 0.5f;
         position1.Centerposition.y = 0.025f;
+ //       position1.Centerposition.z = -0.3f;
+        position1.rotaion.angle = rotaion.angle;
+        position1.rotaion.y = rotaion.y;
+        position1.rotaion.x = rotaion.x;
+        position1.rotaion.z = rotaion.z;
         if (DeckWg.isTouched(touchEvents).isTouched) {
-            GLPoint intersectingPoint = GLGeometry.GLRayIntersectionWithXZPlane(
-                    new GLRay(game.getInput().getNearPoint(0), GLGeometry.GLVectorBetween(game.getInput().getNearPoint(0),
-                            game.getInput().getFarPoint(0))), 0);
-            position1.Centerposition.x = intersectingPoint.x;
-            position1.Centerposition.z = intersectingPoint.z;
+            //GLPoint intersectingPoint = GLGeometry.GLRayIntersectionWithXZPlane(
+            //        new GLRay(game.getInput().getNearPoint(0), GLGeometry.GLVectorBetween(game.getInput().getNearPoint(0),
+            //                game.getInput().getFarPoint(0))), 0);
+            //position1.Centerposition.x = intersectingPoint.x;
+            //position1.Centerposition.z = intersectingPoint.z;
+            DeckWg.setMode(WidgetMode.Transition);
         }
 
         DeckWg.setTranslateRotateScale(position1);
@@ -237,12 +257,13 @@ public class PvPDuelScreenTesting extends Screen{
 
         // Widget
         CardWg.ShadowEnable(false);
-        CardWg.LinkGLobject(glCard);
+        CardWg.LinkGLobject(glcard2);
         CardWg2.ShadowEnable(false);
-        CardWg2.LinkGLobject(glCard);
+        CardWg2.LinkGLobject(glcard2);
         DeckWg.ShadowEnable(false);
-        DeckWg.LinkGLobject(cube, glCard);
+        DeckWg.LinkGLobject(cube, glcard2);
         DeckWg.LinkLogicalObject(CardStack);
+        DeckWg.setFlip(true);
     }
 
     @Override

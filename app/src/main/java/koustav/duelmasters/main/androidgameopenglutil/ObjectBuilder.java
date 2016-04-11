@@ -506,7 +506,7 @@ public class ObjectBuilder {
             vertexData[offset++] = 0;
             vertexData[offset++] = 1;
         }
-        vertexData[offset++] = CubePoints.get(5).x; vertexData[offset++] = CubePoints.get(5).y; vertexData[offset++] = CubePoints.get(5).z;
+        vertexData[offset++] = CubePoints.get(3).x; vertexData[offset++] = CubePoints.get(3).y; vertexData[offset++] = CubePoints.get(3).z;
         vertexData[offset++] = 1.0f; vertexData[offset++] = 0f; vertexData[offset++] = 0f;
         if (texture) {
             vertexData[offset++] = 0;

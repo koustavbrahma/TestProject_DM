@@ -16,6 +16,7 @@ import koustav.duelmasters.main.androidgameopenglobjectmodels.XZRectangle;
 import koustav.duelmasters.main.androidgameopenglutil.GLGeometry;
 import koustav.duelmasters.main.androidgameopenglutil.GLGeometry.*;
 import koustav.duelmasters.main.androidgameopenglutil.GLMaterial;
+import koustav.duelmasters.main.androidgamesframework.Graphics;
 import koustav.duelmasters.main.androidgamesframework.Input;
 import koustav.duelmasters.main.androidgamesframework.Pool;
 
@@ -42,7 +43,7 @@ public class WidgetCoordinator {
 
     // GLObjects
     Cube cube;
-    XZRectangle glCard;
+    Cube glCard;
 
     // Tracking tables
     Hashtable<Cards, CardWidget> CardToWidget;
@@ -78,8 +79,8 @@ public class WidgetCoordinator {
         cube = new Cube(new GLMaterial(new float[] {0.8f, 0.8f, 0.8f}, new float[] {0.8f, 0.8f, 0.8f},
                 new float[] {0.1f, 0.1f, 0.1f}, 10.0f), 0.08f, 0.05f, 0.12f, true);
 
-        glCard = new XZRectangle(new GLMaterial(new float[] {0.8f, 0.8f, 0.8f}, new float[] {0.8f, 0.8f, 0.8f},
-                new float[] {0.1f, 0.1f, 0.1f}, 10.0f), 0.08f, 0.12f, 0);
+        glCard = new Cube(new GLMaterial(new float[] {0.8f, 0.8f, 0.8f}, new float[] {0.8f, 0.8f, 0.8f},
+                new float[] {0.1f, 0.1f, 0.1f}, 10.0f), 0.08f, 0.00125f, 0.12f, true);
 
         // Link to its logical unit
         BattleZone.LinkLogicalObject(maze.getZoneList().get(Maze.battleZone));
@@ -94,9 +95,13 @@ public class WidgetCoordinator {
 
         // Link to its GLObject
         Graveyard.LinkGLobject(cube, glCard);
+        Graveyard.setFlip(false);
         Deck.LinkGLobject(cube, glCard);
+        Deck.setFlip(true);
         Opponent_Graveyard.LinkGLobject(cube, glCard);
+        Opponent_Graveyard.setFlip(false);
         Opponent_Deck.LinkGLobject(cube, glCard);
+        Opponent_Deck.setFlip(true);
 
         // Tracking tables
         CardToWidget = new Hashtable<Cards, CardWidget>();

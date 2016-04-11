@@ -5,7 +5,7 @@ import koustav.duelmasters.main.androidgameopenglutil.GLGeometry.*;
 /**
  * Created by Koustav on 2/24/2016.
  */
-public class GLDynamics {
+public class GLKinematic {
     private float x, y, z;
     private float Vx, Vy, Vz;
     private float Ax, Ay, Az;
@@ -13,7 +13,7 @@ public class GLDynamics {
     private float wx, wy, wz;
     private float ax, ay, az;
 
-    public GLDynamics() {
+    public GLKinematic() {
         x = y = z = 0;
         Vx = Vy = Vz = 0;
         Ax = Ay = Az = 0;

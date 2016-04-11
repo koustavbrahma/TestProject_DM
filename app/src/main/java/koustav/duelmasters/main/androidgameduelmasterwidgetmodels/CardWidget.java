@@ -7,6 +7,7 @@ import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAnd
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
 import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.WidgetPosition;
 import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.WidgetTouchEvent;
+import koustav.duelmasters.main.androidgameopenglobjectmodels.Cube;
 import koustav.duelmasters.main.androidgameopenglobjectmodels.XZRectangle;
 import koustav.duelmasters.main.androidgameopenglutil.DrawObjectHelper;
 import koustav.duelmasters.main.androidgameopenglutil.GLGeometry;
@@ -29,8 +30,11 @@ public class CardWidget implements Widget {
     // shadow enable;
     boolean shadowEnable;
 
+    // Texture Array
+    int[] textureArrays;
+
     // OpenGL object model, physical unit
-    public XZRectangle glcard;
+    public Cube glcard;
 
     // logical unit
     Cards card;
@@ -43,13 +47,19 @@ public class CardWidget implements Widget {
         relativeFarPoint = new GLPoint(0, 0, 0);
 
         shadowEnable = false;
+        textureArrays = new int[6];
         glcard = null;
         card = null;
     }
 
     @Override
     public void draw(float deltaTime, float totalTime){
-        DrawObjectHelper.drawOneCard(card, glcard, shadowEnable);
+        for (int i = 0; i< 6; i++) {
+            textureArrays[i] = AssetsAndResource.cardBorder;
+        }
+        textureArrays[2] = AssetsAndResource.cardBackside;
+        textureArrays[3] = AssetsAndResource.getCardTexture(/*card.getNameID()*/"AquaHulcus");
+        DrawObjectHelper.drawOneCube(glcard, textureArrays, shadowEnable);
     }
 
     @Override
@@ -167,7 +177,7 @@ public class CardWidget implements Widget {
 
     @Override
     public void LinkGLobject(Object ...objs) {
-        glcard = (XZRectangle) objs[0];
+        glcard = (Cube) objs[0];
     }
 
     @Override

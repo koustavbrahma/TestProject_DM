@@ -71,6 +71,7 @@ public class AssetsAndResource {
     // Fixed textures
     public static int Base;
     public static int cardBackside;
+    public static int cardBorder;
     public static int cardDeckSides;
 
     // flexible textures
@@ -83,7 +84,6 @@ public class AssetsAndResource {
     public static ArrayList<GLLight> Light;
 
     // Object Pools
-    public static Pool<WidgetPosition> widgetPositionPool;
     public static Pool<WidgetTouchEvent> widgetTouchEventPool;
 
     // Misc parameters
@@ -118,24 +118,16 @@ public class AssetsAndResource {
         Light = new ArrayList<GLLight>();
 
         // Object Pools
-        Pool.PoolObjectFactory<WidgetPosition> factory = new Pool.PoolObjectFactory<WidgetPosition>() {
-            @Override
-            public WidgetPosition createObject() {
-                return new WidgetPosition();
-            }
-        };
-        widgetPositionPool = new Pool<WidgetPosition>(factory, 80);
-
-        Pool.PoolObjectFactory<WidgetTouchEvent> factory2 = new Pool.PoolObjectFactory<WidgetTouchEvent>() {
+        Pool.PoolObjectFactory<WidgetTouchEvent> factory = new Pool.PoolObjectFactory<WidgetTouchEvent>() {
             @Override
             public WidgetTouchEvent createObject() {
                 return new WidgetTouchEvent();
             }
         };
-        widgetTouchEventPool = new Pool<WidgetTouchEvent>(factory2, 10);
+        widgetTouchEventPool = new Pool<WidgetTouchEvent>(factory, 10);
 
         // Misc Parameters
-        CameraPosition = new GLGeometry.GLPoint(0f, 1.2f, 0.8f);
+        CameraPosition = new GLGeometry.GLPoint(0f, 2.4f, 1.6f);
     }
 
 
@@ -158,6 +150,10 @@ public class AssetsAndResource {
             TextureHelper.freeTexture(cardBackside);
         }
         cardBackside = TextureHelper.loadTexture(game, "cardbackside.png");
+        if (cardBorder != 0) {
+            TextureHelper.freeTexture(cardBorder);
+        }
+        cardBorder = TextureHelper.loadTexture(game, "CardBorder.png");
         if (cardDeckSides != 0) {
             TextureHelper.freeTexture(cardDeckSides);
         }
@@ -167,7 +163,7 @@ public class AssetsAndResource {
         CardCount = new Hashtable<String, Count>();
 
         // Fixed Matrix initialization
-        MatrixHelper.perspectiveM(projectionMatrix, 36, (float) game.getframeBufferWidth() / (float) game.getframeBufferHeight(), 1f, 10f);
+        MatrixHelper.perspectiveM(projectionMatrix, 18f, (float) game.getframeBufferWidth() / (float) game.getframeBufferHeight(), 1f, 10f);
 
         // setup primary view
         setLookAtM(viewMatrix, 0, CameraPosition.x, CameraPosition.y, CameraPosition.z, 0f, 0f, 0.1f, 0f, 1f, 0f);
@@ -175,7 +171,7 @@ public class AssetsAndResource {
         invertM(invertedViewProjectionMatrix, 0, tempMatrix, 0);
 
         // Camera Angle = 90 - (camera ray to center of focus is making with XZ plane)
-        CameraAngle = 90f - (float) Math.toDegrees(Math.atan((double) 1.2f/0.7f));
+        CameraAngle = 90f - (float) Math.toDegrees(Math.atan((double) CameraPosition.y/(CameraPosition.z - 0.1f)));
         MazeWidth = (26.0f * 2.0f)/36.0f ;
         MazeHeight = 1.0f;
 
@@ -220,6 +216,10 @@ public class AssetsAndResource {
             TextureHelper.freeTexture(cardBackside);
         }
         cardBackside = 0;
+        if (cardBorder !=0) {
+            TextureHelper.freeTexture(cardBorder);
+        }
+        cardBorder = 0;
         if (cardDeckSides != 0) {
             TextureHelper.freeTexture(cardDeckSides);
         }
@@ -231,7 +231,6 @@ public class AssetsAndResource {
         Light.clear();
 
         // Object Pools
-        widgetPositionPool.clear();
         widgetTouchEventPool.clear();
     }
 

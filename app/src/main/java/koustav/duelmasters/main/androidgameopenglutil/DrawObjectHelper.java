@@ -15,7 +15,7 @@ public class DrawObjectHelper {
         AssetsAndResource.textureShaderProgramLight.setUniforms(AssetsAndResource.modelViewMatrix, AssetsAndResource.it_modelViewMatrix,
                 ((AssetsAndResource.game.getGLFragColoring() == 0)? AssetsAndResource.modelViewProjectionMatrix :
                         AssetsAndResource.ShadowMatrix), AssetsAndResource.ShadowMatrix, AssetsAndResource.Light, glcard.getMaterial(),
-                AssetsAndResource.getCardTexture(/*card.getNameID()*/"cardbackside"), AssetsAndResource.ShadowBuffer.getrenderTex(),
+                AssetsAndResource.getCardTexture(card.getNameID()), AssetsAndResource.ShadowBuffer.getrenderTex(),
                 ((AssetsAndResource.game.getGLFragColoring() == 0)? shadowEnable: false));
 
         glcard.bindData(AssetsAndResource.textureShaderProgramLight.getPositionAttributeLocation(),
