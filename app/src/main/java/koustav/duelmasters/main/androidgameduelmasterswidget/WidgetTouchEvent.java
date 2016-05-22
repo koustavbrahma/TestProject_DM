@@ -1,4 +1,4 @@
-package koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator;
+package koustav.duelmasters.main.androidgameduelmasterswidget;
 
 /**
  * Created by Koustav on 4/2/2016.

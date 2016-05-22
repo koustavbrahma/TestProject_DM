@@ -5,12 +5,10 @@ import java.util.List;
 
 import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAndResource;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
-import koustav.duelmasters.main.androidgameduelmastersdatastructure.Maze;
-import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.WidgetPosition;
-import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.World;
+import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetPosition;
 import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.CardStackWidget;
 import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.CardWidget;
-import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.WidgetMode;
+import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetMode;
 import koustav.duelmasters.main.androidgameopenglobjectmodels.Cube;
 import koustav.duelmasters.main.androidgameopenglobjectmodels.FullScreenRectangle;
 import koustav.duelmasters.main.androidgameopenglobjectmodels.Points;
@@ -19,7 +17,6 @@ import koustav.duelmasters.main.androidgameopenglobjectmodels.XZRectangle;
 import koustav.duelmasters.main.androidgameopenglutil.GLGeometry;
 import koustav.duelmasters.main.androidgameopenglutil.GLGeometry.*;
 import koustav.duelmasters.main.androidgameopenglutil.GLMaterial;
-import koustav.duelmasters.main.androidgameopenglutil.MatrixHelper;
 import koustav.duelmasters.main.androidgamesframework.Input;
 import koustav.duelmasters.main.androidgamesframework.Screen;
 import koustav.duelmasters.main.androidgamesframeworkimpl.AndroidGame;
@@ -191,7 +188,7 @@ public class PvPDuelScreenTesting extends Screen{
         }
 
         CardWg2.setTranslateRotateScale(position);
-        CardWg2.draw(deltaTime, totalTime);
+        CardWg2.draw();
 
         ArrayList<GLAngularRotaion> rotaions = new ArrayList<GLAngularRotaion>();
         GLAngularRotaion rotaion= new GLAngularRotaion(90, 0, 1f, 0);
@@ -219,7 +216,8 @@ public class PvPDuelScreenTesting extends Screen{
         }
 
         DeckWg.setTranslateRotateScale(position1);
-        DeckWg.draw(deltaTime, totalTime);
+        DeckWg.update(deltaTime, totalTime);
+        DeckWg.draw();
 
         glDisable(GL_DEPTH_TEST);
         positionObjectInScene(0f, 0f, 0f, 0f, 0f, 0f, 0f, 1f, 1f, 1f);

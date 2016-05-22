@@ -5,10 +5,11 @@ import java.util.List;
 
 import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAndResource;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
-import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.WidgetPosition;
-import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.WidgetTouchEvent;
+import koustav.duelmasters.main.androidgameduelmasterswidget.Widget;
+import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetMode;
+import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetPosition;
+import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetTouchEvent;
 import koustav.duelmasters.main.androidgameopenglobjectmodels.Cube;
-import koustav.duelmasters.main.androidgameopenglobjectmodels.XZRectangle;
 import koustav.duelmasters.main.androidgameopenglutil.DrawObjectHelper;
 import koustav.duelmasters.main.androidgameopenglutil.GLGeometry;
 import koustav.duelmasters.main.androidgameopenglutil.GLGeometry.*;
@@ -53,7 +54,12 @@ public class CardWidget implements Widget {
     }
 
     @Override
-    public void draw(float deltaTime, float totalTime){
+    public void update(float deltaTime, float totalTime) {
+
+    }
+
+    @Override
+    public void draw(){
         for (int i = 0; i< 6; i++) {
             textureArrays[i] = AssetsAndResource.cardBorder;
         }
@@ -108,45 +114,45 @@ public class CardWidget implements Widget {
                 widgetTouchEvent.object = card;
                 return widgetTouchEvent;
             }
-        }
+        } else {
+            for (int i = 0; i < touchEvents.size(); i++) {
+                Input.TouchEvent event = touchEvents.get(i);
+                if (event.type == Input.TouchEvent.TOUCH_UP) {
+                    GLPoint relativeNearPointAfterTrans = event.nearPoint[0].translate(Position.Centerposition.getVector().scale(-1));
+                    GLPoint relativeFarPointAfterTrans = event.farPoint[0].translate(Position.Centerposition.getVector().scale(-1));
 
-        for (int i = 0; i < touchEvents.size(); i++) {
-            Input.TouchEvent event = touchEvents.get(i);
-            if (event.type == Input.TouchEvent.TOUCH_UP) {
-                GLPoint relativeNearPointAfterTrans = event.nearPoint[0].translate(Position.Centerposition.getVector().scale(-1));
-                GLPoint relativeFarPointAfterTrans = event.farPoint[0].translate(Position.Centerposition.getVector().scale(-1));
+                    multiplyMV(relativeNearPointAfterRot, 0, AssetsAndResource.tempMatrix, 0, new float[]{relativeNearPointAfterTrans.x,
+                            relativeNearPointAfterTrans.y, relativeNearPointAfterTrans.z, 0f}, 0);
+                    multiplyMV(relativeFarPointAfterRot, 0, AssetsAndResource.tempMatrix, 0, new float[]{relativeFarPointAfterTrans.x,
+                            relativeFarPointAfterTrans.y, relativeFarPointAfterTrans.z, 0f}, 0);
 
-                multiplyMV(relativeNearPointAfterRot, 0, AssetsAndResource.tempMatrix, 0, new float[]{relativeNearPointAfterTrans.x,
-                        relativeNearPointAfterTrans.y, relativeNearPointAfterTrans.z, 0f}, 0);
-                multiplyMV(relativeFarPointAfterRot, 0, AssetsAndResource.tempMatrix, 0, new float[]{relativeFarPointAfterTrans.x,
-                        relativeFarPointAfterTrans.y, relativeFarPointAfterTrans.z, 0f}, 0);
+                    relativeNearPoint.x = relativeNearPointAfterRot[0];
+                    relativeNearPoint.y = relativeNearPointAfterRot[1];
+                    relativeNearPoint.z = relativeNearPointAfterRot[2];
 
-                relativeNearPoint.x = relativeNearPointAfterRot[0];
-                relativeNearPoint.y = relativeNearPointAfterRot[1];
-                relativeNearPoint.z = relativeNearPointAfterRot[2];
+                    relativeFarPoint.x = relativeFarPointAfterRot[0];
+                    relativeFarPoint.y = relativeFarPointAfterRot[1];
+                    relativeFarPoint.z = relativeFarPointAfterRot[2];
 
-                relativeFarPoint.x = relativeFarPointAfterRot[0];
-                relativeFarPoint.y = relativeFarPointAfterRot[1];
-                relativeFarPoint.z = relativeFarPointAfterRot[2];
+                    GLPoint intersectingPoint = GLGeometry.GLRayIntersectionWithXZPlane(
+                            new GLRay(relativeNearPoint, GLGeometry.GLVectorBetween(relativeNearPoint, relativeFarPoint)), 0);
 
-                GLPoint intersectingPoint = GLGeometry.GLRayIntersectionWithXZPlane(
-                        new GLRay(relativeNearPoint, GLGeometry.GLVectorBetween(relativeNearPoint, relativeFarPoint)), 0);
+                    float width = Math.abs(intersectingPoint.x);
+                    float height = Math.abs(intersectingPoint.z);
 
-                float width = Math.abs(intersectingPoint.x);
-                float height = Math.abs(intersectingPoint.z);
-
-                if (width <= (glcard.width * Position.X_scale) / 2 && height <= (glcard.height * Position.Z_scale) / 2) {
-                    widgetTouchEvent.isTouched = true;
-                    widgetTouchEvent.object = card;
-                    touchCount++;
-                    continue;
+                    if (width <= (glcard.width * Position.X_scale) / 2 && height <= (glcard.height * Position.Z_scale) / 2) {
+                        widgetTouchEvent.isTouched = true;
+                        widgetTouchEvent.object = card;
+                        touchCount++;
+                        continue;
+                    }
                 }
             }
-        }
 
 
-        if (widgetTouchEvent.isTouched && touchCount > 1) {
-            widgetTouchEvent.isDoubleTouched = true;
+            if (widgetTouchEvent.isTouched && touchCount > 1) {
+                widgetTouchEvent.isDoubleTouched = true;
+            }
         }
 
         return widgetTouchEvent;
@@ -186,7 +192,17 @@ public class CardWidget implements Widget {
     }
 
     @Override
+    public Object getLogicalObject() {
+        return card;
+    }
+
+    @Override
     public void setMode(WidgetMode mode) {
 
+    }
+
+    @Override
+    public WidgetPosition getPosition() {
+        return Position;
     }
 }

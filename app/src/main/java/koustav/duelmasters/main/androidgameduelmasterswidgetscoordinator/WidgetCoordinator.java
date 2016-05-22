@@ -7,16 +7,14 @@ import java.util.List;
 import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAndResource;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Maze;
-import koustav.duelmasters.main.androidgameduelmastersdatastructure.Zone;
+import koustav.duelmasters.main.androidgameduelmasterwidgetlayout.HeadOrientation;
+import koustav.duelmasters.main.androidgameduelmasterwidgetlayoutmodels.BattleZoneLayout;
 import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.CardStackWidget;
 import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.CardWidget;
-import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.ZoneWidget;
+import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetTouchEvent;
 import koustav.duelmasters.main.androidgameopenglobjectmodels.Cube;
-import koustav.duelmasters.main.androidgameopenglobjectmodels.XZRectangle;
-import koustav.duelmasters.main.androidgameopenglutil.GLGeometry;
 import koustav.duelmasters.main.androidgameopenglutil.GLGeometry.*;
 import koustav.duelmasters.main.androidgameopenglutil.GLMaterial;
-import koustav.duelmasters.main.androidgamesframework.Graphics;
 import koustav.duelmasters.main.androidgamesframework.Input;
 import koustav.duelmasters.main.androidgamesframework.Pool;
 
@@ -30,11 +28,9 @@ public class WidgetCoordinator {
     // CardWidget Pool
     Pool<CardWidget> cardWidgetPool;
 
-    // Widgets
-    ZoneWidget BattleZone;
-    ZoneWidget ManaZone;
-    ZoneWidget Opponent_BattleZone;
-    ZoneWidget Opponent_ManaZone;
+    // Layouts
+    BattleZoneLayout battleZoneLayout;
+    BattleZoneLayout opponentBattleZoneLayout;
 
     public CardStackWidget Graveyard;
     public CardStackWidget Deck;
@@ -64,11 +60,11 @@ public class WidgetCoordinator {
         };
         cardWidgetPool = new Pool<CardWidget>(factory, 80);
 
-        // Initialize Widgets
-        BattleZone =new ZoneWidget();
-        ManaZone = new ZoneWidget();
-        Opponent_BattleZone = new ZoneWidget();
-        Opponent_ManaZone = new ZoneWidget();
+        // Initialize Layouts
+        battleZoneLayout = new BattleZoneLayout(AssetsAndResource.MazeHeight/10, AssetsAndResource.MazeWidth,
+                AssetsAndResource.MazeHeight/5, HeadOrientation.North);
+        opponentBattleZoneLayout = new BattleZoneLayout(-AssetsAndResource.MazeHeight/10, AssetsAndResource.MazeWidth,
+                AssetsAndResource.MazeHeight/5, HeadOrientation.South);
 
         Graveyard = new CardStackWidget();
         Deck = new CardStackWidget();
@@ -81,12 +77,6 @@ public class WidgetCoordinator {
 
         glCard = new Cube(new GLMaterial(new float[] {0.8f, 0.8f, 0.8f}, new float[] {0.8f, 0.8f, 0.8f},
                 new float[] {0.1f, 0.1f, 0.1f}, 10.0f), 0.08f, 0.00125f, 0.12f, true);
-
-        // Link to its logical unit
-        BattleZone.LinkLogicalObject(maze.getZoneList().get(Maze.battleZone));
-        ManaZone.LinkLogicalObject(maze.getZoneList().get(Maze.manaZone));
-        Opponent_BattleZone.LinkLogicalObject(maze.getZoneList().get(Maze.Opponent_battleZone));
-        Opponent_ManaZone.LinkLogicalObject(maze.getZoneList().get(Maze.Opponent_manaZone));
 
         Graveyard.LinkLogicalObject(maze.getZoneList().get(Maze.graveyard).getZoneArray());
         Deck.LinkLogicalObject(maze.getZoneList().get(Maze.deck).getZoneArray());
@@ -135,66 +125,7 @@ public class WidgetCoordinator {
     }
 
     public Cards getTouchedCard(List<Input.TouchEvent> touchEvents) {
-        GLPoint intersectingPoint = null;
-        Input input = AssetsAndResource.game.getInput();
-        Cards card = null;
-        Zone zone = null;
-
-        if (input.isTouchDown(0)) {
-            intersectingPoint = GLGeometry.GLRayIntersectionWithXZPlane(
-                    new GLRay(input.getNearPoint(0), GLGeometry.GLVectorBetween(input.getNearPoint(0), input.getFarPoint(0))), 0);
-        }
-
-        for(int i = 0; i<touchEvents.size(); i++) {
-            Input.TouchEvent event = touchEvents.get(i);
-            if (event.type == Input.TouchEvent.TOUCH_UP) {
-                intersectingPoint = GLGeometry.GLRayIntersectionWithXZPlane(
-                        new GLRay(event.nearPoint[0], GLGeometry.GLVectorBetween(event.nearPoint[0], event.farPoint[0])), 0);
-            }
-        }
-
-        if (intersectingPoint != null) {
-            WidgetTouchEvent widgetTouchEvent = null;
-            if (intersectingPoint.z > 0) {
-                if ((widgetTouchEvent = BattleZone.isTouched(touchEvents)) != null && widgetTouchEvent.isTouched) {
-                    zone = BattleZone.zone;
-                } else if (AssetsAndResource.widgetTouchEventPool.free(widgetTouchEvent) &&
-                        (widgetTouchEvent = ManaZone.isTouched(touchEvents)) != null && widgetTouchEvent.isTouched){
-                    zone = ManaZone.zone;
-                }
-
-                if (widgetTouchEvent != null) {
-                    AssetsAndResource.widgetTouchEventPool.free(widgetTouchEvent);
-                }
-            } else {
-                if ((widgetTouchEvent = Opponent_BattleZone.isTouched(touchEvents)) != null && widgetTouchEvent.isTouched) {
-                    zone = Opponent_BattleZone.zone;
-                } else if (AssetsAndResource.widgetTouchEventPool.free(widgetTouchEvent) &&
-                        (widgetTouchEvent = Opponent_ManaZone.isTouched(touchEvents)) != null && widgetTouchEvent.isTouched) {
-                    zone = Opponent_ManaZone.zone;
-                }
-
-                if (widgetTouchEvent != null) {
-                    AssetsAndResource.widgetTouchEventPool.free(widgetTouchEvent);
-                }
-            }
-
-            cardsArrayList.clear();
-
-            for (int i = 0; i < zone.zoneSize(); i++) {
-                Cards tcard = zone.getZoneArray().get(i);
-
-                CardWidget widget = CardToWidget.get(tcard);
-
-                if (widget == null) {
-                    throw new RuntimeException("For the card no widget exist");
-                }
-
-
-            }
-        }
-
-        return card;
+        return null;
     }
 
 }

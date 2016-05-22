@@ -1,4 +1,4 @@
-package koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator;
+package koustav.duelmasters.main.androidgameduelmasterswidget;
 
 import koustav.duelmasters.main.androidgameopenglutil.GLGeometry.*;
 
