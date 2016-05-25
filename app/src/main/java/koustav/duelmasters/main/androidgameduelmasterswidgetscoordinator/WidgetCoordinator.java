@@ -61,10 +61,8 @@ public class WidgetCoordinator {
         cardWidgetPool = new Pool<CardWidget>(factory, 80);
 
         // Initialize Layouts
-        battleZoneLayout = new BattleZoneLayout(AssetsAndResource.MazeHeight/10, AssetsAndResource.MazeWidth,
-                AssetsAndResource.MazeHeight/5, HeadOrientation.North);
-        opponentBattleZoneLayout = new BattleZoneLayout(-AssetsAndResource.MazeHeight/10, AssetsAndResource.MazeWidth,
-                AssetsAndResource.MazeHeight/5, HeadOrientation.South);
+        battleZoneLayout = new BattleZoneLayout();
+        opponentBattleZoneLayout = new BattleZoneLayout();
 
         Graveyard = new CardStackWidget();
         Deck = new CardStackWidget();

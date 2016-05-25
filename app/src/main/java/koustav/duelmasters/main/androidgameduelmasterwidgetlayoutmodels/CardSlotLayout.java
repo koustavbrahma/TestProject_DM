@@ -19,6 +19,7 @@ public class CardSlotLayout implements Layout {
     float headOrientationAngle;
 
     WidgetPosition slotPosition;
+    WidgetPosition widgetPosition;
     DriftSystem driftSystem;
     CardWidget cardWidget;
     boolean Disturbed;
@@ -27,6 +28,7 @@ public class CardSlotLayout implements Layout {
 
     public CardSlotLayout() {
         slotPosition = new WidgetPosition();
+        widgetPosition = new WidgetPosition();
         driftSystem = new DriftSystem();
         Disturbed = false;
         running = false;
@@ -43,7 +45,7 @@ public class CardSlotLayout implements Layout {
 
         InactiveCard card = (InactiveCard) cardWidget.getLogicalObject();
 
-        boolean tapped = GetUtil.IsTapped(card);
+        boolean tapped = (card != null) ? GetUtil.IsTapped(card): false;
 
         if (tapped != TappedPreviousValue) {
             TappedPreviousValue = tapped;
@@ -62,15 +64,34 @@ public class CardSlotLayout implements Layout {
         }
 
         if (running) {
-            WidgetPosition widgetPosition = driftSystem.getUpdatePosition(totalTime);
-            cardWidget.setTranslateRotateScale(widgetPosition);
+            WidgetPosition widgetPositionUpdate = driftSystem.getUpdatePosition(totalTime);
+
+            this.widgetPosition.rotaion.angle = widgetPositionUpdate.rotaion.angle;
+            this.widgetPosition.rotaion.x = widgetPositionUpdate.rotaion.x;
+            this.widgetPosition.rotaion.y = widgetPositionUpdate.rotaion.y;
+            this.widgetPosition.rotaion.z = widgetPositionUpdate.rotaion.z;
+            this.widgetPosition.Centerposition.x = widgetPositionUpdate.Centerposition.x;
+            this.widgetPosition.Centerposition.y = widgetPositionUpdate.Centerposition.y;
+            this.widgetPosition.Centerposition.z = widgetPositionUpdate.Centerposition.z;
+            this.widgetPosition.X_scale = widgetPositionUpdate.X_scale;
+            this.widgetPosition.Y_scale = widgetPositionUpdate.Y_scale;
+            this.widgetPosition.Z_scale = widgetPositionUpdate.Z_scale;
 
             float percentageComplete = driftSystem.getPercentageComplete(totalTime);
             if (percentageComplete == 1.0f) {
                 running = false;
             }
         } else {
-            cardWidget.setTranslateRotateScale(slotPosition);
+            this.widgetPosition.rotaion.angle = slotPosition.rotaion.angle;
+            this.widgetPosition.rotaion.x = slotPosition.rotaion.x;
+            this.widgetPosition.rotaion.y = slotPosition.rotaion.y;
+            this.widgetPosition.rotaion.z = slotPosition.rotaion.z;
+            this.widgetPosition.Centerposition.x = slotPosition.Centerposition.x;
+            this.widgetPosition.Centerposition.y = slotPosition.Centerposition.y;
+            this.widgetPosition.Centerposition.z = slotPosition.Centerposition.z;
+            this.widgetPosition.X_scale = slotPosition.X_scale;
+            this.widgetPosition.Y_scale = slotPosition.Y_scale;
+            this.widgetPosition.Z_scale = slotPosition.Z_scale;
         }
 
     }
@@ -78,6 +99,7 @@ public class CardSlotLayout implements Layout {
     @Override
     public void draw() {
         if (cardWidget != null) {
+            cardWidget.setTranslateRotateScale(widgetPosition);
             cardWidget.draw();
         }
     }

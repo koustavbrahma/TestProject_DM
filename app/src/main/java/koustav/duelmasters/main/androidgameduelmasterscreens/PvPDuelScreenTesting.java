@@ -2,10 +2,14 @@ package koustav.duelmasters.main.androidgameduelmasterscreens;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAndResource;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
 import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetPosition;
+import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetTouchEvent;
+import koustav.duelmasters.main.androidgameduelmasterwidgetlayout.HeadOrientation;
+import koustav.duelmasters.main.androidgameduelmasterwidgetlayoutmodels.BattleZoneLayout;
 import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.CardStackWidget;
 import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.CardWidget;
 import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetMode;
@@ -49,6 +53,9 @@ public class PvPDuelScreenTesting extends Screen{
     private Cube glcard2;
     private ScreenRectangle DisplayCard;
 
+    // Layout
+    BattleZoneLayout battleZoneLayout;
+
    // Matrix
     private float[] tempMatrix;
     private float[] modelMatrix;
@@ -62,6 +69,7 @@ public class PvPDuelScreenTesting extends Screen{
     CardStackWidget DeckWg;
     CardWidget CardWg2;
 
+    ArrayList<CardWidget> tmplist;
     public PvPDuelScreenTesting(AndroidGame game) {
         super(game);
 
@@ -98,10 +106,13 @@ public class PvPDuelScreenTesting extends Screen{
                 new float[] {0.1f, 0.1f, 0.1f}, 10.0f), 0.08f, 0.00125f, 0.12f, true);
         DisplayCard = new ScreenRectangle(0.4f, 0.6f);
 
+        battleZoneLayout = new BattleZoneLayout();
         // Widget
         CardWg = new CardWidget();
         DeckWg = new CardStackWidget();
         CardWg2 = new CardWidget();
+
+        tmplist = new ArrayList<CardWidget>();
     }
 
     @Override
@@ -134,46 +145,20 @@ public class PvPDuelScreenTesting extends Screen{
 
         List<Input.TouchEvent> touchEvents = game.getInput().getTouchEvents();
         WidgetPosition position = new WidgetPosition();
-        position.Centerposition.x = 0.3f;
-        position.Centerposition.y = c * 0.3f;
-        position.Centerposition.z = c * 0.2f;
-        position.rotaion.angle = AssetsAndResource.CameraAngle;
-        position.rotaion.y = 0f;
-        position.rotaion.x = 1f;
-        position.rotaion.z = 0f;
-        position.X_scale = 1f;
-        position.Z_scale = 1f;
-        if (CardWg.isTouched(touchEvents).isTouched) {
-            GLPoint intersectingPoint = GLGeometry.GLRayIntersectionWithXZPlane(
-                    new GLRay(game.getInput().getNearPoint(0), GLGeometry.GLVectorBetween(game.getInput().getNearPoint(0),
-                            game.getInput().getFarPoint(0))), 0);
-            //position.Centerposition.x = intersectingPoint.x;
-            //position.Centerposition.z = intersectingPoint.z;
-            positionObjectInScene(0.4f, 0f, 0.4f, 0f, 0f, 0f, 0f, 1f, 1f, 1f);
-            AssetsAndResource.colorShaderProgram.useProgram();
-            AssetsAndResource.colorShaderProgram.setUniforms(modelViewProjectionMatrix);
-
-            point.bindData(AssetsAndResource.colorShaderProgram.getPositionAttributeLocation(),
-                    AssetsAndResource.colorShaderProgram.getColorAttributeLocation());
-            point.draw();
-        }
-
-        CardWg.setTranslateRotateScale(position);
-       // CardWg.draw(deltaTime, totalTime);
-
-        GLVector tmp = new GLVector(0 - AssetsAndResource.CameraPosition.x, c * 0.3f - AssetsAndResource.CameraPosition.y, c * 0.2f - AssetsAndResource.CameraPosition.z);
-        tmp = tmp.getDirection();
         position.Centerposition.x = 0f;
-        position.Centerposition.y = 0f;
-        position.Centerposition.z = 0f;
+        position.Centerposition.y = 0;
+        position.Centerposition.z = -0.3f;
         position.rotaion.angle = 0;
         position.rotaion.y = 0f;
         position.rotaion.x = 1f;
         position.rotaion.z = 0f;
         position.X_scale = 1f;
         position.Z_scale = 1f;
-        if (CardWg2.isTouched(touchEvents).isTouched) {
-            GLPoint intersectingPoint = GLGeometry.GLRayIntersectionWithXZPlane(
+        CardWg.setTranslateRotateScale(position);
+        CardWg.draw();
+        WidgetTouchEvent tmp2 = CardWg.isTouched(touchEvents);
+        if (tmp2.isTouched && !tmp2.isTouchedDown) {
+            /*GLPoint intersectingPoint = GLGeometry.GLRayIntersectionWithXZPlane(
                     new GLRay(game.getInput().getNearPoint(0), GLGeometry.GLVectorBetween(game.getInput().getNearPoint(0),
                             game.getInput().getFarPoint(0))), 0);
             //position.Centerposition.x = intersectingPoint.x;
@@ -184,12 +169,75 @@ public class PvPDuelScreenTesting extends Screen{
 
             point.bindData(AssetsAndResource.colorShaderProgram.getPositionAttributeLocation(),
                     AssetsAndResource.colorShaderProgram.getColorAttributeLocation());
-            point.draw();
+            point.draw(); */
+            CardWidget CardWgtmp = new CardWidget();
+            CardWgtmp.LinkGLobject(glcard2);
+            CardWgtmp.ShadowEnable(false);
+
+            WidgetPosition position2 = new WidgetPosition();
+            position2.Centerposition.x = 0.2f;
+            position2.Centerposition.y = 0.2f;
+            position2.Centerposition.z = 0.5f;
+            position2.rotaion.angle = 0;
+            position2.rotaion.y = 1f;
+            position2.rotaion.x = 0f;
+            position2.rotaion.z = 0f;
+            position2.X_scale = 1f;
+            position2.Z_scale = 1f;
+            CardWgtmp.setTranslateRotateScale(position2);
+            battleZoneLayout.AddCardWidgetToZone(CardWgtmp);
+            tmplist.add(CardWgtmp);
         }
 
+
+  //      CardWg.setTranslateRotateScale(position);
+       // CardWg.draw(deltaTime, totalTime);
+
+
+        GLVector tmp = new GLVector(0 - AssetsAndResource.CameraPosition.x, c * 0.3f - AssetsAndResource.CameraPosition.y, c * 0.2f - AssetsAndResource.CameraPosition.z);
+        tmp = tmp.getDirection();
+        position.Centerposition.x = 0.3f;
+        position.Centerposition.y = 0f;
+        position.Centerposition.z = -0.3f;
+        position.rotaion.angle = 0;
+        position.rotaion.y = 0f;
+        position.rotaion.x = 1f;
+        position.rotaion.z = 0f;
+        position.X_scale = 1f;
+        position.Z_scale = 1f;
         CardWg2.setTranslateRotateScale(position);
         CardWg2.draw();
+        tmp2 = CardWg2.isTouched(touchEvents);
+        if (tmp2.isTouched && !tmp2.isTouchedDown) {
+           /* GLPoint intersectingPoint = GLGeometry.GLRayIntersectionWithXZPlane(
+                    new GLRay(game.getInput().getNearPoint(0), GLGeometry.GLVectorBetween(game.getInput().getNearPoint(0),
+                            game.getInput().getFarPoint(0))), 0);
+            //position.Centerposition.x = intersectingPoint.x;
+            //position.Centerposition.z = intersectingPoint.z;
+            positionObjectInScene(0.4f, 0f, 0.4f, 0f, 0f, 0f, 0f, 1f, 1f, 1f);
+            AssetsAndResource.colorShaderProgram.useProgram();
+            AssetsAndResource.colorShaderProgram.setUniforms(modelViewProjectionMatrix);
 
+            point.bindData(AssetsAndResource.colorShaderProgram.getPositionAttributeLocation(),
+                    AssetsAndResource.colorShaderProgram.getColorAttributeLocation());
+            point.draw(); */
+            Random R = new Random();
+            int tempindex;
+            tempindex = (int) R.nextInt(tmplist.size());
+            CardWidget rmwg = null;
+            if (tmplist.size() > 0) {
+                rmwg = tmplist.remove(tempindex);
+                battleZoneLayout.RemoveCardWidgetFromZone(rmwg);
+            }
+        }
+
+        tmp2 = battleZoneLayout.TouchResponse(touchEvents);
+        battleZoneLayout.update(deltaTime, totalTime);
+        battleZoneLayout.draw();
+        /*
+        CardWg2.setTranslateRotateScale(position);
+        CardWg2.draw();
+*/
         ArrayList<GLAngularRotaion> rotaions = new ArrayList<GLAngularRotaion>();
         GLAngularRotaion rotaion= new GLAngularRotaion(90, 0, 1f, 0);
         //GLAngularRotaion rotaion1 = new GLAngularRotaion(90, 1f, 0 , 0);
@@ -206,19 +254,20 @@ public class PvPDuelScreenTesting extends Screen{
         position1.rotaion.y = rotaion.y;
         position1.rotaion.x = rotaion.x;
         position1.rotaion.z = rotaion.z;
+        /*
         if (DeckWg.isTouched(touchEvents).isTouched) {
             //GLPoint intersectingPoint = GLGeometry.GLRayIntersectionWithXZPlane(
             //        new GLRay(game.getInput().getNearPoint(0), GLGeometry.GLVectorBetween(game.getInput().getNearPoint(0),
             //                game.getInput().getFarPoint(0))), 0);
             //position1.Centerposition.x = intersectingPoint.x;
             //position1.Centerposition.z = intersectingPoint.z;
-            DeckWg.setMode(WidgetMode.Transition);
+    //        DeckWg.setMode(WidgetMode.Transition);
         }
 
         DeckWg.setTranslateRotateScale(position1);
         DeckWg.update(deltaTime, totalTime);
         DeckWg.draw();
-
+*/
         glDisable(GL_DEPTH_TEST);
         positionObjectInScene(0f, 0f, 0f, 0f, 0f, 0f, 0f, 1f, 1f, 1f);
         AssetsAndResource.textureProgram.useProgram();
@@ -237,7 +286,7 @@ public class PvPDuelScreenTesting extends Screen{
 
                 point.bindData(AssetsAndResource.colorShaderProgram.getPositionAttributeLocation(),
                         AssetsAndResource.colorShaderProgram.getColorAttributeLocation());
-                point.draw();
+  //              point.draw();
             }
         }
     }
@@ -262,6 +311,8 @@ public class PvPDuelScreenTesting extends Screen{
         DeckWg.LinkGLobject(cube, glcard2);
         DeckWg.LinkLogicalObject(CardStack);
         DeckWg.setFlip(true);
+        battleZoneLayout.InitializeBattleZoneLayout(AssetsAndResource.MazeHeight/10, AssetsAndResource.MazeWidth,
+                AssetsAndResource.MazeHeight/5, HeadOrientation.North);
     }
 
     @Override

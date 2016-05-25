@@ -30,18 +30,17 @@ public class BattleZoneLayout implements Layout {
     ArrayList<CardSlotLayout> TouchedSlots;
     ArrayList<WidgetTouchEvent> widgetTouchEventList;
 
-    public BattleZoneLayout(float zCoordinateOfZoneCenter, float width, float height,
-                            HeadOrientation orientation) {
+    public BattleZoneLayout() {
         Pool.PoolObjectFactory<CardSlotLayout> factory = new Pool.PoolObjectFactory<CardSlotLayout>() {
             @Override
             public CardSlotLayout createObject() {
                 return new CardSlotLayout();
             }
         };
-        ZCoordinateOfZoneCenter = zCoordinateOfZoneCenter;
-        headOrientation = orientation;
-        this.width = width;
-        this.height = height;
+        ZCoordinateOfZoneCenter = 0;
+        headOrientation = HeadOrientation.North;
+        this.width = 0;
+        this.height = 0;
 
         cardSlotLayoutPool = new Pool<CardSlotLayout>(factory, 40);
 
@@ -52,6 +51,14 @@ public class BattleZoneLayout implements Layout {
         SelectedCardSlot = null;
         TouchedSlots = new ArrayList<CardSlotLayout>();
         widgetTouchEventList = new ArrayList<WidgetTouchEvent>();
+    }
+
+    public void InitializeBattleZoneLayout(float zCoordinateOfZoneCenter, float width, float height,
+                                           HeadOrientation orientation) {
+        ZCoordinateOfZoneCenter = zCoordinateOfZoneCenter;
+        headOrientation = orientation;
+        this.width = width;
+        this.height = height;
     }
 
     @Override
@@ -143,10 +150,10 @@ public class BattleZoneLayout implements Layout {
         widgetTouchEventList.clear();
         TouchedSlots.clear();
         WidgetTouchEvent widgetTouchEvent;
-        float gap = AssetsAndResource.MazeWidth/(1f + LeftWingOfCardSlot.size() +RightWingOfCardSlot.size());
+        float gap = this.width/(1f + LeftWingOfCardSlot.size() +RightWingOfCardSlot.size());
 
-        if (gap >= AssetsAndResource.MazeWidth/8f) {
-            gap = AssetsAndResource.MazeWidth/8f;
+        if (gap >= 0.125f * AssetsAndResource.MazeWidth) {
+            gap = 0.125f * AssetsAndResource.MazeWidth;
         }
 
         Input input = AssetsAndResource.game.getInput();
@@ -447,9 +454,18 @@ public class BattleZoneLayout implements Layout {
                         }
                     }
                 }
+
+                widgetTouchEvent = AssetsAndResource.widgetTouchEventPool.newObject();
+                widgetTouchEvent.isTouched = true;
+                widgetTouchEvent.isTouchedDown = false;
+                widgetTouchEvent.isDoubleTouched = false;
+                widgetTouchEvent.object = null;
+
+                return widgetTouchEvent;
             }
         }  else {
 
+            boolean isTouched = false;
             WidgetTouchEvent widgetTouchEventOutCome = null;
             Input.TouchEvent event = null;
             for (int j = touchEvents.size() - 1; j >= 0; j--) {
@@ -469,6 +485,7 @@ public class BattleZoneLayout implements Layout {
                     int index;
 
                     if (width <= this.width / 2 && height <= this.height / 2) {
+                        isTouched = true;
                         x = intersectingPoint.x / gap;
                         index = (int) Math.floor(Math.abs(x));
                         if (index == 0) {
@@ -764,7 +781,17 @@ public class BattleZoneLayout implements Layout {
                 }
             }
 
-            return widgetTouchEventOutCome;
+            if (widgetTouchEventOutCome != null) {
+                return widgetTouchEventOutCome;
+            } else if (isTouched) {
+                widgetTouchEventOutCome = AssetsAndResource.widgetTouchEventPool.newObject();
+                widgetTouchEventOutCome.isTouched = true;
+                widgetTouchEventOutCome.isTouchedDown = false;
+                widgetTouchEventOutCome.isDoubleTouched = false;
+                widgetTouchEventOutCome.object = null;
+
+                return widgetTouchEventOutCome;
+            }
         }
 
         return null;
@@ -786,10 +813,10 @@ public class BattleZoneLayout implements Layout {
 
         HeadCardSlot = slotLayout;
 
-        float gap = AssetsAndResource.MazeWidth/(1f + LeftWingOfCardSlot.size() +RightWingOfCardSlot.size());
+        float gap = this.width/(1f + LeftWingOfCardSlot.size() +RightWingOfCardSlot.size());
 
-        if (gap >= AssetsAndResource.MazeWidth/8f) {
-            gap = AssetsAndResource.MazeWidth/8f;
+        if (gap >= 0.125f * AssetsAndResource.MazeWidth) {
+            gap = 0.125f * AssetsAndResource.MazeWidth;
         }
 
         HeadCardSlot.setSlotXPosition(0);
@@ -887,10 +914,10 @@ public class BattleZoneLayout implements Layout {
             throw new RuntimeException("Slot object not found in the zone");
         }
 
-        float gap = AssetsAndResource.MazeWidth/(1f + LeftWingOfCardSlot.size() +RightWingOfCardSlot.size());
+        float gap = this.width/(1f + LeftWingOfCardSlot.size() +RightWingOfCardSlot.size());
 
-        if (gap >= AssetsAndResource.MazeWidth/8f) {
-            gap = AssetsAndResource.MazeWidth/8f;
+        if (gap >= 0.125f * AssetsAndResource.MazeWidth) {
+            gap = 0.125f * AssetsAndResource.MazeWidth;
         }
 
         if (HeadCardSlot != null) {

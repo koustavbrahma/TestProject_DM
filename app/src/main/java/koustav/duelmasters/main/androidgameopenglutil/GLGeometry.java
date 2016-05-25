@@ -122,7 +122,11 @@ public class GLGeometry {
 
         public GLVector getDirection() {
             float abs = getMagnitude();
-            return new GLVector(x/abs, y/abs, z/abs);
+            if (abs != 0) {
+                return new GLVector(x / abs, y / abs, z / abs);
+            } else {
+                return new GLVector(0f, 1f, 0f);
+            }
         }
 
         public GLVector scale(float s) {

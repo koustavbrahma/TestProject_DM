@@ -1041,9 +1041,9 @@ public class CardStackWidget implements Widget{
         this.Position.rotaion.x = position.rotaion.x;
         this.Position.rotaion.y = position.rotaion.y;
         this.Position.rotaion.z = position.rotaion.z;
-        Position.Centerposition.x = position.Centerposition.x;
-        Position.Centerposition.y = position.Centerposition.y;
-        Position.Centerposition.z = position.Centerposition.z;
+        this.Position.Centerposition.x = position.Centerposition.x;
+        this.Position.Centerposition.y = position.Centerposition.y;
+        this.Position.Centerposition.z = position.Centerposition.z;
         this.Position.X_scale = position.X_scale;
         this.Position.Y_scale = position.Y_scale;
         this.Position.Z_scale = position.Z_scale;
