@@ -43,6 +43,7 @@ public interface Input {
     public  boolean isKeyPressed(int keyCode);
     public List<KeyEvent> getKeyEvents();
     public  boolean isTouchDown(int pointer);
+    public  int TouchType(int pointer);
     public  int getTouchX(int pointer);
     public  int getTouchY(int pointer);
     public List<TouchEvent> getTouchEvents();

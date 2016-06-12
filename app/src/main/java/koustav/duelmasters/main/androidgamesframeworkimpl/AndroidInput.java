@@ -35,6 +35,10 @@ public class AndroidInput implements Input {
         return touchHandler.isTouchDown(pointer);
     }
     @Override
+    public int TouchType(int pointer) {
+        return touchHandler.TouchType(pointer);
+    }
+    @Override
     public  int getTouchX(int pointer) {
         return touchHandler.getTouchX(pointer);
     }

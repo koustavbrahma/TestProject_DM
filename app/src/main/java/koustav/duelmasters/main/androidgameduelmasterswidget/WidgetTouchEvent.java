@@ -6,12 +6,14 @@ package koustav.duelmasters.main.androidgameduelmasterswidget;
 public class WidgetTouchEvent {
     public boolean isTouched;
     public boolean isTouchedDown;
+    public boolean isMoving;
     public boolean isDoubleTouched;
     public Object object;
 
     public WidgetTouchEvent() {
         isTouched = false;
         isTouchedDown = false;
+        isMoving = false;
         isDoubleTouched = false;
         object = null;
     }

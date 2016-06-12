@@ -223,11 +223,33 @@ public class PvPDuelScreenTesting extends Screen{
             point.draw(); */
             Random R = new Random();
             int tempindex;
-            tempindex = (int) R.nextInt(tmplist.size());
             CardWidget rmwg = null;
-            if (tmplist.size() > 0) {
+  /*          if (tmplist.size() > 0) {
+                tempindex = (int) R.nextInt(tmplist.size());
                 rmwg = tmplist.remove(tempindex);
                 battleZoneLayout.RemoveCardWidgetFromZone(rmwg);
+            } */
+
+            if (tmplist.size() > 0) {
+                tempindex = (int) R.nextInt(tmplist.size());
+                rmwg = tmplist.get(tempindex);
+                CardWidget CardWgtmp = new CardWidget();
+                CardWgtmp.LinkGLobject(glcard2);
+                CardWgtmp.ShadowEnable(false);
+
+                WidgetPosition position2 = new WidgetPosition();
+                position2.Centerposition.x = 0.2f;
+                position2.Centerposition.y = 0.2f;
+                position2.Centerposition.z = 0.5f;
+                position2.rotaion.angle = 0;
+                position2.rotaion.y = 1f;
+                position2.rotaion.x = 0f;
+                position2.rotaion.z = 0f;
+                position2.X_scale = 1f;
+                position2.Z_scale = 1f;
+                CardWgtmp.setTranslateRotateScale(position2);
+                battleZoneLayout.PutCardWidgetOnTopOfExistingCardWidget(CardWgtmp, rmwg);
+                tmplist.add(CardWgtmp);
             }
         }
 
@@ -312,7 +334,7 @@ public class PvPDuelScreenTesting extends Screen{
         DeckWg.LinkLogicalObject(CardStack);
         DeckWg.setFlip(true);
         battleZoneLayout.InitializeBattleZoneLayout(AssetsAndResource.MazeHeight/10, AssetsAndResource.MazeWidth,
-                AssetsAndResource.MazeHeight/5, HeadOrientation.North);
+                AssetsAndResource.MazeHeight/5, HeadOrientation.North, false);
     }
 
     @Override

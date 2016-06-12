@@ -73,6 +73,7 @@ public class CardWidget implements Widget {
         WidgetTouchEvent widgetTouchEvent = AssetsAndResource.widgetTouchEventPool.newObject();
         widgetTouchEvent.isTouched = false;
         widgetTouchEvent.isTouchedDown = false;
+        widgetTouchEvent.isMoving = false;
         widgetTouchEvent.isDoubleTouched = false;
         widgetTouchEvent.object = null;
 
@@ -111,6 +112,9 @@ public class CardWidget implements Widget {
             if (width <= (glcard.width * Position.X_scale)/2 && height <= (glcard.height * Position.Z_scale)/2) {
                 widgetTouchEvent.isTouched = true;
                 widgetTouchEvent.isTouchedDown = true;
+                if (input.TouchType(0) == Input.TouchEvent.TOUCH_DRAGGED) {
+                    widgetTouchEvent.isMoving = true;
+                }
                 widgetTouchEvent.object = card;
                 return widgetTouchEvent;
             }

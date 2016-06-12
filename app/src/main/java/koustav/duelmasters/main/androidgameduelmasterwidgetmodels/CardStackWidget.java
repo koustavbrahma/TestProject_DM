@@ -652,6 +652,9 @@ public class CardStackWidget implements Widget{
             if (width <= (cube.width * Position.X_scale)/2 && height <= (cube.height * Position.Z_scale)/2) {
                 widgetTouchEvent.isTouched = true;
                 widgetTouchEvent.isTouchedDown = true;
+                if (input.TouchType(0) == Input.TouchEvent.TOUCH_DRAGGED) {
+                    widgetTouchEvent.isMoving = true;
+                }
                 widgetTouchEvent.object = cardStack;
                 return widgetTouchEvent;
             }
@@ -665,6 +668,9 @@ public class CardStackWidget implements Widget{
             if (width <= (cube.width * Position.X_scale)/2 && height <= (cube.height * Position.Z_scale)/2) {
                 widgetTouchEvent.isTouched = true;
                 widgetTouchEvent.isTouchedDown = true;
+                if (input.TouchType(0) == Input.TouchEvent.TOUCH_DRAGGED) {
+                    widgetTouchEvent.isMoving = true;
+                }
                 widgetTouchEvent.object = cardStack;
                 return widgetTouchEvent;
             }
@@ -680,6 +686,9 @@ public class CardStackWidget implements Widget{
                     height <= (cube.height * Position.Z_scale)/2) {
                 widgetTouchEvent.isTouched = true;
                 widgetTouchEvent.isTouchedDown = true;
+                if (input.TouchType(0) == Input.TouchEvent.TOUCH_DRAGGED) {
+                    widgetTouchEvent.isMoving = true;
+                }
                 widgetTouchEvent.object = cardStack;
                 return widgetTouchEvent;
             }
@@ -694,6 +703,9 @@ public class CardStackWidget implements Widget{
                 if (width <= (cube.width * Position.X_scale)/2 && length <= (cube.length * Position.Y_scale)/2) {
                     widgetTouchEvent.isTouched = true;
                     widgetTouchEvent.isTouchedDown = true;
+                    if (input.TouchType(0) == Input.TouchEvent.TOUCH_DRAGGED) {
+                        widgetTouchEvent.isMoving = true;
+                    }
                     widgetTouchEvent.object = cardStack;
                     return widgetTouchEvent;
                 }
@@ -707,6 +719,9 @@ public class CardStackWidget implements Widget{
                 if (width <= (cube.width * Position.X_scale)/2 && length <= (cube.length * Position.Y_scale)/2) {
                     widgetTouchEvent.isTouched = true;
                     widgetTouchEvent.isTouchedDown = true;
+                    if (input.TouchType(0) == Input.TouchEvent.TOUCH_DRAGGED) {
+                        widgetTouchEvent.isMoving = true;
+                    }
                     widgetTouchEvent.object = cardStack;
                     return widgetTouchEvent;
                 }
@@ -814,6 +829,7 @@ public class CardStackWidget implements Widget{
         WidgetTouchEvent widgetTouchEvent = AssetsAndResource.widgetTouchEventPool.newObject();
         widgetTouchEvent.isTouched = false;
         widgetTouchEvent.isTouchedDown = false;
+        widgetTouchEvent.isMoving = false;
         widgetTouchEvent.isDoubleTouched = false;
         widgetTouchEvent.object = null;
 
@@ -824,6 +840,7 @@ public class CardStackWidget implements Widget{
         WidgetTouchEvent widgetTouchEvent = AssetsAndResource.widgetTouchEventPool.newObject();
         widgetTouchEvent.isTouched = false;
         widgetTouchEvent.isTouchedDown = false;
+        widgetTouchEvent.isMoving = false;
         widgetTouchEvent.isDoubleTouched = false;
         widgetTouchEvent.object = null;
 
@@ -916,6 +933,9 @@ public class CardStackWidget implements Widget{
                     index = cardStack.indexOf(SelectedCard);
                     widgetTouchEvent.isTouched = true;
                     widgetTouchEvent.isTouchedDown = true;
+                    if (input.TouchType(0) == Input.TouchEvent.TOUCH_DRAGGED) {
+                        widgetTouchEvent.isMoving = true;
+                    }
                     if (index < indexTouched.get(0)) {
                         widgetTouchEvent.object = cardStack.get(indexTouched.get(0));
                         SelectedCard = (Cards) widgetTouchEvent.object;

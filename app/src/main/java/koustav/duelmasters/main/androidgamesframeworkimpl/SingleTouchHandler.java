@@ -26,6 +26,7 @@ public class SingleTouchHandler implements TouchHandler{
     Context context;
     View view;
     boolean isTouched;
+    int type;
     int touchX;
     int touchY;
     GLPoint[] nearPoint;
@@ -74,15 +75,18 @@ public class SingleTouchHandler implements TouchHandler{
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     touchEvent.type = TouchEvent.TOUCH_DOWN;
+                    type = TouchEvent.TOUCH_DOWN;
                     isTouched = true;
                     break;
                 case MotionEvent.ACTION_MOVE:
                     touchEvent.type = TouchEvent.TOUCH_DRAGGED;
+                    type = TouchEvent.TOUCH_DRAGGED;
                     isTouched = true;
                     break;
                 case MotionEvent.ACTION_CANCEL:
                 case MotionEvent.ACTION_UP:
                     touchEvent.type = TouchEvent.TOUCH_UP;
+                    type = TouchEvent.TOUCH_UP;
                     isTouched =false;
                     break;
             }
@@ -140,6 +144,13 @@ public class SingleTouchHandler implements TouchHandler{
                 return isTouched;
             else
                 return false;
+        }
+    }
+
+    @Override
+    public int TouchType(int pointer) {
+        synchronized (this) {
+            return type;
         }
     }
 

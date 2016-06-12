@@ -87,8 +87,12 @@ public class AssetsAndResource {
 
     // Misc parameters
     public static float CameraAngle;
-    public static float MazeWidth;
-    public static float MazeHeight;
+    public static float MazeWidth = 1.4f;
+    public static float MazeHeight = 1.0f;
+    public static float CardWidth = 0.08f;
+    public static float CardHeight = 0.12f;
+    public static float CardLength =  0.00125f;
+    public static float CardStackShift = 0.002f;
     public static GLGeometry.GLPoint CameraPosition;
 
     // APIs
@@ -171,8 +175,6 @@ public class AssetsAndResource {
 
         // Camera Angle = 90 - (camera ray to center of focus is making with XZ plane)
         CameraAngle = 90f - (float) Math.toDegrees(Math.atan((double) CameraPosition.y/(CameraPosition.z - 0.1f)));
-        MazeWidth = 1.4f ;
-        MazeHeight = 1.0f;
 
         // setup ortho projection matrix
         orthoM(OrthoProjectionMatrix, 0, -(float) game.getframeBufferWidth() / (float) game.getframeBufferHeight(),
