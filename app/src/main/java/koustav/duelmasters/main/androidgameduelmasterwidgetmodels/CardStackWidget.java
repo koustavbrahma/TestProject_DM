@@ -10,6 +10,7 @@ import koustav.duelmasters.main.androidgameduelmasterswidget.Widget;
 import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetMode;
 import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetPosition;
 import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetTouchEvent;
+import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetTouchFocusLevel;
 import koustav.duelmasters.main.androidgameopenglanimation.DriftSystem;
 import koustav.duelmasters.main.androidgameopenglobjectmodels.Cube;
 import koustav.duelmasters.main.androidgameopenglutil.DrawObjectHelper;
@@ -614,7 +615,9 @@ public class CardStackWidget implements Widget{
         WidgetTouchEvent widgetTouchEvent = AssetsAndResource.widgetTouchEventPool.newObject();
         widgetTouchEvent.isTouched = false;
         widgetTouchEvent.isTouchedDown = false;
+        widgetTouchEvent.isMoving = false;
         widgetTouchEvent.isDoubleTouched = false;
+        widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Low;
         widgetTouchEvent.object = null;
 
         int touchCount = 0;
@@ -831,6 +834,7 @@ public class CardStackWidget implements Widget{
         widgetTouchEvent.isTouchedDown = false;
         widgetTouchEvent.isMoving = false;
         widgetTouchEvent.isDoubleTouched = false;
+        widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Low;
         widgetTouchEvent.object = null;
 
         return widgetTouchEvent;
@@ -842,6 +846,7 @@ public class CardStackWidget implements Widget{
         widgetTouchEvent.isTouchedDown = false;
         widgetTouchEvent.isMoving = false;
         widgetTouchEvent.isDoubleTouched = false;
+        widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Low;
         widgetTouchEvent.object = null;
 
         indexTouched.clear();

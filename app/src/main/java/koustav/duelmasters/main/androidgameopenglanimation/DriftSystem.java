@@ -83,4 +83,8 @@ public class DriftSystem {
 
         return ref_track;
     }
+
+    public float getCurrentDerivative(float totalTime) {
+        return referenceTracking.getRefTrackingDerivative(0, totalTime);
+    }
 }

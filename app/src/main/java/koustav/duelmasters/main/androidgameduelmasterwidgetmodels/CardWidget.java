@@ -9,6 +9,7 @@ import koustav.duelmasters.main.androidgameduelmasterswidget.Widget;
 import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetMode;
 import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetPosition;
 import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetTouchEvent;
+import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetTouchFocusLevel;
 import koustav.duelmasters.main.androidgameopenglobjectmodels.Cube;
 import koustav.duelmasters.main.androidgameopenglutil.DrawObjectHelper;
 import koustav.duelmasters.main.androidgameopenglutil.GLGeometry;
@@ -75,6 +76,7 @@ public class CardWidget implements Widget {
         widgetTouchEvent.isTouchedDown = false;
         widgetTouchEvent.isMoving = false;
         widgetTouchEvent.isDoubleTouched = false;
+        widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Low;
         widgetTouchEvent.object = null;
 
         int touchCount = 0;

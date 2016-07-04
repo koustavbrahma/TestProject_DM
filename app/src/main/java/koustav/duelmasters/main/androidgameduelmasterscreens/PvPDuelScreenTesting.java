@@ -10,6 +10,7 @@ import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetPosition;
 import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetTouchEvent;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayout.HeadOrientation;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoutmodels.BattleZoneLayout;
+import koustav.duelmasters.main.androidgameduelmasterwidgetlayoutmodels.ManaZoneLayout;
 import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.CardStackWidget;
 import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.CardWidget;
 import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetMode;
@@ -55,6 +56,7 @@ public class PvPDuelScreenTesting extends Screen{
 
     // Layout
     BattleZoneLayout battleZoneLayout;
+    ManaZoneLayout manaZoneLayout;
 
    // Matrix
     private float[] tempMatrix;
@@ -68,6 +70,8 @@ public class PvPDuelScreenTesting extends Screen{
     CardWidget CardWg;
     CardStackWidget DeckWg;
     CardWidget CardWg2;
+    CardWidget CardWg3;
+    CardWidget CardWg4;
 
     ArrayList<CardWidget> tmplist;
     public PvPDuelScreenTesting(AndroidGame game) {
@@ -107,10 +111,13 @@ public class PvPDuelScreenTesting extends Screen{
         DisplayCard = new ScreenRectangle(0.4f, 0.6f);
 
         battleZoneLayout = new BattleZoneLayout();
+        manaZoneLayout = new ManaZoneLayout();
         // Widget
         CardWg = new CardWidget();
         DeckWg = new CardStackWidget();
         CardWg2 = new CardWidget();
+        CardWg3 = new CardWidget();
+        CardWg4 = new CardWidget();
 
         tmplist = new ArrayList<CardWidget>();
     }
@@ -185,7 +192,8 @@ public class PvPDuelScreenTesting extends Screen{
             position2.X_scale = 1f;
             position2.Z_scale = 1f;
             CardWgtmp.setTranslateRotateScale(position2);
-            battleZoneLayout.AddCardWidgetToZone(CardWgtmp);
+            //battleZoneLayout.AddCardWidgetToZone(CardWgtmp);
+            manaZoneLayout.AddCardWidgetToZone(CardWgtmp);
             tmplist.add(CardWgtmp);
         }
 
@@ -224,12 +232,13 @@ public class PvPDuelScreenTesting extends Screen{
             Random R = new Random();
             int tempindex;
             CardWidget rmwg = null;
-  /*          if (tmplist.size() > 0) {
+            if (tmplist.size() > 0) {
                 tempindex = (int) R.nextInt(tmplist.size());
                 rmwg = tmplist.remove(tempindex);
-                battleZoneLayout.RemoveCardWidgetFromZone(rmwg);
-            } */
-
+               // battleZoneLayout.RemoveCardWidgetFromZone(rmwg);
+                manaZoneLayout.RemoveCardWidgetFromZone(rmwg);
+            }
+/*
             if (tmplist.size() > 0) {
                 tempindex = (int) R.nextInt(tmplist.size());
                 rmwg = tmplist.get(tempindex);
@@ -251,11 +260,60 @@ public class PvPDuelScreenTesting extends Screen{
                 battleZoneLayout.PutCardWidgetOnTopOfExistingCardWidget(CardWgtmp, rmwg);
                 tmplist.add(CardWgtmp);
             }
+            */
         }
 
-        tmp2 = battleZoneLayout.TouchResponse(touchEvents);
-        battleZoneLayout.update(deltaTime, totalTime);
-        battleZoneLayout.draw();
+        position.Centerposition.x = 0.4f;
+        position.Centerposition.y = 0f;
+        position.Centerposition.z = -0.3f;
+        position.rotaion.angle = 0;
+        position.rotaion.y = 0f;
+        position.rotaion.x = 1f;
+        position.rotaion.z = 0f;
+        position.X_scale = 1f;
+        position.Z_scale = 1f;
+        CardWg3.setTranslateRotateScale(position);
+        CardWg3.draw();
+        tmp2 = CardWg3.isTouched(touchEvents);
+        if (tmp2.isTouched && !tmp2.isTouchedDown) {
+            CardWidget CardWgtmp = new CardWidget();
+            CardWgtmp.LinkGLobject(glcard2);
+            CardWgtmp.ShadowEnable(false);
+
+            WidgetPosition position2 = new WidgetPosition();
+            position2.Centerposition.x = 0.2f;
+            position2.Centerposition.y = 0.2f;
+            position2.Centerposition.z = 0.5f;
+            position2.rotaion.angle = 0;
+            position2.rotaion.y = 1f;
+            position2.rotaion.x = 0f;
+            position2.rotaion.z = 0f;
+            position2.X_scale = 1f;
+            position2.Z_scale = 1f;
+            CardWgtmp.setTranslateRotateScale(position2);
+            //battleZoneLayout.AddCardWidgetToZone(CardWgtmp);
+            manaZoneLayout.TransferCardWidgetToCoupleSlotZone(CardWgtmp);
+            tmplist.add(CardWgtmp);
+        }
+
+        tmp2 = manaZoneLayout.TouchResponse(touchEvents);
+
+        if (tmp2 != null && tmp2.isTouched && !tmp2.isTouchedDown) {
+            Random R = new Random();
+            int tempindex;
+            CardWidget rmwg = null;
+            if (tmplist.size() > 0) {
+                tempindex = (int) R.nextInt(tmplist.size());
+                rmwg = tmplist.get(tempindex);
+                // battleZoneLayout.RemoveCardWidgetFromZone(rmwg);
+                manaZoneLayout.AddToTransitionZone(rmwg);
+            }
+        }
+        manaZoneLayout.update(deltaTime, totalTime);
+        manaZoneLayout.draw();
+        //tmp2 = battleZoneLayout.TouchResponse(touchEvents);
+        //battleZoneLayout.update(deltaTime, totalTime);
+        //battleZoneLayout.draw();
         /*
         CardWg2.setTranslateRotateScale(position);
         CardWg2.draw();
@@ -329,12 +387,19 @@ public class PvPDuelScreenTesting extends Screen{
         CardWg.LinkGLobject(glcard2);
         CardWg2.ShadowEnable(false);
         CardWg2.LinkGLobject(glcard2);
+        CardWg3.ShadowEnable(false);
+        CardWg3.LinkGLobject(glcard2);
+        CardWg4.ShadowEnable(false);
+        CardWg4.LinkGLobject(glcard2);
         DeckWg.ShadowEnable(false);
         DeckWg.LinkGLobject(cube, glcard2);
         DeckWg.LinkLogicalObject(CardStack);
         DeckWg.setFlip(true);
         battleZoneLayout.InitializeBattleZoneLayout(AssetsAndResource.MazeHeight/10, AssetsAndResource.MazeWidth,
                 AssetsAndResource.MazeHeight/5, HeadOrientation.North, false);
+        manaZoneLayout.InitializeBattleZoneLayout((3f * AssetsAndResource.MazeHeight)/10, AssetsAndResource.MazeWidth,
+                AssetsAndResource.MazeHeight/5, HeadOrientation.North, false);
+        manaZoneLayout.SetDraggingMode(true);
     }
 
     @Override

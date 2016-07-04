@@ -6,6 +6,7 @@ import java.util.List;
 
 import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAndResource;
 import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetTouchEvent;
+import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetTouchFocusLevel;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayout.HeadOrientation;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayout.Layout;
 import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.CardWidget;
@@ -68,6 +69,16 @@ public class BattleZoneLayout implements Layout {
         this.width = width;
         this.height = height;
         this.Opponent = opponent;
+    }
+
+    public boolean BattleZoneCardOverlapping() {
+        float gap = (this.width)/(1f + LeftWingOfCardSlot.size() +RightWingOfCardSlot.size());
+
+        if (gap >= 0.125f * this.width) {
+            gap = 0.125f * this.width;
+        }
+
+        return  (gap < AssetsAndResource.CardWidth);
     }
 
     @Override
@@ -372,6 +383,8 @@ public class BattleZoneLayout implements Layout {
                             AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
                         }
 
+                        widgetTouchEventList.clear();
+                        TouchedSlots.clear();
                         return widgetTouchEvent;
                     } else {
                         if (LeftWingOfCardSlot.contains(SelectedCardSlot)) {
@@ -387,6 +400,8 @@ public class BattleZoneLayout implements Layout {
                                         AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
                                     }
 
+                                    widgetTouchEventList.clear();
+                                    TouchedSlots.clear();
                                     return widgetTouchEvent;
                                 } else {
                                     if (!LeftWingOfCardSlot.contains(TouchedSlots.get(TouchedSlots.size() - 1))) {
@@ -400,6 +415,8 @@ public class BattleZoneLayout implements Layout {
                                         AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
                                     }
 
+                                    widgetTouchEventList.clear();
+                                    TouchedSlots.clear();
                                     return widgetTouchEvent;
                                 }
                             } else {
@@ -410,6 +427,8 @@ public class BattleZoneLayout implements Layout {
                                     AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
                                 }
 
+                                widgetTouchEventList.clear();
+                                TouchedSlots.clear();
                                 return widgetTouchEvent;
                             }
                         } else if (RightWingOfCardSlot.contains(SelectedCardSlot)) {
@@ -425,6 +444,8 @@ public class BattleZoneLayout implements Layout {
                                         AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
                                     }
 
+                                    widgetTouchEventList.clear();
+                                    TouchedSlots.clear();
                                     return widgetTouchEvent;
                                 } else {
                                     if (!RightWingOfCardSlot.contains(TouchedSlots.get(0))) {
@@ -438,6 +459,8 @@ public class BattleZoneLayout implements Layout {
                                         AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
                                     }
 
+                                    widgetTouchEventList.clear();
+                                    TouchedSlots.clear();
                                     return widgetTouchEvent;
                                 }
                             } else {
@@ -448,6 +471,8 @@ public class BattleZoneLayout implements Layout {
                                     AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
                                 }
 
+                                widgetTouchEventList.clear();
+                                TouchedSlots.clear();
                                 return widgetTouchEvent;
                             }
                         } else if (HeadCardSlot == SelectedCardSlot) {
@@ -459,6 +484,8 @@ public class BattleZoneLayout implements Layout {
                                     AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
                                 }
 
+                                widgetTouchEventList.clear();
+                                TouchedSlots.clear();
                                 return widgetTouchEvent;
                             } else if (LeftWingOfCardSlot.contains(TouchedSlots.get(TouchedSlots.size() -1))) {
                                 SelectedCardSlot = TouchedSlots.get(TouchedSlots.size() - 1);
@@ -468,6 +495,8 @@ public class BattleZoneLayout implements Layout {
                                     AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
                                 }
 
+                                widgetTouchEventList.clear();
+                                TouchedSlots.clear();
                                 return widgetTouchEvent;
                             } else {
                                 throw new RuntimeException("Invalid Condition");
@@ -478,11 +507,15 @@ public class BattleZoneLayout implements Layout {
                     }
                 }
 
+                widgetTouchEventList.clear();
+                TouchedSlots.clear();
+
                 widgetTouchEvent = AssetsAndResource.widgetTouchEventPool.newObject();
                 widgetTouchEvent.isTouched = true;
-                widgetTouchEvent.isTouchedDown = false;
+                widgetTouchEvent.isTouchedDown = true;
                 widgetTouchEvent.isMoving = false;
                 widgetTouchEvent.isDoubleTouched = false;
+                widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Low;
                 widgetTouchEvent.object = null;
 
                 return widgetTouchEvent;
@@ -819,6 +852,9 @@ public class BattleZoneLayout implements Layout {
                 }
             }
 
+            widgetTouchEventList.clear();
+            TouchedSlots.clear();
+
             if (widgetTouchEventOutCome != null) {
                 return widgetTouchEventOutCome;
             } else if (isTouched) {
@@ -827,6 +863,7 @@ public class BattleZoneLayout implements Layout {
                 widgetTouchEventOutCome.isTouchedDown = false;
                 widgetTouchEventOutCome.isMoving = false;
                 widgetTouchEventOutCome.isDoubleTouched = false;
+                widgetTouchEventOutCome.isFocus = WidgetTouchFocusLevel.Low;
                 widgetTouchEventOutCome.object = null;
 
                 return widgetTouchEventOutCome;

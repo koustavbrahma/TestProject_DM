@@ -189,10 +189,10 @@ public class GLGeometry {
         GLPoint nearPointRay = ray.point;
         GLPoint farPointRay = ray.point.translate(ray.vector);
 
-        float x = (yOffset-nearPointRay.y/(farPointRay.y - nearPointRay.y)) * (farPointRay.x - nearPointRay.x)
+        float x = ((yOffset-nearPointRay.y)/(farPointRay.y - nearPointRay.y)) * (farPointRay.x - nearPointRay.x)
                 + nearPointRay.x;
 
-        float z = (yOffset-nearPointRay.y/(farPointRay.y - nearPointRay.y)) * (farPointRay.z - nearPointRay.z)
+        float z = ((yOffset-nearPointRay.y)/(farPointRay.y - nearPointRay.y)) * (farPointRay.z - nearPointRay.z)
                 + nearPointRay.z;
 
         return new GLPoint(x, yOffset, z);

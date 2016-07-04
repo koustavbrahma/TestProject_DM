@@ -5,8 +5,9 @@ import java.util.Hashtable;
 import java.util.List;
 
 import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAndResource;
-import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
+import koustav.duelmasters.main.androidgameduelmasterswidget.Widget;
 import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetTouchEvent;
+import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetTouchFocusLevel;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayout.HeadOrientation;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayout.Layout;
 import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.CardWidget;
@@ -18,12 +19,20 @@ import koustav.duelmasters.main.androidgamesframework.Pool;
  * Created by Koustav on 5/31/2016.
  */
 public class ManaZoneLayout implements Layout{
+    enum TouchModeManaZone {
+        NormalMode,
+        DragMode,
+        SlotExpandMode,
+    }
+    TouchModeManaZone touchMode;
+
     Pool<CardSlotLayout> cardSlotLayoutPool;
 
     ArrayList<CardSlotLayout> LeftWingOfCardSlot;
     ArrayList<CardSlotLayout> RightWingOfCardSlot;
     ArrayList<CardSlotLayout> CoupleCardSlot;
-    ArrayList<CardSlotLayout> UnderTransitionSlot;
+    ArrayList<CardSlotLayout> TransitionSlotFromFreeToCouple;
+    ArrayList<CardSlotLayout> TransitionSlotFromCoupleToFree;
     CardSlotLayout HeadCardSlot;
     CardSlotLayout SelectedCardSlot;
     CardSlotLayout SelectedCoupleCardSlot;
@@ -43,7 +52,9 @@ public class ManaZoneLayout implements Layout{
     ArrayList<WidgetTouchEvent> widgetTouchEventList;
 
     boolean DragMode;
-    boolean Dragging;
+
+    ArrayList<CardSlotLayout> SlotsToRemoveDuringTransition;
+    Hashtable<CardSlotLayout, Float> SlotToDriftParameter;
 
     public ManaZoneLayout() {
         Pool.PoolObjectFactory<CardSlotLayout> factory = new Pool.PoolObjectFactory<CardSlotLayout>() {
@@ -52,6 +63,7 @@ public class ManaZoneLayout implements Layout{
                 return new CardSlotLayout();
             }
         };
+        touchMode = TouchModeManaZone.NormalMode;
 
         ZCoordinateOfZoneCenter = 0;
         headOrientationOfCard = HeadOrientation.North;
@@ -65,7 +77,8 @@ public class ManaZoneLayout implements Layout{
         LeftWingOfCardSlot = new ArrayList<CardSlotLayout>();
         RightWingOfCardSlot = new ArrayList<CardSlotLayout>();
         CoupleCardSlot = new ArrayList<CardSlotLayout>();
-        UnderTransitionSlot = new ArrayList<CardSlotLayout>();
+        TransitionSlotFromFreeToCouple = new ArrayList<CardSlotLayout>();
+        TransitionSlotFromCoupleToFree = new ArrayList<CardSlotLayout>();
         SelectedCardSlot = null;
         SelectedCoupleCardSlot = null;
         HeadCardSlot = null;
@@ -78,7 +91,9 @@ public class ManaZoneLayout implements Layout{
         widgetTouchEventList = new ArrayList<WidgetTouchEvent>();
 
         DragMode = false;
-        Dragging = false;
+
+        SlotsToRemoveDuringTransition = new ArrayList<CardSlotLayout>();
+        SlotToDriftParameter = new Hashtable<CardSlotLayout, Float>();
     }
 
     public void InitializeBattleZoneLayout(float zCoordinateOfZoneCenter, float width, float height,
@@ -92,6 +107,10 @@ public class ManaZoneLayout implements Layout{
 
     public void SetDraggingMode(boolean val) {
         DragMode = val;
+    }
+
+    public void FreezeNewCoupleSlot() {
+        NewCoupleSlot = null;
     }
 
     public boolean FreeManaCardOverlapping() {
@@ -124,33 +143,105 @@ public class ManaZoneLayout implements Layout{
 
     @Override
     public void update(float deltaTime, float totalTime) {
+        SlotsToRemoveDuringTransition.clear();
+        SlotToDriftParameter.clear();
+
+        for (int i = 0; i < TransitionSlotFromFreeToCouple.size(); i++) {
+            CardSlotLayout slotLayout = TransitionSlotFromFreeToCouple.get(i);
+            slotLayout.update(deltaTime, totalTime);
+            if (slotLayout.getPercentageComplete() > 0.70f) {
+                CardWidget widget = slotLayout.getCardWidget();
+                if (slotLayout.stackCount() > 1) {
+                    throw new RuntimeException("Count cannot be more than one");
+                }
+
+                slotLayout.UpdateTopWidgetPosition();
+                float velocity = slotLayout.getDerivative();
+                WidgetToSlotMapping.remove(widget);
+                slotLayout.resetSlot();
+                SlotsToRemoveDuringTransition.add(slotLayout);
+                TransferCardWidgetToCoupleSlotZone(widget);
+                slotLayout = WidgetToSlotMapping.get(widget);
+                SlotToDriftParameter.put(slotLayout, velocity);
+            }
+        }
+
+        for (int i = 0; i < TransitionSlotFromCoupleToFree.size(); i++) {
+            CardSlotLayout slotLayout = TransitionSlotFromCoupleToFree.get(i);
+            slotLayout.update(deltaTime, totalTime);
+            if (slotLayout.getPercentageComplete() > 0.70f) {
+                CardWidget widget = slotLayout.getCardWidget();
+                if (slotLayout.stackCount() > 1) {
+                    throw new RuntimeException("Count cannot be more than one");
+                }
+
+                slotLayout.UpdateTopWidgetPosition();
+                float velocity = slotLayout.getDerivative();
+                WidgetToSlotMapping.remove(widget);
+                slotLayout.resetSlot();
+                SlotsToRemoveDuringTransition.add(slotLayout);
+                AddCardWidgetToZone(widget);
+                slotLayout = WidgetToSlotMapping.get(widget);
+                SlotToDriftParameter.put(slotLayout, velocity);
+            }
+        }
+
+        for (int i = 0; i < SlotsToRemoveDuringTransition.size(); i++) {
+            CardSlotLayout slotLayout = SlotsToRemoveDuringTransition.get(i);
+            TransitionSlotFromFreeToCouple.remove(slotLayout);
+            TransitionSlotFromCoupleToFree.remove(slotLayout);
+            cardSlotLayoutPool.free(slotLayout);
+        }
+
         if (HeadCardSlot != null) {
+            if (SlotToDriftParameter.contains(HeadCardSlot)) {
+                float val = SlotToDriftParameter.get(HeadCardSlot);
+                HeadCardSlot.setUseBackupDriftParameter(true, val/4, val/2);
+            } else {
+                HeadCardSlot.setUseBackupDriftParameter(false, 0, 0);
+            }
             HeadCardSlot.update(deltaTime, totalTime);
         }
 
         for(int i = 0; i < LeftWingOfCardSlot.size(); i++) {
             CardSlotLayout slotLayout = LeftWingOfCardSlot.get(i);
+            if (SlotToDriftParameter.contains(slotLayout)) {
+                float val = SlotToDriftParameter.get(slotLayout);
+                slotLayout.setUseBackupDriftParameter(true, val/4, val/2);
+            } else {
+                slotLayout.setUseBackupDriftParameter(false, 0, 0);
+            }
             slotLayout.update(deltaTime, totalTime);
         }
 
         for(int i = 0; i < RightWingOfCardSlot.size(); i++) {
             CardSlotLayout slotLayout = RightWingOfCardSlot.get(i);
+            if (SlotToDriftParameter.contains(slotLayout)) {
+                float val = SlotToDriftParameter.get(slotLayout);
+                slotLayout.setUseBackupDriftParameter(true, val/4, val/2);
+            } else {
+                slotLayout.setUseBackupDriftParameter(false, 0, 0);
+            }
             slotLayout.update(deltaTime, totalTime);
         }
 
         for (int i = 0; i < CoupleCardSlot.size(); i++) {
             CardSlotLayout slotLayout = CoupleCardSlot.get(i);
-            slotLayout.update(deltaTime, totalTime);
-        }
-
-        for (int i = 0; i < UnderTransitionSlot.size(); i++) {
-            CardSlotLayout slotLayout = UnderTransitionSlot.get(i);
+            if (SlotToDriftParameter.contains(slotLayout)) {
+                float val = SlotToDriftParameter.get(slotLayout);
+                slotLayout.setUseBackupDriftParameter(true, val/4, val/2);
+            } else {
+                slotLayout.setUseBackupDriftParameter(false, 0, 0);
+            }
             slotLayout.update(deltaTime, totalTime);
         }
 
         if (DraggingSlot != null) {
             DraggingSlot.DragUpdate(AssetsAndResource.CardLength * 40f);
         }
+
+        SlotsToRemoveDuringTransition.clear();
+        SlotToDriftParameter.clear();
     }
 
     @Override
@@ -226,14 +317,118 @@ public class ManaZoneLayout implements Layout{
             slotLayout.draw();
         }
 
-        for (int i = 0; i < UnderTransitionSlot.size(); i++) {
-            CardSlotLayout slotLayout =  CoupleCardSlot.get(i);
+        for (int i = 0; i < TransitionSlotFromFreeToCouple.size(); i++) {
+            CardSlotLayout slotLayout =  TransitionSlotFromFreeToCouple.get(i);
+            slotLayout.draw();
+        }
+
+        for (int i = 0; i < TransitionSlotFromCoupleToFree.size(); i++) {
+            CardSlotLayout slotLayout = TransitionSlotFromCoupleToFree.get(i);
             slotLayout.draw();
         }
     }
 
     @Override
     public WidgetTouchEvent TouchResponse(List<Input.TouchEvent> touchEvents) {
+        if (touchMode == TouchModeManaZone.NormalMode) {
+            return TouchResponseInNormalMode(touchEvents);
+        } else if (touchMode == TouchModeManaZone.DragMode) {
+            return TouchResponseInDragMode(touchEvents);
+        } else if (touchMode == TouchModeManaZone.SlotExpandMode) {
+            return TouchResponseInExpandMode(touchEvents);
+        }
+
+        return null;
+    }
+
+    public WidgetTouchEvent TouchResponseInDragMode(List<Input.TouchEvent> touchEvents) {
+        if (DraggingSlot == null) {
+            throw new RuntimeException("Dragging Slot cannot be null");
+        }
+        WidgetTouchEvent widgetTouchEvent;
+        Input input = AssetsAndResource.game.getInput();
+        if (input.isTouchDown(0)) {
+            widgetTouchEvent = AssetsAndResource.widgetTouchEventPool.newObject();
+            widgetTouchEvent.isTouched = true;
+            widgetTouchEvent.isTouchedDown = true;
+            if (input.TouchType(0) == Input.TouchEvent.TOUCH_DRAGGED) {
+                widgetTouchEvent.isMoving = true;
+            } else {
+                widgetTouchEvent.isMoving = false;
+            }
+            widgetTouchEvent.isFocus = WidgetTouchFocusLevel.High;
+            widgetTouchEvent.isDoubleTouched = false;
+            widgetTouchEvent.object = DraggingSlot.getCardWidget().getLogicalObject();
+
+            return widgetTouchEvent;
+        } else {
+            touchMode = TouchModeManaZone.NormalMode;
+            widgetTouchEvent = AssetsAndResource.widgetTouchEventPool.newObject();
+            widgetTouchEvent.isTouched = true;
+            widgetTouchEvent.isTouchedDown = false;
+            widgetTouchEvent.isMoving = false;
+            widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Low;
+            widgetTouchEvent.isDoubleTouched = false;
+            widgetTouchEvent.object = DraggingSlot.getCardWidget().getLogicalObject();
+            DraggingSlot = null;
+
+            return widgetTouchEvent;
+        }
+    }
+
+    public WidgetTouchEvent TouchResponseInExpandMode(List<Input.TouchEvent> touchEvents) {
+        WidgetTouchEvent widgetTouchEvent;
+        Input input = AssetsAndResource.game.getInput();
+        if (input.isTouchDown(0)) {
+            if (DraggingSlot != null) {
+                widgetTouchEvent = AssetsAndResource.widgetTouchEventPool.newObject();
+                widgetTouchEvent.isTouched = true;
+                widgetTouchEvent.isTouchedDown = true;
+                if (input.TouchType(0) == Input.TouchEvent.TOUCH_DRAGGED) {
+                    widgetTouchEvent.isMoving = true;
+                } else {
+                    widgetTouchEvent.isMoving = false;
+                }
+                widgetTouchEvent.isFocus = WidgetTouchFocusLevel.High;
+                widgetTouchEvent.isDoubleTouched = false;
+                widgetTouchEvent.object = DraggingSlot.getCardWidget().getLogicalObject();
+            } else {
+                widgetTouchEvent = SelectedCoupleCardSlot.TouchResponse(touchEvents);
+                if (widgetTouchEvent.isTouched) {
+                    widgetTouchEvent.isFocus = WidgetTouchFocusLevel.High;
+                    if (DragMode) {
+                        DraggingSlot = SelectedCoupleCardSlot;
+                    }
+                } else {
+                    widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Medium;
+                }
+            }
+            return widgetTouchEvent;
+        } else {
+            if (DraggingSlot != null) {
+                widgetTouchEvent = AssetsAndResource.widgetTouchEventPool.newObject();
+                widgetTouchEvent.isTouched = true;
+                widgetTouchEvent.isTouchedDown = false;
+                widgetTouchEvent.isMoving = false;
+                widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Medium;
+                widgetTouchEvent.isDoubleTouched = false;
+                widgetTouchEvent.object = DraggingSlot.getCardWidget().getLogicalObject();
+            } else {
+                widgetTouchEvent = SelectedCoupleCardSlot.TouchResponse(touchEvents);
+            }
+            DraggingSlot = null;
+            if (widgetTouchEvent.isTouched) {
+                widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Medium;
+            } else {
+                widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Low;
+                touchMode = TouchModeManaZone.NormalMode;
+                SelectedCoupleCardSlot.ExpandOrShrinkSlot(false, 0f, 0f);
+            }
+            return widgetTouchEvent;
+        }
+    }
+
+    public WidgetTouchEvent TouchResponseInNormalMode(List<Input.TouchEvent> touchEvents) {
         if (HeadCardSlot == null && SelectedCoupleCardSlot == null) {
             return null;
         }
@@ -265,21 +460,6 @@ public class ManaZoneLayout implements Layout{
 
         Input input = AssetsAndResource.game.getInput();
         if (input.isTouchDown(0)) {
-
-            if (Dragging == true) {
-                widgetTouchEvent = AssetsAndResource.widgetTouchEventPool.newObject();
-                widgetTouchEvent.isTouched = true;
-                widgetTouchEvent.isTouchedDown = true;
-                if (input.TouchType(0) == Input.TouchEvent.TOUCH_DRAGGED) {
-                    widgetTouchEvent.isMoving = true;
-                } else {
-                    widgetTouchEvent.isMoving = false;
-                }
-                widgetTouchEvent.isDoubleTouched = false;
-                widgetTouchEvent.object = DraggingSlot.getCardWidget().getLogicalObject();
-
-                return widgetTouchEvent;
-            }
             GLGeometry.GLPoint relativeNearPointAfterTrans = input.getNearPoint(0).translate(new GLGeometry.GLVector(0f, 0f, -ZCoordinateOfZoneCenter));
             GLGeometry.GLPoint relativeFarPointAfterTrans = input.getFarPoint(0).translate(new GLGeometry.GLVector(0f, 0f, -ZCoordinateOfZoneCenter));
 
@@ -382,13 +562,15 @@ public class ManaZoneLayout implements Layout{
                     }
 
                     if (ok) {
-                        widgetTouchEvent = HeadCardSlot.TouchResponse(touchEvents);
-                        if (widgetTouchEvent.isTouched) {
-                            TouchedSlots.add(HeadCardSlot);
-                            widgetTouchEventList.add(widgetTouchEvent);
-                        } else {
-                            AssetsAndResource.widgetTouchEventPool.free(widgetTouchEvent);
-                            ok = false;
+                        if (HeadCardSlot != null) {
+                            widgetTouchEvent = HeadCardSlot.TouchResponse(touchEvents);
+                            if (widgetTouchEvent.isTouched) {
+                                TouchedSlots.add(HeadCardSlot);
+                                widgetTouchEventList.add(widgetTouchEvent);
+                            } else {
+                                AssetsAndResource.widgetTouchEventPool.free(widgetTouchEvent);
+                                ok = false;
+                            }
                         }
                     }
 
@@ -493,13 +675,15 @@ public class ManaZoneLayout implements Layout{
                     }
 
                     if (ok) {
-                        widgetTouchEvent = HeadCardSlot.TouchResponse(touchEvents);
-                        if (widgetTouchEvent.isTouched) {
-                            TouchedSlots.add(0, HeadCardSlot);
-                            widgetTouchEventList.add(0, widgetTouchEvent);
-                        } else {
-                            AssetsAndResource.widgetTouchEventPool.free(widgetTouchEvent);
-                            ok = false;
+                        if (HeadCardSlot != null) {
+                            widgetTouchEvent = HeadCardSlot.TouchResponse(touchEvents);
+                            if (widgetTouchEvent.isTouched) {
+                                TouchedSlots.add(0, HeadCardSlot);
+                                widgetTouchEventList.add(0, widgetTouchEvent);
+                            } else {
+                                AssetsAndResource.widgetTouchEventPool.free(widgetTouchEvent);
+                                ok = false;
+                            }
                         }
                     }
 
@@ -530,11 +714,14 @@ public class ManaZoneLayout implements Layout{
                                 AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
                             }
 
-                            if (DragMode == true && NewCoupleSlot == SelectedCoupleCardSlot) {
+                            if (DragMode && NewCoupleSlot != null && NewCoupleSlot == SelectedCoupleCardSlot) {
                                 DraggingSlot = SelectedCoupleCardSlot;
-                                Dragging = true;
+                                touchMode = TouchModeManaZone.DragMode;
+                                widgetTouchEvent.isFocus = WidgetTouchFocusLevel.High;
                             }
 
+                            widgetTouchEventList.clear();
+                            TouchedSlots.clear();
                             return widgetTouchEvent;
                         } else if (index > CoupleCardSlot.indexOf(TouchedSlots.get(TouchedSlots.size() -1))) {
                             SelectedCoupleCardSlot = TouchedSlots.get(TouchedSlots.size() - 1);
@@ -544,11 +731,14 @@ public class ManaZoneLayout implements Layout{
                                 AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
                             }
 
-                            if (DragMode == true && NewCoupleSlot == SelectedCoupleCardSlot) {
+                            if (DragMode && NewCoupleSlot != null && NewCoupleSlot == SelectedCoupleCardSlot) {
                                 DraggingSlot = SelectedCoupleCardSlot;
-                                Dragging = true;
+                                touchMode = TouchModeManaZone.DragMode;
+                                widgetTouchEvent.isFocus = WidgetTouchFocusLevel.High;
                             }
 
+                            widgetTouchEventList.clear();
+                            TouchedSlots.clear();
                             return widgetTouchEvent;
                         } else {
                             int i = TouchedSlots.indexOf(SelectedCoupleCardSlot);
@@ -558,11 +748,14 @@ public class ManaZoneLayout implements Layout{
                                 AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
                             }
 
-                            if (DragMode == true && NewCoupleSlot == SelectedCoupleCardSlot) {
+                            if (DragMode && NewCoupleSlot != null && NewCoupleSlot == SelectedCoupleCardSlot) {
                                 DraggingSlot = SelectedCoupleCardSlot;
-                                Dragging = true;
+                                touchMode = TouchModeManaZone.DragMode;
+                                widgetTouchEvent.isFocus = WidgetTouchFocusLevel.High;
                             }
 
+                            widgetTouchEventList.clear();
+                            TouchedSlots.clear();
                             return widgetTouchEvent;
                         }
                     } else {
@@ -574,10 +767,14 @@ public class ManaZoneLayout implements Layout{
                                 AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
                             }
 
-                            if (DragMode == true) {
+                            if (DragMode) {
                                 DraggingSlot = SelectedCardSlot;
-                                Dragging = true;
+                                touchMode = TouchModeManaZone.DragMode;
+                                widgetTouchEvent.isFocus = WidgetTouchFocusLevel.High;
                             }
+
+                            widgetTouchEventList.clear();
+                            TouchedSlots.clear();
                             return widgetTouchEvent;
                         } else {
                             if (LeftWingOfCardSlot.contains(SelectedCardSlot)) {
@@ -593,11 +790,14 @@ public class ManaZoneLayout implements Layout{
                                             AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
                                         }
 
-                                        if (DragMode == true) {
+                                        if (DragMode) {
                                             DraggingSlot = SelectedCardSlot;
-                                            Dragging = true;
+                                            touchMode = TouchModeManaZone.DragMode;
+                                            widgetTouchEvent.isFocus = WidgetTouchFocusLevel.High;
                                         }
 
+                                        widgetTouchEventList.clear();
+                                        TouchedSlots.clear();
                                         return widgetTouchEvent;
                                     } else {
                                         if (!LeftWingOfCardSlot.contains(TouchedSlots.get(TouchedSlots.size() - 1))) {
@@ -611,11 +811,14 @@ public class ManaZoneLayout implements Layout{
                                             AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
                                         }
 
-                                        if (DragMode == true) {
+                                        if (DragMode) {
                                             DraggingSlot = SelectedCardSlot;
-                                            Dragging = true;
+                                            touchMode = TouchModeManaZone.DragMode;
+                                            widgetTouchEvent.isFocus = WidgetTouchFocusLevel.High;
                                         }
 
+                                        widgetTouchEventList.clear();
+                                        TouchedSlots.clear();
                                         return widgetTouchEvent;
                                     }
                                 } else {
@@ -626,11 +829,14 @@ public class ManaZoneLayout implements Layout{
                                         AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
                                     }
 
-                                    if (DragMode == true) {
+                                    if (DragMode) {
                                         DraggingSlot = SelectedCardSlot;
-                                        Dragging = true;
+                                        touchMode = TouchModeManaZone.DragMode;
+                                        widgetTouchEvent.isFocus = WidgetTouchFocusLevel.High;
                                     }
 
+                                    widgetTouchEventList.clear();
+                                    TouchedSlots.clear();
                                     return widgetTouchEvent;
                                 }
                             } else if (RightWingOfCardSlot.contains(SelectedCardSlot)) {
@@ -646,11 +852,14 @@ public class ManaZoneLayout implements Layout{
                                             AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
                                         }
 
-                                        if (DragMode == true) {
+                                        if (DragMode) {
                                             DraggingSlot = SelectedCardSlot;
-                                            Dragging = true;
+                                            touchMode = TouchModeManaZone.DragMode;
+                                            widgetTouchEvent.isFocus = WidgetTouchFocusLevel.High;
                                         }
 
+                                        widgetTouchEventList.clear();
+                                        TouchedSlots.clear();
                                         return widgetTouchEvent;
                                     } else {
                                         if (!RightWingOfCardSlot.contains(TouchedSlots.get(0))) {
@@ -664,11 +873,14 @@ public class ManaZoneLayout implements Layout{
                                             AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
                                         }
 
-                                        if (DragMode == true) {
+                                        if (DragMode) {
                                             DraggingSlot = SelectedCardSlot;
-                                            Dragging = true;
+                                            touchMode = TouchModeManaZone.DragMode;
+                                            widgetTouchEvent.isFocus = WidgetTouchFocusLevel.High;
                                         }
 
+                                        widgetTouchEventList.clear();
+                                        TouchedSlots.clear();
                                         return widgetTouchEvent;
                                     }
                                 } else {
@@ -679,11 +891,14 @@ public class ManaZoneLayout implements Layout{
                                         AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
                                     }
 
-                                    if (DragMode == true) {
+                                    if (DragMode) {
                                         DraggingSlot = SelectedCardSlot;
-                                        Dragging = true;
+                                        touchMode = TouchModeManaZone.DragMode;
+                                        widgetTouchEvent.isFocus = WidgetTouchFocusLevel.High;
                                     }
 
+                                    widgetTouchEventList.clear();
+                                    TouchedSlots.clear();
                                     return widgetTouchEvent;
                                 }
                             } else if (HeadCardSlot == SelectedCardSlot) {
@@ -695,11 +910,14 @@ public class ManaZoneLayout implements Layout{
                                         AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
                                     }
 
-                                    if (DragMode == true) {
+                                    if (DragMode) {
                                         DraggingSlot = SelectedCardSlot;
-                                        Dragging = true;
+                                        touchMode = TouchModeManaZone.DragMode;
+                                        widgetTouchEvent.isFocus = WidgetTouchFocusLevel.High;
                                     }
 
+                                    widgetTouchEventList.clear();
+                                    TouchedSlots.clear();
                                     return widgetTouchEvent;
                                 } else if (LeftWingOfCardSlot.contains(TouchedSlots.get(TouchedSlots.size() - 1))) {
                                     SelectedCardSlot = TouchedSlots.get(TouchedSlots.size() - 1);
@@ -709,11 +927,14 @@ public class ManaZoneLayout implements Layout{
                                         AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
                                     }
 
-                                    if (DragMode == true) {
+                                    if (DragMode) {
                                         DraggingSlot = SelectedCardSlot;
-                                        Dragging = true;
+                                        touchMode = TouchModeManaZone.DragMode;
+                                        widgetTouchEvent.isFocus = WidgetTouchFocusLevel.High;
                                     }
 
+                                    widgetTouchEventList.clear();
+                                    TouchedSlots.clear();
                                     return widgetTouchEvent;
                                 } else {
                                     throw new RuntimeException("Invalid Condition");
@@ -724,30 +945,20 @@ public class ManaZoneLayout implements Layout{
                         }
                     }
                 }
+                widgetTouchEventList.clear();
+                TouchedSlots.clear();
+
                 widgetTouchEvent = AssetsAndResource.widgetTouchEventPool.newObject();
                 widgetTouchEvent.isTouched = true;
-                widgetTouchEvent.isTouchedDown = false;
+                widgetTouchEvent.isTouchedDown = true;
                 widgetTouchEvent.isMoving = false;
                 widgetTouchEvent.isDoubleTouched = false;
+                widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Low;
                 widgetTouchEvent.object = null;
 
                 return widgetTouchEvent;
             }
         }  else {
-
-            if (Dragging == true) {
-                Dragging = false;
-                widgetTouchEvent = AssetsAndResource.widgetTouchEventPool.newObject();
-                widgetTouchEvent.isTouched = true;
-                widgetTouchEvent.isTouchedDown = false;
-                widgetTouchEvent.isMoving = false;
-                widgetTouchEvent.isDoubleTouched = false;
-                widgetTouchEvent.object = DraggingSlot.getCardWidget().getLogicalObject();
-                DraggingSlot = null;
-
-                return widgetTouchEvent;
-            }
-
             boolean isTouched = false;
             WidgetTouchEvent widgetTouchEventOutCome = null;
             Input.TouchEvent event = null;
@@ -858,13 +1069,15 @@ public class ManaZoneLayout implements Layout{
                             }
 
                             if (ok) {
-                                widgetTouchEvent = HeadCardSlot.TouchResponse(touchEvents);
-                                if (widgetTouchEvent.isTouched) {
-                                    TouchedSlots.add(HeadCardSlot);
-                                    widgetTouchEventList.add(widgetTouchEvent);
-                                } else {
-                                    AssetsAndResource.widgetTouchEventPool.free(widgetTouchEvent);
-                                    ok = false;
+                                if (HeadCardSlot != null) {
+                                    widgetTouchEvent = HeadCardSlot.TouchResponse(touchEvents);
+                                    if (widgetTouchEvent.isTouched) {
+                                        TouchedSlots.add(HeadCardSlot);
+                                        widgetTouchEventList.add(widgetTouchEvent);
+                                    } else {
+                                        AssetsAndResource.widgetTouchEventPool.free(widgetTouchEvent);
+                                        ok = false;
+                                    }
                                 }
                             }
 
@@ -969,13 +1182,15 @@ public class ManaZoneLayout implements Layout{
                             }
 
                             if (ok) {
-                                widgetTouchEvent = HeadCardSlot.TouchResponse(touchEvents);
-                                if (widgetTouchEvent.isTouched) {
-                                    TouchedSlots.add(0, HeadCardSlot);
-                                    widgetTouchEventList.add(0, widgetTouchEvent);
-                                } else {
-                                    AssetsAndResource.widgetTouchEventPool.free(widgetTouchEvent);
-                                    ok = false;
+                                if (HeadCardSlot != null) {
+                                    widgetTouchEvent = HeadCardSlot.TouchResponse(touchEvents);
+                                    if (widgetTouchEvent.isTouched) {
+                                        TouchedSlots.add(0, HeadCardSlot);
+                                        widgetTouchEventList.add(0, widgetTouchEvent);
+                                    } else {
+                                        AssetsAndResource.widgetTouchEventPool.free(widgetTouchEvent);
+                                        ok = false;
+                                    }
                                 }
                             }
 
@@ -1007,7 +1222,6 @@ public class ManaZoneLayout implements Layout{
                                     }
 
                                     widgetTouchEventOutCome = widgetTouchEvent;
-                                    break;
                                 } else if (index > CoupleCardSlot.indexOf(TouchedSlots.get(TouchedSlots.size() - 1))) {
                                     SelectedCoupleCardSlot = TouchedSlots.get(TouchedSlots.size() - 1);
                                     widgetTouchEvent = widgetTouchEventList.remove(TouchedSlots.size() - 1);
@@ -1017,7 +1231,6 @@ public class ManaZoneLayout implements Layout{
                                     }
 
                                     widgetTouchEventOutCome = widgetTouchEvent;
-                                    break;
                                 } else {
                                     int i = TouchedSlots.indexOf(SelectedCoupleCardSlot);
                                     widgetTouchEvent = widgetTouchEventList.remove(i);
@@ -1027,6 +1240,22 @@ public class ManaZoneLayout implements Layout{
                                     }
 
                                     widgetTouchEventOutCome = widgetTouchEvent;
+                                }
+
+                                if (widgetTouchEventOutCome != null) {
+                                    if (DragMode && NewCoupleSlot != null && SelectedCoupleCardSlot == NewCoupleSlot) {
+                                        if (NewCoupleSlot.stackCount() > 1) {
+                                            NewCoupleSlot.ExpandOrShrinkSlot(true, AssetsAndResource.CardLength * 40, AssetsAndResource.MazeWidth/2 * (Opponent == true ? -1 : 1));
+                                            widgetTouchEventOutCome.isFocus = WidgetTouchFocusLevel.Medium;
+                                            touchMode = TouchModeManaZone.SlotExpandMode;
+                                        }
+                                    } else if (!DragMode) {
+                                        if (SelectedCoupleCardSlot.stackCount() > 1) {
+                                            SelectedCoupleCardSlot.ExpandOrShrinkSlot(true, AssetsAndResource.CardLength * 40, AssetsAndResource.MazeWidth/2 * (Opponent == true ? -1 : 1));
+                                            widgetTouchEventOutCome.isFocus = WidgetTouchFocusLevel.Medium;
+                                            touchMode = TouchModeManaZone.SlotExpandMode;
+                                        }
+                                    }
                                     break;
                                 }
                             } else {
@@ -1157,6 +1386,9 @@ public class ManaZoneLayout implements Layout{
                 }
             }
 
+            widgetTouchEventList.clear();
+            TouchedSlots.clear();
+
             if (widgetTouchEventOutCome != null) {
                 return widgetTouchEventOutCome;
             } else if (isTouched) {
@@ -1165,6 +1397,7 @@ public class ManaZoneLayout implements Layout{
                 widgetTouchEventOutCome.isTouchedDown = false;
                 widgetTouchEventOutCome.isMoving = false;
                 widgetTouchEventOutCome.isDoubleTouched = false;
+                widgetTouchEventOutCome.isFocus = WidgetTouchFocusLevel.Low;
                 widgetTouchEventOutCome.object = null;
 
                 return widgetTouchEventOutCome;
@@ -1210,7 +1443,7 @@ public class ManaZoneLayout implements Layout{
         }
     }
 
-    public ArrayList<CardWidget> RemoveCardWidgetFromZone(CardWidget widget) {
+    public CardWidget RemoveCardWidgetFromZone(CardWidget widget) {
         CardSlotLayout slotLayout = WidgetToSlotMapping.get(widget);
         boolean selectedSlotRemoved = false;
         boolean selectedCoupleSlotRemoved = false;
@@ -1229,114 +1462,270 @@ public class ManaZoneLayout implements Layout{
             }
         }
 
-        if (slotLayout == HeadCardSlot) {
-            if (selectedSlotRemoved) {
-                if (LeftWingOfCardSlot.size() > 0) {
-                    SelectedCardSlot = LeftWingOfCardSlot.get(0);
-                } else if (RightWingOfCardSlot.size() > 0) {
-                    SelectedCardSlot = RightWingOfCardSlot.get(0);
-                } else {
-                    SelectedCardSlot = null;
+        if (CoupleCardSlot.contains(slotLayout)) {
+            if (slotLayout.stackCount() ==1) {
+                if (selectedCoupleSlotRemoved) {
+                    int index = CoupleCardSlot.indexOf(slotLayout);
+
+                    if (index == CoupleCardSlot.size() -1) {
+                        if (CoupleCardSlot.size() == 1) {
+                            SelectedCoupleCardSlot = null;
+                        } else {
+                            SelectedCoupleCardSlot = CoupleCardSlot.get(index -1);
+                        }
+                    } else {
+                        SelectedCoupleCardSlot = CoupleCardSlot.get(index + 1);
+                    }
                 }
-            }
 
-            if (LeftWingOfCardSlot.size() <= RightWingOfCardSlot.size()) {
-                if (RightWingOfCardSlot.size() > 0) {
-                    CardSlotLayout firstRightSlot = RightWingOfCardSlot.remove(0);
-                    HeadCardSlot = firstRightSlot;
-                } else {
-                    HeadCardSlot = null;
+                if (NewCoupleSlot == slotLayout) {
+                    NewCoupleSlot = null;
                 }
-            } else {
-                CardSlotLayout firstLeftSlot = LeftWingOfCardSlot.remove(0);
-                HeadCardSlot = firstLeftSlot;
-            }
-        } else if (LeftWingOfCardSlot.contains(slotLayout)) {
-            if (selectedSlotRemoved) {
-                int indexofSlot = LeftWingOfCardSlot.indexOf(slotLayout);
-                if (indexofSlot > 0) {
-                    SelectedCardSlot = LeftWingOfCardSlot.get(indexofSlot - 1);
-                } else {
-                    SelectedCardSlot = HeadCardSlot;
+                CoupleCardSlot.remove(slotLayout);
+
+                float expectedCoupleSlotWidth = 0;
+                this.CoupleSlotWidth = 0;
+                if (CoupleCardSlot.size() > 0) {
+                    this.CoupleSlotWidth = expectedCoupleSlotWidth = (CoupleCardSlot.size() + 1) * AssetsAndResource.CardHeight +
+                            (CoupleCardSlot.size() -1) * (AssetsAndResource.CardWidth/4);
+
+                    if (this.CoupleSlotWidth > this.width * 0.70f) {
+                        this.CoupleSlotWidth = this.width * 0.70f;
+                    }
                 }
-            }
 
-            LeftWingOfCardSlot.remove(slotLayout);
-            int sizeDiff = LeftWingOfCardSlot.size() - RightWingOfCardSlot.size();
-
-            if (sizeDiff >= 2) {
-                RightWingOfCardSlot.add(0, HeadCardSlot);
-                CardSlotLayout firstLeftSlot = LeftWingOfCardSlot.remove(0);
-                HeadCardSlot = firstLeftSlot;
-            } else if (sizeDiff <= -2) {
-                LeftWingOfCardSlot.add(0, HeadCardSlot);
-                CardSlotLayout firstRightSlot = RightWingOfCardSlot.remove(0);
-                HeadCardSlot = firstRightSlot;
-            }
-        } else if (RightWingOfCardSlot.contains(slotLayout)) {
-            if (selectedSlotRemoved) {
-                int indexofSlot = RightWingOfCardSlot.indexOf(slotLayout);
-                if (indexofSlot > 0) {
-                    SelectedCardSlot = RightWingOfCardSlot.get(indexofSlot - 1);
+                float gap;
+                if (expectedCoupleSlotWidth == CoupleSlotWidth) {
+                    gap = AssetsAndResource.CardHeight + AssetsAndResource.CardWidth/4 ;
                 } else {
-                    SelectedCardSlot = HeadCardSlot;
+                    gap = (CoupleSlotWidth - AssetsAndResource.CardHeight) / CoupleCardSlot.size();
                 }
-            }
 
-            RightWingOfCardSlot.remove(slotLayout);
-            int sizeDiff = LeftWingOfCardSlot.size() - RightWingOfCardSlot.size();
-
-            if (sizeDiff >= 2) {
-                RightWingOfCardSlot.add(0, HeadCardSlot);
-                CardSlotLayout firstLeftSlot = LeftWingOfCardSlot.remove(0);
-                HeadCardSlot = firstLeftSlot;
-            } else if (sizeDiff <= -2) {
-                LeftWingOfCardSlot.add(0, HeadCardSlot);
-                CardSlotLayout firstRightSlot = RightWingOfCardSlot.remove(0);
-                HeadCardSlot = firstRightSlot;
+                for (int i = 0; i < CoupleCardSlot.size(); i++) {
+                    float slotPosition = (-this.width/2 * (Opponent == true ? -1 : 1)) + (gap * i * (Opponent == true ? -1 : 1));
+                    CardSlotLayout slotLayout1 = CoupleCardSlot.get(i);
+                    slotLayout1.setSlotXPosition(slotPosition);
+                }
             }
         } else {
-            throw new RuntimeException("Slot object not found in the zone");
+            if (slotLayout.stackCount() > 1) {
+                throw new RuntimeException("Stack count cannot be more than 1");
+            }
+            if (slotLayout == HeadCardSlot) {
+                if (selectedSlotRemoved) {
+                    if (LeftWingOfCardSlot.size() > 0) {
+                        SelectedCardSlot = LeftWingOfCardSlot.get(0);
+                    } else if (RightWingOfCardSlot.size() > 0) {
+                        SelectedCardSlot = RightWingOfCardSlot.get(0);
+                    } else {
+                        SelectedCardSlot = null;
+                    }
+                }
+
+                if (LeftWingOfCardSlot.size() <= RightWingOfCardSlot.size()) {
+                    if (RightWingOfCardSlot.size() > 0) {
+                        CardSlotLayout firstRightSlot = RightWingOfCardSlot.remove(0);
+                        HeadCardSlot = firstRightSlot;
+                    } else {
+                        HeadCardSlot = null;
+                    }
+                } else {
+                    CardSlotLayout firstLeftSlot = LeftWingOfCardSlot.remove(0);
+                    HeadCardSlot = firstLeftSlot;
+                }
+            } else if (LeftWingOfCardSlot.contains(slotLayout)) {
+                if (selectedSlotRemoved) {
+                    int indexofSlot = LeftWingOfCardSlot.indexOf(slotLayout);
+                    if (indexofSlot > 0) {
+                        SelectedCardSlot = LeftWingOfCardSlot.get(indexofSlot - 1);
+                    } else {
+                        SelectedCardSlot = HeadCardSlot;
+                    }
+                }
+
+                LeftWingOfCardSlot.remove(slotLayout);
+                int sizeDiff = LeftWingOfCardSlot.size() - RightWingOfCardSlot.size();
+
+                if (sizeDiff >= 2) {
+                    RightWingOfCardSlot.add(0, HeadCardSlot);
+                    CardSlotLayout firstLeftSlot = LeftWingOfCardSlot.remove(0);
+                    HeadCardSlot = firstLeftSlot;
+                } else if (sizeDiff <= -2) {
+                    LeftWingOfCardSlot.add(0, HeadCardSlot);
+                    CardSlotLayout firstRightSlot = RightWingOfCardSlot.remove(0);
+                    HeadCardSlot = firstRightSlot;
+                }
+            } else if (RightWingOfCardSlot.contains(slotLayout)) {
+                if (selectedSlotRemoved) {
+                    int indexofSlot = RightWingOfCardSlot.indexOf(slotLayout);
+                    if (indexofSlot > 0) {
+                        SelectedCardSlot = RightWingOfCardSlot.get(indexofSlot - 1);
+                    } else {
+                        SelectedCardSlot = HeadCardSlot;
+                    }
+                }
+
+                RightWingOfCardSlot.remove(slotLayout);
+                int sizeDiff = LeftWingOfCardSlot.size() - RightWingOfCardSlot.size();
+
+                if (sizeDiff >= 2) {
+                    RightWingOfCardSlot.add(0, HeadCardSlot);
+                    CardSlotLayout firstLeftSlot = LeftWingOfCardSlot.remove(0);
+                    HeadCardSlot = firstLeftSlot;
+                } else if (sizeDiff <= -2) {
+                    LeftWingOfCardSlot.add(0, HeadCardSlot);
+                    CardSlotLayout firstRightSlot = RightWingOfCardSlot.remove(0);
+                    HeadCardSlot = firstRightSlot;
+                }
+            } else {
+                throw new RuntimeException("Slot object not found in the zone");
+            }
         }
 
-        float gap = this.width/(1f + LeftWingOfCardSlot.size() +RightWingOfCardSlot.size());
+        float gap = (this.width - this.CoupleSlotWidth) / (1f + LeftWingOfCardSlot.size() + RightWingOfCardSlot.size());
 
         if (gap >= 0.125f * this.width) {
             gap = 0.125f * this.width;
         }
 
+        float centerPosition = (this.CoupleSlotWidth * (Opponent == true ? -1 : 1)) / 2f;
         if (HeadCardSlot != null) {
-            HeadCardSlot.setSlotXPosition(0);
+            HeadCardSlot.setSlotXPosition(centerPosition);
         }
 
         for(int i = 0; i < LeftWingOfCardSlot.size(); i++) {
             slotLayout = LeftWingOfCardSlot.get(i);
-            slotLayout.setSlotXPosition(gap * (-(i+1)) * (Opponent == true ? -1 : 1));
+            slotLayout.setSlotXPosition(centerPosition + gap * (-(i + 1)) * (Opponent == true ? -1 : 1));
         }
 
         for(int i = 0; i < RightWingOfCardSlot.size(); i++) {
             slotLayout = RightWingOfCardSlot.get(i);
-            slotLayout.setSlotXPosition(gap * (i+1) * (Opponent == true ? -1 : 1));
+            slotLayout.setSlotXPosition(centerPosition + gap * (i + 1) * (Opponent == true ? -1 : 1));
         }
 
         slotLayout = WidgetToSlotMapping.get(widget);
-        ArrayList<CardWidget> cardWidgets = new ArrayList<CardWidget>();
-        CardWidget popWidget = null;
-        do {
-            popWidget = slotLayout.popWidget();
-            if (popWidget != null) {
-                cardWidgets.add(popWidget);
-                WidgetToSlotMapping.remove(popWidget);
+        CardWidget cardWidget = slotLayout.removeCardWidget(widget);
+
+        if (cardWidget != null && cardWidget != widget) {
+            throw new RuntimeException("Invalid condition");
+        }
+
+        WidgetToSlotMapping.remove(widget);
+
+        if (cardWidget == null && slotLayout.stackCount() == 1) {
+            slotLayout.resetSlot();
+            cardSlotLayoutPool.free(slotLayout);
+        }
+
+        return widget;
+    }
+
+    public void TransferCardWidgetToCoupleSlotZone(CardWidget widget) {
+        if (NewCoupleSlot == null) {
+            CardSlotLayout slotLayout = cardSlotLayoutPool.newObject();
+            slotLayout.initializeSlot(0, 0, ZCoordinateOfZoneCenter, widget, headOrientationOfCard, 2f, 2f);
+            WidgetToSlotMapping.put(widget, slotLayout);
+            NewCoupleSlot = slotLayout;
+            CoupleCardSlot.add(NewCoupleSlot);
+            SelectedCoupleCardSlot = NewCoupleSlot;
+        } else {
+            NewCoupleSlot.pushWidget(widget);
+            WidgetToSlotMapping.put(widget, NewCoupleSlot);
+            SelectedCoupleCardSlot = NewCoupleSlot;
+        }
+
+        float expectedCoupleSlotWidth;
+        this.CoupleSlotWidth = 0;
+        this.CoupleSlotWidth = expectedCoupleSlotWidth = (CoupleCardSlot.size() + 1) * AssetsAndResource.CardHeight +
+                (CoupleCardSlot.size() -1) * (AssetsAndResource.CardWidth/4);
+
+        if (this.CoupleSlotWidth > this.width * 0.70f) {
+            this.CoupleSlotWidth = this.width * 0.70f;
+        }
+
+        float gap;
+        if (expectedCoupleSlotWidth == CoupleSlotWidth) {
+            gap = AssetsAndResource.CardHeight + AssetsAndResource.CardWidth/4 ;
+        } else {
+            gap = (CoupleSlotWidth - AssetsAndResource.CardHeight) / CoupleCardSlot.size();
+        }
+
+        for (int i = 0; i < CoupleCardSlot.size(); i++) {
+            float slotPosition = (-this.width/2 * (Opponent == true ? -1 : 1)) + (gap * i * (Opponent == true ? -1 : 1));
+            CardSlotLayout slotLayout1 = CoupleCardSlot.get(i);
+            slotLayout1.setSlotXPosition(slotPosition);
+        }
+
+        gap = (this.width - this.CoupleSlotWidth) / (1f + LeftWingOfCardSlot.size() + RightWingOfCardSlot.size());
+
+        if (gap >= 0.125f * this.width) {
+            gap = 0.125f * this.width;
+        }
+
+        float centerPosition = (this.CoupleSlotWidth * (Opponent == true ? -1 : 1)) / 2f;
+        if (HeadCardSlot != null) {
+            HeadCardSlot.setSlotXPosition(centerPosition);
+        }
+
+        CardSlotLayout slotLayout;
+        for (int i = 0; i < LeftWingOfCardSlot.size(); i++) {
+            slotLayout = LeftWingOfCardSlot.get(i);
+            slotLayout.setSlotXPosition(centerPosition + gap * (-(i + 1)) * (Opponent == true ? -1 : 1));
+        }
+
+        for (int i = 0; i < RightWingOfCardSlot.size(); i++) {
+            slotLayout = RightWingOfCardSlot.get(i);
+            slotLayout.setSlotXPosition(centerPosition + gap * (i + 1) * (Opponent == true ? -1 : 1));
+        }
+    }
+
+    public void AddToTransitionZone(CardWidget widget) {
+        CardSlotLayout slotLayout = WidgetToSlotMapping.get(widget);
+
+        if (CoupleCardSlot.contains(slotLayout)) {
+            float fromX = slotLayout.getSlotXPosition();
+            float fromZ = slotLayout.getSlotZPosition();
+            float toX;
+            float toZ;
+            if (HeadCardSlot != null) {
+                toX = HeadCardSlot.getSlotXPosition();
+                toZ = HeadCardSlot.getSlotZPosition();
+            } else {
+                toX = (this.CoupleSlotWidth * (Opponent == true ? -1 : 1)) / 2f;
+                toZ = ZCoordinateOfZoneCenter;
             }
-        } while (popWidget != null);
 
-        cardWidgets.add(slotLayout.getCardWidget());
-        WidgetToSlotMapping.remove(slotLayout.getCardWidget());
+            float x = (fromX + toX) / 2.0f;
+            float z = (fromZ + toZ) / 2.0f;
 
+            RemoveCardWidgetFromZone(widget);
 
-        slotLayout.resetSlot();
-        cardSlotLayoutPool.free(slotLayout);
+            slotLayout = cardSlotLayoutPool.newObject();
+            slotLayout.initializeSlot(x, AssetsAndResource.CardLength * 40f, z, widget, headOrientationOfCard, 2f, 2f);
+            WidgetToSlotMapping.put(widget, slotLayout);
+            TransitionSlotFromCoupleToFree.add(slotLayout);
+        } else {
+            float fromX = slotLayout.getSlotXPosition();
+            float fromZ = slotLayout.getSlotZPosition();
+            float toX;
+            float toZ;
+            if (CoupleCardSlot.size() > 0) {
+                toX = CoupleCardSlot.get(CoupleCardSlot.size() - 1).getSlotXPosition();
+                toZ = CoupleCardSlot.get(CoupleCardSlot.size() - 1).getSlotZPosition();
+            } else {
+                toX = (-this.width/2 * (Opponent == true ? -1 : 1));
+                toZ = ZCoordinateOfZoneCenter;
+            }
 
-        return cardWidgets;
+            float x = (fromX + toX) / 2.0f;
+            float z = (fromZ + toZ) / 2.0f;
+
+            RemoveCardWidgetFromZone(widget);
+
+            slotLayout = cardSlotLayoutPool.newObject();
+            slotLayout.initializeSlot(x, AssetsAndResource.CardLength * 40f, z, widget, headOrientationOfCard, 2f, 2f);
+            WidgetToSlotMapping.put(widget, slotLayout);
+            TransitionSlotFromFreeToCouple.add(slotLayout);
+        }
     }
 }

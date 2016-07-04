@@ -48,6 +48,19 @@ public class GLReferenceTracking {
         return val;
     }
 
+    public float getRefTrackingDerivative(int index, float TotalTime) {
+        GLRefTrackingParameters parameters = ParameterList.get(index);
+
+        if (parameters == null) {
+            return 0f;
+        }
+
+        float val = (2.0f * parameters.K1 * (float) Math.exp(-parameters.K1 * (TotalTime - parameters.StartingTime))) -
+                parameters.K2 * (float) Math.exp(-parameters.K2 * (TotalTime - parameters.StartingTime));
+
+        return val;
+    }
+
     public void clearRefTracking() {
         ParameterList.clear();
     }

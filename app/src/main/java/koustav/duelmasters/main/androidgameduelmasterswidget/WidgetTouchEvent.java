@@ -8,6 +8,7 @@ public class WidgetTouchEvent {
     public boolean isTouchedDown;
     public boolean isMoving;
     public boolean isDoubleTouched;
+    public WidgetTouchFocusLevel isFocus;
     public Object object;
 
     public WidgetTouchEvent() {
@@ -15,6 +16,7 @@ public class WidgetTouchEvent {
         isTouchedDown = false;
         isMoving = false;
         isDoubleTouched = false;
+        isFocus = WidgetTouchFocusLevel.Low;
         object = null;
     }
 }
