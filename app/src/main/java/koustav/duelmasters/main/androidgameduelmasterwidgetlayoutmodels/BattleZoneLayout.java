@@ -18,6 +18,12 @@ import koustav.duelmasters.main.androidgamesframework.Pool;
  * Created by Koustav on 4/27/2016.
  */
 public class BattleZoneLayout implements Layout {
+    enum TouchModeBattleZone{
+        NormalMode,
+        SlotExpandMode,
+    }
+    TouchModeBattleZone touchMode;
+
     Pool<CardSlotLayout> cardSlotLayoutPool;
 
     ArrayList<CardSlotLayout> LeftWingOfCardSlot;
@@ -33,6 +39,8 @@ public class BattleZoneLayout implements Layout {
     float width;
     float height;
 
+    boolean ExpandMode;
+
     ArrayList<CardSlotLayout> TouchedSlots;
     ArrayList<WidgetTouchEvent> widgetTouchEventList;
 
@@ -43,11 +51,15 @@ public class BattleZoneLayout implements Layout {
                 return new CardSlotLayout();
             }
         };
+        touchMode = TouchModeBattleZone.NormalMode;
+
         ZCoordinateOfZoneCenter = 0;
         headOrientationOfCard = HeadOrientation.North;
         this.width = 0;
         this.height = 0;
         this.Opponent = false;
+
+        ExpandMode = true;
 
         cardSlotLayoutPool = new Pool<CardSlotLayout>(factory, 40);
 
@@ -69,6 +81,10 @@ public class BattleZoneLayout implements Layout {
         this.width = width;
         this.height = height;
         this.Opponent = opponent;
+    }
+
+    public void setExpandMode(boolean val) {
+        this.ExpandMode = val;
     }
 
     public boolean BattleZoneCardOverlapping() {
@@ -159,6 +175,36 @@ public class BattleZoneLayout implements Layout {
 
     @Override
     public WidgetTouchEvent TouchResponse(List<Input.TouchEvent> touchEvents) {
+        if (touchMode == TouchModeBattleZone.NormalMode) {
+            return TouchResponseInNormalMode(touchEvents);
+        } else if (touchMode == TouchModeBattleZone.SlotExpandMode) {
+            return TouchResponseInExpandMode(touchEvents);
+        }
+
+        return null;
+    }
+
+    public WidgetTouchEvent TouchResponseInExpandMode(List<Input.TouchEvent> touchEvents) {
+        WidgetTouchEvent widgetTouchEvent;
+        widgetTouchEvent = SelectedCardSlot.TouchResponse(touchEvents);
+        Input input = AssetsAndResource.game.getInput();
+
+        if (widgetTouchEvent.isTouched) {
+            widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Medium;
+        } else {
+            if (!input.isTouchDown(0) && touchEvents.size() > 0) {
+                widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Low;
+                touchMode = TouchModeBattleZone.NormalMode;
+                SelectedCardSlot.ExpandOrShrinkSlot(false, 0f, 0f);
+            } else {
+                AssetsAndResource.widgetTouchEventPool.free(widgetTouchEvent);
+                widgetTouchEvent = null;
+            }
+        }
+        return widgetTouchEvent;
+    }
+
+    public WidgetTouchEvent TouchResponseInNormalMode(List<Input.TouchEvent> touchEvents) {
         if (HeadCardSlot == null) {
             return null;
         }
@@ -383,6 +429,14 @@ public class BattleZoneLayout implements Layout {
                             AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
                         }
 
+                        if (ExpandMode && !widgetTouchEvent.isTouchedDown) {
+                            if (SelectedCardSlot.stackCount() > 1) {
+                                SelectedCardSlot.ExpandOrShrinkSlot(true, AssetsAndResource.CardLength * 40, AssetsAndResource.MazeWidth/2 * (Opponent == true ? -1 : 1));
+                                widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Medium;
+                                touchMode = TouchModeBattleZone.SlotExpandMode;
+                            }
+                        }
+
                         widgetTouchEventList.clear();
                         TouchedSlots.clear();
                         return widgetTouchEvent;
@@ -400,6 +454,14 @@ public class BattleZoneLayout implements Layout {
                                         AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
                                     }
 
+                                    if (ExpandMode && !widgetTouchEvent.isTouchedDown) {
+                                        if (SelectedCardSlot.stackCount() > 1) {
+                                            SelectedCardSlot.ExpandOrShrinkSlot(true, AssetsAndResource.CardLength * 40, AssetsAndResource.MazeWidth/2 * (Opponent == true ? -1 : 1));
+                                            widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Medium;
+                                            touchMode = TouchModeBattleZone.SlotExpandMode;
+                                        }
+                                    }
+
                                     widgetTouchEventList.clear();
                                     TouchedSlots.clear();
                                     return widgetTouchEvent;
@@ -415,6 +477,14 @@ public class BattleZoneLayout implements Layout {
                                         AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
                                     }
 
+                                    if (ExpandMode && !widgetTouchEvent.isTouchedDown) {
+                                        if (SelectedCardSlot.stackCount() > 1) {
+                                            SelectedCardSlot.ExpandOrShrinkSlot(true, AssetsAndResource.CardLength * 40, AssetsAndResource.MazeWidth/2 * (Opponent == true ? -1 : 1));
+                                            widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Medium;
+                                            touchMode = TouchModeBattleZone.SlotExpandMode;
+                                        }
+                                    }
+
                                     widgetTouchEventList.clear();
                                     TouchedSlots.clear();
                                     return widgetTouchEvent;
@@ -425,6 +495,14 @@ public class BattleZoneLayout implements Layout {
 
                                 for (int i = 0; i < widgetTouchEventList.size(); i++) {
                                     AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
+                                }
+
+                                if (ExpandMode && !widgetTouchEvent.isTouchedDown) {
+                                    if (SelectedCardSlot.stackCount() > 1) {
+                                        SelectedCardSlot.ExpandOrShrinkSlot(true, AssetsAndResource.CardLength * 40, AssetsAndResource.MazeWidth/2 * (Opponent == true ? -1 : 1));
+                                        widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Medium;
+                                        touchMode = TouchModeBattleZone.SlotExpandMode;
+                                    }
                                 }
 
                                 widgetTouchEventList.clear();
@@ -444,6 +522,14 @@ public class BattleZoneLayout implements Layout {
                                         AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
                                     }
 
+                                    if (ExpandMode && !widgetTouchEvent.isTouchedDown) {
+                                        if (SelectedCardSlot.stackCount() > 1) {
+                                            SelectedCardSlot.ExpandOrShrinkSlot(true, AssetsAndResource.CardLength * 40, AssetsAndResource.MazeWidth/2 * (Opponent == true ? -1 : 1));
+                                            widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Medium;
+                                            touchMode = TouchModeBattleZone.SlotExpandMode;
+                                        }
+                                    }
+
                                     widgetTouchEventList.clear();
                                     TouchedSlots.clear();
                                     return widgetTouchEvent;
@@ -459,6 +545,14 @@ public class BattleZoneLayout implements Layout {
                                         AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
                                     }
 
+                                    if (ExpandMode && !widgetTouchEvent.isTouchedDown) {
+                                        if (SelectedCardSlot.stackCount() > 1) {
+                                            SelectedCardSlot.ExpandOrShrinkSlot(true, AssetsAndResource.CardLength * 40, AssetsAndResource.MazeWidth/2 * (Opponent == true ? -1 : 1));
+                                            widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Medium;
+                                            touchMode = TouchModeBattleZone.SlotExpandMode;
+                                        }
+                                    }
+
                                     widgetTouchEventList.clear();
                                     TouchedSlots.clear();
                                     return widgetTouchEvent;
@@ -469,6 +563,14 @@ public class BattleZoneLayout implements Layout {
 
                                 for (int i = 0; i < widgetTouchEventList.size(); i++) {
                                     AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
+                                }
+
+                                if (ExpandMode && !widgetTouchEvent.isTouchedDown) {
+                                    if (SelectedCardSlot.stackCount() > 1) {
+                                        SelectedCardSlot.ExpandOrShrinkSlot(true, AssetsAndResource.CardLength * 40, AssetsAndResource.MazeWidth/2 * (Opponent == true ? -1 : 1));
+                                        widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Medium;
+                                        touchMode = TouchModeBattleZone.SlotExpandMode;
+                                    }
                                 }
 
                                 widgetTouchEventList.clear();
@@ -484,6 +586,14 @@ public class BattleZoneLayout implements Layout {
                                     AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
                                 }
 
+                                if (ExpandMode && !widgetTouchEvent.isTouchedDown) {
+                                    if (SelectedCardSlot.stackCount() > 1) {
+                                        SelectedCardSlot.ExpandOrShrinkSlot(true, AssetsAndResource.CardLength * 40, AssetsAndResource.MazeWidth/2 * (Opponent == true ? -1 : 1));
+                                        widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Medium;
+                                        touchMode = TouchModeBattleZone.SlotExpandMode;
+                                    }
+                                }
+
                                 widgetTouchEventList.clear();
                                 TouchedSlots.clear();
                                 return widgetTouchEvent;
@@ -493,6 +603,14 @@ public class BattleZoneLayout implements Layout {
 
                                 for (int i = 0; i < widgetTouchEventList.size(); i++) {
                                     AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
+                                }
+
+                                if (ExpandMode && !widgetTouchEvent.isTouchedDown) {
+                                    if (SelectedCardSlot.stackCount() > 1) {
+                                        SelectedCardSlot.ExpandOrShrinkSlot(true, AssetsAndResource.CardLength * 40, AssetsAndResource.MazeWidth/2 * (Opponent == true ? -1 : 1));
+                                        widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Medium;
+                                        touchMode = TouchModeBattleZone.SlotExpandMode;
+                                    }
                                 }
 
                                 widgetTouchEventList.clear();
@@ -856,6 +974,13 @@ public class BattleZoneLayout implements Layout {
             TouchedSlots.clear();
 
             if (widgetTouchEventOutCome != null) {
+                if (ExpandMode) {
+                    if (SelectedCardSlot.stackCount() > 1) {
+                        SelectedCardSlot.ExpandOrShrinkSlot(true, AssetsAndResource.CardLength * 40, AssetsAndResource.MazeWidth/2 * (Opponent == true ? -1 : 1));
+                        widgetTouchEventOutCome.isFocus = WidgetTouchFocusLevel.Medium;
+                        touchMode = TouchModeBattleZone.SlotExpandMode;
+                    }
+                }
                 return widgetTouchEventOutCome;
             } else if (isTouched) {
                 widgetTouchEventOutCome = AssetsAndResource.widgetTouchEventPool.newObject();

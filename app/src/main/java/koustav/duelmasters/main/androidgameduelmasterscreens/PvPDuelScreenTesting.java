@@ -192,8 +192,8 @@ public class PvPDuelScreenTesting extends Screen{
             position2.X_scale = 1f;
             position2.Z_scale = 1f;
             CardWgtmp.setTranslateRotateScale(position2);
-            //battleZoneLayout.AddCardWidgetToZone(CardWgtmp);
-            manaZoneLayout.AddCardWidgetToZone(CardWgtmp);
+            battleZoneLayout.AddCardWidgetToZone(CardWgtmp);
+            //manaZoneLayout.AddCardWidgetToZone(CardWgtmp);
             tmplist.add(CardWgtmp);
         }
 
@@ -233,14 +233,14 @@ public class PvPDuelScreenTesting extends Screen{
             Random R = new Random();
             int tempindex;
             CardWidget rmwg = null;
-            if (tmplist.size() > 0) {
+            /*if (tmplist.size() > 0) {
                 tempindex = (int) R.nextInt(tmplist.size());
                 rmwg = tmplist.remove(tempindex);
                // battleZoneLayout.RemoveCardWidgetFromZone(rmwg);
                 manaZoneLayout.RemoveCardWidgetFromZone(rmwg);
                 remove = true;
-            }
-/*
+            } */
+
             if (tmplist.size() > 0) {
                 tempindex = (int) R.nextInt(tmplist.size());
                 rmwg = tmplist.get(tempindex);
@@ -262,7 +262,7 @@ public class PvPDuelScreenTesting extends Screen{
                 battleZoneLayout.PutCardWidgetOnTopOfExistingCardWidget(CardWgtmp, rmwg);
                 tmplist.add(CardWgtmp);
             }
-            */
+
         }
 
         position.Centerposition.x = 0.6f;
@@ -293,14 +293,14 @@ public class PvPDuelScreenTesting extends Screen{
             position2.X_scale = 1f;
             position2.Z_scale = 1f;
             CardWgtmp.setTranslateRotateScale(position2);
-            //battleZoneLayout.AddCardWidgetToZone(CardWgtmp);
-            manaZoneLayout.TransferCardWidgetToCoupleSlotZone(CardWgtmp);
+            battleZoneLayout.AddCardWidgetToZone(CardWgtmp);
+            //manaZoneLayout.TransferCardWidgetToCoupleSlotZone(CardWgtmp);
             tmplist.add(CardWgtmp);
         }
 
-        if (!remove) {
-            tmp2 = manaZoneLayout.TouchResponse(touchEvents);
-        }
+        //if (!remove) {
+         //   tmp2 = manaZoneLayout.TouchResponse(touchEvents);
+        //}
 
         if (tmp2 != null && tmp2.isTouched && !tmp2.isTouchedDown) {
             Random R = new Random();
@@ -313,11 +313,11 @@ public class PvPDuelScreenTesting extends Screen{
                 //manaZoneLayout.AddToTransitionZone(rmwg);
             }
         }
-        manaZoneLayout.update(deltaTime, totalTime);
-        manaZoneLayout.draw();
-        //tmp2 = battleZoneLayout.TouchResponse(touchEvents);
-        //battleZoneLayout.update(deltaTime, totalTime);
-        //battleZoneLayout.draw();
+        //manaZoneLayout.update(deltaTime, totalTime);
+        //manaZoneLayout.draw();
+        tmp2 = battleZoneLayout.TouchResponse(touchEvents);
+        battleZoneLayout.update(deltaTime, totalTime);
+        battleZoneLayout.draw();
         /*
         CardWg2.setTranslateRotateScale(position);
         CardWg2.draw();
