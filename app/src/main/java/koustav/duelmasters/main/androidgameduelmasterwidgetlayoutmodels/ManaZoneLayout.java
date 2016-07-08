@@ -47,6 +47,8 @@ public class ManaZoneLayout implements Layout{
     float width;
     float height;
     float CoupleSlotWidth;
+    float k1;
+    float k2;
 
     ArrayList<CardSlotLayout> TouchedSlots;
     ArrayList<WidgetTouchEvent> widgetTouchEventList;
@@ -54,6 +56,7 @@ public class ManaZoneLayout implements Layout{
     boolean DragMode;
     boolean DragLock;
     int DragCount;
+    boolean ExpandMode;
 
     ArrayList<CardSlotLayout> SlotsToRemoveDuringTransition;
     Hashtable<CardSlotLayout, Float> SlotToDriftParameter;
@@ -95,22 +98,29 @@ public class ManaZoneLayout implements Layout{
         DragMode = false;
         DragLock = false;
         DragCount = 0;
+        ExpandMode = true;
 
         SlotsToRemoveDuringTransition = new ArrayList<CardSlotLayout>();
         SlotToDriftParameter = new Hashtable<CardSlotLayout, Float>();
     }
 
     public void InitializeBattleZoneLayout(float zCoordinateOfZoneCenter, float width, float height,
-                                           HeadOrientation orientation, boolean opponent) {
+                                           HeadOrientation orientation, boolean opponent, float k1, float k2) {
         ZCoordinateOfZoneCenter = zCoordinateOfZoneCenter;
         headOrientationOfCard = orientation;
         this.width = width;
         this.height = height;
         this.Opponent = opponent;
+        this.k1 = k1;
+        this.k2 = k2;
     }
 
     public void SetDraggingMode(boolean val) {
         DragMode = val;
+    }
+
+    public void SetExpandMode(boolean val) {
+        ExpandMode = val;
     }
 
     public void FreezeNewCoupleSlot() {
@@ -373,7 +383,8 @@ public class ManaZoneLayout implements Layout{
             }
             return widgetTouchEvent;
         } else {
-            if (!DragLock && CoupleCardSlot.contains(DraggingSlot) && (!DragMode || (NewCoupleSlot != null && SelectedCoupleCardSlot == NewCoupleSlot))) {
+            if (!DragLock && CoupleCardSlot.contains(DraggingSlot) &&
+                    (ExpandMode && (NewCoupleSlot != null && SelectedCoupleCardSlot == NewCoupleSlot))) {
                 touchMode = TouchModeManaZone.SlotExpandMode;
                 widgetTouchEvent = AssetsAndResource.widgetTouchEventPool.newObject();
                 widgetTouchEvent.isTouched = true;
@@ -395,6 +406,7 @@ public class ManaZoneLayout implements Layout{
                 widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Low;
                 widgetTouchEvent.isDoubleTouched = false;
                 widgetTouchEvent.object = DraggingSlot.getCardWidget().getLogicalObject();
+                DraggingSlot.SetSlotDisturbed();
             }
             DragLock = false;
             DragCount = 0;
@@ -440,6 +452,7 @@ public class ManaZoneLayout implements Layout{
                 widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Medium;
                 widgetTouchEvent.isDoubleTouched = false;
                 widgetTouchEvent.object = DraggingSlot.getCardWidget().getLogicalObject();
+                DraggingSlot.SetSlotDisturbed();
             } else {
                 if (SelectedCoupleCardSlot!= null) {
                     widgetTouchEvent = SelectedCoupleCardSlot.TouchResponse(touchEvents);
@@ -756,7 +769,7 @@ public class ManaZoneLayout implements Layout{
                                 DraggingSlot = SelectedCoupleCardSlot;
                                 touchMode = TouchModeManaZone.DragMode;
                                 widgetTouchEvent.isFocus = WidgetTouchFocusLevel.High;
-                            } else if (!widgetTouchEvent.isTouchedDown) {
+                            } else if (ExpandMode && !widgetTouchEvent.isTouchedDown) {
                                 if (DragMode && NewCoupleSlot != null && SelectedCoupleCardSlot == NewCoupleSlot) {
                                     if (NewCoupleSlot.stackCount() > 1) {
                                         NewCoupleSlot.ExpandOrShrinkSlot(true, AssetsAndResource.CardLength * 40, AssetsAndResource.MazeWidth/2 * (Opponent == true ? -1 : 1));
@@ -787,7 +800,7 @@ public class ManaZoneLayout implements Layout{
                                 DraggingSlot = SelectedCoupleCardSlot;
                                 touchMode = TouchModeManaZone.DragMode;
                                 widgetTouchEvent.isFocus = WidgetTouchFocusLevel.High;
-                            } else if (!widgetTouchEvent.isTouchedDown) {
+                            } else if (ExpandMode && !widgetTouchEvent.isTouchedDown) {
                                 if (DragMode && NewCoupleSlot != null && SelectedCoupleCardSlot == NewCoupleSlot) {
                                     if (NewCoupleSlot.stackCount() > 1) {
                                         NewCoupleSlot.ExpandOrShrinkSlot(true, AssetsAndResource.CardLength * 40, AssetsAndResource.MazeWidth/2 * (Opponent == true ? -1 : 1));
@@ -818,7 +831,7 @@ public class ManaZoneLayout implements Layout{
                                 DraggingSlot = SelectedCoupleCardSlot;
                                 touchMode = TouchModeManaZone.DragMode;
                                 widgetTouchEvent.isFocus = WidgetTouchFocusLevel.High;
-                            } else if (!widgetTouchEvent.isTouchedDown) {
+                            } else if (ExpandMode && !widgetTouchEvent.isTouchedDown) {
                                 if (DragMode && NewCoupleSlot != null && SelectedCoupleCardSlot == NewCoupleSlot) {
                                     if (NewCoupleSlot.stackCount() > 1) {
                                         NewCoupleSlot.ExpandOrShrinkSlot(true, AssetsAndResource.CardLength * 40, AssetsAndResource.MazeWidth/2 * (Opponent == true ? -1 : 1));
@@ -1323,17 +1336,19 @@ public class ManaZoneLayout implements Layout{
                                 }
 
                                 if (widgetTouchEventOutCome != null) {
-                                    if (DragMode && NewCoupleSlot != null && SelectedCoupleCardSlot == NewCoupleSlot) {
-                                        if (NewCoupleSlot.stackCount() > 1) {
-                                            NewCoupleSlot.ExpandOrShrinkSlot(true, AssetsAndResource.CardLength * 40, AssetsAndResource.MazeWidth/2 * (Opponent == true ? -1 : 1));
-                                            widgetTouchEventOutCome.isFocus = WidgetTouchFocusLevel.Medium;
-                                            touchMode = TouchModeManaZone.SlotExpandMode;
-                                        }
-                                    } else if (!DragMode) {
-                                        if (SelectedCoupleCardSlot.stackCount() > 1) {
-                                            SelectedCoupleCardSlot.ExpandOrShrinkSlot(true, AssetsAndResource.CardLength * 40, AssetsAndResource.MazeWidth/2 * (Opponent == true ? -1 : 1));
-                                            widgetTouchEventOutCome.isFocus = WidgetTouchFocusLevel.Medium;
-                                            touchMode = TouchModeManaZone.SlotExpandMode;
+                                    if (ExpandMode) {
+                                        if (DragMode && NewCoupleSlot != null && SelectedCoupleCardSlot == NewCoupleSlot) {
+                                            if (NewCoupleSlot.stackCount() > 1) {
+                                                NewCoupleSlot.ExpandOrShrinkSlot(true, AssetsAndResource.CardLength * 40, AssetsAndResource.MazeWidth / 2 * (Opponent == true ? -1 : 1));
+                                                widgetTouchEventOutCome.isFocus = WidgetTouchFocusLevel.Medium;
+                                                touchMode = TouchModeManaZone.SlotExpandMode;
+                                            }
+                                        } else if (!DragMode) {
+                                            if (SelectedCoupleCardSlot.stackCount() > 1) {
+                                                SelectedCoupleCardSlot.ExpandOrShrinkSlot(true, AssetsAndResource.CardLength * 40, AssetsAndResource.MazeWidth / 2 * (Opponent == true ? -1 : 1));
+                                                widgetTouchEventOutCome.isFocus = WidgetTouchFocusLevel.Medium;
+                                                touchMode = TouchModeManaZone.SlotExpandMode;
+                                            }
                                         }
                                     }
                                     break;
@@ -1489,7 +1504,7 @@ public class ManaZoneLayout implements Layout{
 
     public void AddCardWidgetToZone(CardWidget widget) {
         CardSlotLayout slotLayout = cardSlotLayoutPool.newObject();
-        slotLayout.initializeSlot(0, 0, ZCoordinateOfZoneCenter, widget, headOrientationOfCard, 2f, 2f);
+        slotLayout.initializeSlot(0, 0, ZCoordinateOfZoneCenter, widget, headOrientationOfCard, k1, k2);
         WidgetToSlotMapping.put(widget, slotLayout);
 
         SelectedCardSlot = slotLayout;
@@ -1695,6 +1710,8 @@ public class ManaZoneLayout implements Layout{
         if (cardWidget == null && slotLayout.stackCount() == 1) {
             slotLayout.resetSlot();
             cardSlotLayoutPool.free(slotLayout);
+        } else if (slotLayout.stackCount() == 1 && CoupleCardSlot.contains(slotLayout)) {
+            slotLayout.ExpandOrShrinkSlot(false, 0f, 0f);
         }
 
         return widget;
@@ -1703,7 +1720,7 @@ public class ManaZoneLayout implements Layout{
     public void TransferCardWidgetToCoupleSlotZone(CardWidget widget) {
         if (NewCoupleSlot == null) {
             CardSlotLayout slotLayout = cardSlotLayoutPool.newObject();
-            slotLayout.initializeSlot(0, 0, ZCoordinateOfZoneCenter, widget, headOrientationOfCard, 2f, 2f);
+            slotLayout.initializeSlot(0, 0, ZCoordinateOfZoneCenter, widget, headOrientationOfCard, k1, k2);
             WidgetToSlotMapping.put(widget, slotLayout);
             NewCoupleSlot = slotLayout;
             CoupleCardSlot.add(NewCoupleSlot);
@@ -1763,13 +1780,13 @@ public class ManaZoneLayout implements Layout{
         CardSlotLayout slotLayout = WidgetToSlotMapping.get(widget);
 
         if (CoupleCardSlot.contains(slotLayout)) {
-            float fromX = slotLayout.getSlotXPosition();
-            float fromZ = slotLayout.getSlotZPosition();
+            float fromX = slotLayout.getTopWidgetXPosition();
+            float fromZ = slotLayout.getTopWidgetZPosition();
             float toX;
             float toZ;
             if (HeadCardSlot != null) {
-                toX = HeadCardSlot.getSlotXPosition();
-                toZ = HeadCardSlot.getSlotZPosition();
+                toX = HeadCardSlot.getTopWidgetXPosition();
+                toZ = HeadCardSlot.getTopWidgetZPosition();
             } else {
                 toX = (this.CoupleSlotWidth * (Opponent == true ? -1 : 1)) / 2f;
                 toZ = ZCoordinateOfZoneCenter;
@@ -1781,17 +1798,17 @@ public class ManaZoneLayout implements Layout{
             RemoveCardWidgetFromZone(widget);
 
             slotLayout = cardSlotLayoutPool.newObject();
-            slotLayout.initializeSlot(x, AssetsAndResource.CardLength * 40f, z, widget, headOrientationOfCard, 2f, 2f);
+            slotLayout.initializeSlot(x, AssetsAndResource.CardLength * 40f, z, widget, headOrientationOfCard, k1, k2);
             WidgetToSlotMapping.put(widget, slotLayout);
             TransitionSlotFromCoupleToFree.add(slotLayout);
         } else {
-            float fromX = slotLayout.getSlotXPosition();
-            float fromZ = slotLayout.getSlotZPosition();
+            float fromX = slotLayout.getTopWidgetXPosition();
+            float fromZ = slotLayout.getTopWidgetZPosition();
             float toX;
             float toZ;
             if (CoupleCardSlot.size() > 0) {
-                toX = CoupleCardSlot.get(CoupleCardSlot.size() - 1).getSlotXPosition();
-                toZ = CoupleCardSlot.get(CoupleCardSlot.size() - 1).getSlotZPosition();
+                toX = CoupleCardSlot.get(CoupleCardSlot.size() - 1).getTopWidgetXPosition();
+                toZ = CoupleCardSlot.get(CoupleCardSlot.size() - 1).getTopWidgetZPosition();
             } else {
                 toX = (-this.width/2 * (Opponent == true ? -1 : 1));
                 toZ = ZCoordinateOfZoneCenter;
@@ -1803,7 +1820,7 @@ public class ManaZoneLayout implements Layout{
             RemoveCardWidgetFromZone(widget);
 
             slotLayout = cardSlotLayoutPool.newObject();
-            slotLayout.initializeSlot(x, AssetsAndResource.CardLength * 40f, z, widget, headOrientationOfCard, 2f, 2f);
+            slotLayout.initializeSlot(x, AssetsAndResource.CardLength * 40f, z, widget, headOrientationOfCard, k1, k2);
             WidgetToSlotMapping.put(widget, slotLayout);
             TransitionSlotFromFreeToCouple.add(slotLayout);
         }

@@ -402,8 +402,9 @@ public class PvPDuelScreenTesting extends Screen{
         battleZoneLayout.InitializeBattleZoneLayout(AssetsAndResource.MazeHeight/10, AssetsAndResource.MazeWidth,
                 AssetsAndResource.MazeHeight/5, HeadOrientation.North, false);
         manaZoneLayout.InitializeBattleZoneLayout((3f * AssetsAndResource.MazeHeight)/10, AssetsAndResource.MazeWidth,
-                AssetsAndResource.MazeHeight/5, HeadOrientation.North, false);
+                AssetsAndResource.MazeHeight/5, HeadOrientation.North, false, 4f, 4f);
         manaZoneLayout.SetDraggingMode(true);
+        //manaZoneLayout.SetExpandMode(false);
     }
 
     @Override

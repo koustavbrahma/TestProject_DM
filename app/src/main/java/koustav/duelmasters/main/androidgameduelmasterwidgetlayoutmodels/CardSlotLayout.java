@@ -939,16 +939,16 @@ public class CardSlotLayout implements Layout {
         return running;
     }
 
-    public float getSlotXPosition() {
-        return TopSlotPosition.Centerposition.x;
+    public float getTopWidgetXPosition() {
+        return TopCardWidget.getPosition().Centerposition.x;
     }
 
-    public float getSlotYPosition() {
-        return TopSlotPosition.Centerposition.y;
+    public float getTopWidgetYPosition() {
+        return TopCardWidget.getPosition().Centerposition.y;
     }
 
-    public float getSlotZPosition() {
-        return TopSlotPosition.Centerposition.z;
+    public float getTopWidgetZPosition() {
+        return TopCardWidget.getPosition().Centerposition.z;
     }
 
     public float getPercentageComplete() {
@@ -967,5 +967,9 @@ public class CardSlotLayout implements Layout {
 
     public void UpdateTopWidgetPosition() {
         TopCardWidget.setTranslateRotateScale(TopWidgetPosition);
+    }
+
+    public void SetSlotDisturbed() {
+        this.Disturbed = true;
     }
 }
