@@ -310,10 +310,10 @@ public class CardSlotLayout implements Layout {
         int midPoint = stackCount()/2 + stackCount()%2 -1;
 
         if (input.isTouchDown(0)) {
-            GLGeometry.GLPoint relativeNearPointAfterTrans = input.getNearPoint(0).translate(new GLGeometry.GLVector(centerX, TopSlotPosition.Centerposition.y,
-                    TopSlotPosition.Centerposition.z));
-            GLGeometry.GLPoint relativeFarPointAfterTrans = input.getFarPoint(0).translate(new GLGeometry.GLVector(centerX, TopSlotPosition.Centerposition.y,
-                    TopSlotPosition.Centerposition.z));
+            GLGeometry.GLPoint relativeNearPointAfterTrans = input.getNearPoint(0).translate(new GLGeometry.GLVector(-centerX, -TopSlotPosition.Centerposition.y,
+                    -TopSlotPosition.Centerposition.z));
+            GLGeometry.GLPoint relativeFarPointAfterTrans = input.getFarPoint(0).translate(new GLGeometry.GLVector(-centerX, -TopSlotPosition.Centerposition.y,
+                    -TopSlotPosition.Centerposition.z));
 
             GLGeometry.GLPoint intersectingPoint = GLGeometry.GLRayIntersectionWithXZPlane(
                     new GLGeometry.GLRay(relativeNearPointAfterTrans, GLGeometry.GLVectorBetween(relativeNearPointAfterTrans,
@@ -452,10 +452,10 @@ public class CardSlotLayout implements Layout {
             for (int j = touchEvents.size() - 1; j >= 0; j--) {
                 event = touchEvents.get(j);
                 if (event.type == Input.TouchEvent.TOUCH_UP) {
-                    GLGeometry.GLPoint relativeNearPointAfterTrans = event.nearPoint[0].translate(new GLGeometry.GLVector(centerX, TopSlotPosition.Centerposition.y,
-                            TopSlotPosition.Centerposition.z));
-                    GLGeometry.GLPoint relativeFarPointAfterTrans = event.farPoint[0].translate(new GLGeometry.GLVector(centerX, TopSlotPosition.Centerposition.y,
-                            TopSlotPosition.Centerposition.z));
+                    GLGeometry.GLPoint relativeNearPointAfterTrans = event.nearPoint[0].translate(new GLGeometry.GLVector(-centerX, -TopSlotPosition.Centerposition.y,
+                            -TopSlotPosition.Centerposition.z));
+                    GLGeometry.GLPoint relativeFarPointAfterTrans = event.farPoint[0].translate(new GLGeometry.GLVector(-centerX, -TopSlotPosition.Centerposition.y,
+                            -TopSlotPosition.Centerposition.z));
 
                     GLGeometry.GLPoint intersectingPoint = GLGeometry.GLRayIntersectionWithXZPlane(
                             new GLGeometry.GLRay(relativeNearPointAfterTrans, GLGeometry.GLVectorBetween(relativeNearPointAfterTrans,
@@ -832,7 +832,7 @@ public class CardSlotLayout implements Layout {
             return false;
         }
 
-        if (TopCardWidget == null || (stackCount() == 1 && Expand) ||running) {
+        if (TopCardWidget == null || (stackCount() == 1 && Expand)) {
             return false;
         }
 
@@ -911,6 +911,7 @@ public class CardSlotLayout implements Layout {
         Expanded = false;
         TappedPreviousValue = false;
         useBackupDriftParameter = false;
+        SelectedCardWidget = null;
     }
 
     public void setSlotXPosition(float x) {

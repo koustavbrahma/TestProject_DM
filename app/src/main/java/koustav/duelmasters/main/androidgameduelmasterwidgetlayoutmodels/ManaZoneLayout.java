@@ -52,6 +52,8 @@ public class ManaZoneLayout implements Layout{
     ArrayList<WidgetTouchEvent> widgetTouchEventList;
 
     boolean DragMode;
+    boolean DragLock;
+    int DragCount;
 
     ArrayList<CardSlotLayout> SlotsToRemoveDuringTransition;
     Hashtable<CardSlotLayout, Float> SlotToDriftParameter;
@@ -91,6 +93,8 @@ public class ManaZoneLayout implements Layout{
         widgetTouchEventList = new ArrayList<WidgetTouchEvent>();
 
         DragMode = false;
+        DragLock = false;
+        DragCount = 0;
 
         SlotsToRemoveDuringTransition = new ArrayList<CardSlotLayout>();
         SlotToDriftParameter = new Hashtable<CardSlotLayout, Float>();
@@ -352,6 +356,9 @@ public class ManaZoneLayout implements Layout{
             widgetTouchEvent.isTouched = true;
             widgetTouchEvent.isTouchedDown = true;
             if (input.TouchType(0) == Input.TouchEvent.TOUCH_DRAGGED) {
+                if (!DragLock) {
+                    DragCount++;
+                }
                 widgetTouchEvent.isMoving = true;
             } else {
                 widgetTouchEvent.isMoving = false;
@@ -360,18 +367,38 @@ public class ManaZoneLayout implements Layout{
             widgetTouchEvent.isDoubleTouched = false;
             widgetTouchEvent.object = DraggingSlot.getCardWidget().getLogicalObject();
 
+            if (!DragLock && (DragCount > 2)) {
+                DragLock = true;
+                DragCount = 0;
+            }
             return widgetTouchEvent;
         } else {
-            touchMode = TouchModeManaZone.NormalMode;
-            widgetTouchEvent = AssetsAndResource.widgetTouchEventPool.newObject();
-            widgetTouchEvent.isTouched = true;
-            widgetTouchEvent.isTouchedDown = false;
-            widgetTouchEvent.isMoving = false;
-            widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Low;
-            widgetTouchEvent.isDoubleTouched = false;
-            widgetTouchEvent.object = DraggingSlot.getCardWidget().getLogicalObject();
+            if (!DragLock && CoupleCardSlot.contains(DraggingSlot) && (!DragMode || (NewCoupleSlot != null && SelectedCoupleCardSlot == NewCoupleSlot))) {
+                touchMode = TouchModeManaZone.SlotExpandMode;
+                widgetTouchEvent = AssetsAndResource.widgetTouchEventPool.newObject();
+                widgetTouchEvent.isTouched = true;
+                widgetTouchEvent.isTouchedDown = false;
+                widgetTouchEvent.isMoving = false;
+                widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Medium;
+                widgetTouchEvent.isDoubleTouched = false;
+                widgetTouchEvent.object = DraggingSlot.getCardWidget().getLogicalObject();
+                if (DraggingSlot != SelectedCoupleCardSlot) {
+                    throw new RuntimeException("Invalid condition");
+                }
+                SelectedCoupleCardSlot.ExpandOrShrinkSlot(true, AssetsAndResource.CardLength * 40, AssetsAndResource.MazeWidth/2 * (Opponent == true ? -1 : 1));
+            } else {
+                touchMode = TouchModeManaZone.NormalMode;
+                widgetTouchEvent = AssetsAndResource.widgetTouchEventPool.newObject();
+                widgetTouchEvent.isTouched = true;
+                widgetTouchEvent.isTouchedDown = false;
+                widgetTouchEvent.isMoving = false;
+                widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Low;
+                widgetTouchEvent.isDoubleTouched = false;
+                widgetTouchEvent.object = DraggingSlot.getCardWidget().getLogicalObject();
+            }
+            DragLock = false;
+            DragCount = 0;
             DraggingSlot = null;
-
             return widgetTouchEvent;
         }
     }
@@ -394,13 +421,13 @@ public class ManaZoneLayout implements Layout{
                 widgetTouchEvent.object = DraggingSlot.getCardWidget().getLogicalObject();
             } else {
                 widgetTouchEvent = SelectedCoupleCardSlot.TouchResponse(touchEvents);
+                widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Medium;
+
                 if (widgetTouchEvent.isTouched) {
-                    widgetTouchEvent.isFocus = WidgetTouchFocusLevel.High;
                     if (DragMode) {
+                        widgetTouchEvent.isFocus = WidgetTouchFocusLevel.High;
                         DraggingSlot = SelectedCoupleCardSlot;
                     }
-                } else {
-                    widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Medium;
                 }
             }
             return widgetTouchEvent;
@@ -414,15 +441,26 @@ public class ManaZoneLayout implements Layout{
                 widgetTouchEvent.isDoubleTouched = false;
                 widgetTouchEvent.object = DraggingSlot.getCardWidget().getLogicalObject();
             } else {
-                widgetTouchEvent = SelectedCoupleCardSlot.TouchResponse(touchEvents);
+                if (SelectedCoupleCardSlot!= null) {
+                    widgetTouchEvent = SelectedCoupleCardSlot.TouchResponse(touchEvents);
+                } else {
+                    touchMode = TouchModeManaZone.NormalMode;
+                    DraggingSlot = null;
+                    return null;
+                }
             }
             DraggingSlot = null;
             if (widgetTouchEvent.isTouched) {
                 widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Medium;
             } else {
-                widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Low;
-                touchMode = TouchModeManaZone.NormalMode;
-                SelectedCoupleCardSlot.ExpandOrShrinkSlot(false, 0f, 0f);
+                if (touchEvents.size() > 0) {
+                    widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Low;
+                    touchMode = TouchModeManaZone.NormalMode;
+                    SelectedCoupleCardSlot.ExpandOrShrinkSlot(false, 0f, 0f);
+                } else {
+                    AssetsAndResource.widgetTouchEventPool.free(widgetTouchEvent);
+                    widgetTouchEvent = null;
+                }
             }
             return widgetTouchEvent;
         }
@@ -714,10 +752,24 @@ public class ManaZoneLayout implements Layout{
                                 AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
                             }
 
-                            if (DragMode && NewCoupleSlot != null && NewCoupleSlot == SelectedCoupleCardSlot) {
+                            if (widgetTouchEvent.isTouchedDown && DragMode && NewCoupleSlot != null && NewCoupleSlot == SelectedCoupleCardSlot) {
                                 DraggingSlot = SelectedCoupleCardSlot;
                                 touchMode = TouchModeManaZone.DragMode;
                                 widgetTouchEvent.isFocus = WidgetTouchFocusLevel.High;
+                            } else if (!widgetTouchEvent.isTouchedDown) {
+                                if (DragMode && NewCoupleSlot != null && SelectedCoupleCardSlot == NewCoupleSlot) {
+                                    if (NewCoupleSlot.stackCount() > 1) {
+                                        NewCoupleSlot.ExpandOrShrinkSlot(true, AssetsAndResource.CardLength * 40, AssetsAndResource.MazeWidth/2 * (Opponent == true ? -1 : 1));
+                                        widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Medium;
+                                        touchMode = TouchModeManaZone.SlotExpandMode;
+                                    }
+                                } else if (!DragMode) {
+                                    if (SelectedCoupleCardSlot.stackCount() > 1) {
+                                        SelectedCoupleCardSlot.ExpandOrShrinkSlot(true, AssetsAndResource.CardLength * 40, AssetsAndResource.MazeWidth/2 * (Opponent == true ? -1 : 1));
+                                        widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Medium;
+                                        touchMode = TouchModeManaZone.SlotExpandMode;
+                                    }
+                                }
                             }
 
                             widgetTouchEventList.clear();
@@ -731,10 +783,24 @@ public class ManaZoneLayout implements Layout{
                                 AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
                             }
 
-                            if (DragMode && NewCoupleSlot != null && NewCoupleSlot == SelectedCoupleCardSlot) {
+                            if (widgetTouchEvent.isTouchedDown && DragMode && NewCoupleSlot != null && NewCoupleSlot == SelectedCoupleCardSlot) {
                                 DraggingSlot = SelectedCoupleCardSlot;
                                 touchMode = TouchModeManaZone.DragMode;
                                 widgetTouchEvent.isFocus = WidgetTouchFocusLevel.High;
+                            } else if (!widgetTouchEvent.isTouchedDown) {
+                                if (DragMode && NewCoupleSlot != null && SelectedCoupleCardSlot == NewCoupleSlot) {
+                                    if (NewCoupleSlot.stackCount() > 1) {
+                                        NewCoupleSlot.ExpandOrShrinkSlot(true, AssetsAndResource.CardLength * 40, AssetsAndResource.MazeWidth/2 * (Opponent == true ? -1 : 1));
+                                        widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Medium;
+                                        touchMode = TouchModeManaZone.SlotExpandMode;
+                                    }
+                                } else if (!DragMode) {
+                                    if (SelectedCoupleCardSlot.stackCount() > 1) {
+                                        SelectedCoupleCardSlot.ExpandOrShrinkSlot(true, AssetsAndResource.CardLength * 40, AssetsAndResource.MazeWidth/2 * (Opponent == true ? -1 : 1));
+                                        widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Medium;
+                                        touchMode = TouchModeManaZone.SlotExpandMode;
+                                    }
+                                }
                             }
 
                             widgetTouchEventList.clear();
@@ -748,10 +814,24 @@ public class ManaZoneLayout implements Layout{
                                 AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
                             }
 
-                            if (DragMode && NewCoupleSlot != null && NewCoupleSlot == SelectedCoupleCardSlot) {
+                            if (widgetTouchEvent.isTouchedDown && DragMode && NewCoupleSlot != null && NewCoupleSlot == SelectedCoupleCardSlot) {
                                 DraggingSlot = SelectedCoupleCardSlot;
                                 touchMode = TouchModeManaZone.DragMode;
                                 widgetTouchEvent.isFocus = WidgetTouchFocusLevel.High;
+                            } else if (!widgetTouchEvent.isTouchedDown) {
+                                if (DragMode && NewCoupleSlot != null && SelectedCoupleCardSlot == NewCoupleSlot) {
+                                    if (NewCoupleSlot.stackCount() > 1) {
+                                        NewCoupleSlot.ExpandOrShrinkSlot(true, AssetsAndResource.CardLength * 40, AssetsAndResource.MazeWidth/2 * (Opponent == true ? -1 : 1));
+                                        widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Medium;
+                                        touchMode = TouchModeManaZone.SlotExpandMode;
+                                    }
+                                } else if (!DragMode) {
+                                    if (SelectedCoupleCardSlot.stackCount() > 1) {
+                                        SelectedCoupleCardSlot.ExpandOrShrinkSlot(true, AssetsAndResource.CardLength * 40, AssetsAndResource.MazeWidth/2 * (Opponent == true ? -1 : 1));
+                                        widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Medium;
+                                        touchMode = TouchModeManaZone.SlotExpandMode;
+                                    }
+                                }
                             }
 
                             widgetTouchEventList.clear();
