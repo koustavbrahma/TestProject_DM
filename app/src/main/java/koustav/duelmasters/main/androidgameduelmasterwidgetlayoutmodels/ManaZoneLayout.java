@@ -5,7 +5,6 @@ import java.util.Hashtable;
 import java.util.List;
 
 import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAndResource;
-import koustav.duelmasters.main.androidgameduelmasterswidget.Widget;
 import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetTouchEvent;
 import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetTouchFocusLevel;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayout.HeadOrientation;
@@ -26,20 +25,20 @@ public class ManaZoneLayout implements Layout{
     }
     TouchModeManaZone touchMode;
 
-    Pool<CardSlotLayout> cardSlotLayoutPool;
+    Pool<CardSlotLayoutXZPlaner> cardSlotLayoutPool;
 
-    ArrayList<CardSlotLayout> LeftWingOfCardSlot;
-    ArrayList<CardSlotLayout> RightWingOfCardSlot;
-    ArrayList<CardSlotLayout> CoupleCardSlot;
-    ArrayList<CardSlotLayout> TransitionSlotFromFreeToCouple;
-    ArrayList<CardSlotLayout> TransitionSlotFromCoupleToFree;
-    CardSlotLayout HeadCardSlot;
-    CardSlotLayout SelectedCardSlot;
-    CardSlotLayout SelectedCoupleCardSlot;
-    CardSlotLayout NewCoupleSlot;
-    CardSlotLayout DraggingSlot;
+    ArrayList<CardSlotLayoutXZPlaner> LeftWingOfCardSlot;
+    ArrayList<CardSlotLayoutXZPlaner> RightWingOfCardSlot;
+    ArrayList<CardSlotLayoutXZPlaner> CoupleCardSlot;
+    ArrayList<CardSlotLayoutXZPlaner> TransitionSlotFromFreeToCouple;
+    ArrayList<CardSlotLayoutXZPlaner> TransitionSlotFromCoupleToFree;
+    CardSlotLayoutXZPlaner HeadCardSlot;
+    CardSlotLayoutXZPlaner SelectedCardSlot;
+    CardSlotLayoutXZPlaner SelectedCoupleCardSlot;
+    CardSlotLayoutXZPlaner NewCoupleSlot;
+    CardSlotLayoutXZPlaner DraggingSlot;
 
-    Hashtable<CardWidget, CardSlotLayout> WidgetToSlotMapping;
+    Hashtable<CardWidget, CardSlotLayoutXZPlaner> WidgetToSlotMapping;
 
     float ZCoordinateOfZoneCenter;
     HeadOrientation headOrientationOfCard;
@@ -50,7 +49,7 @@ public class ManaZoneLayout implements Layout{
     float k1;
     float k2;
 
-    ArrayList<CardSlotLayout> TouchedSlots;
+    ArrayList<CardSlotLayoutXZPlaner> TouchedSlots;
     ArrayList<WidgetTouchEvent> widgetTouchEventList;
 
     boolean DragMode;
@@ -58,14 +57,13 @@ public class ManaZoneLayout implements Layout{
     int DragCount;
     boolean ExpandMode;
 
-    ArrayList<CardSlotLayout> SlotsToRemoveDuringTransition;
-    Hashtable<CardSlotLayout, Float> SlotToDriftParameter;
+    ArrayList<CardSlotLayoutXZPlaner> SlotsToRemoveDuringTransition;
 
     public ManaZoneLayout() {
-        Pool.PoolObjectFactory<CardSlotLayout> factory = new Pool.PoolObjectFactory<CardSlotLayout>() {
+        Pool.PoolObjectFactory<CardSlotLayoutXZPlaner> factory = new Pool.PoolObjectFactory<CardSlotLayoutXZPlaner>() {
             @Override
-            public CardSlotLayout createObject() {
-                return new CardSlotLayout();
+            public CardSlotLayoutXZPlaner createObject() {
+                return new CardSlotLayoutXZPlaner();
             }
         };
         touchMode = TouchModeManaZone.NormalMode;
@@ -77,22 +75,22 @@ public class ManaZoneLayout implements Layout{
         CoupleSlotWidth = 0;
         this.Opponent = false;
 
-        cardSlotLayoutPool = new Pool<CardSlotLayout>(factory, 40);
+        cardSlotLayoutPool = new Pool<CardSlotLayoutXZPlaner>(factory, 40);
 
-        LeftWingOfCardSlot = new ArrayList<CardSlotLayout>();
-        RightWingOfCardSlot = new ArrayList<CardSlotLayout>();
-        CoupleCardSlot = new ArrayList<CardSlotLayout>();
-        TransitionSlotFromFreeToCouple = new ArrayList<CardSlotLayout>();
-        TransitionSlotFromCoupleToFree = new ArrayList<CardSlotLayout>();
+        LeftWingOfCardSlot = new ArrayList<CardSlotLayoutXZPlaner>();
+        RightWingOfCardSlot = new ArrayList<CardSlotLayoutXZPlaner>();
+        CoupleCardSlot = new ArrayList<CardSlotLayoutXZPlaner>();
+        TransitionSlotFromFreeToCouple = new ArrayList<CardSlotLayoutXZPlaner>();
+        TransitionSlotFromCoupleToFree = new ArrayList<CardSlotLayoutXZPlaner>();
         SelectedCardSlot = null;
         SelectedCoupleCardSlot = null;
         HeadCardSlot = null;
         NewCoupleSlot = null;
         DraggingSlot = null;
 
-        WidgetToSlotMapping = new Hashtable<CardWidget, CardSlotLayout>();
+        WidgetToSlotMapping = new Hashtable<CardWidget, CardSlotLayoutXZPlaner>();
 
-        TouchedSlots = new ArrayList<CardSlotLayout>();
+        TouchedSlots = new ArrayList<CardSlotLayoutXZPlaner>();
         widgetTouchEventList = new ArrayList<WidgetTouchEvent>();
 
         DragMode = false;
@@ -100,14 +98,19 @@ public class ManaZoneLayout implements Layout{
         DragCount = 0;
         ExpandMode = true;
 
-        SlotsToRemoveDuringTransition = new ArrayList<CardSlotLayout>();
-        SlotToDriftParameter = new Hashtable<CardSlotLayout, Float>();
+        SlotsToRemoveDuringTransition = new ArrayList<CardSlotLayoutXZPlaner>();
     }
 
     public void InitializeBattleZoneLayout(float zCoordinateOfZoneCenter, float width, float height,
                                            HeadOrientation orientation, boolean opponent, float k1, float k2) {
         ZCoordinateOfZoneCenter = zCoordinateOfZoneCenter;
-        headOrientationOfCard = orientation;
+        if (orientation == HeadOrientation.North) {
+            headOrientationOfCard = HeadOrientation.South;
+        } else if (orientation == HeadOrientation.South) {
+            headOrientationOfCard = HeadOrientation.North;
+        } else {
+            throw new IllegalArgumentException("can only be north or south");
+        }
         this.width = width;
         this.height = height;
         this.Opponent = opponent;
@@ -158,10 +161,9 @@ public class ManaZoneLayout implements Layout{
     @Override
     public void update(float deltaTime, float totalTime) {
         SlotsToRemoveDuringTransition.clear();
-        SlotToDriftParameter.clear();
 
         for (int i = 0; i < TransitionSlotFromFreeToCouple.size(); i++) {
-            CardSlotLayout slotLayout = TransitionSlotFromFreeToCouple.get(i);
+            CardSlotLayoutXZPlaner slotLayout = TransitionSlotFromFreeToCouple.get(i);
             slotLayout.update(deltaTime, totalTime);
             if (slotLayout.getPercentageComplete() > 0.70f) {
                 CardWidget widget = slotLayout.getCardWidget();
@@ -170,18 +172,15 @@ public class ManaZoneLayout implements Layout{
                 }
 
                 slotLayout.UpdateTopWidgetPosition();
-                float velocity = slotLayout.getDerivative();
                 WidgetToSlotMapping.remove(widget);
                 slotLayout.resetSlot();
                 SlotsToRemoveDuringTransition.add(slotLayout);
                 TransferCardWidgetToCoupleSlotZone(widget);
-                slotLayout = WidgetToSlotMapping.get(widget);
-                SlotToDriftParameter.put(slotLayout, velocity);
             }
         }
 
         for (int i = 0; i < TransitionSlotFromCoupleToFree.size(); i++) {
-            CardSlotLayout slotLayout = TransitionSlotFromCoupleToFree.get(i);
+            CardSlotLayoutXZPlaner slotLayout = TransitionSlotFromCoupleToFree.get(i);
             slotLayout.update(deltaTime, totalTime);
             if (slotLayout.getPercentageComplete() > 0.70f) {
                 CardWidget widget = slotLayout.getCardWidget();
@@ -190,63 +189,36 @@ public class ManaZoneLayout implements Layout{
                 }
 
                 slotLayout.UpdateTopWidgetPosition();
-                float velocity = slotLayout.getDerivative();
                 WidgetToSlotMapping.remove(widget);
                 slotLayout.resetSlot();
                 SlotsToRemoveDuringTransition.add(slotLayout);
                 AddCardWidgetToZone(widget);
-                slotLayout = WidgetToSlotMapping.get(widget);
-                SlotToDriftParameter.put(slotLayout, velocity);
             }
         }
 
         for (int i = 0; i < SlotsToRemoveDuringTransition.size(); i++) {
-            CardSlotLayout slotLayout = SlotsToRemoveDuringTransition.get(i);
+            CardSlotLayoutXZPlaner slotLayout = SlotsToRemoveDuringTransition.get(i);
             TransitionSlotFromFreeToCouple.remove(slotLayout);
             TransitionSlotFromCoupleToFree.remove(slotLayout);
             cardSlotLayoutPool.free(slotLayout);
         }
 
         if (HeadCardSlot != null) {
-            if (SlotToDriftParameter.contains(HeadCardSlot)) {
-                float val = SlotToDriftParameter.get(HeadCardSlot);
-                HeadCardSlot.setUseBackupDriftParameter(true, val/4, val/2);
-            } else {
-                HeadCardSlot.setUseBackupDriftParameter(false, 0, 0);
-            }
             HeadCardSlot.update(deltaTime, totalTime);
         }
 
         for(int i = 0; i < LeftWingOfCardSlot.size(); i++) {
-            CardSlotLayout slotLayout = LeftWingOfCardSlot.get(i);
-            if (SlotToDriftParameter.contains(slotLayout)) {
-                float val = SlotToDriftParameter.get(slotLayout);
-                slotLayout.setUseBackupDriftParameter(true, val/4, val/2);
-            } else {
-                slotLayout.setUseBackupDriftParameter(false, 0, 0);
-            }
+            CardSlotLayoutXZPlaner slotLayout = LeftWingOfCardSlot.get(i);
             slotLayout.update(deltaTime, totalTime);
         }
 
         for(int i = 0; i < RightWingOfCardSlot.size(); i++) {
-            CardSlotLayout slotLayout = RightWingOfCardSlot.get(i);
-            if (SlotToDriftParameter.contains(slotLayout)) {
-                float val = SlotToDriftParameter.get(slotLayout);
-                slotLayout.setUseBackupDriftParameter(true, val/4, val/2);
-            } else {
-                slotLayout.setUseBackupDriftParameter(false, 0, 0);
-            }
+            CardSlotLayoutXZPlaner slotLayout = RightWingOfCardSlot.get(i);
             slotLayout.update(deltaTime, totalTime);
         }
 
         for (int i = 0; i < CoupleCardSlot.size(); i++) {
-            CardSlotLayout slotLayout = CoupleCardSlot.get(i);
-            if (SlotToDriftParameter.contains(slotLayout)) {
-                float val = SlotToDriftParameter.get(slotLayout);
-                slotLayout.setUseBackupDriftParameter(true, val/4, val/2);
-            } else {
-                slotLayout.setUseBackupDriftParameter(false, 0, 0);
-            }
+            CardSlotLayoutXZPlaner slotLayout = CoupleCardSlot.get(i);
             slotLayout.update(deltaTime, totalTime);
         }
 
@@ -255,19 +227,18 @@ public class ManaZoneLayout implements Layout{
         }
 
         SlotsToRemoveDuringTransition.clear();
-        SlotToDriftParameter.clear();
     }
 
     @Override
     public void draw() {
         if (SelectedCardSlot == HeadCardSlot) {
             for (int i = LeftWingOfCardSlot.size() - 1; i >= 0; i--) {
-                CardSlotLayout slotLayout = LeftWingOfCardSlot.get(i);
+                CardSlotLayoutXZPlaner slotLayout = LeftWingOfCardSlot.get(i);
                 slotLayout.draw();
             }
 
             for (int i = RightWingOfCardSlot.size() - 1; i >= 0; i--) {
-                CardSlotLayout slotLayout = RightWingOfCardSlot.get(i);
+                CardSlotLayoutXZPlaner slotLayout = RightWingOfCardSlot.get(i);
                 slotLayout.draw();
             }
 
@@ -278,38 +249,38 @@ public class ManaZoneLayout implements Layout{
             int index = LeftWingOfCardSlot.indexOf(SelectedCardSlot);
 
             for (int i = LeftWingOfCardSlot.size() - 1; i > index; i--) {
-                CardSlotLayout slotLayout = LeftWingOfCardSlot.get(i);
+                CardSlotLayoutXZPlaner slotLayout = LeftWingOfCardSlot.get(i);
                 slotLayout.draw();
             }
 
             for (int i = RightWingOfCardSlot.size() - 1; i >= 0; i--) {
-                CardSlotLayout slotLayout = RightWingOfCardSlot.get(i);
+                CardSlotLayoutXZPlaner slotLayout = RightWingOfCardSlot.get(i);
                 slotLayout.draw();
             }
 
             HeadCardSlot.draw();
 
             for (int i = 0; i <= index; i++) {
-                CardSlotLayout slotLayout = LeftWingOfCardSlot.get(i);
+                CardSlotLayoutXZPlaner slotLayout = LeftWingOfCardSlot.get(i);
                 slotLayout.draw();
             }
         } else if (RightWingOfCardSlot.contains(SelectedCardSlot)) {
             int index = RightWingOfCardSlot.indexOf(SelectedCardSlot);
 
             for (int i = LeftWingOfCardSlot.size() - 1; i >= 0; i--) {
-                CardSlotLayout slotLayout = LeftWingOfCardSlot.get(i);
+                CardSlotLayoutXZPlaner slotLayout = LeftWingOfCardSlot.get(i);
                 slotLayout.draw();
             }
 
             HeadCardSlot.draw();
 
             for (int i = 0; i <index; i++) {
-                CardSlotLayout slotLayout = RightWingOfCardSlot.get(i);
+                CardSlotLayoutXZPlaner slotLayout = RightWingOfCardSlot.get(i);
                 slotLayout.draw();
             }
 
             for (int i = RightWingOfCardSlot.size() -1; i >= index; i--) {
-                CardSlotLayout slotLayout = RightWingOfCardSlot.get(i);
+                CardSlotLayoutXZPlaner slotLayout = RightWingOfCardSlot.get(i);
                 slotLayout.draw();
             }
         } else {
@@ -322,22 +293,22 @@ public class ManaZoneLayout implements Layout{
         }
 
         for (int i = 0; i < index; i++) {
-            CardSlotLayout slotLayout =  CoupleCardSlot.get(i);
+            CardSlotLayoutXZPlaner slotLayout =  CoupleCardSlot.get(i);
             slotLayout.draw();
         }
 
         for (int i = CoupleCardSlot.size() - 1; i >= index; i--) {
-            CardSlotLayout slotLayout =  CoupleCardSlot.get(i);
+            CardSlotLayoutXZPlaner slotLayout =  CoupleCardSlot.get(i);
             slotLayout.draw();
         }
 
         for (int i = 0; i < TransitionSlotFromFreeToCouple.size(); i++) {
-            CardSlotLayout slotLayout =  TransitionSlotFromFreeToCouple.get(i);
+            CardSlotLayoutXZPlaner slotLayout =  TransitionSlotFromFreeToCouple.get(i);
             slotLayout.draw();
         }
 
         for (int i = 0; i < TransitionSlotFromCoupleToFree.size(); i++) {
-            CardSlotLayout slotLayout = TransitionSlotFromCoupleToFree.get(i);
+            CardSlotLayoutXZPlaner slotLayout = TransitionSlotFromCoupleToFree.get(i);
             slotLayout.draw();
         }
     }
@@ -541,7 +512,7 @@ public class ManaZoneLayout implements Layout{
                     }
 
                     for (int i =0; i < LeftWingOfCardSlot.size(); i++) {
-                        CardSlotLayout slotLayout = LeftWingOfCardSlot.get(i);
+                        CardSlotLayoutXZPlaner slotLayout = LeftWingOfCardSlot.get(i);
 
                         widgetTouchEvent = slotLayout.TouchResponse(touchEvents);
                         if (widgetTouchEvent.isTouched) {
@@ -554,7 +525,7 @@ public class ManaZoneLayout implements Layout{
                     }
 
                     for (int i = 0; i < RightWingOfCardSlot.size(); i++) {
-                        CardSlotLayout slotLayout = RightWingOfCardSlot.get(i);
+                        CardSlotLayoutXZPlaner slotLayout = RightWingOfCardSlot.get(i);
 
                         widgetTouchEvent = slotLayout.TouchResponse(touchEvents);
                         if (widgetTouchEvent.isTouched) {
@@ -566,7 +537,7 @@ public class ManaZoneLayout implements Layout{
                         }
                     }
                 } else if (x < 0) {
-                    CardSlotLayout slotLayout;
+                    CardSlotLayoutXZPlaner slotLayout;
                     if (index > LeftWingOfCardSlot.size()) {
                         index = LeftWingOfCardSlot.size();
                     }
@@ -679,7 +650,7 @@ public class ManaZoneLayout implements Layout{
                         }
                     }
                 } else {
-                    CardSlotLayout slotLayout;
+                    CardSlotLayoutXZPlaner slotLayout;
                     if (index > RightWingOfCardSlot.size()) {
                         index = RightWingOfCardSlot.size();
                     }
@@ -1090,7 +1061,7 @@ public class ManaZoneLayout implements Layout{
                             }
 
                             for (int i = 0; i < LeftWingOfCardSlot.size(); i++) {
-                                CardSlotLayout slotLayout = LeftWingOfCardSlot.get(i);
+                                CardSlotLayoutXZPlaner slotLayout = LeftWingOfCardSlot.get(i);
 
                                 widgetTouchEvent = slotLayout.TouchResponse(touchEvents);
                                 if (widgetTouchEvent.isTouched) {
@@ -1103,7 +1074,7 @@ public class ManaZoneLayout implements Layout{
                             }
 
                             for (int i = 0; i < RightWingOfCardSlot.size(); i++) {
-                                CardSlotLayout slotLayout = RightWingOfCardSlot.get(i);
+                                CardSlotLayoutXZPlaner slotLayout = RightWingOfCardSlot.get(i);
 
                                 widgetTouchEvent = slotLayout.TouchResponse(touchEvents);
                                 if (widgetTouchEvent.isTouched) {
@@ -1115,7 +1086,7 @@ public class ManaZoneLayout implements Layout{
                                 }
                             }
                         } else if (x < 0) {
-                            CardSlotLayout slotLayout;
+                            CardSlotLayoutXZPlaner slotLayout;
                             if (index > LeftWingOfCardSlot.size()) {
                                 index = LeftWingOfCardSlot.size();
                             }
@@ -1228,7 +1199,7 @@ public class ManaZoneLayout implements Layout{
                                 }
                             }
                         } else {
-                            CardSlotLayout slotLayout;
+                            CardSlotLayoutXZPlaner slotLayout;
                             if (index > RightWingOfCardSlot.size()) {
                                 index = RightWingOfCardSlot.size();
                             }
@@ -1503,7 +1474,7 @@ public class ManaZoneLayout implements Layout{
     }
 
     public void AddCardWidgetToZone(CardWidget widget) {
-        CardSlotLayout slotLayout = cardSlotLayoutPool.newObject();
+        CardSlotLayoutXZPlaner slotLayout = cardSlotLayoutPool.newObject();
         slotLayout.initializeSlot(0, 0, ZCoordinateOfZoneCenter, widget, headOrientationOfCard, k1, k2);
         WidgetToSlotMapping.put(widget, slotLayout);
 
@@ -1539,7 +1510,7 @@ public class ManaZoneLayout implements Layout{
     }
 
     public CardWidget RemoveCardWidgetFromZone(CardWidget widget) {
-        CardSlotLayout slotLayout = WidgetToSlotMapping.get(widget);
+        CardSlotLayoutXZPlaner slotLayout = WidgetToSlotMapping.get(widget);
         boolean selectedSlotRemoved = false;
         boolean selectedCoupleSlotRemoved = false;
 
@@ -1598,7 +1569,7 @@ public class ManaZoneLayout implements Layout{
 
                 for (int i = 0; i < CoupleCardSlot.size(); i++) {
                     float slotPosition = (-this.width/2 * (Opponent == true ? -1 : 1)) + (gap * i * (Opponent == true ? -1 : 1));
-                    CardSlotLayout slotLayout1 = CoupleCardSlot.get(i);
+                    CardSlotLayoutXZPlaner slotLayout1 = CoupleCardSlot.get(i);
                     slotLayout1.setSlotXPosition(slotPosition);
                 }
             }
@@ -1619,13 +1590,13 @@ public class ManaZoneLayout implements Layout{
 
                 if (LeftWingOfCardSlot.size() <= RightWingOfCardSlot.size()) {
                     if (RightWingOfCardSlot.size() > 0) {
-                        CardSlotLayout firstRightSlot = RightWingOfCardSlot.remove(0);
+                        CardSlotLayoutXZPlaner firstRightSlot = RightWingOfCardSlot.remove(0);
                         HeadCardSlot = firstRightSlot;
                     } else {
                         HeadCardSlot = null;
                     }
                 } else {
-                    CardSlotLayout firstLeftSlot = LeftWingOfCardSlot.remove(0);
+                    CardSlotLayoutXZPlaner firstLeftSlot = LeftWingOfCardSlot.remove(0);
                     HeadCardSlot = firstLeftSlot;
                 }
             } else if (LeftWingOfCardSlot.contains(slotLayout)) {
@@ -1643,11 +1614,11 @@ public class ManaZoneLayout implements Layout{
 
                 if (sizeDiff >= 2) {
                     RightWingOfCardSlot.add(0, HeadCardSlot);
-                    CardSlotLayout firstLeftSlot = LeftWingOfCardSlot.remove(0);
+                    CardSlotLayoutXZPlaner firstLeftSlot = LeftWingOfCardSlot.remove(0);
                     HeadCardSlot = firstLeftSlot;
                 } else if (sizeDiff <= -2) {
                     LeftWingOfCardSlot.add(0, HeadCardSlot);
-                    CardSlotLayout firstRightSlot = RightWingOfCardSlot.remove(0);
+                    CardSlotLayoutXZPlaner firstRightSlot = RightWingOfCardSlot.remove(0);
                     HeadCardSlot = firstRightSlot;
                 }
             } else if (RightWingOfCardSlot.contains(slotLayout)) {
@@ -1665,11 +1636,11 @@ public class ManaZoneLayout implements Layout{
 
                 if (sizeDiff >= 2) {
                     RightWingOfCardSlot.add(0, HeadCardSlot);
-                    CardSlotLayout firstLeftSlot = LeftWingOfCardSlot.remove(0);
+                    CardSlotLayoutXZPlaner firstLeftSlot = LeftWingOfCardSlot.remove(0);
                     HeadCardSlot = firstLeftSlot;
                 } else if (sizeDiff <= -2) {
                     LeftWingOfCardSlot.add(0, HeadCardSlot);
-                    CardSlotLayout firstRightSlot = RightWingOfCardSlot.remove(0);
+                    CardSlotLayoutXZPlaner firstRightSlot = RightWingOfCardSlot.remove(0);
                     HeadCardSlot = firstRightSlot;
                 }
             } else {
@@ -1719,7 +1690,7 @@ public class ManaZoneLayout implements Layout{
 
     public void TransferCardWidgetToCoupleSlotZone(CardWidget widget) {
         if (NewCoupleSlot == null) {
-            CardSlotLayout slotLayout = cardSlotLayoutPool.newObject();
+            CardSlotLayoutXZPlaner slotLayout = cardSlotLayoutPool.newObject();
             slotLayout.initializeSlot(0, 0, ZCoordinateOfZoneCenter, widget, headOrientationOfCard, k1, k2);
             WidgetToSlotMapping.put(widget, slotLayout);
             NewCoupleSlot = slotLayout;
@@ -1749,7 +1720,7 @@ public class ManaZoneLayout implements Layout{
 
         for (int i = 0; i < CoupleCardSlot.size(); i++) {
             float slotPosition = (-this.width/2 * (Opponent == true ? -1 : 1)) + (gap * i * (Opponent == true ? -1 : 1));
-            CardSlotLayout slotLayout1 = CoupleCardSlot.get(i);
+            CardSlotLayoutXZPlaner slotLayout1 = CoupleCardSlot.get(i);
             slotLayout1.setSlotXPosition(slotPosition);
         }
 
@@ -1764,7 +1735,7 @@ public class ManaZoneLayout implements Layout{
             HeadCardSlot.setSlotXPosition(centerPosition);
         }
 
-        CardSlotLayout slotLayout;
+        CardSlotLayoutXZPlaner slotLayout;
         for (int i = 0; i < LeftWingOfCardSlot.size(); i++) {
             slotLayout = LeftWingOfCardSlot.get(i);
             slotLayout.setSlotXPosition(centerPosition + gap * (-(i + 1)) * (Opponent == true ? -1 : 1));
@@ -1777,50 +1748,20 @@ public class ManaZoneLayout implements Layout{
     }
 
     public void AddToTransitionZone(CardWidget widget) {
-        CardSlotLayout slotLayout = WidgetToSlotMapping.get(widget);
+        CardSlotLayoutXZPlaner slotLayout = WidgetToSlotMapping.get(widget);
 
         if (CoupleCardSlot.contains(slotLayout)) {
-            float fromX = slotLayout.getTopWidgetXPosition();
-            float fromZ = slotLayout.getTopWidgetZPosition();
-            float toX;
-            float toZ;
-            if (HeadCardSlot != null) {
-                toX = HeadCardSlot.getTopWidgetXPosition();
-                toZ = HeadCardSlot.getTopWidgetZPosition();
-            } else {
-                toX = (this.CoupleSlotWidth * (Opponent == true ? -1 : 1)) / 2f;
-                toZ = ZCoordinateOfZoneCenter;
-            }
-
-            float x = (fromX + toX) / 2.0f;
-            float z = (fromZ + toZ) / 2.0f;
-
             RemoveCardWidgetFromZone(widget);
-
+            float x = (this.CoupleSlotWidth * (Opponent == true ? -1 : 1)) / 2f;
             slotLayout = cardSlotLayoutPool.newObject();
-            slotLayout.initializeSlot(x, AssetsAndResource.CardLength * 40f, z, widget, headOrientationOfCard, k1, k2);
+            slotLayout.initializeSlot(x, AssetsAndResource.CardLength * 40f, ZCoordinateOfZoneCenter, widget, headOrientationOfCard, k1, k2);
             WidgetToSlotMapping.put(widget, slotLayout);
             TransitionSlotFromCoupleToFree.add(slotLayout);
         } else {
-            float fromX = slotLayout.getTopWidgetXPosition();
-            float fromZ = slotLayout.getTopWidgetZPosition();
-            float toX;
-            float toZ;
-            if (CoupleCardSlot.size() > 0) {
-                toX = CoupleCardSlot.get(CoupleCardSlot.size() - 1).getTopWidgetXPosition();
-                toZ = CoupleCardSlot.get(CoupleCardSlot.size() - 1).getTopWidgetZPosition();
-            } else {
-                toX = (-this.width/2 * (Opponent == true ? -1 : 1));
-                toZ = ZCoordinateOfZoneCenter;
-            }
-
-            float x = (fromX + toX) / 2.0f;
-            float z = (fromZ + toZ) / 2.0f;
-
             RemoveCardWidgetFromZone(widget);
-
+            float x =(-this.width/2 * (Opponent == true ? -1 : 1)) + (this.CoupleSlotWidth * (Opponent == true ? -1 : 1));
             slotLayout = cardSlotLayoutPool.newObject();
-            slotLayout.initializeSlot(x, AssetsAndResource.CardLength * 40f, z, widget, headOrientationOfCard, k1, k2);
+            slotLayout.initializeSlot(x, AssetsAndResource.CardLength * 40f, ZCoordinateOfZoneCenter, widget, headOrientationOfCard, k1, k2);
             WidgetToSlotMapping.put(widget, slotLayout);
             TransitionSlotFromFreeToCouple.add(slotLayout);
         }

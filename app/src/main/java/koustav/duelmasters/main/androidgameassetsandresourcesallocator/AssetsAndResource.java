@@ -89,8 +89,8 @@ public class AssetsAndResource {
     public static float CameraAngle;
     public static float MazeWidth = 1.4f;
     public static float MazeHeight = 1.0f;
-    public static float CardWidth = 0.08f;
-    public static float CardHeight = 0.12f;
+    public static float CardWidth = 0.1067f;
+    public static float CardHeight = 0.16f;
     public static float CardLength =  0.00125f;
     public static float CardStackShift = 0.002f;
     public static GLGeometry.GLPoint CameraPosition;

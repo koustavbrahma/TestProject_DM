@@ -20,7 +20,7 @@ import koustav.duelmasters.main.androidgamesframework.Input;
 /**
  * Created by Koustav on 5/1/2016.
  */
-public class CardSlotLayout implements Layout {
+public class CardSlotLayoutXZPlaner implements Layout {
     WidgetPosition TopSlotPosition;
     Hashtable<CardWidget, WidgetPosition> SlotPositions;
     WidgetPosition TopWidgetPosition;
@@ -43,15 +43,12 @@ public class CardSlotLayout implements Layout {
     float headOrientationAngle;
     float k1;
     float k2;
-    float k1_backup;
-    float k2_backup;
-    boolean useBackupDriftParameter;
     float percentageComplete;
     float derivative;
     float length;
     float ExpandLimit_X;
 
-    public CardSlotLayout() {
+    public CardSlotLayoutXZPlaner() {
         TopSlotPosition = new WidgetPosition();
         TopWidgetPosition = new WidgetPosition();
         OldTopSlotPosition = new WidgetPosition();
@@ -73,9 +70,6 @@ public class CardSlotLayout implements Layout {
         headOrientationAngle = 0f;
         k1 = 0f;
         k2 = 0f;
-        k1_backup = 0f;
-        k2_backup = 0f;
-        useBackupDriftParameter = false;
         percentageComplete = 1.0f;
         derivative = 0f;
         length = 0f;
@@ -114,22 +108,14 @@ public class CardSlotLayout implements Layout {
         }
 
         if (Disturbed) {
-            if (!useBackupDriftParameter) {
-                TopDriftSystem.setDriftInfo(TopCardWidget.getPosition(), TopSlotPosition, k1, k2, totalTime);
-            } else {
-                TopDriftSystem.setDriftInfo(TopCardWidget.getPosition(), TopSlotPosition, k1_backup, k2_backup, totalTime);
-            }
+            TopDriftSystem.setDriftInfo(TopCardWidget.getPosition(), TopSlotPosition, k1, k2, totalTime);
 
             for (int i =0; i < cardWidgets.size(); i++) {
                 CardWidget cardWidget = cardWidgets.get(i);
                 WidgetPosition widgetSlotPosition = SlotPositions.get(cardWidget);
                 DriftSystem driftSystem = driftSystems.get(cardWidget);
 
-                if (!useBackupDriftParameter) {
-                    driftSystem.setDriftInfo(cardWidget.getPosition(), widgetSlotPosition, k1, k2, totalTime);
-                } else {
-                    driftSystem.setDriftInfo(cardWidget.getPosition(), widgetSlotPosition, k1_backup, k2_backup, totalTime);
-                }
+                driftSystem.setDriftInfo(cardWidget.getPosition(), widgetSlotPosition, k1, k2, totalTime);
             }
             Disturbed = false;
             running = true;
@@ -910,7 +896,6 @@ public class CardSlotLayout implements Layout {
         cardWidgets.clear();
         Expanded = false;
         TappedPreviousValue = false;
-        useBackupDriftParameter = false;
         SelectedCardWidget = null;
     }
 
@@ -957,12 +942,6 @@ public class CardSlotLayout implements Layout {
 
     public float getDerivative() {
         return derivative;
-    }
-
-    public void  setUseBackupDriftParameter(boolean val, float k1, float k2) {
-        useBackupDriftParameter = val;
-        k1_backup = k1;
-        k2_backup = k2;
     }
 
     public void UpdateTopWidgetPosition() {
