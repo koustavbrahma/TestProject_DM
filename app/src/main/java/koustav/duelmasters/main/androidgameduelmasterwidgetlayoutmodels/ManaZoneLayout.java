@@ -73,6 +73,8 @@ public class ManaZoneLayout implements Layout{
         this.width = 0;
         this.height = 0;
         CoupleSlotWidth = 0;
+        k1 = 2f;
+        k2 = 2f;
         this.Opponent = false;
 
         cardSlotLayoutPool = new Pool<CardSlotLayoutXZPlaner>(factory, 40);
@@ -133,8 +135,8 @@ public class ManaZoneLayout implements Layout{
     public boolean FreeManaCardOverlapping() {
         float gap = (this.width - this.CoupleSlotWidth)/(1f + LeftWingOfCardSlot.size() +RightWingOfCardSlot.size());
 
-        if (gap >= 0.125f * this.width) {
-            gap = 0.125f * this.width;
+        if (gap >= AssetsAndResource.CardHeight) {
+            gap = AssetsAndResource.CardHeight;
         }
 
         return  (gap < AssetsAndResource.CardWidth);
@@ -464,8 +466,8 @@ public class ManaZoneLayout implements Layout{
         WidgetTouchEvent widgetTouchEvent;
         float gap = (this.width - this.CoupleSlotWidth)/(1f + LeftWingOfCardSlot.size() +RightWingOfCardSlot.size());
 
-        if (gap >= 0.125f * this.width) {
-            gap = 0.125f * this.width;
+        if (gap >= AssetsAndResource.CardHeight) {
+            gap = AssetsAndResource.CardHeight;
         }
 
         float gap2 = 0;
@@ -1491,8 +1493,8 @@ public class ManaZoneLayout implements Layout{
 
         float gap = (this.width - this.CoupleSlotWidth)/(1f + LeftWingOfCardSlot.size() + RightWingOfCardSlot.size());
 
-        if (gap >= 0.125f * this.width) {
-            gap = 0.125f * this.width;
+        if (gap >= AssetsAndResource.CardHeight) {
+            gap = AssetsAndResource.CardHeight;
         }
 
         float centerPosition = (this.CoupleSlotWidth * (Opponent == true ? -1 : 1)) / 2f;
@@ -1650,8 +1652,8 @@ public class ManaZoneLayout implements Layout{
 
         float gap = (this.width - this.CoupleSlotWidth) / (1f + LeftWingOfCardSlot.size() + RightWingOfCardSlot.size());
 
-        if (gap >= 0.125f * this.width) {
-            gap = 0.125f * this.width;
+        if (gap >= AssetsAndResource.CardHeight) {
+            gap = AssetsAndResource.CardHeight;
         }
 
         float centerPosition = (this.CoupleSlotWidth * (Opponent == true ? -1 : 1)) / 2f;
@@ -1726,8 +1728,8 @@ public class ManaZoneLayout implements Layout{
 
         gap = (this.width - this.CoupleSlotWidth) / (1f + LeftWingOfCardSlot.size() + RightWingOfCardSlot.size());
 
-        if (gap >= 0.125f * this.width) {
-            gap = 0.125f * this.width;
+        if (gap >= AssetsAndResource.CardHeight) {
+            gap = AssetsAndResource.CardHeight;
         }
 
         float centerPosition = (this.CoupleSlotWidth * (Opponent == true ? -1 : 1)) / 2f;

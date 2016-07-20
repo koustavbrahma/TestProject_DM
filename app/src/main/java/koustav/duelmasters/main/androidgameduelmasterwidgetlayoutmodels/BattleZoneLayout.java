@@ -38,6 +38,8 @@ public class BattleZoneLayout implements Layout {
     boolean Opponent;
     float width;
     float height;
+    float k1;
+    float k2;
 
     boolean ExpandMode;
 
@@ -57,6 +59,9 @@ public class BattleZoneLayout implements Layout {
         headOrientationOfCard = HeadOrientation.North;
         this.width = 0;
         this.height = 0;
+        k1 = 2f;
+        k2 = 2f;
+
         this.Opponent = false;
 
         ExpandMode = true;
@@ -75,7 +80,7 @@ public class BattleZoneLayout implements Layout {
     }
 
     public void InitializeBattleZoneLayout(float zCoordinateOfZoneCenter, float width, float height,
-                                           HeadOrientation orientation, boolean opponent) {
+                                           HeadOrientation orientation, boolean opponent, float k1, float k2) {
         ZCoordinateOfZoneCenter = zCoordinateOfZoneCenter;
         if (orientation == HeadOrientation.North || orientation == HeadOrientation.South) {
             headOrientationOfCard = orientation;
@@ -85,6 +90,8 @@ public class BattleZoneLayout implements Layout {
         this.width = width;
         this.height = height;
         this.Opponent = opponent;
+        this.k1 = k1;
+        this.k2 = k2;
     }
 
     public void setExpandMode(boolean val) {
@@ -94,8 +101,8 @@ public class BattleZoneLayout implements Layout {
     public boolean BattleZoneCardOverlapping() {
         float gap = (this.width)/(1f + LeftWingOfCardSlot.size() +RightWingOfCardSlot.size());
 
-        if (gap >= 0.125f * this.width) {
-            gap = 0.125f * this.width;
+        if (gap >= AssetsAndResource.CardHeight) {
+            gap = AssetsAndResource.CardHeight;
         }
 
         return  (gap < AssetsAndResource.CardWidth);
@@ -222,8 +229,8 @@ public class BattleZoneLayout implements Layout {
         WidgetTouchEvent widgetTouchEvent;
         float gap = this.width/(1f + LeftWingOfCardSlot.size() +RightWingOfCardSlot.size());
 
-        if (gap >= 0.125f * this.width) {
-            gap = 0.125f * this.width;
+        if (gap >= AssetsAndResource.CardHeight) {
+            gap = AssetsAndResource.CardHeight;
         }
 
         Input input = AssetsAndResource.game.getInput();
@@ -1004,7 +1011,7 @@ public class BattleZoneLayout implements Layout {
 
     public void AddCardWidgetToZone(CardWidget widget) {
         CardSlotLayoutXZPlaner slotLayout = cardSlotLayoutPool.newObject();
-        slotLayout.initializeSlot(0, 0, ZCoordinateOfZoneCenter, widget, headOrientationOfCard, 2f, 2f);
+        slotLayout.initializeSlot(0, 0, ZCoordinateOfZoneCenter, widget, headOrientationOfCard, k1, k2);
         WidgetToSlotMapping.put(widget, slotLayout);
 
         SelectedCardSlot = slotLayout;
@@ -1020,8 +1027,8 @@ public class BattleZoneLayout implements Layout {
 
         float gap = this.width/(1f + LeftWingOfCardSlot.size() +RightWingOfCardSlot.size());
 
-        if (gap >= 0.125f * this.width) {
-            gap = 0.125f * this.width;
+        if (gap >= AssetsAndResource.CardHeight) {
+            gap = AssetsAndResource.CardHeight;
         }
 
         HeadCardSlot.setSlotXPosition(0);
@@ -1039,11 +1046,30 @@ public class BattleZoneLayout implements Layout {
 
     public void PutCardWidgetOnTopOfExistingCardWidget(CardWidget newWidget, CardWidget oldWidget) {
         CardSlotLayoutXZPlaner slotLayout = WidgetToSlotMapping.get(oldWidget);
-        slotLayout.pushWidget(newWidget);
-        WidgetToSlotMapping.put(newWidget, slotLayout);
+        if (slotLayout.stackCount() == 1) {
+            slotLayout.pushWidget(newWidget);
+            WidgetToSlotMapping.put(newWidget, slotLayout);
+        } else {
+            ArrayList<CardWidget> cardWidgets = new ArrayList<CardWidget>();
+            CardWidget popWidget = null;
+            do {
+                popWidget = slotLayout.popWidget();
+                if (popWidget != null && popWidget != oldWidget) {
+                    cardWidgets.add(0, popWidget);
+                } else if (popWidget == oldWidget){
+                    slotLayout.pushWidget(popWidget);
+                    break;
+                }
+            } while (popWidget != null);
+            slotLayout.pushWidget(newWidget);
+            WidgetToSlotMapping.put(newWidget, slotLayout);
+            for (int i = 0; i < cardWidgets.size(); i++) {
+                slotLayout.pushWidget(cardWidgets.get(i));
+            }
+        }
     }
 
-    public ArrayList<CardWidget> RemoveCardWidgetFromZone(CardWidget widget) {
+    public CardWidget RemoveCardWidgetFromZone(CardWidget widget) {
         CardSlotLayoutXZPlaner slotLayout = WidgetToSlotMapping.get(widget);
         boolean selectedSlotRemoved = false;
 
@@ -1055,114 +1081,113 @@ public class BattleZoneLayout implements Layout {
             selectedSlotRemoved = true;
         }
 
-        if (slotLayout == HeadCardSlot) {
-            if (selectedSlotRemoved) {
-                if (LeftWingOfCardSlot.size() > 0) {
-                    SelectedCardSlot = LeftWingOfCardSlot.get(0);
-                } else if (RightWingOfCardSlot.size() > 0) {
-                    SelectedCardSlot = RightWingOfCardSlot.get(0);
-                } else {
-                    SelectedCardSlot = null;
+        if (slotLayout.stackCount() == 1) {
+            if (slotLayout == HeadCardSlot) {
+                if (selectedSlotRemoved) {
+                    if (LeftWingOfCardSlot.size() > 0) {
+                        SelectedCardSlot = LeftWingOfCardSlot.get(0);
+                    } else if (RightWingOfCardSlot.size() > 0) {
+                        SelectedCardSlot = RightWingOfCardSlot.get(0);
+                    } else {
+                        SelectedCardSlot = null;
+                    }
                 }
-            }
 
-            if (LeftWingOfCardSlot.size() <= RightWingOfCardSlot.size()) {
-                if (RightWingOfCardSlot.size() > 0) {
+                if (LeftWingOfCardSlot.size() <= RightWingOfCardSlot.size()) {
+                    if (RightWingOfCardSlot.size() > 0) {
+                        CardSlotLayoutXZPlaner firstRightSlot = RightWingOfCardSlot.remove(0);
+                        HeadCardSlot = firstRightSlot;
+                    } else {
+                        HeadCardSlot = null;
+                    }
+                } else {
+                    CardSlotLayoutXZPlaner firstLeftSlot = LeftWingOfCardSlot.remove(0);
+                    HeadCardSlot = firstLeftSlot;
+                }
+            } else if (LeftWingOfCardSlot.contains(slotLayout)) {
+                if (selectedSlotRemoved) {
+                    int indexofSlot = LeftWingOfCardSlot.indexOf(slotLayout);
+                    if (indexofSlot > 0) {
+                        SelectedCardSlot = LeftWingOfCardSlot.get(indexofSlot - 1);
+                    } else {
+                        SelectedCardSlot = HeadCardSlot;
+                    }
+                }
+
+                LeftWingOfCardSlot.remove(slotLayout);
+                int sizeDiff = LeftWingOfCardSlot.size() - RightWingOfCardSlot.size();
+
+                if (sizeDiff >= 2) {
+                    RightWingOfCardSlot.add(0, HeadCardSlot);
+                    CardSlotLayoutXZPlaner firstLeftSlot = LeftWingOfCardSlot.remove(0);
+                    HeadCardSlot = firstLeftSlot;
+                } else if (sizeDiff <= -2) {
+                    LeftWingOfCardSlot.add(0, HeadCardSlot);
                     CardSlotLayoutXZPlaner firstRightSlot = RightWingOfCardSlot.remove(0);
                     HeadCardSlot = firstRightSlot;
-                } else {
-                    HeadCardSlot = null;
+                }
+            } else if (RightWingOfCardSlot.contains(slotLayout)) {
+                if (selectedSlotRemoved) {
+                    int indexofSlot = RightWingOfCardSlot.indexOf(slotLayout);
+                    if (indexofSlot > 0) {
+                        SelectedCardSlot = RightWingOfCardSlot.get(indexofSlot - 1);
+                    } else {
+                        SelectedCardSlot = HeadCardSlot;
+                    }
+                }
+
+                RightWingOfCardSlot.remove(slotLayout);
+                int sizeDiff = LeftWingOfCardSlot.size() - RightWingOfCardSlot.size();
+
+                if (sizeDiff >= 2) {
+                    RightWingOfCardSlot.add(0, HeadCardSlot);
+                    CardSlotLayoutXZPlaner firstLeftSlot = LeftWingOfCardSlot.remove(0);
+                    HeadCardSlot = firstLeftSlot;
+                } else if (sizeDiff <= -2) {
+                    LeftWingOfCardSlot.add(0, HeadCardSlot);
+                    CardSlotLayoutXZPlaner firstRightSlot = RightWingOfCardSlot.remove(0);
+                    HeadCardSlot = firstRightSlot;
                 }
             } else {
-                CardSlotLayoutXZPlaner firstLeftSlot = LeftWingOfCardSlot.remove(0);
-                HeadCardSlot = firstLeftSlot;
-            }
-        } else if (LeftWingOfCardSlot.contains(slotLayout)) {
-            if (selectedSlotRemoved) {
-                int indexofSlot = LeftWingOfCardSlot.indexOf(slotLayout);
-                if (indexofSlot > 0) {
-                    SelectedCardSlot = LeftWingOfCardSlot.get(indexofSlot - 1);
-                } else {
-                    SelectedCardSlot = HeadCardSlot;
-                }
+                throw new RuntimeException("Slot object not found in the zone");
             }
 
-            LeftWingOfCardSlot.remove(slotLayout);
-            int sizeDiff = LeftWingOfCardSlot.size() - RightWingOfCardSlot.size();
+            float gap = this.width / (1f + LeftWingOfCardSlot.size() + RightWingOfCardSlot.size());
 
-            if (sizeDiff >= 2) {
-                RightWingOfCardSlot.add(0, HeadCardSlot);
-                CardSlotLayoutXZPlaner firstLeftSlot = LeftWingOfCardSlot.remove(0);
-                HeadCardSlot = firstLeftSlot;
-            } else if (sizeDiff <= -2) {
-                LeftWingOfCardSlot.add(0, HeadCardSlot);
-                CardSlotLayoutXZPlaner firstRightSlot = RightWingOfCardSlot.remove(0);
-                HeadCardSlot = firstRightSlot;
-            }
-        } else if (RightWingOfCardSlot.contains(slotLayout)) {
-            if (selectedSlotRemoved) {
-                int indexofSlot = RightWingOfCardSlot.indexOf(slotLayout);
-                if (indexofSlot > 0) {
-                    SelectedCardSlot = RightWingOfCardSlot.get(indexofSlot - 1);
-                } else {
-                    SelectedCardSlot = HeadCardSlot;
-                }
+            if (gap >= AssetsAndResource.CardHeight) {
+                gap = AssetsAndResource.CardHeight;
             }
 
-            RightWingOfCardSlot.remove(slotLayout);
-            int sizeDiff = LeftWingOfCardSlot.size() - RightWingOfCardSlot.size();
-
-            if (sizeDiff >= 2) {
-                RightWingOfCardSlot.add(0, HeadCardSlot);
-                CardSlotLayoutXZPlaner firstLeftSlot = LeftWingOfCardSlot.remove(0);
-                HeadCardSlot = firstLeftSlot;
-            } else if (sizeDiff <= -2) {
-                LeftWingOfCardSlot.add(0, HeadCardSlot);
-                CardSlotLayoutXZPlaner firstRightSlot = RightWingOfCardSlot.remove(0);
-                HeadCardSlot = firstRightSlot;
+            if (HeadCardSlot != null) {
+                HeadCardSlot.setSlotXPosition(0);
             }
-        } else {
-            throw new RuntimeException("Slot object not found in the zone");
+
+            for (int i = 0; i < LeftWingOfCardSlot.size(); i++) {
+                slotLayout = LeftWingOfCardSlot.get(i);
+                slotLayout.setSlotXPosition(gap * (-(i + 1)) * (Opponent == true ? -1 : 1));
+            }
+
+            for (int i = 0; i < RightWingOfCardSlot.size(); i++) {
+                slotLayout = RightWingOfCardSlot.get(i);
+                slotLayout.setSlotXPosition(gap * (i + 1) * (Opponent == true ? -1 : 1));
+            }
         }
-
-        float gap = this.width/(1f + LeftWingOfCardSlot.size() +RightWingOfCardSlot.size());
-
-        if (gap >= 0.125f * this.width) {
-            gap = 0.125f * this.width;
-        }
-
-        if (HeadCardSlot != null) {
-            HeadCardSlot.setSlotXPosition(0);
-        }
-
-        for(int i = 0; i < LeftWingOfCardSlot.size(); i++) {
-            slotLayout = LeftWingOfCardSlot.get(i);
-            slotLayout.setSlotXPosition(gap * (-(i+1)) * (Opponent == true ? -1 : 1));
-        }
-
-        for(int i = 0; i < RightWingOfCardSlot.size(); i++) {
-            slotLayout = RightWingOfCardSlot.get(i);
-            slotLayout.setSlotXPosition(gap * (i+1) * (Opponent == true ? -1 : 1));
-        }
-
         slotLayout = WidgetToSlotMapping.get(widget);
-        ArrayList<CardWidget> cardWidgets = new ArrayList<CardWidget>();
-        CardWidget popWidget = null;
-        do {
-            popWidget = slotLayout.popWidget();
-            if (popWidget != null) {
-                cardWidgets.add(popWidget);
-                WidgetToSlotMapping.remove(popWidget);
-            }
-        } while (popWidget != null);
+        CardWidget cardWidget = slotLayout.removeCardWidget(widget);
 
-        cardWidgets.add(slotLayout.getCardWidget());
-        WidgetToSlotMapping.remove(slotLayout.getCardWidget());
+        if (cardWidget != null && cardWidget != widget) {
+            throw new RuntimeException("Invalid condition");
+        }
 
+        WidgetToSlotMapping.remove(widget);
 
-        slotLayout.resetSlot();
-        cardSlotLayoutPool.free(slotLayout);
+        if (cardWidget == null && slotLayout.stackCount() == 1) {
+            slotLayout.resetSlot();
+            cardSlotLayoutPool.free(slotLayout);
+        } else if (slotLayout.stackCount() == 1) {
+            slotLayout.ExpandOrShrinkSlot(false, 0f, 0f);
+        }
 
-        return cardWidgets;
+        return widget;
     }
 }

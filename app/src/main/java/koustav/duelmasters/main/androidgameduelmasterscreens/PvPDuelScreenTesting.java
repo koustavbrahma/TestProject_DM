@@ -105,7 +105,7 @@ public class PvPDuelScreenTesting extends Screen{
                 new float[] {0.1f, 0.1f, 0.1f}, 10.0f), 0.08f, 0.12f, 0);
         point = new Points( new GLPoint(0f, 0f, 0f), 1f, 0f, 0f);
         cube = new Cube(new GLMaterial(new float[] {0.8f, 0.8f, 0.8f}, new float[] {0.8f, 0.8f, 0.8f},
-                new float[] {0.1f, 0.1f, 0.1f}, 10.0f), 0.08f, 0.05f, 0.12f, true);
+                new float[] {0.1f, 0.1f, 0.1f}, 10.0f), AssetsAndResource.CardWidth, 0.05f, AssetsAndResource.CardHeight, true);
         glcard2 = new Cube(new GLMaterial(new float[] {0.8f, 0.8f, 0.8f}, new float[] {0.8f, 0.8f, 0.8f},
                 new float[] {0.1f, 0.1f, 0.1f}, 10.0f), AssetsAndResource.CardWidth, AssetsAndResource.CardLength, AssetsAndResource.CardHeight, true);
         DisplayCard = new ScreenRectangle(0.4f, 0.6f);
@@ -333,25 +333,26 @@ public class PvPDuelScreenTesting extends Screen{
         WidgetPosition position1 = new WidgetPosition();
         position1.Centerposition.x = 0.5f;
         position1.Centerposition.y = 0.025f;
- //       position1.Centerposition.z = -0.3f;
+        position1.Centerposition.z = 0.0f;
         position1.rotaion.angle = rotaion.angle;
         position1.rotaion.y = rotaion.y;
         position1.rotaion.x = rotaion.x;
         position1.rotaion.z = rotaion.z;
-        /*
-        if (DeckWg.isTouched(touchEvents).isTouched) {
+
+        tmp2 = DeckWg.isTouched(touchEvents);
+        if (tmp2.isTouched && !tmp2.isTouchedDown) {
             //GLPoint intersectingPoint = GLGeometry.GLRayIntersectionWithXZPlane(
             //        new GLRay(game.getInput().getNearPoint(0), GLGeometry.GLVectorBetween(game.getInput().getNearPoint(0),
             //                game.getInput().getFarPoint(0))), 0);
             //position1.Centerposition.x = intersectingPoint.x;
             //position1.Centerposition.z = intersectingPoint.z;
-    //        DeckWg.setMode(WidgetMode.Transition);
+            DeckWg.setMode(WidgetMode.Transition);
         }
 
         DeckWg.setTranslateRotateScale(position1);
         DeckWg.update(deltaTime, totalTime);
         DeckWg.draw();
-*/
+
         glDisable(GL_DEPTH_TEST);
         positionObjectInScene(0f, 0f, 0f, 0f, 0f, 0f, 0f, 1f, 1f, 1f);
         AssetsAndResource.textureProgram.useProgram();
@@ -400,7 +401,7 @@ public class PvPDuelScreenTesting extends Screen{
         DeckWg.LinkLogicalObject(CardStack);
         DeckWg.setFlip(true);
         battleZoneLayout.InitializeBattleZoneLayout(AssetsAndResource.MazeHeight/10, AssetsAndResource.MazeWidth,
-                AssetsAndResource.MazeHeight/5, HeadOrientation.North, false);
+                AssetsAndResource.MazeHeight/5, HeadOrientation.North, false, 4f, 4f);
         manaZoneLayout.InitializeBattleZoneLayout((3f * AssetsAndResource.MazeHeight)/10, AssetsAndResource.MazeWidth,
                 AssetsAndResource.MazeHeight/5, HeadOrientation.North, false, 4f, 4f);
         manaZoneLayout.SetDraggingMode(true);

@@ -36,6 +36,7 @@ public class CardStackWidget implements Widget{
     WidgetPosition Position;
     WidgetPosition init_position;
     WidgetPosition ref_position;
+    float[] GapVector;
     float[] relativeNearPointAfterRot;
     float[] relativeFarPointAfterRot;
     GLPoint relativeNearPoint;
@@ -49,6 +50,10 @@ public class CardStackWidget implements Widget{
     float scale;
     int moving;
     int completeCount;
+    float k1;
+    float k2;
+    float angle;
+    GLVector rotationDir;
 
     // Stack orientation
     boolean flip;
@@ -75,6 +80,7 @@ public class CardStackWidget implements Widget{
         Position = new WidgetPosition();
         init_position = new WidgetPosition();
         ref_position = new WidgetPosition();
+        GapVector = new float[4];
         relativeNearPointAfterRot = new float[4];
         relativeFarPointAfterRot = new float[4];
         relativeNearPoint = new GLPoint(0, 0, 0);
@@ -89,6 +95,8 @@ public class CardStackWidget implements Widget{
         scale = 2.0f;
         moving = 0;
         completeCount = 0;
+        k1 = 4.0f;
+        k2 = 4.0f;
 
         flip = false;
 
@@ -97,6 +105,10 @@ public class CardStackWidget implements Widget{
         cube = null;
         glcard = null;
         cardStack = null;
+
+        GLVector rotationAngle = new GLVector(0, 1f, 0f).crossProduct(AssetsAndResource.CameraPosition.getVector().getDirection());
+        angle = (float) Math.toDegrees(Math.asin(rotationAngle.getMagnitude()));
+        rotationDir = rotationAngle.getDirection();
     }
 
     @Override
@@ -113,7 +125,6 @@ public class CardStackWidget implements Widget{
 
         float gaps = (0.8f * AssetsAndResource.MazeHeight)/((float) cardStack.size());
 
-        GLVector vector = new GLVector(0f,0f,0f);
         if (gaps > glcard.width/2.0f) {
             gaps = glcard.width/2.0f;
         }
@@ -144,17 +155,22 @@ public class CardStackWidget implements Widget{
                         cardWidgetPositionTable.put(card, widgetPosition);
                         cardsDriftSystemHashtable.put(card, driftSystem);
 
-                        ref_position.Centerposition.x = ((AssetsAndResource.CameraPosition.x / 4.0f) + (((float) (i - midPoint)) * gaps));
-                        ref_position.Centerposition.y = (AssetsAndResource.CameraPosition.y / 4.0f);
-                        ref_position.Centerposition.z = (AssetsAndResource.CameraPosition.z / 4.0f);
-                        vector.x = (AssetsAndResource.CameraAngle);
-                        vector.y = 0f;
-                        vector.z = 0f;
-                        ref_position.rotaion.angle = vector.getMagnitude();
-                        GLVector dir = vector.getDirection();
-                        ref_position.rotaion.x = dir.x;
-                        ref_position.rotaion.y = dir.y;
-                        ref_position.rotaion.z = dir.z;
+                        ref_position.rotaion.angle = angle;
+                        ref_position.rotaion.x = rotationDir.x;
+                        ref_position.rotaion.y = rotationDir.y;
+                        ref_position.rotaion.z = rotationDir.z;
+                        setIdentityM(AssetsAndResource.tempMatrix, 0);
+                        if (ref_position.rotaion.angle != 0) {
+                            rotateM(AssetsAndResource.tempMatrix, 0, ref_position.rotaion.angle, ref_position.rotaion.x,
+                                    ref_position.rotaion.y, ref_position.rotaion.z);
+                        }
+                        multiplyMV(GapVector, 0, AssetsAndResource.tempMatrix, 0, new float[] {1,
+                                0, 0, 0f}, 0);
+
+                        GLVector gapVec = new GLVector(GapVector[0], GapVector[1], GapVector[2]).getDirection();
+                        ref_position.Centerposition.x = ((AssetsAndResource.CameraPosition.x / 4.0f) + (((float) (i - midPoint)) * gaps * gapVec.x));
+                        ref_position.Centerposition.y = ((AssetsAndResource.CameraPosition.y / 4.0f) + (((float) (i - midPoint)) * gaps * gapVec.y));
+                        ref_position.Centerposition.z = ((AssetsAndResource.CameraPosition.z / 4.0f) + (((float) (i - midPoint)) * gaps * gapVec.z));
                         ref_position.X_scale = (scale * ((39.0f - (0.3f * (float) i))/39.0f));
                         ref_position.Y_scale = 1f;
                         ref_position.Z_scale = (scale * ((39.0f - (0.3f * (float) i))/39.0f));
@@ -184,7 +200,7 @@ public class CardStackWidget implements Widget{
                         init_position.X_scale = Position.X_scale;
                         init_position.Y_scale = 1f;
                         init_position.Z_scale = Position.Z_scale;
-                        driftSystem.setDriftInfo(init_position, ref_position, 2f, 2f, totalTime);
+                        driftSystem.setDriftInfo(init_position, ref_position, k1, k2, totalTime);
                     }
 
                     float percentageComplete = driftSystem.getPercentageComplete(totalTime);
@@ -285,7 +301,7 @@ public class CardStackWidget implements Widget{
                         init_position.Y_scale = 1.0f;
                         init_position.Z_scale = widgetPosition.Z_scale;
 
-                        driftSystem.setDriftInfo(init_position, ref_position, 2f, 2f, totalTime);
+                        driftSystem.setDriftInfo(init_position, ref_position, k1, k2, totalTime);
                     }
 
                     float percentageComplete = driftSystem.getPercentageComplete(totalTime);
@@ -861,8 +877,8 @@ public class CardStackWidget implements Widget{
         int midPoint = cardStack.size()/2 + cardStack.size()%2 -1;
 
         setIdentityM(AssetsAndResource.tempMatrix, 0);
-        if (Position.rotaion.angle != 0) {
-            rotateM(AssetsAndResource.tempMatrix, 0, AssetsAndResource.CameraAngle, -1.0f, 0f, 0f);
+        if (angle != 0) {
+            rotateM(AssetsAndResource.tempMatrix, 0, angle, -rotationDir.x, -rotationDir.y, -rotationDir.z);
         }
 
         Input input = AssetsAndResource.game.getInput();

@@ -210,8 +210,8 @@ public class CardSlotLayoutXZPlaner implements Layout {
             widgetPosition = widgetPositions.get(SelectedCardWidget);
             slotPosition = SlotPositions.get(SelectedCardWidget);
         }
-        if ((Math.abs(intersectingPoint.x - widgetPosition.Centerposition.x) <= (AssetsAndResource.CardWidth * widgetPosition.X_scale)/2 &&
-                Math.abs(intersectingPoint.z - widgetPosition.Centerposition.z) <= (AssetsAndResource.CardHeight * widgetPosition.Z_scale)/2) ||
+        if ((Math.abs(intersectingPoint.x - slotPosition.Centerposition.x) <= (AssetsAndResource.CardWidth * slotPosition.X_scale)/2 &&
+                Math.abs(intersectingPoint.z - slotPosition.Centerposition.z) <= (AssetsAndResource.CardHeight * slotPosition.Z_scale)/2) ||
                 (input.TouchType(0) != Input.TouchEvent.TOUCH_DRAGGED)) {
             return;
         }
