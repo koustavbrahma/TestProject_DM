@@ -53,7 +53,9 @@ public class CardStackWidget implements Widget{
     float k1;
     float k2;
     float angle;
-    GLVector rotationDir;
+    float rotationDir_x;
+    float rotationDir_y;
+    float rotationDir_z;
 
     // Stack orientation
     boolean flip;
@@ -108,7 +110,10 @@ public class CardStackWidget implements Widget{
 
         GLVector rotationAngle = new GLVector(0, 1f, 0f).crossProduct(AssetsAndResource.CameraPosition.getVector().getDirection());
         angle = (float) Math.toDegrees(Math.asin(rotationAngle.getMagnitude()));
-        rotationDir = rotationAngle.getDirection();
+        GLVector rotationDir = rotationAngle.getDirection();
+        rotationDir_x = rotationDir.x;
+        rotationDir_y = rotationDir.y;
+        rotationDir_z = rotationDir.z;
     }
 
     @Override
@@ -156,9 +161,9 @@ public class CardStackWidget implements Widget{
                         cardsDriftSystemHashtable.put(card, driftSystem);
 
                         ref_position.rotaion.angle = angle;
-                        ref_position.rotaion.x = rotationDir.x;
-                        ref_position.rotaion.y = rotationDir.y;
-                        ref_position.rotaion.z = rotationDir.z;
+                        ref_position.rotaion.x = rotationDir_x;
+                        ref_position.rotaion.y = rotationDir_y;
+                        ref_position.rotaion.z = rotationDir_z;
                         setIdentityM(AssetsAndResource.tempMatrix, 0);
                         if (ref_position.rotaion.angle != 0) {
                             rotateM(AssetsAndResource.tempMatrix, 0, ref_position.rotaion.angle, ref_position.rotaion.x,
@@ -878,7 +883,7 @@ public class CardStackWidget implements Widget{
 
         setIdentityM(AssetsAndResource.tempMatrix, 0);
         if (angle != 0) {
-            rotateM(AssetsAndResource.tempMatrix, 0, angle, -rotationDir.x, -rotationDir.y, -rotationDir.z);
+            rotateM(AssetsAndResource.tempMatrix, 0, angle, -rotationDir_x, -rotationDir_y, -rotationDir_z);
         }
 
         Input input = AssetsAndResource.game.getInput();
