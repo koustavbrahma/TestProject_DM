@@ -114,6 +114,13 @@ public class CardStackWidget implements Widget{
         rotationDir_x = rotationDir.x;
         rotationDir_y = rotationDir.y;
         rotationDir_z = rotationDir.z;
+
+        setIdentityM(AssetsAndResource.tempMatrix, 0);
+        if (angle != 0) {
+            rotateM(AssetsAndResource.tempMatrix, 0, angle, rotationDir_x, rotationDir_y, rotationDir_z);
+        }
+        multiplyMV(GapVector, 0, AssetsAndResource.tempMatrix, 0, new float[] {1,
+                0, 0, 0f}, 0);
     }
 
     @Override
@@ -164,13 +171,6 @@ public class CardStackWidget implements Widget{
                         ref_position.rotaion.x = rotationDir_x;
                         ref_position.rotaion.y = rotationDir_y;
                         ref_position.rotaion.z = rotationDir_z;
-                        setIdentityM(AssetsAndResource.tempMatrix, 0);
-                        if (ref_position.rotaion.angle != 0) {
-                            rotateM(AssetsAndResource.tempMatrix, 0, ref_position.rotaion.angle, ref_position.rotaion.x,
-                                    ref_position.rotaion.y, ref_position.rotaion.z);
-                        }
-                        multiplyMV(GapVector, 0, AssetsAndResource.tempMatrix, 0, new float[] {1,
-                                0, 0, 0f}, 0);
 
                         GLVector gapVec = new GLVector(GapVector[0], GapVector[1], GapVector[2]).getDirection();
                         ref_position.Centerposition.x = ((AssetsAndResource.CameraPosition.x / 4.0f) + (((float) (i - midPoint)) * gaps * gapVec.x));

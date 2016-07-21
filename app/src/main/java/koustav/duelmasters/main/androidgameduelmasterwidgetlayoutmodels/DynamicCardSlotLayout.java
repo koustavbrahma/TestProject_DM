@@ -166,6 +166,10 @@ public class DynamicCardSlotLayout implements Layout {
         Disturbed = true;
     }
 
+    public void resetSlot() {
+        this.TopCardWidget = null;
+    }
+
     public CardWidget getCardWidget() {
         return TopCardWidget;
     }
@@ -180,5 +184,11 @@ public class DynamicCardSlotLayout implements Layout {
 
     public void SetSlotDisturbed() {
         this.Disturbed = true;
+    }
+
+    public void setSlotPosition(float x, float y, float z) {
+        TopSlotPosition.Centerposition.x = x;
+        TopSlotPosition.Centerposition.y = y;
+        TopSlotPosition.Centerposition.z = z;
     }
 }
