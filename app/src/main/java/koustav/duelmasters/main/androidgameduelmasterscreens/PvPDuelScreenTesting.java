@@ -10,6 +10,7 @@ import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetPosition;
 import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetTouchEvent;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayout.HeadOrientation;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoutmodels.BattleZoneLayout;
+import koustav.duelmasters.main.androidgameduelmasterwidgetlayoutmodels.HandZoneLayout;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoutmodels.ManaZoneLayout;
 import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.CardStackWidget;
 import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.CardWidget;
@@ -57,6 +58,7 @@ public class PvPDuelScreenTesting extends Screen{
     // Layout
     BattleZoneLayout battleZoneLayout;
     ManaZoneLayout manaZoneLayout;
+    HandZoneLayout handZoneLayout;
 
    // Matrix
     private float[] tempMatrix;
@@ -112,6 +114,7 @@ public class PvPDuelScreenTesting extends Screen{
 
         battleZoneLayout = new BattleZoneLayout();
         manaZoneLayout = new ManaZoneLayout();
+        handZoneLayout = new HandZoneLayout();
         // Widget
         CardWg = new CardWidget();
         DeckWg = new CardStackWidget();
@@ -193,7 +196,9 @@ public class PvPDuelScreenTesting extends Screen{
             position2.Z_scale = 1f;
             CardWgtmp.setTranslateRotateScale(position2);
             //battleZoneLayout.AddCardWidgetToZone(CardWgtmp);
-            manaZoneLayout.AddCardWidgetToZone(CardWgtmp);
+            //manaZoneLayout.AddCardWidgetToZone(CardWgtmp);
+            //DeckWg.setMode(WidgetMode.Transition);
+            handZoneLayout.AddCardWidgetToZone(CardWgtmp);
             tmplist.add(CardWgtmp);
         }
 
@@ -237,7 +242,8 @@ public class PvPDuelScreenTesting extends Screen{
                 tempindex = (int) R.nextInt(tmplist.size());
                 rmwg = tmplist.remove(tempindex);
                // battleZoneLayout.RemoveCardWidgetFromZone(rmwg);
-                manaZoneLayout.RemoveCardWidgetFromZone(rmwg);
+                //manaZoneLayout.RemoveCardWidgetFromZone(rmwg);
+                handZoneLayout.RemoveCardWidgetFromZone(rmwg);
                 remove = true;
             }
 /*
@@ -294,13 +300,13 @@ public class PvPDuelScreenTesting extends Screen{
             position2.Z_scale = 1f;
             CardWgtmp.setTranslateRotateScale(position2);
             //battleZoneLayout.AddCardWidgetToZone(CardWgtmp);
-            manaZoneLayout.TransferCardWidgetToCoupleSlotZone(CardWgtmp);
+            //manaZoneLayout.TransferCardWidgetToCoupleSlotZone(CardWgtmp);
             tmplist.add(CardWgtmp);
         }
 
-        if (!remove) {
-            tmp2 = manaZoneLayout.TouchResponse(touchEvents);
-        }
+        //if (!remove) {
+        //    tmp2 = manaZoneLayout.TouchResponse(touchEvents);
+        //}
 
         if (tmp2 != null && tmp2.isTouched && !tmp2.isTouchedDown) {
             Random R = new Random();
@@ -310,12 +316,15 @@ public class PvPDuelScreenTesting extends Screen{
                 tempindex = (int) R.nextInt(tmplist.size());
                 rmwg = tmplist.get(tempindex);
                 // battleZoneLayout.RemoveCardWidgetFromZone(rmwg);
-                manaZoneLayout.AddToTransitionZone(rmwg);
+                //manaZoneLayout.AddToTransitionZone(rmwg);
             }
         }
-        manaZoneLayout.update(deltaTime, totalTime);
-        manaZoneLayout.draw();
-        tmp2 = battleZoneLayout.TouchResponse(touchEvents);
+        tmp2 = handZoneLayout.TouchResponse(touchEvents);
+        handZoneLayout.update(deltaTime, totalTime);
+        handZoneLayout.draw();
+        //manaZoneLayout.update(deltaTime, totalTime);
+        //manaZoneLayout.draw();
+//        tmp2 = battleZoneLayout.TouchResponse(touchEvents);
         //battleZoneLayout.update(deltaTime, totalTime);
         //battleZoneLayout.draw();
         /*
@@ -346,7 +355,7 @@ public class PvPDuelScreenTesting extends Screen{
             //                game.getInput().getFarPoint(0))), 0);
             //position1.Centerposition.x = intersectingPoint.x;
             //position1.Centerposition.z = intersectingPoint.z;
-            DeckWg.setMode(WidgetMode.Transition);
+            //DeckWg.setMode(WidgetMode.Transition);
         }
 
         DeckWg.setTranslateRotateScale(position1);
@@ -406,6 +415,8 @@ public class PvPDuelScreenTesting extends Screen{
                 AssetsAndResource.MazeHeight/5, HeadOrientation.North, false, 4f, 4f);
         manaZoneLayout.SetDraggingMode(true);
         //manaZoneLayout.SetExpandMode(false);
+        handZoneLayout.InitializeHandZoneLayout(1f, -0.8f, AssetsAndResource.CameraPosition.x/4, AssetsAndResource.CameraPosition.y/4,
+                AssetsAndResource.CameraPosition.z/4, 4f, 4f);
     }
 
     @Override

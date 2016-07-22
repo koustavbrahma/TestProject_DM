@@ -1017,12 +1017,12 @@ public class CardStackWidget implements Widget{
                         }
 
                         for (int j = index; j >= 0; j--) {
-                            WidgetPosition widgetPosition = cardWidgetPositionTable.get(cardStack.get(i));
+                            WidgetPosition widgetPosition = cardWidgetPositionTable.get(cardStack.get(j));
 
                             if (widgetPosition != null) {
                                 width = Math.abs(intersectingPoint.x - (widgetPosition.Centerposition.x - AssetsAndResource.CameraPosition.x / 4));
                                 if (width <= (glcard.width * widgetPosition.X_scale) / 2 && height <= (glcard.height * widgetPosition.Z_scale) / 2) {
-                                    indexTouched.add(0, new Integer(i));
+                                    indexTouched.add(0, new Integer(j));
                                 } else {
                                     break;
                                 }
@@ -1032,12 +1032,12 @@ public class CardStackWidget implements Widget{
                         }
 
                         for (int j = index + 1; j < cardStack.size(); j++) {
-                            WidgetPosition widgetPosition = cardWidgetPositionTable.get(cardStack.get(i));
+                            WidgetPosition widgetPosition = cardWidgetPositionTable.get(cardStack.get(j));
 
                             if (widgetPosition != null) {
                                 width = Math.abs(intersectingPoint.x - (widgetPosition.Centerposition.x - AssetsAndResource.CameraPosition.x / 4));
                                 if (width <= (glcard.width * widgetPosition.X_scale) / 2 && height <= (glcard.height * widgetPosition.Z_scale) / 2) {
-                                    indexTouched.add(new Integer(i));
+                                    indexTouched.add(new Integer(j));
                                 } else {
                                     break;
                                 }

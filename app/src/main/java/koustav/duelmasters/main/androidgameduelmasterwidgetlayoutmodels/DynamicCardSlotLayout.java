@@ -190,5 +190,7 @@ public class DynamicCardSlotLayout implements Layout {
         TopSlotPosition.Centerposition.x = x;
         TopSlotPosition.Centerposition.y = y;
         TopSlotPosition.Centerposition.z = z;
+
+        Disturbed = true;
     }
 }
