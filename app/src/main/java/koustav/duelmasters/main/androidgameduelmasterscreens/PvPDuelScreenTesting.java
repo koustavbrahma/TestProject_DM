@@ -417,6 +417,7 @@ public class PvPDuelScreenTesting extends Screen{
         //manaZoneLayout.SetExpandMode(false);
         handZoneLayout.InitializeHandZoneLayout(1f, -0.8f, AssetsAndResource.CameraPosition.x/4, AssetsAndResource.CameraPosition.y/4,
                 AssetsAndResource.CameraPosition.z/4, 4f, 4f);
+        handZoneLayout.SetDraggingMode(true);
     }
 
     @Override

@@ -186,6 +186,20 @@ public class HandZoneLayout implements Layout  {
             slotLayout.update(deltaTime, totalTime);
         }
 
+        if (DraggingSlot != null) {
+            Input input = AssetsAndResource.game.getInput();
+            GLGeometry.GLPoint intersectingPoint = GLGeometry.GLRayIntersectionWithPlane(
+                    new GLGeometry.GLRay(new GLGeometry.GLPoint(input.getNearPoint(0).x, input.getNearPoint(0).y, input.getNearPoint(0).z),
+                            GLGeometry.GLVectorBetween(input.getNearPoint(0), input.getFarPoint(0))),
+                    new GLGeometry.GLPlane(new GLGeometry.GLPoint(perpendicular_x, perpendicular_y, perpendicular_z),
+                            new GLGeometry.GLVector(perpendicular_x, perpendicular_y, perpendicular_z)));
+
+            if ((intersectingPoint.y - center_y) > AssetsAndResource.CardHeight/2) {
+                DraggingSlot.DragUpdate(0, center_y + AssetsAndResource.CardHeight/2, 0);
+            } else {
+                DraggingSlot.DragUpdate(perpendicular_x * 1.01f, perpendicular_y * 1.01f, perpendicular_z * 1.01f);
+            }
+        }
     }
 
     @Override
@@ -553,9 +567,7 @@ public class HandZoneLayout implements Layout  {
 
         CardSlot.add(slotLayout);
 
-        if (CardSlot.size() == 1) {
-            SelectedCardSlot = slotLayout;
-        }
+        SelectedCardSlot = slotLayout;
 
         int midPoint = CardSlot.size()/2 + CardSlot.size()%2 -1;
 

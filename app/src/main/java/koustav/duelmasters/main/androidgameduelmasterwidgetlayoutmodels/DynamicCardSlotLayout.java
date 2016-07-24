@@ -12,6 +12,10 @@ import koustav.duelmasters.main.androidgameopenglanimation.DriftSystem;
 import koustav.duelmasters.main.androidgameopenglutil.GLGeometry;
 import koustav.duelmasters.main.androidgamesframework.Input;
 
+import static android.opengl.Matrix.multiplyMV;
+import static android.opengl.Matrix.rotateM;
+import static android.opengl.Matrix.setIdentityM;
+
 /**
  * Created by Koustav on 7/12/2016.
  */
@@ -22,6 +26,7 @@ public class DynamicCardSlotLayout implements Layout {
     CardWidget TopCardWidget;
 
     WidgetPosition OldTopSlotPosition;
+    WidgetPosition TopSlotPosition_BreakPoint;
 
     float k1;
     float k2;
@@ -29,11 +34,18 @@ public class DynamicCardSlotLayout implements Layout {
 
     boolean Disturbed;
     boolean running;
+    boolean TwoStepTracking;
+
+    float[] relativeNearPointAfterRot;
+    float[] relativeFarPointAfterRot;
+    GLGeometry.GLPoint relativeNearPoint;
+    GLGeometry.GLPoint relativeFarPoint;
 
     public DynamicCardSlotLayout() {
         TopSlotPosition = new WidgetPosition();
         TopWidgetPosition = new WidgetPosition();
         OldTopSlotPosition = new WidgetPosition();
+        TopSlotPosition_BreakPoint = new WidgetPosition();
         TopDriftSystem = new DriftSystem();
         TopCardWidget = null;
 
@@ -43,6 +55,13 @@ public class DynamicCardSlotLayout implements Layout {
 
         Disturbed = false;
         running = false;
+        TwoStepTracking = false;
+
+        relativeNearPointAfterRot = new float[4];
+        relativeFarPointAfterRot = new float[4];
+
+        relativeNearPoint = new GLGeometry.GLPoint(0, 0, 0);
+        relativeFarPoint = new GLGeometry.GLPoint(0, 0, 0);
     }
 
     @Override
@@ -52,7 +71,50 @@ public class DynamicCardSlotLayout implements Layout {
         }
 
         if (Disturbed) {
-            TopDriftSystem.setDriftInfo(TopCardWidget.getPosition(), TopSlotPosition, k1, k2, totalTime);
+            TwoStepTracking = false;
+            if (Math.abs((TopCardWidget.getPosition().rotaion.angle- TopSlotPosition.rotaion.angle)/ TopSlotPosition.rotaion.angle) > 0.05f) {
+                TwoStepTracking = true;
+            } else if (Math.abs((TopCardWidget.getPosition().rotaion.x - TopSlotPosition.rotaion.x)/ TopSlotPosition.rotaion.x) > 0.05f) {
+                TwoStepTracking = true;
+            } else if (Math.abs((TopCardWidget.getPosition().rotaion.y - TopSlotPosition.rotaion.y)/ TopSlotPosition.rotaion.y) > 0.05f) {
+                TwoStepTracking = true;
+            } else if (Math.abs((TopCardWidget.getPosition().rotaion.z - TopSlotPosition.rotaion.z) / TopSlotPosition.rotaion.z) > 0.05f) {
+                TwoStepTracking = true;
+            }
+            if (TwoStepTracking) {
+                setIdentityM(AssetsAndResource.tempMatrix, 0);
+                if (TopSlotPosition.rotaion.angle != 0) {
+                    rotateM(AssetsAndResource.tempMatrix, 0, TopSlotPosition.rotaion.angle, TopSlotPosition.rotaion.x, TopSlotPosition.rotaion.y,
+                            TopSlotPosition.rotaion.z);
+                }
+                float[] PointAfterRot = new float[4];
+                multiplyMV(PointAfterRot, 0, AssetsAndResource.tempMatrix, 0, new float[] {0, 0, -1, 0f}, 0);
+
+                setIdentityM(AssetsAndResource.tempMatrix, 0);
+                if (TopSlotPosition.rotaion.angle != 0) {
+                    rotateM(AssetsAndResource.tempMatrix, 0, TopSlotPosition.rotaion.angle, TopSlotPosition.rotaion.x, TopSlotPosition.rotaion.y,
+                            TopSlotPosition.rotaion.z);
+                }
+                float[] PointAfterRot2 = new float[4];
+                multiplyMV(PointAfterRot2, 0, AssetsAndResource.tempMatrix, 0, new float[] {0, 1, 0, 0f}, 0);
+
+                TopSlotPosition_BreakPoint.Centerposition.x = TopSlotPosition.Centerposition.x +
+                        PointAfterRot[0] * AssetsAndResource.CardHeight + 0.01f * PointAfterRot2[0];
+                TopSlotPosition_BreakPoint.Centerposition.y = TopSlotPosition.Centerposition.y +
+                        PointAfterRot[1] * AssetsAndResource.CardHeight + 0.01f * PointAfterRot2[1];
+                TopSlotPosition_BreakPoint.Centerposition.z = TopSlotPosition.Centerposition.z +
+                        PointAfterRot[2] * AssetsAndResource.CardHeight + 0.01f * PointAfterRot2[2];
+                TopSlotPosition_BreakPoint.rotaion.angle = TopSlotPosition.rotaion.angle;
+                TopSlotPosition_BreakPoint.rotaion.x = TopSlotPosition.rotaion.x;
+                TopSlotPosition_BreakPoint.rotaion.y = TopSlotPosition.rotaion.y;
+                TopSlotPosition_BreakPoint.rotaion.z = TopSlotPosition.rotaion.z;
+                TopSlotPosition_BreakPoint.X_scale = TopSlotPosition.X_scale;
+                TopSlotPosition_BreakPoint.Y_scale = TopSlotPosition.Y_scale;
+                TopSlotPosition_BreakPoint.Z_scale = TopSlotPosition.Z_scale;
+                TopDriftSystem.setDriftInfo(TopCardWidget.getPosition(), TopSlotPosition_BreakPoint, k1, k2, totalTime);
+            } else {
+                TopDriftSystem.setDriftInfo(TopCardWidget.getPosition(), TopSlotPosition, k1, k2, totalTime);
+            }
             Disturbed = false;
             running = true;
         }
@@ -75,6 +137,14 @@ public class DynamicCardSlotLayout implements Layout {
             this.TopWidgetPosition.X_scale = widgetPositionUpdate.X_scale;
             this.TopWidgetPosition.Y_scale = widgetPositionUpdate.Y_scale;
             this.TopWidgetPosition.Z_scale = widgetPositionUpdate.Z_scale;
+
+            if (TwoStepTracking) {
+                if (!running) {
+                    TopDriftSystem.setDriftInfo(TopCardWidget.getPosition(), TopSlotPosition, k1, k2, totalTime);
+                    running = true;
+                    TwoStepTracking = false;
+                }
+            }
         } else {
             this.TopWidgetPosition.rotaion.angle = TopSlotPosition.rotaion.angle;
             this.TopWidgetPosition.rotaion.x = TopSlotPosition.rotaion.x;
@@ -99,8 +169,36 @@ public class DynamicCardSlotLayout implements Layout {
                 new GLGeometry.GLRay(new GLGeometry.GLPoint(input.getNearPoint(0).x, input.getNearPoint(0).y, input.getNearPoint(0).z),
                         GLGeometry.GLVectorBetween(input.getNearPoint(0), input.getFarPoint(0))),
                 new GLGeometry.GLPlane(new GLGeometry.GLPoint(x, y, z), new GLGeometry.GLVector(x, y, z)));
-        if ((Math.abs(intersectingPoint.x - TopSlotPosition.Centerposition.x) <= (AssetsAndResource.CardWidth * TopSlotPosition.X_scale)/2 &&
-                Math.abs(intersectingPoint.z - TopSlotPosition.Centerposition.z) <= (AssetsAndResource.CardHeight * TopSlotPosition.Z_scale)/2) ||
+
+        setIdentityM(AssetsAndResource.tempMatrix, 0);
+        if (TopSlotPosition.rotaion.angle != 0) {
+            rotateM(AssetsAndResource.tempMatrix, 0, TopSlotPosition.rotaion.angle, -TopSlotPosition.rotaion.x, -TopSlotPosition.rotaion.y,
+                    -TopSlotPosition.rotaion.z);
+        }
+
+        GLGeometry.GLPoint relativeNearPointAfterTrans = input.getNearPoint(0).translate(TopSlotPosition.Centerposition.getVector().scale(-1));
+        GLGeometry.GLPoint relativeFarPointAfterTrans = input.getFarPoint(0).translate(TopSlotPosition.Centerposition.getVector().scale(-1));
+
+        multiplyMV(relativeNearPointAfterRot, 0, AssetsAndResource.tempMatrix, 0, new float[] {relativeNearPointAfterTrans.x,
+                relativeNearPointAfterTrans.y, relativeNearPointAfterTrans.z, 0f}, 0);
+        multiplyMV(relativeFarPointAfterRot, 0, AssetsAndResource.tempMatrix, 0, new float[] {relativeFarPointAfterTrans.x,
+                relativeFarPointAfterTrans.y, relativeFarPointAfterTrans.z, 0f}, 0);
+
+        relativeNearPoint.x = relativeNearPointAfterRot[0];
+        relativeNearPoint.y = relativeNearPointAfterRot[1];
+        relativeNearPoint.z = relativeNearPointAfterRot[2];
+
+        relativeFarPoint.x = relativeFarPointAfterRot[0];
+        relativeFarPoint.y = relativeFarPointAfterRot[1];
+        relativeFarPoint.z = relativeFarPointAfterRot[2];
+
+        GLGeometry.GLPoint intersectingPoint2 = GLGeometry.GLRayIntersectionWithXZPlane(
+                new GLGeometry.GLRay(relativeNearPoint, GLGeometry.GLVectorBetween(relativeNearPoint, relativeFarPoint)), 0);
+
+        float width = Math.abs(intersectingPoint2.x);
+        float height = Math.abs(intersectingPoint2.z);
+
+        if ((width <= AssetsAndResource.CardWidth/2  && height <= AssetsAndResource.CardHeight/2) ||
                 (input.TouchType(0) != Input.TouchEvent.TOUCH_DRAGGED)) {
             return;
         }
