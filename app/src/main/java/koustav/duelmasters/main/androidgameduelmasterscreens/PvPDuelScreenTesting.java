@@ -97,7 +97,7 @@ public class PvPDuelScreenTesting extends Screen{
         it_modelViewMatrix = new float[16];
 
         // Load Assets and Resource for this screen
-        AssetsAndResource.Load(game);
+        AssetsAndResource.Load(game, 0f, 2.4f, 1.6f);
 
         // Object
         DisplayRectangle = new FullScreenRectangle();

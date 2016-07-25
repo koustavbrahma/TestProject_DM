@@ -96,7 +96,7 @@ public class AssetsAndResource {
 
     // APIs
 
-    public static void Load(AndroidGame game) {
+    public static void Load(AndroidGame game, float camera_x, float camera_y, float camera_z) {
         // Store the game reference
         AssetsAndResource.game = game;
 
@@ -129,7 +129,7 @@ public class AssetsAndResource {
         widgetTouchEventPool = new Pool<WidgetTouchEvent>(factory, 10);
 
         // Misc Parameters
-        CameraPosition = new GLGeometry.GLPoint(0f, 2.4f, 1.6f);
+        CameraPosition = new GLGeometry.GLPoint(camera_x, camera_y, camera_z);
     }
 
 

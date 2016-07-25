@@ -9,6 +9,9 @@ import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Maze;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayout.HeadOrientation;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoutmodels.BattleZoneLayout;
+import koustav.duelmasters.main.androidgameduelmasterwidgetlayoutmodels.CardStackZoneLayout;
+import koustav.duelmasters.main.androidgameduelmasterwidgetlayoutmodels.HandZoneLayout;
+import koustav.duelmasters.main.androidgameduelmasterwidgetlayoutmodels.ManaZoneLayout;
 import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.CardStackWidget;
 import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.CardWidget;
 import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetTouchEvent;
@@ -22,16 +25,13 @@ import koustav.duelmasters.main.androidgamesframework.Pool;
  * Created by Koustav on 3/12/2016.
  */
 
-public class WidgetCoordinator {
+public class PvPWidgetCoordinator {
     Maze maze;
 
     // CardWidget Pool
     Pool<CardWidget> cardWidgetPool;
 
-    // Layouts
-    BattleZoneLayout battleZoneLayout;
-    BattleZoneLayout opponentBattleZoneLayout;
-
+    // CardStackWidget
     public CardStackWidget Graveyard;
     public CardStackWidget Deck;
     public CardStackWidget Opponent_Graveyard;
@@ -41,14 +41,22 @@ public class WidgetCoordinator {
     Cube cube;
     Cube glCard;
 
+    // Layouts
+    BattleZoneLayout battleZoneLayout;
+    BattleZoneLayout opponentBattleZoneLayout;
+    ManaZoneLayout manaZoneLayout;
+    ManaZoneLayout opponentManaZoneLayout;
+    CardStackZoneLayout deckLayout;
+    CardStackZoneLayout opponentDeckLayout;
+    CardStackZoneLayout graveyardLayout;
+    CardStackZoneLayout opponentGraveyardLayout;
+    HandZoneLayout handZoneLayout;
+
+
     // Tracking tables
     Hashtable<Cards, CardWidget> CardToWidget;
 
-    // Local variables
-    ArrayList<Cards> cardsArrayList;
-    ArrayList<Float> floatArrayList;
-
-    public WidgetCoordinator(Maze maze) {
+    public PvPWidgetCoordinator(Maze maze) {
         this.maze = maze;
 
         // CardWidget Pool
@@ -63,6 +71,23 @@ public class WidgetCoordinator {
         // Initialize Layouts
         battleZoneLayout = new BattleZoneLayout();
         opponentBattleZoneLayout = new BattleZoneLayout();
+        manaZoneLayout = new ManaZoneLayout();
+        opponentManaZoneLayout = new ManaZoneLayout();
+        deckLayout = new CardStackZoneLayout();
+        opponentDeckLayout = new CardStackZoneLayout();
+        graveyardLayout = new CardStackZoneLayout();
+        opponentGraveyardLayout = new CardStackZoneLayout();
+        handZoneLayout = new HandZoneLayout();
+
+        battleZoneLayout.InitializeBattleZoneLayout(AssetsAndResource.MazeHeight/10, AssetsAndResource.MazeWidth,
+                AssetsAndResource.MazeHeight/5, HeadOrientation.North, false, 4f, 4f);
+        opponentBattleZoneLayout.InitializeBattleZoneLayout(-AssetsAndResource.MazeHeight/10, AssetsAndResource.MazeWidth,
+                AssetsAndResource.MazeHeight/5, HeadOrientation.South, true, 4f, 4f);
+        manaZoneLayout.InitializeBattleZoneLayout((3f * AssetsAndResource.MazeHeight)/10, AssetsAndResource.MazeWidth,
+                AssetsAndResource.MazeHeight/5, HeadOrientation.North, false, 4f, 4f);
+        opponentManaZoneLayout.InitializeBattleZoneLayout(-(3f * AssetsAndResource.MazeHeight)/10, AssetsAndResource.MazeWidth,
+                AssetsAndResource.MazeHeight/5, HeadOrientation.South, true, 4f, 4f);
+       // deckLayout.InitializeCardStackZoneLayout();
 
         Graveyard = new CardStackWidget();
         Deck = new CardStackWidget();
@@ -76,11 +101,6 @@ public class WidgetCoordinator {
         glCard = new Cube(new GLMaterial(new float[] {0.8f, 0.8f, 0.8f}, new float[] {0.8f, 0.8f, 0.8f},
                 new float[] {0.1f, 0.1f, 0.1f}, 10.0f), AssetsAndResource.CardWidth, AssetsAndResource.CardLength, AssetsAndResource.CardHeight, true);
 
-        Graveyard.LinkLogicalObject(maze.getZoneList().get(Maze.graveyard).getZoneArray());
-        Deck.LinkLogicalObject(maze.getZoneList().get(Maze.deck).getZoneArray());
-        Opponent_Graveyard.LinkLogicalObject(maze.getZoneList().get(Maze.Opponent_graveyard).getZoneArray());
-        Opponent_Deck.LinkLogicalObject(maze.getZoneList().get(Maze.Opponent_deck).getZoneArray());
-
         // Link to its GLObject
         Graveyard.LinkGLobject(cube, glCard);
         Graveyard.setFlip(false);
@@ -91,12 +111,15 @@ public class WidgetCoordinator {
         Opponent_Deck.LinkGLobject(cube, glCard);
         Opponent_Deck.setFlip(true);
 
+        // Link to its Logical Object
+        Graveyard.LinkLogicalObject(maze.getZoneList().get(Maze.graveyard).getZoneArray());
+        Deck.LinkLogicalObject(maze.getZoneList().get(Maze.deck).getZoneArray());
+        Opponent_Graveyard.LinkLogicalObject(maze.getZoneList().get(Maze.Opponent_graveyard).getZoneArray());
+        Opponent_Deck.LinkLogicalObject(maze.getZoneList().get(Maze.Opponent_deck).getZoneArray());
+
         // Tracking tables
         CardToWidget = new Hashtable<Cards, CardWidget>();
 
-        // Local variables
-        cardsArrayList = new ArrayList<Cards>();
-        floatArrayList = new ArrayList<Float>();
     }
 
     public CardWidget getWidgetForCard(Cards card) {

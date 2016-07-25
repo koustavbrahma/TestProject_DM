@@ -261,6 +261,7 @@ public class HandZoneLayout implements Layout  {
             widgetTouchEvent.isDoubleTouched = false;
             widgetTouchEvent.object = DraggingSlot.getCardWidget().getLogicalObject();
             DraggingSlot.SetSlotDisturbed();
+            DraggingSlot.setTwoStepTransition(true);
             DraggingSlot = null;
 
             return widgetTouchEvent;
@@ -274,6 +275,10 @@ public class HandZoneLayout implements Layout  {
 
         if (SelectedCardSlot == null) {
             throw new RuntimeException("SelectedCardSlot is null and Zone is not empty");
+        }
+
+        if (SelectedCardSlot.IsTransition()) {
+            return null;
         }
 
         widgetTouchEventList.clear();
@@ -567,7 +572,9 @@ public class HandZoneLayout implements Layout  {
 
         CardSlot.add(slotLayout);
 
-        SelectedCardSlot = slotLayout;
+        if (CardSlot.size() == 1) {
+            SelectedCardSlot = slotLayout;
+        }
 
         int midPoint = CardSlot.size()/2 + CardSlot.size()%2 -1;
 

@@ -35,6 +35,7 @@ public class DynamicCardSlotLayout implements Layout {
     boolean Disturbed;
     boolean running;
     boolean TwoStepTracking;
+    boolean TwoStepTransition;
 
     float[] relativeNearPointAfterRot;
     float[] relativeFarPointAfterRot;
@@ -56,6 +57,7 @@ public class DynamicCardSlotLayout implements Layout {
         Disturbed = false;
         running = false;
         TwoStepTracking = false;
+        TwoStepTransition = false;
 
         relativeNearPointAfterRot = new float[4];
         relativeFarPointAfterRot = new float[4];
@@ -72,15 +74,16 @@ public class DynamicCardSlotLayout implements Layout {
 
         if (Disturbed) {
             TwoStepTracking = false;
-            if (Math.abs((TopCardWidget.getPosition().rotaion.angle- TopSlotPosition.rotaion.angle)/ TopSlotPosition.rotaion.angle) > 0.05f) {
+            if (TwoStepTransition && Math.abs((TopCardWidget.getPosition().rotaion.angle- TopSlotPosition.rotaion.angle)/ TopSlotPosition.rotaion.angle) > 0.05f) {
                 TwoStepTracking = true;
-            } else if (Math.abs((TopCardWidget.getPosition().rotaion.x - TopSlotPosition.rotaion.x)/ TopSlotPosition.rotaion.x) > 0.05f) {
+            } else if (TwoStepTransition && Math.abs((TopCardWidget.getPosition().rotaion.x - TopSlotPosition.rotaion.x)/ TopSlotPosition.rotaion.x) > 0.05f) {
                 TwoStepTracking = true;
-            } else if (Math.abs((TopCardWidget.getPosition().rotaion.y - TopSlotPosition.rotaion.y)/ TopSlotPosition.rotaion.y) > 0.05f) {
+            } else if (TwoStepTransition && Math.abs((TopCardWidget.getPosition().rotaion.y - TopSlotPosition.rotaion.y)/ TopSlotPosition.rotaion.y) > 0.05f) {
                 TwoStepTracking = true;
-            } else if (Math.abs((TopCardWidget.getPosition().rotaion.z - TopSlotPosition.rotaion.z) / TopSlotPosition.rotaion.z) > 0.05f) {
+            } else if (TwoStepTransition && Math.abs((TopCardWidget.getPosition().rotaion.z - TopSlotPosition.rotaion.z) / TopSlotPosition.rotaion.z) > 0.05f) {
                 TwoStepTracking = true;
             }
+            TwoStepTransition = false;
             if (TwoStepTracking) {
                 setIdentityM(AssetsAndResource.tempMatrix, 0);
                 if (TopSlotPosition.rotaion.angle != 0) {
@@ -290,5 +293,9 @@ public class DynamicCardSlotLayout implements Layout {
         TopSlotPosition.Centerposition.z = z;
 
         Disturbed = true;
+    }
+
+    public void setTwoStepTransition(boolean val) {
+        this.TwoStepTransition = val;
     }
 }
