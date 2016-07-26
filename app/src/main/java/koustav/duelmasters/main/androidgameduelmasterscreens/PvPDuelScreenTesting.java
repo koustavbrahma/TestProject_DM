@@ -271,7 +271,7 @@ public class PvPDuelScreenTesting extends Screen{
 
         }
 
-        position.Centerposition.x = 0.6f;
+        position.Centerposition.x = 0.5f;
         position.Centerposition.y = 0f;
         position.Centerposition.z = -0.3f;
         position.rotaion.angle = 0;
@@ -332,7 +332,7 @@ public class PvPDuelScreenTesting extends Screen{
         CardWg2.draw();
 */
         ArrayList<GLAngularRotaion> rotaions = new ArrayList<GLAngularRotaion>();
-        GLAngularRotaion rotaion= new GLAngularRotaion(90, 0, 1f, 0);
+        GLAngularRotaion rotaion= new GLAngularRotaion(30, 0, 1f, 0);
         //GLAngularRotaion rotaion1 = new GLAngularRotaion(90, 1f, 0 , 0);
 
         //rotaions.add(rotaion);
@@ -340,9 +340,9 @@ public class PvPDuelScreenTesting extends Screen{
 
         //rotaion = MatrixHelper.getCombinedRotation(rotaions);
         WidgetPosition position1 = new WidgetPosition();
-        position1.Centerposition.x = 0.5f;
+        position1.Centerposition.x = 0.68f;
         position1.Centerposition.y = 0.025f;
-        position1.Centerposition.z = 0.0f;
+        position1.Centerposition.z = 0.15f;
         position1.rotaion.angle = rotaion.angle;
         position1.rotaion.y = rotaion.y;
         position1.rotaion.x = rotaion.x;
@@ -399,6 +399,7 @@ public class PvPDuelScreenTesting extends Screen{
         // Widget
         CardWg.ShadowEnable(false);
         CardWg.LinkGLobject(glcard2);
+        CardWg.LinkLogicalObject(null);
         CardWg2.ShadowEnable(false);
         CardWg2.LinkGLobject(glcard2);
         CardWg3.ShadowEnable(false);
@@ -415,7 +416,7 @@ public class PvPDuelScreenTesting extends Screen{
                 AssetsAndResource.MazeHeight/5, HeadOrientation.North, false, 4f, 4f);
         manaZoneLayout.SetDraggingMode(true);
         //manaZoneLayout.SetExpandMode(false);
-        handZoneLayout.InitializeHandZoneLayout(1f, -0.8f, AssetsAndResource.CameraPosition.x/4, AssetsAndResource.CameraPosition.y/4,
+        handZoneLayout.InitializeHandZoneLayout(1f, -0.78f, AssetsAndResource.CameraPosition.x/4, AssetsAndResource.CameraPosition.y/4,
                 AssetsAndResource.CameraPosition.z/4, 4f, 4f);
         handZoneLayout.SetDraggingMode(true);
     }

@@ -1,6 +1,7 @@
 package koustav.duelmasters.main.androidgameduelmastersdatastructure;
 
 import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.GridPositionIndex;
+import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.CardWidget;
 
 /**
  * Created by Koustav on 2/16/2015.
@@ -8,10 +9,12 @@ import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.GridPos
 public class Cards {
     protected PackedCardInfo cardinfo;
     protected GridPositionIndex GridPosition;
+    CardWidget widget;
 
     public  Cards(PackedCardInfo cardinfo, GridPositionIndex GridPosition) {
         this.cardinfo = cardinfo;
         this.GridPosition = GridPosition;
+        this.widget = null;
     }
 
     public GridPositionIndex GridPosition() {
@@ -49,5 +52,16 @@ public class Cards {
         A = cardinfo;
         cardinfo = null;
         return A;
+    }
+    public void setWidget(CardWidget widget) {
+        this.widget = widget;
+    }
+    public CardWidget getWidget() {
+        return widget;
+    }
+    public CardWidget unsetWidget() {
+        CardWidget oldwidget = this.widget;
+        this.widget = null;
+        return oldwidget;
     }
 }

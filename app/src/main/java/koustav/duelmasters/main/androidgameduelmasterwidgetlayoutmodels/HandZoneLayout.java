@@ -289,8 +289,8 @@ public class HandZoneLayout implements Layout  {
 
         float gap = this.width / CardSlot.size();
 
-        if (gap >= AssetsAndResource.CardWidth/2) {
-            gap = AssetsAndResource.CardWidth/2;
+        if (gap >= (3f * AssetsAndResource.CardWidth)/4f) {
+            gap = (3f * AssetsAndResource.CardWidth)/4f;
         }
 
         setIdentityM(AssetsAndResource.tempMatrix, 0);
@@ -580,8 +580,8 @@ public class HandZoneLayout implements Layout  {
 
         float gap = this.width / CardSlot.size();
 
-        if (gap >= AssetsAndResource.CardWidth/2) {
-            gap = AssetsAndResource.CardWidth/2;
+        if (gap >= (3f * AssetsAndResource.CardWidth)/4f) {
+            gap = (3f * AssetsAndResource.CardWidth)/4f;
         }
 
         for (int i = 0; i < CardSlot.size(); i++) {
@@ -626,8 +626,8 @@ public class HandZoneLayout implements Layout  {
 
             float gap = this.width / CardSlot.size();
 
-            if (gap >= AssetsAndResource.CardWidth/2) {
-                gap = AssetsAndResource.CardWidth/2;
+            if (gap >= (3f* AssetsAndResource.CardWidth)/4f) {
+                gap = (3f * AssetsAndResource.CardWidth)/4f;
             }
 
             for (int i = 0; i < CardSlot.size(); i++) {

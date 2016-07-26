@@ -86,7 +86,7 @@ public class AssetsAndResource {
     public static Pool<WidgetTouchEvent> widgetTouchEventPool;
 
     // Misc parameters
-    public static float MazeWidth = 1.4f;
+    public static float MazeWidth = 1.0f;
     public static float MazeHeight = 1.0f;
     public static float CardWidth = 0.1067f;
     public static float CardHeight = 0.16f;
