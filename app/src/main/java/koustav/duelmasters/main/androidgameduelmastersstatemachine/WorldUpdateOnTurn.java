@@ -1,6 +1,6 @@
 package koustav.duelmasters.main.androidgameduelmastersstatemachine;
 
-import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.World;
+import koustav.duelmasters.main.androidgameduelmastersworlds.PvPWorld;
 
 /**
  * Created by Koustav on 3/28/2015.
@@ -11,13 +11,13 @@ public class WorldUpdateOnTurn {
         OnTurn,
         PostTurn,
     }
-    World world;
+    PvPWorld world;
     WorldStateOnTurn stateOnTurn;
     PreTurn preTurn;
     OnTurn onTurn;
     PostTurn postTurn;
 
-    public WorldUpdateOnTurn(World world, boolean trun) {
+    public WorldUpdateOnTurn(PvPWorld world, boolean trun) {
         this.world = world;
         if (trun) {
             stateOnTurn = WorldStateOnTurn.OnTurn;

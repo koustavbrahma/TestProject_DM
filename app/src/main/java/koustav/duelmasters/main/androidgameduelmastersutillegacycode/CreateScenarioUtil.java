@@ -10,14 +10,14 @@ import koustav.duelmasters.main.androidgameduelmastersdatastructure.ActiveCard;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
 import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.GridPositionIndex;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.PackedCardInfo;
-import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.World;
+import koustav.duelmasters.main.androidgameduelmastersworlds.PvPWorld;
 import koustav.duelmasters.main.androidgameduelmastersutil.SetUnsetUtil;
 
 /**
  * Created by Koustav on 5/20/2015.
  */
 public class CreateScenarioUtil {
-    public static void CreateTestScenario(World world) {
+    public static void CreateTestScenario(PvPWorld world) {
         try {
             InputStream DeckList = world.getGame().getFileIO().readAsset("testscenario.txt");
             BufferedReader bufferedReaderDeckList = new BufferedReader(new InputStreamReader(DeckList));
@@ -191,7 +191,7 @@ public class CreateScenarioUtil {
         }
     }
 
-        public static void CreateTestScenario2(World world) {
+        public static void CreateTestScenario2(PvPWorld world) {
             try {
                 InputStream DeckList = world.getGame().getFileIO().readAsset("testscenario.txt");
                 BufferedReader bufferedReaderDeckList = new BufferedReader(new InputStreamReader(DeckList));

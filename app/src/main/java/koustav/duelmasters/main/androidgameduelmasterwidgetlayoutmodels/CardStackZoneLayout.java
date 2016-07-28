@@ -58,7 +58,13 @@ public class CardStackZoneLayout implements Layout {
 
     @Override
     public WidgetTouchEvent TouchResponse(List<Input.TouchEvent> touchEvents) {
-        return cardStackWidget.isTouched(touchEvents);
+        WidgetTouchEvent widgetTouchEvent = cardStackWidget.isTouched(touchEvents);
+
+        if (widgetTouchEvent.isTouched) {
+            return widgetTouchEvent;
+        } else {
+            return null;
+        }
     }
 
     public CardStackWidget getCardStackWidget() {

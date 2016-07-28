@@ -7,7 +7,7 @@ import koustav.duelmasters.main.androidgameduelmasterscardrulehandler.Instructio
 import koustav.duelmasters.main.androidgameduelmasterscardrulehandler.InstructionSet;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.InactiveCard;
-import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.World;
+import koustav.duelmasters.main.androidgameduelmastersworlds.PvPWorld;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.WorldFlags;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Zone;
 import koustav.duelmasters.main.androidgameduelmasterseventlogmodule.DirectiveHeader;
@@ -22,7 +22,7 @@ import koustav.duelmasters.main.androidgameduelmastersutillegacycode.UIUtil;
  * Created by Koustav on 3/28/2015.
  */
 public class WorldUpdateOffTurn {
-    World world;
+    PvPWorld world;
     enum WorldUpdateoffTurnState {
         S1,
         S2,
@@ -45,7 +45,7 @@ public class WorldUpdateOffTurn {
     InactiveCard AttackingCard;
     InactiveCard AttackedCard;
 
-    public WorldUpdateOffTurn(World world){
+    public WorldUpdateOffTurn(PvPWorld world){
         this.world = world;
         this.S = WorldUpdateoffTurnState.S1;
         AttackingCard = null;

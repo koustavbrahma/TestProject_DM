@@ -3,7 +3,7 @@ package koustav.duelmasters.main.androidgameduelmastersutil;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.InactiveCard;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.TypeOfCard;
-import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.World;
+import koustav.duelmasters.main.androidgameduelmastersworlds.PvPWorld;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Zone;
 
 /**
@@ -429,7 +429,7 @@ public class GetUtil {
         return (card.getCost() + ManaCost(card) - NManaCost(card));
     }
 
-    public static boolean IsAllowedToSummonOrCast(InactiveCard card, World world) {
+    public static boolean IsAllowedToSummonOrCast(InactiveCard card, PvPWorld world) {
         if (card.getflagAttributes().GetAttribute("CantSummon") > 0)
             return false;
 
@@ -475,7 +475,7 @@ public class GetUtil {
         return true;
     }
 
-    public static boolean IsAllowedToAttack(InactiveCard card, World world) {
+    public static boolean IsAllowedToAttack(InactiveCard card, PvPWorld world) {
         boolean status = false;
         InactiveCard Ocard;
         if (IgnoreAnyAttackPrevent(card))
@@ -530,7 +530,7 @@ public class GetUtil {
         }
     }
 
-    public static boolean IsEvolutionBaseExist(InactiveCard card, World world) {
+    public static boolean IsEvolutionBaseExist(InactiveCard card, PvPWorld world) {
         InactiveCard Bcard;
         boolean status = false;
         Zone zone = world.getMaze().getZoneList().get(0);
@@ -545,7 +545,7 @@ public class GetUtil {
         return status;
     }
 
-    public static boolean OpponentHasABlocker(World world, InactiveCard Attacker, InactiveCard Attacked) {
+    public static boolean OpponentHasABlocker(PvPWorld world, InactiveCard Attacker, InactiveCard Attacked) {
         InactiveCard card;
         boolean status = false;
         Zone zone = world.getMaze().getZoneList().get(7);
@@ -560,7 +560,7 @@ public class GetUtil {
         return status;
     }
 
-    public static boolean IsAllowedToEndTurn(World world) {
+    public static boolean IsAllowedToEndTurn(PvPWorld world) {
         boolean status = true;
 
         Zone zone = world.getMaze().getZoneList().get(0);
@@ -576,7 +576,7 @@ public class GetUtil {
         return status;
     }
 
-    public static boolean IsUnTapAllAtEndOfTurn(World world) {
+    public static boolean IsUnTapAllAtEndOfTurn(PvPWorld world) {
         boolean status = false;
 
         Zone zone = world.getMaze().getZoneList().get(0);

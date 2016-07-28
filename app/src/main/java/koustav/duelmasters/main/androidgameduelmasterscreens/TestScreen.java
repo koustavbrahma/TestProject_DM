@@ -2,7 +2,7 @@ package koustav.duelmasters.main.androidgameduelmasterscreens;
 
 import java.util.List;
 
-import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.World;
+import koustav.duelmasters.main.androidgameduelmastersworlds.PvPWorld;
 import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAndResource;
 import koustav.duelmasters.main.androidgameduelmastersutillegacycode.CreateScenarioUtil;
 import koustav.duelmasters.main.androidgameduelmastersutillegacycode.GraphicUtil;
@@ -22,12 +22,12 @@ public class TestScreen extends Screen {
         Paused
     }
 
-    World world;
+    PvPWorld world;
     GameState state;
 
     public TestScreen(AndroidGame game) {
         super(game);
-        world = new World(game, game.getTurn());
+        world = new PvPWorld(game, game.getTurn());
         state = GameState.Loading;
         game.getNetwork().start();
     }

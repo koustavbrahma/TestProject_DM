@@ -8,6 +8,7 @@ import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAnd
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Maze;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayout.HeadOrientation;
+import koustav.duelmasters.main.androidgameduelmasterwidgetlayout.Layout;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoutmodels.BattleZoneLayout;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoutmodels.CardStackZoneLayout;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoutmodels.HandZoneLayout;
@@ -16,6 +17,7 @@ import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.CardStackWidge
 import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.CardWidget;
 import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetTouchEvent;
 import koustav.duelmasters.main.androidgameopenglobjectmodels.Cube;
+import koustav.duelmasters.main.androidgameopenglutil.GLGeometry;
 import koustav.duelmasters.main.androidgameopenglutil.GLGeometry.*;
 import koustav.duelmasters.main.androidgameopenglutil.GLMaterial;
 import koustav.duelmasters.main.androidgamesframework.Graphics;
@@ -53,12 +55,22 @@ public class PvPWidgetCoordinator {
     CardStackZoneLayout opponentGraveyardLayout;
     HandZoneLayout handZoneLayout;
 
-    // Misc var;
+    // Misc var
     boolean ShadowEnable;
+    Layout FocusLayout;
+
+    // Listener
+    WidgetTouchListener LowFocusListener;
+    WidgetTouchListener MediumFocusListener;
+    WidgetTouchListener HighFocusListener;
+    WidgetTouchListener Listener;
 
     public PvPWidgetCoordinator(Maze maze) {
         this.maze = maze;
+
+        // Misc var
         this.ShadowEnable = true;
+        FocusLayout = null;
 
         // CardWidget Pool
         Pool.PoolObjectFactory<CardWidget> factory = new Pool.PoolObjectFactory<CardWidget>() {
@@ -128,9 +140,58 @@ public class PvPWidgetCoordinator {
         opponentDeckLayout.InitializeCardStackZoneLayout(-0.68f, AssetsAndResource.CardLength * 20f, -0.15f, 210f, 0, 1f, 0f, Opponent_Deck);
         graveyardLayout.InitializeCardStackZoneLayout(0.65f, AssetsAndResource.CardLength * 20f, 0.35f, 30f, 0, 1f, 0f, Graveyard);
         opponentGraveyardLayout.InitializeCardStackZoneLayout(-0.65f, AssetsAndResource.CardLength * 20f, -0.35f, 210f, 0, 1f, 0f, Opponent_Graveyard);
-        handZoneLayout.InitializeHandZoneLayout(1f, -0.8f, AssetsAndResource.CameraPosition.x/4, AssetsAndResource.CameraPosition.y/4,
-                AssetsAndResource.CameraPosition.z/4, 4f, 4f);
+        handZoneLayout.InitializeHandZoneLayout(AssetsAndResource.MazeWidth, -0.8f, AssetsAndResource.CameraPosition.x/4,
+                AssetsAndResource.CameraPosition.y/4, AssetsAndResource.CameraPosition.z/4, 4f, 4f);
 
+        // Define Listener
+        DefineListener();
+        Listener = LowFocusListener;
+
+    }
+
+    private void setWidgetCoordinatorListener(WidgetTouchListener listener) {
+        this.Listener = listener;
+    }
+
+    private void DefineListener() {
+        LowFocusListener = new WidgetTouchListener() {
+            @Override
+            public void TouchListener(List<Input.TouchEvent> touchEvents) {
+                Input input = AssetsAndResource.game.getInput();
+                WidgetTouchEvent widgetTouchEvent = null;
+
+                if (input.isTouchDown(0)) {
+                    GLPoint NearPoint = new GLPoint(input.getNearPoint(0).x, input.getNearPoint(0).y,
+                            input.getNearPoint(0).z);
+                    GLPoint FarPoint = new GLPoint(input.getFarPoint(0).x, input.getFarPoint(0).y,
+                            input.getFarPoint(0).z);
+
+                    GLPoint intersectingPoint = GLGeometry.GLRayIntersectionWithXZPlane(
+                            new GLRay(NearPoint, GLGeometry.GLVectorBetween(NearPoint, FarPoint)), 0);
+
+                    if (intersectingPoint.z >= 0) {
+                        if (Math.abs(intersectingPoint.x) <= AssetsAndResource.MazeHeight/10 &&
+                                Math.abs(intersectingPoint.z - AssetsAndResource.MazeHeight/10) <= AssetsAndResource.MazeWidth) {
+                            widgetTouchEvent = battleZoneLayout.TouchResponse(touchEvents);
+                        }
+                    }
+                }
+            }
+        };
+
+        MediumFocusListener = new WidgetTouchListener() {
+            @Override
+            public void TouchListener(List<Input.TouchEvent> touchEvents) {
+
+            }
+        };
+
+        HighFocusListener = new WidgetTouchListener() {
+            @Override
+            public void TouchListener(List<Input.TouchEvent> touchEvents) {
+
+            }
+        };
     }
 
     public CardWidget getWidgetForCard(Cards card) {
@@ -169,8 +230,33 @@ public class PvPWidgetCoordinator {
         return cardWidget;
     }
 
-    public Cards getTouchedCard(List<Input.TouchEvent> touchEvents) {
-        return null;
+    public void PvPWidgetsTouchListener() {
+        List<Input.TouchEvent> touchEvents = AssetsAndResource.game.getInput().getTouchEvents();
+
+        Listener.TouchListener(touchEvents);
     }
 
+    public void update(float deltaTime, float totalTime) {
+        battleZoneLayout.update(deltaTime, totalTime);
+        opponentBattleZoneLayout.update(deltaTime, totalTime);
+        manaZoneLayout.update(deltaTime, totalTime);
+        opponentManaZoneLayout.update(deltaTime, totalTime);
+        deckLayout.update(deltaTime, totalTime);
+        opponentDeckLayout.update(deltaTime, totalTime);
+        graveyardLayout.update(deltaTime, totalTime);
+        opponentGraveyardLayout.update(deltaTime, totalTime);
+        handZoneLayout.update(deltaTime, totalTime);
+    }
+
+    public void draw(){
+        battleZoneLayout.draw();
+        opponentBattleZoneLayout.draw();
+        manaZoneLayout.draw();
+        opponentManaZoneLayout.draw();
+        deckLayout.draw();
+        opponentDeckLayout.draw();
+        graveyardLayout.draw();
+        opponentGraveyardLayout.draw();
+        handZoneLayout.draw();
+    }
 }

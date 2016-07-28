@@ -357,7 +357,7 @@ public class ManaZoneLayout implements Layout{
             return widgetTouchEvent;
         } else {
             if (!DragLock && CoupleCardSlot.contains(DraggingSlot) &&
-                    (ExpandMode && (NewCoupleSlot != null && SelectedCoupleCardSlot == NewCoupleSlot))) {
+                    (ExpandMode && (NewCoupleSlot != null && SelectedCoupleCardSlot == NewCoupleSlot) && NewCoupleSlot.stackCount() > 1)) {
                 touchMode = TouchModeManaZone.SlotExpandMode;
                 widgetTouchEvent = AssetsAndResource.widgetTouchEventPool.newObject();
                 widgetTouchEvent.isTouched = true;

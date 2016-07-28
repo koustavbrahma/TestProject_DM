@@ -8,7 +8,7 @@ import koustav.duelmasters.main.androidgameduelmastersdatastructure.ActiveCard;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.InactiveCard;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.TypeOfCard;
-import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.World;
+import koustav.duelmasters.main.androidgameduelmastersworlds.PvPWorld;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.WorldFlags;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Zone;
 import koustav.duelmasters.main.androidgameduelmasterseventlogmodule.DirectiveHeader;
@@ -34,7 +34,7 @@ public class PreTurn {
         S5,
     }
     State S;
-    World world;
+    PvPWorld world;
     InstructionSet UnTapManaInstruction;
     InstructionSet UnTapCreaturesInstruction;
     InstructionSet CleanDontUnTap;
@@ -46,7 +46,7 @@ public class PreTurn {
     int Counter;
     Boolean SummonTapped;
 
-    public PreTurn(World world){
+    public PreTurn(PvPWorld world){
         this.world = world;
         S = State.S1;
         String instruction = InstSetUtil.GenerateAttributeCleanUpInstruction(10, "Tapped", 1);

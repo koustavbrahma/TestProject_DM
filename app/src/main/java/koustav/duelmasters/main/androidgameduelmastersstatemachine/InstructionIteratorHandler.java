@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import koustav.duelmasters.main.androidgameduelmasterscardrulehandler.InstructionSet;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.InactiveCard;
-import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.World;
+import koustav.duelmasters.main.androidgameduelmastersworlds.PvPWorld;
 import koustav.duelmasters.main.androidgameduelmasterseventlogmodule.DirectiveHeader;
 import koustav.duelmasters.main.androidgameduelmastersutil.ActUtil;
 import koustav.duelmasters.main.androidgameduelmastersutil.InstSetUtil;
@@ -21,13 +21,13 @@ public class InstructionIteratorHandler {
     }
 
     AbilityHandlerStates S;
-    World world;
+    PvPWorld world;
     int InstCount;
     ArrayList<InstructionSet> instructions;
     InactiveCard card;
     InstructionSet NotYetSpreadCleanup;
 
-    public InstructionIteratorHandler(World world) {
+    public InstructionIteratorHandler(PvPWorld world) {
         this.world = world;
         S = AbilityHandlerStates.S1;
         InstCount = 0;

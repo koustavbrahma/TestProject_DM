@@ -1,7 +1,7 @@
 package koustav.duelmasters.main.androidgameduelmastersutil;
 
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.InactiveCard;
-import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.World;
+import koustav.duelmasters.main.androidgameduelmastersworlds.PvPWorld;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Zone;
 
 /**
@@ -9,7 +9,7 @@ import koustav.duelmasters.main.androidgameduelmastersdatastructure.Zone;
  */
 public class NetworkUtil {
 
-    public static boolean sendDirectiveUpdates(World world, String Header, String trunk, String tail) {
+    public static boolean sendDirectiveUpdates(PvPWorld world, String Header, String trunk, String tail) {
         String msg;
         msg = new String(Header);
         msg = msg.concat("@");
@@ -79,7 +79,7 @@ public class NetworkUtil {
         }
     }
 */
-    public static String GenerateTappedCardInfo(World world, int zone) {
+    public static String GenerateTappedCardInfo(PvPWorld world, int zone) {
         if ( zone > 1)
             throw new IllegalArgumentException("Invalid Zone passed");
         int z = zone + 7;

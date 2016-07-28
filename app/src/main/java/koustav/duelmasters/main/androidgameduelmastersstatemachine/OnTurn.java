@@ -8,7 +8,7 @@ import koustav.duelmasters.main.androidgameduelmastersdatastructure.InactiveCard
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.ActiveCard;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.TypeOfCard;
-import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.World;
+import koustav.duelmasters.main.androidgameduelmastersworlds.PvPWorld;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.WorldFlags;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Zone;
 import koustav.duelmasters.main.androidgameduelmasterseventlogmodule.DirectiveHeader;
@@ -47,14 +47,14 @@ public class OnTurn {
         SY2,
     }
     OnTurnState S;
-    World world;
+    PvPWorld world;
     InstructionSet NotYetSpreadCleanup;
     InstructionSet UnTapCreaturesInstruction;
     boolean SummonTapped;
     boolean UnTapAllAtEndOfTurn;
 
 
-    public OnTurn(World world) {
+    public OnTurn(PvPWorld world) {
         this.world = world;
         S = OnTurnState.S1;
         String instruction = InstSetUtil.GenerateAttributeCleanUpInstruction(3333, "NotYetSpread", 1);

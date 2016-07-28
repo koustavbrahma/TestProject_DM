@@ -8,7 +8,7 @@ import java.util.Iterator;
 import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAndResource;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.InactiveCard;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
-import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.World;
+import koustav.duelmasters.main.androidgameduelmastersworlds.PvPWorld;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.WorldFlags;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Zone;
 import koustav.duelmasters.main.androidgameduelmastersutil.GetUtil;
@@ -18,7 +18,7 @@ import koustav.duelmasters.main.androidgamesframework.Graphics;
  * Created by Koustav on 5/19/2015.
  */
 public class GraphicUtil {
-    public static boolean BlockPresent(World world) {
+    public static boolean BlockPresent(PvPWorld world) {
         if (world.getWorldFlag(WorldFlags.ManaSelectMode) || world.getWorldFlag(WorldFlags.ShieldSelectMode) ||
                 world.getWorldFlag(WorldFlags.AttackSelectMode) || world.getWorldFlag(WorldFlags.SilentSkillMode) ||
                 world.getWorldFlag(WorldFlags.CardSelectingMode) || world.getWorldFlag(WorldFlags.BlockerSelectMode)||
@@ -29,7 +29,7 @@ public class GraphicUtil {
         else
             return false;
     }
-    public static void presentControlButtons(World world) {
+    public static void presentControlButtons(PvPWorld world) {
         if (BlockPresent(world)) {
             return;
         }
@@ -94,7 +94,7 @@ public class GraphicUtil {
         }
     }
 
-    public static void presentYourCards(World world) {
+    public static void presentYourCards(PvPWorld world) {
         Graphics g = world.getGame().getGraphics();
         int w = world.getframeBufferWidht()/8;
         int h = world.getframeBufferHeight()/10;
@@ -177,7 +177,7 @@ public class GraphicUtil {
         }
     }
 
-    public static void presentOpponentCards(World world) {
+    public static void presentOpponentCards(PvPWorld world) {
         Graphics g = world.getGame().getGraphics();
         int w = world.getframeBufferWidht()/8;
         int h = world.getframeBufferHeight()/10;
@@ -260,7 +260,7 @@ public class GraphicUtil {
         }
     }
 
-    public static void presentInfoTab(World world) {
+    public static void presentInfoTab(PvPWorld world) {
         if (BlockPresent(world)) {
             return;
         }
@@ -309,7 +309,7 @@ public class GraphicUtil {
         }
     }
 
-    public static void presentHighlightManaCard(World world) {
+    public static void presentHighlightManaCard(PvPWorld world) {
         if (!world.getWorldFlag(WorldFlags.ManaSelectMode)) {
             return;
         }
@@ -336,7 +336,7 @@ public class GraphicUtil {
         }
     }
 
-    public static void presentAttackedCard(World world) {
+    public static void presentAttackedCard(PvPWorld world) {
         if ((!world.getWorldFlag(WorldFlags.ShieldSelectMode) && !world.getWorldFlag(WorldFlags.AttackSelectMode)) ||
                 (world.getWorldFlag(WorldFlags.CardSelectingMode) || world.getWorldFlag(WorldFlags.CardSearchSelectingMode))) {
             return;
@@ -375,7 +375,7 @@ public class GraphicUtil {
         }
     }
 
-    public static void presentSilentSkillOrShieldTrigger(World world) {
+    public static void presentSilentSkillOrShieldTrigger(PvPWorld world) {
         if (!world.getWorldFlag(WorldFlags.SilentSkillMode) && !world.getWorldFlag(WorldFlags.ShieldTriggerMode))
             return;
 
@@ -385,7 +385,7 @@ public class GraphicUtil {
         g.drawPixmap(AssetsAndResource.Button, w * 2, 0);
     }
 
-    public static void presentUserDecisionMakingMode(World world) {
+    public static void presentUserDecisionMakingMode(PvPWorld world) {
         if (!world.getWorldFlag(WorldFlags.UserDecisionMakingMode))
             return;
 
@@ -399,7 +399,7 @@ public class GraphicUtil {
         }
     }
 
-    public static void presentCardSelectMode(World world) {
+    public static void presentCardSelectMode(PvPWorld world) {
         if (!world.getWorldFlag(WorldFlags.CardSelectingMode))
             return;
 
@@ -433,7 +433,7 @@ public class GraphicUtil {
         }
     }
 
-    public static void presentBlockerSelect(World world) {
+    public static void presentBlockerSelect(PvPWorld world) {
         if (!world.getWorldFlag(WorldFlags.BlockerSelectMode) || world.getTurn())
             return;
 
@@ -466,7 +466,7 @@ public class GraphicUtil {
         }
     }
 
-    public static void presentCardInfoUserSelect(World world) {
+    public static void presentCardInfoUserSelect(PvPWorld world) {
         if (!world.getWorldFlag(WorldFlags.DisplayInfoUserSelect)) {
             return;
         }
@@ -491,7 +491,7 @@ public class GraphicUtil {
         }
     }
 
-    public static void presentCardInfoUserSearchSelect(World world) {
+    public static void presentCardInfoUserSearchSelect(PvPWorld world) {
         if (!world.getWorldFlag(WorldFlags.CardSearchSelectingMode)) {
             return;
         }

@@ -5,14 +5,14 @@ import java.util.List;
 
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
 import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.GridPositionIndex;
-import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.World;
+import koustav.duelmasters.main.androidgameduelmastersworlds.PvPWorld;
 import koustav.duelmasters.main.androidgamesframework.Input.TouchEvent;
 
 /**
  * Created by Koustav on 5/3/2015.
  */
 public class UIUtil {
-    public static GridPositionIndex TouchedGridPositionIndex(World world) {
+    public static GridPositionIndex TouchedGridPositionIndex(PvPWorld world) {
         List<TouchEvent> touchEvents = world.getTouchEvents();
         int w = world.getframeBufferWidht()/8;
         int h = world.getframeBufferHeight()/10;
@@ -106,7 +106,7 @@ public class UIUtil {
 
     }
 
-    public static boolean TouchedInfoTabEnterButton(World world) {
+    public static boolean TouchedInfoTabEnterButton(PvPWorld world) {
         boolean status = false;
         int w = world.getframeBufferWidht()/8;
         int h = world.getframeBufferHeight()/10;
@@ -122,7 +122,7 @@ public class UIUtil {
         return status;
     }
 
-    public static boolean TouchedInfoTabBackButton(World world) {
+    public static boolean TouchedInfoTabBackButton(PvPWorld world) {
         boolean status = false;
         int w = world.getframeBufferWidht()/8;
         int h = world.getframeBufferHeight()/10;
@@ -138,7 +138,7 @@ public class UIUtil {
         return status;
     }
 
-    public static boolean TouchedSkippedButton(World world) {
+    public static boolean TouchedSkippedButton(PvPWorld world) {
         boolean status = false;
         int w = world.getframeBufferWidht()/8;
         int h = world.getframeBufferHeight()/10;
@@ -154,7 +154,7 @@ public class UIUtil {
         return status;
     }
 
-    public static boolean TouchedLeftPlayButton(World world) {
+    public static boolean TouchedLeftPlayButton(PvPWorld world) {
         boolean status = false;
         int w = world.getframeBufferWidht()/8;
         int h = world.getframeBufferHeight()/10;
@@ -170,7 +170,7 @@ public class UIUtil {
         return status;
     }
 
-    public static boolean TouchedRightPlayButton(World world) {
+    public static boolean TouchedRightPlayButton(PvPWorld world) {
         boolean status = false;
         int w = world.getframeBufferWidht()/8;
         int h = world.getframeBufferHeight()/10;
@@ -186,7 +186,7 @@ public class UIUtil {
         return status;
     }
 
-    public static boolean TouchedDrawCardButton(World world) {
+    public static boolean TouchedDrawCardButton(PvPWorld world) {
         boolean status = false;
         int w = world.getframeBufferWidht()/8;
         int h = world.getframeBufferHeight()/10;
@@ -202,7 +202,7 @@ public class UIUtil {
         return status;
     }
 
-    public static boolean TouchedAcceptButton(World world) {
+    public static boolean TouchedAcceptButton(PvPWorld world) {
         boolean status = false;
         int w = world.getframeBufferWidht()/8;
         int h = world.getframeBufferHeight()/10;
@@ -222,7 +222,7 @@ public class UIUtil {
         return status;
     }
 
-    public static boolean TouchedDeclineButton(World world) {
+    public static boolean TouchedDeclineButton(PvPWorld world) {
         boolean status = false;
         int w = world.getframeBufferWidht()/8;
         int h = world.getframeBufferHeight()/10;
@@ -238,7 +238,7 @@ public class UIUtil {
         return status;
     }
 
-    public static boolean TouchedAttackShieldOrPlayerButton(World world) {
+    public static boolean TouchedAttackShieldOrPlayerButton(PvPWorld world) {
         boolean status = false;
         int w = world.getframeBufferWidht()/8;
         int h = world.getframeBufferHeight()/10;
@@ -258,7 +258,7 @@ public class UIUtil {
         return status;
     }
 
-    public static boolean TouchedMaze(World world) {
+    public static boolean TouchedMaze(PvPWorld world) {
         boolean status = false;
         int h = world.getframeBufferHeight()/10;
         List<TouchEvent> touchEvents = world.getTouchEvents();
@@ -303,7 +303,7 @@ public class UIUtil {
         return null;
     }
 
-    public static boolean WorldFetchCard(World world) {
+    public static boolean WorldFetchCard(PvPWorld world) {
         GridPositionIndex gridPositionIndex = TouchedGridPositionIndex(world);
 
         if (gridPositionIndex != null) {
@@ -316,7 +316,7 @@ public class UIUtil {
         return false;
     }
 
-    public static Cards GetTouchedTrackCard(World world) {
+    public static Cards GetTouchedTrackCard(PvPWorld world) {
         GridPositionIndex gridPositionIndex = TouchedGridPositionIndex(world);
 
         if (gridPositionIndex != null) {

@@ -7,7 +7,7 @@ import koustav.duelmasters.main.androidgameduelmastersdatastructure.ActiveCard;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.InactiveCard;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.TypeOfCard;
-import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.World;
+import koustav.duelmasters.main.androidgameduelmastersworlds.PvPWorld;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.WorldFlags;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Zone;
 import koustav.duelmasters.main.androidgameduelmasterseventlogmodule.DirectiveHeader;
@@ -31,11 +31,11 @@ public class InstructionHandler {
     InstructionState State;
     InactiveCard CurrentCard;
     InstructionSet instruction;
-    World world;
+    PvPWorld world;
     ArrayList<Cards> CollectCardList;
     boolean InstructionSkipped;
 
-    public InstructionHandler(World world){
+    public InstructionHandler(PvPWorld world){
         this.world = world;
         this.State = InstructionState.S1;
         CollectCardList = new ArrayList<Cards>();

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import koustav.duelmasters.main.androidgameduelmasterscardrulehandler.InstructionSet;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.ActiveCard;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.InactiveCard;
-import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.World;
+import koustav.duelmasters.main.androidgameduelmastersworlds.PvPWorld;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.WorldFlags;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Zone;
 import koustav.duelmasters.main.androidgameduelmasterseventlogmodule.DirectiveHeader;
@@ -21,7 +21,7 @@ public class PostTurn {
         S1,
         S2,
     }
-    World world;
+    PvPWorld world;
     InstructionSet NewSummonedCreatureCleanUp;
     InstructionSet NotYetSpreadCleanup;
     InstructionSet ActiveTurboRushCleanup;
@@ -30,7 +30,7 @@ public class PostTurn {
     InstructionSet UsedBlockedSetAttrAbilityCleanUp;
     PostTurnState S;
 
-    public PostTurn(World world){
+    public PostTurn(PvPWorld world){
         this.world = world;
         String instruction = InstSetUtil.GenerateAttributeCleanUpInstruction(1, "NewSummonedCreature", 1);
         NewSummonedCreatureCleanUp = new InstructionSet(instruction);

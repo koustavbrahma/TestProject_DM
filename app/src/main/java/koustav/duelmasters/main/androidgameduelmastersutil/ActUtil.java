@@ -10,13 +10,13 @@ import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
 import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.GridPositionIndex;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.InactiveCard;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Maze;
-import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.World;
+import koustav.duelmasters.main.androidgameduelmastersworlds.PvPWorld;
 
 /**
  * Created by Koustav on 4/26/2015.
  */
 public class ActUtil {
-    public static Cards ChangeZoneOperator(World world, Cards card, InstructionSet instruction) {
+    public static Cards ChangeZoneOperator(PvPWorld world, Cards card, InstructionSet instruction) {
         GridPositionIndex gridPosition = card.GridPosition();
         Cards NewCard = null;
         if (card.GridPosition().getZone() == Maze.battleZone || card.GridPosition().getZone() == Maze.Opponent_battleZone) {
@@ -150,7 +150,7 @@ public class ActUtil {
         return NewCard;
     }
 
-    public static void ShuffleDeck(World world, ArrayList<Cards> CardList) {
+    public static void ShuffleDeck(PvPWorld world, ArrayList<Cards> CardList) {
         int z = CardList.get(0).GridPosition().getZone();
 
         if (world.getMaze().getZoneList().get(z).zoneSize() != CardList.size())
@@ -185,11 +185,11 @@ public class ActUtil {
         }
     }
 
-    public static void CopyCardsToTempZone(World world, Cards Card) {
+    public static void CopyCardsToTempZone(PvPWorld world, Cards Card) {
         world.getMaze().getZoneList().get(6).getZoneArray().add(Card);
     }
 
-    public static Cards EvolveCreature(Cards Ecard, Cards Bcard, World world) {
+    public static Cards EvolveCreature(Cards Ecard, Cards Bcard, PvPWorld world) {
         int zoneOfbase = Bcard.GridPosition().getZone();
         int zoneOfevo = Ecard.GridPosition().getZone();
 
@@ -224,7 +224,7 @@ public class ActUtil {
         return newCard;
     }
 
-    public static void ApplyEventsInt(String event, World world){
+    public static void ApplyEventsInt(String event, PvPWorld world){
         String[] eventField = event.split(" ");
 
         if (eventField.length != 8)

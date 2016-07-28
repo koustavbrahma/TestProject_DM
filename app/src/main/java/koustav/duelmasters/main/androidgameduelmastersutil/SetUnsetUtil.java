@@ -8,7 +8,7 @@ import koustav.duelmasters.main.androidgameduelmasterscardrulehandler.Instructio
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.ActiveCard;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.InactiveCard;
-import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.World;
+import koustav.duelmasters.main.androidgameduelmastersworlds.PvPWorld;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Zone;
 
 /**
@@ -41,7 +41,7 @@ public class SetUnsetUtil {
         }
     }
 
-    public static void SetFlagAttr(World world, InactiveCard card, InstructionSet instruction) {
+    public static void SetFlagAttr(PvPWorld world, InactiveCard card, InstructionSet instruction) {
         String attr = instruction.getAttr().getFlag();
         if (attr.equals("MaskDestroyDst") && GetUtil.MaskDestroyDstVal(card) > 0)
             return;
@@ -179,7 +179,7 @@ public class SetUnsetUtil {
         card.getflagAttributes().SetAttribute("UsedBlockedSetAttrAbility", 1);
     }
 
-    public static void SetTurboRushSetAttr(World world) {
+    public static void SetTurboRushSetAttr(PvPWorld world) {
         Zone zone = world.getMaze().getZoneList().get(0);
 
         for (int i = 0; i < zone.zoneSize(); i++) {
@@ -198,7 +198,7 @@ public class SetUnsetUtil {
         }
     }
 
-    public static void SpreadingFlagAttr(World world) {
+    public static void SpreadingFlagAttr(PvPWorld world) {
         Zone MyBattleZone = world.getMaze().getZoneList().get(0);
         Zone OpponentBattleZone = world.getMaze().getZoneList().get(7);
 
@@ -249,7 +249,7 @@ public class SetUnsetUtil {
         }
     }
 
-    public static void SpreadConditionalFlagSpreadOrUnSpreadAttr(World world, InactiveCard card) {
+    public static void SpreadConditionalFlagSpreadOrUnSpreadAttr(PvPWorld world, InactiveCard card) {
         ArrayList<InstructionSet> setinstructions = card.getCrossInstructionForTheInstructionID(InstructionID.FlagSpreadingConditional);
         ArrayList<InstructionSet> unsetinstructions = card.getCrossInstructionForTheInstructionID(InstructionID.CleanUpConditional);
         if (setinstructions != null) {
@@ -269,7 +269,7 @@ public class SetUnsetUtil {
         }
     }
 
-    public static void PerformCleanUpForMovedCard(World world) {
+    public static void PerformCleanUpForMovedCard(PvPWorld world) {
         Iterator<Cards> iterator = world.getEventLog().getHoldCleanUpKey();
         while (iterator.hasNext()) {
             Cards tcard = iterator.next();
