@@ -435,7 +435,7 @@ public class CardSlotLayoutXZPlaner implements Layout {
         } else {
             WidgetTouchEvent widgetTouchEventOutCome = null;
             Input.TouchEvent event = null;
-            for (int j = touchEvents.size() - 1; j >= 0; j--) {
+            for (int j = 0; j < touchEvents.size(); j++) {
                 event = touchEvents.get(j);
                 if (event.type == Input.TouchEvent.TOUCH_UP) {
                     GLGeometry.GLPoint relativeNearPointAfterTrans = event.nearPoint[0].translate(new GLGeometry.GLVector(-centerX, -TopSlotPosition.Centerposition.y,

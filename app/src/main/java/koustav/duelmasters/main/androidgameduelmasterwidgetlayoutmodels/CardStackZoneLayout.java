@@ -5,8 +5,10 @@ import java.util.List;
 
 import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAndResource;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
+import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetMode;
 import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetPosition;
 import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetTouchEvent;
+import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetTouchFocusLevel;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayout.Layout;
 import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.CardStackWidget;
 import koustav.duelmasters.main.androidgamesframework.Input;
@@ -15,10 +17,17 @@ import koustav.duelmasters.main.androidgamesframework.Input;
  * Created by Koustav on 7/24/2016.
  */
 public class CardStackZoneLayout implements Layout {
+    enum TouchModeCardStackZone {
+        NormalMode,
+        ExpandMode,
+    }
+    TouchModeCardStackZone touchMode;
+
     WidgetPosition widgetPosition;
     CardStackWidget cardStackWidget;
 
     float length;
+    boolean ExpandMode;
 
     public CardStackZoneLayout() {
         widgetPosition = new WidgetPosition();
@@ -27,6 +36,8 @@ public class CardStackZoneLayout implements Layout {
 
     public void InitializeCardStackZoneLayout(float x, float y, float z, float angle, float x_axis, float y_axis, float z_axis,
                                               CardStackWidget cardStackWidget) {
+        this.touchMode = TouchModeCardStackZone.NormalMode;
+
         this.cardStackWidget = cardStackWidget;
 
         length = y;
@@ -40,6 +51,12 @@ public class CardStackZoneLayout implements Layout {
         widgetPosition.X_scale = 1f;
         widgetPosition.Y_scale = 1f;
         widgetPosition.Z_scale = 1f;
+
+        ExpandMode = false;
+    }
+
+    public void setExpandMode(boolean val) {
+        this.ExpandMode = val;
     }
 
     @Override
@@ -60,14 +77,30 @@ public class CardStackZoneLayout implements Layout {
     public WidgetTouchEvent TouchResponse(List<Input.TouchEvent> touchEvents) {
         WidgetTouchEvent widgetTouchEvent = cardStackWidget.isTouched(touchEvents);
 
-        if (widgetTouchEvent.isTouched) {
-            return widgetTouchEvent;
-        } else {
-            return null;
+        if (touchMode == TouchModeCardStackZone.NormalMode) {
+            if (ExpandMode && widgetTouchEvent.isTouched && !widgetTouchEvent.isTouchedDown) {
+                cardStackWidget.setMode(WidgetMode.Expand);
+                widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Medium;
+                touchMode = TouchModeCardStackZone.ExpandMode;
+                return widgetTouchEvent;
+            }
+
+            if (widgetTouchEvent.isTouched) {
+                return widgetTouchEvent;
+            } else {
+                return null;
+            }
         }
+
+        if (touchMode == TouchModeCardStackZone.ExpandMode) {
+            if (widgetTouchEvent.isTouched) {
+                widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Medium;
+                return widgetTouchEvent;
+            } else {
+                return null;
+            }
+        }
+        return null;
     }
 
-    public CardStackWidget getCardStackWidget() {
-        return cardStackWidget;
-    }
 }

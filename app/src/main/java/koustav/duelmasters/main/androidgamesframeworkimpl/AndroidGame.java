@@ -207,7 +207,7 @@ public abstract class AndroidGame extends Activity implements Game {
         GLFragColor = val;
     }
 
-    public int getGLFragColoring() {
+    public int getGLFragColoringSkip() {
         return GLFragColor? 0 : 1;
     }
 }

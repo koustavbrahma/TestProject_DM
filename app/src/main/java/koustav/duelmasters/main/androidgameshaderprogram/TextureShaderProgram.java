@@ -32,7 +32,7 @@ public class TextureShaderProgram extends ShaderProgram{
 
     public void setUniforms(float[] matrix, int textureId) {
         // Pass the matrix into the shader program.
-        glUniform1i(uSkipColor, game.getGLFragColoring());
+        glUniform1i(uSkipColor, game.getGLFragColoringSkip());
         glUniformMatrix4fv(uMatrixLocation, 1, false, matrix, 0);
         // Set the active texture unit to texture unit 0.
         glActiveTexture(GL_TEXTURE0);

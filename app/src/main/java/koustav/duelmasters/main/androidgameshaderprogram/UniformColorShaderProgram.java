@@ -28,7 +28,7 @@ public class UniformColorShaderProgram extends ShaderProgram {
     }
 
     public void setUniforms(float[] matrix, float r, float g, float b) {
-        glUniform1i(uSkipColor, game.getGLFragColoring());
+        glUniform1i(uSkipColor, game.getGLFragColoringSkip());
         glUniformMatrix4fv(uMatrixLocation, 1, false, matrix, 0);
         glUniform4f(uColorLocation, r, g, b, 1f);
     }

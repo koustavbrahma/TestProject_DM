@@ -129,7 +129,7 @@ public class UniformColorShaderLightProgram extends ShaderProgram{
                             int ShadowMap,
                             boolean ShadowEnable) {
         // Pass the matrix into the shader program.
-        glUniform1i(uSkipColor, game.getGLFragColoring());
+        glUniform1i(uSkipColor, game.getGLFragColoringSkip());
         glUniform1i(uShadowEnable, ShadowEnable ? 1 : 0);
         glUniformMatrix4fv(uMVMatrixLocation, 1, false, mvMatrix, 0);
         glUniformMatrix4fv(uIT_MVMatrixLocation, 1, false, it_mvMatrix, 0);

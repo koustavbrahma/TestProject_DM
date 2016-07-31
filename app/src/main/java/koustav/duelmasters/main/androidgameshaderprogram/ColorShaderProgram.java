@@ -32,7 +32,7 @@ public class ColorShaderProgram extends ShaderProgram {
     public void setUniforms(float[] matrix) {
         // Pass the matrix into the shader program.
         glUniformMatrix4fv(uMatrixLocation, 1, false, matrix, 0);
-        glUniform1i(uSkipColor, game.getGLFragColoring());
+        glUniform1i(uSkipColor, game.getGLFragColoringSkip());
     }
     public int getPositionAttributeLocation() {
         return aPositionLocation;
