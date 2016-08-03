@@ -62,6 +62,7 @@ public class AssetsAndResource {
     // Matrix Changeable
     public static float[] modelViewMatrix;
     public static float[] modelViewProjectionMatrix;
+    public static float[] modelOrthoProjectionMatrix;
     public static float[] it_modelViewMatrix;
     public static float[] modelMatrix;
     public static float[] tempMatrix;
@@ -72,6 +73,7 @@ public class AssetsAndResource {
     public static int cardBackside;
     public static int cardBorder;
     public static int cardDeckSides;
+    public static int pauseButton;
 
     // flexible textures
     private static Hashtable<String, Integer> CardImages;
@@ -111,6 +113,7 @@ public class AssetsAndResource {
         // Matrix Changeable
         modelViewMatrix = new float[16];
         modelViewProjectionMatrix = new float[16];
+        modelOrthoProjectionMatrix = new float[16];
         it_modelViewMatrix = new float[16];
         modelMatrix = new float[16];
         tempMatrix = new float[16];
@@ -160,6 +163,10 @@ public class AssetsAndResource {
             TextureHelper.freeTexture(cardDeckSides);
         }
         cardDeckSides = TextureHelper.loadTexture(game, "CardDeckSide.png");
+        if (pauseButton != 0) {
+            TextureHelper.freeTexture(pauseButton);
+        }
+        pauseButton = TextureHelper.loadTexture(game, "PauseButton.png");
 
         CardImages = new Hashtable<String, Integer>();
         CardCount = new Hashtable<String, Count>();
@@ -221,6 +228,10 @@ public class AssetsAndResource {
             TextureHelper.freeTexture(cardDeckSides);
         }
         cardDeckSides = 0;
+        if (pauseButton != 0) {
+            TextureHelper.freeTexture(pauseButton);
+        }
+        pauseButton = 0;
 
         RemoveAllCardTexture();
 

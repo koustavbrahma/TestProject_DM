@@ -16,6 +16,7 @@ import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.CardStackWidge
 import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.CardWidget;
 import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetTouchEvent;
 import koustav.duelmasters.main.androidgameopenglobjectmodels.Cube;
+import koustav.duelmasters.main.androidgameopenglobjectmodels.ScreenRectangle;
 import koustav.duelmasters.main.androidgameopenglutil.GLGeometry;
 import koustav.duelmasters.main.androidgameopenglutil.GLGeometry.*;
 import koustav.duelmasters.main.androidgameopenglutil.GLMaterial;
@@ -41,6 +42,7 @@ public class PvPWidgetCoordinator {
     // GLObjects
     Cube cube;
     Cube glCard;
+    ScreenRectangle glbutton;
 
     // Layouts
     BattleZoneLayout battleZoneLayout;
@@ -92,6 +94,8 @@ public class PvPWidgetCoordinator {
 
         glCard = new Cube(new GLMaterial(new float[] {0.8f, 0.8f, 0.8f}, new float[] {0.8f, 0.8f, 0.8f},
                 new float[] {0.1f, 0.1f, 0.1f}, 10.0f), AssetsAndResource.CardWidth, AssetsAndResource.CardLength, AssetsAndResource.CardHeight, true);
+
+        glbutton = new ScreenRectangle(0.1f, 0.1f);
 
         // Link to its GLObject
         Graveyard.LinkGLobject(cube, glCard);

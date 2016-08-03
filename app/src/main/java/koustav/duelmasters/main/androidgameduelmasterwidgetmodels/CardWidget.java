@@ -36,7 +36,7 @@ public class CardWidget implements Widget {
     int[] textureArrays;
 
     // OpenGL object model, physical unit
-    public Cube glcard;
+    Cube glcard;
 
     // logical unit
     Cards card;

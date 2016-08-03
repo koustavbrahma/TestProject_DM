@@ -366,10 +366,10 @@ public class PvPDuelScreenTesting extends Screen{
         positionObjectInScene(0f, 0f, 0f, 0f, 0f, 0f, 0f, 1f, 1f, 1f);
         AssetsAndResource.textureProgram.useProgram();
         multiplyMM(AssetsAndResource.tempMatrix, 0, AssetsAndResource.projectionMatrix, 0, AssetsAndResource.viewMatrix, 0);
-        AssetsAndResource.textureProgram.setUniforms(AssetsAndResource.tempMatrix, AssetsAndResource.cardBackside);
+        AssetsAndResource.textureProgram.setUniforms(AssetsAndResource.OrthoProjectionMatrix, AssetsAndResource.cardBackside);
 
         DisplayCard.bindData(AssetsAndResource.textureProgram.getPositionAttributeLocation(), AssetsAndResource.textureProgram.getTextureCoordinatesAttributeLocation());
-        //DisplayCard.draw();
+        DisplayCard.draw();
 
         if (AssetsAndResource.game.getInput().isTouchDown(0)) {
             if (Math.abs(game.getInput().getNormalizedX(0)) <= DisplayCard.width/2 &&

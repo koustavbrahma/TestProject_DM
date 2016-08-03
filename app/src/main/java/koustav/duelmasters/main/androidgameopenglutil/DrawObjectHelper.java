@@ -41,7 +41,7 @@ public class DrawObjectHelper {
 
     public static void drawOneScreenRectangle(ScreenRectangle rectangle, int texture) {
         AssetsAndResource.textureProgram.useProgram();
-        AssetsAndResource.textureProgram.setUniforms(AssetsAndResource.OrthoProjectionMatrix, texture);
+        AssetsAndResource.textureProgram.setUniforms(AssetsAndResource.modelOrthoProjectionMatrix, texture);
         rectangle.bindData(AssetsAndResource.textureProgram.getPositionAttributeLocation(),
                 AssetsAndResource.textureProgram.getTextureCoordinatesAttributeLocation());
         rectangle.draw();

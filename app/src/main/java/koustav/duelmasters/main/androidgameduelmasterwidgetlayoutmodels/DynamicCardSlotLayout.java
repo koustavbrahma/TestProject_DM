@@ -269,6 +269,7 @@ public class DynamicCardSlotLayout implements Layout {
 
     public void resetSlot() {
         this.TopCardWidget = null;
+        TwoStepTransition = false;
     }
 
     public CardWidget getCardWidget() {

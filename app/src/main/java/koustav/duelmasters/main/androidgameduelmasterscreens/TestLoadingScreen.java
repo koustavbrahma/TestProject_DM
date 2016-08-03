@@ -19,7 +19,7 @@ public class TestLoadingScreen extends Screen {
         Graphics g = game.getGraphics();
         AssetsAndResource.background = g.newPixmap("duelmaze.png", PixmapFormat.RGB565);
         AssetsAndResource.cardbackside = g.newPixmap("cardbackside.png", PixmapFormat.RGB565);
-        AssetsAndResource.Button = g.newPixmap("Button.png", PixmapFormat.RGB565);
+        AssetsAndResource.Button = g.newPixmap("PauseButton.png", PixmapFormat.RGB565);
         AssetsAndResource.InfoBackground = g.newPixmap("InfoBackground.png", PixmapFormat.RGB565);
         //game.setScreen(new TestScreen(game));
         //game.setScreen(new MenuScreen(game));

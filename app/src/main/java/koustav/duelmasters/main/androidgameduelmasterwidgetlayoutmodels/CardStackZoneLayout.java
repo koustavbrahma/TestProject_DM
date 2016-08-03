@@ -59,6 +59,11 @@ public class CardStackZoneLayout implements Layout {
         this.ExpandMode = val;
     }
 
+    public void forceCloseExpandMode() {
+        this.ExpandMode = false;
+        cardStackWidget.setMode(WidgetMode.Normal);
+    }
+
     @Override
     public void update(float deltaTime, float totalTime) {
         cardStackWidget.update(deltaTime, totalTime);
@@ -67,7 +72,7 @@ public class CardStackZoneLayout implements Layout {
     @Override
     public void draw() {
         int count = ((ArrayList<Cards>)cardStackWidget.getLogicalObject()).size();
-        widgetPosition.Centerposition.y = widgetPosition.Centerposition.y + ((AssetsAndResource.CardLength * count) - (AssetsAndResource.CardLength * 40f))/2f;
+        widgetPosition.Centerposition.y = length + ((AssetsAndResource.CardLength * count) - (AssetsAndResource.CardLength * 40f))/2f;
         widgetPosition.Y_scale = ((float)count)/40f;
         cardStackWidget.setTranslateRotateScale(widgetPosition);
         cardStackWidget.draw();

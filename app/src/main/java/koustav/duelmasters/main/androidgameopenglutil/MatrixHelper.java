@@ -56,6 +56,21 @@ public class MatrixHelper {
                 AssetsAndResource.modelMatrix, 0);
     }
 
+    public static void setTranslate(WidgetPosition position) {
+        setIdentityM(AssetsAndResource.modelMatrix, 0);
+        translateM(AssetsAndResource.modelMatrix, 0, position.Centerposition.x, position.Centerposition.y,
+                0);
+        if (position.rotaion.angle != 0) {
+            rotateM(AssetsAndResource.modelMatrix, 0, position.rotaion.angle, 0,
+                    0, 1);
+        }
+        scaleM(AssetsAndResource.modelMatrix, 0, position.X_scale, position.Y_scale, 1);
+        multiplyMM(
+                AssetsAndResource.modelOrthoProjectionMatrix, 0,
+                AssetsAndResource.OrthoProjectionMatrix, 0,
+                AssetsAndResource.modelViewMatrix, 0);
+    }
+
     public static GLGeometry.GLAngularRotaion getCombinedRotation(ArrayList<GLGeometry.GLAngularRotaion> rotations) {
         setIdentityM(AssetsAndResource.tempMatrix, 0);
         int count = 0;

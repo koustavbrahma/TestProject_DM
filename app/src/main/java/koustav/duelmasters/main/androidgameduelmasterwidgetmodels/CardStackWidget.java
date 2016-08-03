@@ -70,8 +70,8 @@ public class CardStackWidget implements Widget{
     int[] textureArrays;
 
     // openGL object model, physical unit
-    public Cube cube;
-    public Cube glcard;
+    Cube cube;
+    Cube glcard;
 
     // Logical object
     ArrayList<Cards> cardStack;
