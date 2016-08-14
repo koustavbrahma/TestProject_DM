@@ -31,7 +31,6 @@ public class ButtonSlotLayout implements Layout {
         ButtonSlotPosition = new WidgetPosition();
         ButtonWidgetPosition = new WidgetPosition();
         driftSystem = new DriftSystem();
-        buttonWidget = new RectangleButtonWidget();
 
         k1 = 0;
         k2 = 0;
@@ -92,8 +91,8 @@ public class ButtonSlotLayout implements Layout {
         return widgetTouchEvent;
     }
 
-    public void intializeButton(float x, float y, float angle, ScreenRectangle rectangle, float k1,
-                                float k2, int texture) {
+    public void intializeButton(float x, float y, float angle, RectangleButtonWidget buttonWidget, float k1,
+                                float k2) {
         ButtonSlotPosition.Centerposition.x = ButtonWidgetPosition.Centerposition.x = x;
         ButtonSlotPosition.Centerposition.y = ButtonWidgetPosition.Centerposition.y = y;
         ButtonSlotPosition.rotaion.angle = ButtonWidgetPosition.rotaion.angle = angle;
@@ -102,8 +101,7 @@ public class ButtonSlotLayout implements Layout {
         this.k1 = k1;
         this.k2 = k2;
 
-        buttonWidget.LinkGLobject(rectangle);
-        buttonWidget.LinkLogicalObject(texture);
+        this.buttonWidget = buttonWidget;
 
         Disturbed = false;
         running = false;
@@ -113,5 +111,15 @@ public class ButtonSlotLayout implements Layout {
     public void setButtonPosition(float x, float y) {
         ButtonSlotPosition.Centerposition.x = x;
         ButtonSlotPosition.Centerposition.y = y;
+        Disturbed = true;
+    }
+
+    public void forceLoadButtonPosition() {
+        ButtonWidgetPosition.Centerposition.x = ButtonSlotPosition.Centerposition.x;
+        ButtonWidgetPosition.Centerposition.y = ButtonSlotPosition.Centerposition.y;
+        ButtonWidgetPosition.rotaion.angle = ButtonSlotPosition.rotaion.angle;
+        ButtonWidgetPosition.X_scale = ButtonSlotPosition.X_scale;
+        ButtonWidgetPosition.Y_scale = ButtonSlotPosition.Y_scale;
+        buttonWidget.setTranslateRotateScale(ButtonWidgetPosition);
     }
 }

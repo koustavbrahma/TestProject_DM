@@ -6,15 +6,19 @@ import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAnd
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Maze;
 import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetTouchFocusLevel;
+import koustav.duelmasters.main.androidgameduelmasterwidgetlayout.ControllerButton;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayout.HeadOrientation;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayout.Layout;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoutmodels.BattleZoneLayout;
+import koustav.duelmasters.main.androidgameduelmasterwidgetlayoutmodels.ButtonSlotLayout;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoutmodels.CardStackZoneLayout;
+import koustav.duelmasters.main.androidgameduelmasterwidgetlayoutmodels.ControllerLayout;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoutmodels.HandZoneLayout;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoutmodels.ManaZoneLayout;
 import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.CardStackWidget;
 import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.CardWidget;
 import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetTouchEvent;
+import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.RectangleButtonWidget;
 import koustav.duelmasters.main.androidgameopenglobjectmodels.Cube;
 import koustav.duelmasters.main.androidgameopenglobjectmodels.ScreenRectangle;
 import koustav.duelmasters.main.androidgameopenglutil.GLGeometry;
@@ -34,17 +38,26 @@ public class PvPWidgetCoordinator {
     Pool<CardWidget> cardWidgetPool;
 
     // CardStackWidget
-    public CardStackWidget Graveyard;
-    public CardStackWidget Deck;
-    public CardStackWidget Opponent_Graveyard;
-    public CardStackWidget Opponent_Deck;
+    CardStackWidget Graveyard;
+    CardStackWidget Deck;
+    CardStackWidget Opponent_Graveyard;
+    CardStackWidget Opponent_Deck;
+
+    // ControllerWidget
+    RectangleButtonWidget pauseButton;
+    RectangleButtonWidget SummonButton;
+    RectangleButtonWidget AddToManaButton;
+    RectangleButtonWidget AttackButton;
+    RectangleButtonWidget BlockButton;
+    RectangleButtonWidget TurboRushButton;
+    RectangleButtonWidget SilentSkillButton;
 
     // GLObjects
     Cube cube;
     Cube glCard;
-    ScreenRectangle glbutton;
+    ScreenRectangle glRbutton;
 
-    // Layouts
+    // Zone Layouts
     BattleZoneLayout battleZoneLayout;
     BattleZoneLayout opponentBattleZoneLayout;
     ManaZoneLayout manaZoneLayout;
@@ -54,6 +67,10 @@ public class PvPWidgetCoordinator {
     CardStackZoneLayout graveyardLayout;
     CardStackZoneLayout opponentGraveyardLayout;
     HandZoneLayout handZoneLayout;
+
+    // Control Buttons
+    ButtonSlotLayout pauseButtonLayout;
+    ControllerLayout controllerLayout;
 
     // Misc var
     boolean ShadowEnable;
@@ -83,10 +100,20 @@ public class PvPWidgetCoordinator {
         };
         cardWidgetPool = new Pool<CardWidget>(factory, 80);
 
+        // CardStack widget
         Graveyard = new CardStackWidget();
         Deck = new CardStackWidget();
         Opponent_Graveyard = new CardStackWidget();
         Opponent_Deck = new CardStackWidget();
+
+        // Controller widget
+        pauseButton = new RectangleButtonWidget();
+        SummonButton = new RectangleButtonWidget();
+        AddToManaButton = new RectangleButtonWidget();
+        AttackButton = new RectangleButtonWidget();
+        BlockButton = new RectangleButtonWidget();
+        TurboRushButton = new RectangleButtonWidget();
+        SilentSkillButton = new RectangleButtonWidget();
 
         // Initialize GLObject
         cube = new Cube(new GLMaterial(new float[] {0.8f, 0.8f, 0.8f}, new float[] {0.8f, 0.8f, 0.8f},
@@ -95,9 +122,9 @@ public class PvPWidgetCoordinator {
         glCard = new Cube(new GLMaterial(new float[] {0.8f, 0.8f, 0.8f}, new float[] {0.8f, 0.8f, 0.8f},
                 new float[] {0.1f, 0.1f, 0.1f}, 10.0f), AssetsAndResource.CardWidth, AssetsAndResource.CardLength, AssetsAndResource.CardHeight, true);
 
-        glbutton = new ScreenRectangle(0.1f, 0.1f);
+        glRbutton = new ScreenRectangle(0.1f, 0.1f);
 
-        // Link to its GLObject
+        // Link to its GLObject (Zones)
         Graveyard.LinkGLobject(cube, glCard);
         Graveyard.setFlip(false);
         Graveyard.ShadowEnable(ShadowEnable);
@@ -115,13 +142,31 @@ public class PvPWidgetCoordinator {
         Opponent_Deck.ShadowEnable(ShadowEnable);
         Opponent_Deck.LinkLogicalObject(this.maze.getZoneList().get(Maze.Opponent_deck).getZoneArray());
 
-        // Link to its Logical Object
+        // Link to its Logical Object (Zones)
         Graveyard.LinkLogicalObject(maze.getZoneList().get(Maze.graveyard).getZoneArray());
         Deck.LinkLogicalObject(maze.getZoneList().get(Maze.deck).getZoneArray());
         Opponent_Graveyard.LinkLogicalObject(maze.getZoneList().get(Maze.Opponent_graveyard).getZoneArray());
         Opponent_Deck.LinkLogicalObject(maze.getZoneList().get(Maze.Opponent_deck).getZoneArray());
 
-        // Initialize Layouts
+        // Link to its GLObject (controller)
+        pauseButton.LinkGLobject(glRbutton);
+        SummonButton.LinkGLobject(glRbutton);
+        AddToManaButton.LinkGLobject(glRbutton);
+        AttackButton.LinkGLobject(glRbutton);
+        BlockButton.LinkGLobject(glRbutton);
+        TurboRushButton.LinkGLobject(glRbutton);
+        SilentSkillButton.LinkGLobject(glRbutton);
+
+        // Link to its texture (controller)
+        pauseButton.LinkLogicalObject(ControllerButton.Pause);
+        SummonButton.LinkLogicalObject(ControllerButton.Summon);
+        AddToManaButton.LinkLogicalObject(ControllerButton.AddToMana);
+        AttackButton.LinkLogicalObject(ControllerButton.Attack);
+        BlockButton.LinkLogicalObject(ControllerButton.Block);
+        TurboRushButton.LinkLogicalObject(ControllerButton.TurboRush);
+        SilentSkillButton.LinkLogicalObject(ControllerButton.SilentSkill);
+
+        // Initialize Zone Layouts
         battleZoneLayout = new BattleZoneLayout();
         opponentBattleZoneLayout = new BattleZoneLayout();
         manaZoneLayout = new ManaZoneLayout();
@@ -151,10 +196,23 @@ public class PvPWidgetCoordinator {
         handZoneLayout.InitializeHandZoneLayout(AssetsAndResource.MazeWidth, -0.8f, AssetsAndResource.CameraPosition.x/4,
                 AssetsAndResource.CameraPosition.y/4, AssetsAndResource.CameraPosition.z/4, 4f, 4f);
 
+        // Initialize Control Button
+        pauseButtonLayout = new ButtonSlotLayout();
+        controllerLayout = new ControllerLayout();
+
+        // Added Button To the Controller Layout
+        controllerLayout.AddButtonWidget(ControllerButton.Summon, SummonButton);
+        controllerLayout.AddButtonWidget(ControllerButton.AddToMana, AddToManaButton);
+        controllerLayout.AddButtonWidget(ControllerButton.Attack, AttackButton);
+        controllerLayout.AddButtonWidget(ControllerButton.Block, BlockButton);
+        controllerLayout.AddButtonWidget(ControllerButton.TurboRush, TurboRushButton);
+        controllerLayout.AddButtonWidget(ControllerButton.SilentSkill, SilentSkillButton);
+
+        pauseButtonLayout.intializeButton(-0.85f, 0.85f, 0, pauseButton, 1f, 1f);
+
         // Define Listener
         DefineListener();
         Listener = LowFocusListener;
-
     }
 
     private void setWidgetCoordinatorListener(WidgetTouchListener listener) {

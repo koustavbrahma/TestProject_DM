@@ -5,6 +5,7 @@ import java.util.Hashtable;
 import java.util.Set;
 
 import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetTouchEvent;
+import koustav.duelmasters.main.androidgameduelmasterwidgetlayout.ControllerButton;
 import koustav.duelmasters.main.androidgameopenglutil.FrameBufferObject;
 import koustav.duelmasters.main.androidgameopenglutil.GLGeometry;
 import koustav.duelmasters.main.androidgameopenglutil.GLLight;
@@ -74,6 +75,25 @@ public class AssetsAndResource {
     public static int cardBorder;
     public static int cardDeckSides;
     public static int pauseButton;
+    public static int SummonButton;
+    public static int AddToManaButton;
+    public static int AttackButton;
+    public static int BlockButton;
+    public static int TurboRushButton;
+    public static int SilentSkillButton;
+
+    // Fixed textures ID
+    public static int BaseID = 0;
+    public static int cardBacksideID = 1;
+    public static int cardBorderID = 2;
+    public static int cardDeckSidesID = 3;
+    public static int pauseButtonID = 4;
+    public static int SummonButtonID = 5;
+    public static int AddToManaButtonID = 6;
+    public static int AttackButtonID = 7;
+    public static int BlockButtonID = 8;
+    public static int TurboRushButtonID = 9;
+    public static int SilentSkillButtonID = 10;
 
     // flexible textures
     private static Hashtable<String, Integer> CardImages;
@@ -146,27 +166,7 @@ public class AssetsAndResource {
         // Frame Buffers
         ShadowBuffer = new FrameBufferObject(game.getframeBufferWidth(), game.getframeBufferHeight());
 
-        // Textures generation
-        if (Base != 0) {
-            TextureHelper.freeTexture(Base);
-        }
-        Base = TextureHelper.loadTexture(game, "Base_5.png");
-        if (cardBackside != 0) {
-            TextureHelper.freeTexture(cardBackside);
-        }
-        cardBackside = TextureHelper.loadTexture(game, "cardbackside.png");
-        if (cardBorder != 0) {
-            TextureHelper.freeTexture(cardBorder);
-        }
-        cardBorder = TextureHelper.loadTexture(game, "CardBorder.png");
-        if (cardDeckSides != 0) {
-            TextureHelper.freeTexture(cardDeckSides);
-        }
-        cardDeckSides = TextureHelper.loadTexture(game, "CardDeckSide.png");
-        if (pauseButton != 0) {
-            TextureHelper.freeTexture(pauseButton);
-        }
-        pauseButton = TextureHelper.loadTexture(game, "PauseButton.png");
+        initializePvPFixedTexture();
 
         CardImages = new Hashtable<String, Integer>();
         CardCount = new Hashtable<String, Count>();
@@ -211,6 +211,66 @@ public class AssetsAndResource {
         // Frame buffer free
         ShadowBuffer.freeFBO();
 
+        freePvPFixedTexture();
+
+        RemoveAllCardTexture();
+
+        // Light free
+        Light.clear();
+
+        // Object Pools
+        widgetTouchEventPool.clear();
+    }
+
+    private static void initializePvPFixedTexture() {
+        // Textures generation
+        if (Base != 0) {
+            TextureHelper.freeTexture(Base);
+        }
+        Base = TextureHelper.loadTexture(game, "Base_5.png");
+        if (cardBackside != 0) {
+            TextureHelper.freeTexture(cardBackside);
+        }
+        cardBackside = TextureHelper.loadTexture(game, "cardbackside.png");
+        if (cardBorder != 0) {
+            TextureHelper.freeTexture(cardBorder);
+        }
+        cardBorder = TextureHelper.loadTexture(game, "CardBorder.png");
+        if (cardDeckSides != 0) {
+            TextureHelper.freeTexture(cardDeckSides);
+        }
+        cardDeckSides = TextureHelper.loadTexture(game, "CardDeckSide.png");
+        if (pauseButton != 0) {
+            TextureHelper.freeTexture(pauseButton);
+        }
+        pauseButton = TextureHelper.loadTexture(game, "PauseButton.png");
+        if (SummonButton != 0) {
+            TextureHelper.freeTexture(SummonButton);
+        }
+        SummonButton = TextureHelper.loadTexture(game, "PauseButton.png");
+        if (AddToManaButton != 0) {
+            TextureHelper.freeTexture(AddToManaButton);
+        }
+        AddToManaButton = TextureHelper.loadTexture(game, "PauseButton.png");
+        if (AttackButton != 0) {
+            TextureHelper.freeTexture(AttackButton);
+        }
+        AttackButton = TextureHelper.loadTexture(game, "PauseButton.png");
+        if (BlockButton != 0) {
+            TextureHelper.freeTexture(BlockButton);
+        }
+        BlockButton = TextureHelper.loadTexture(game, "PauseButton.png");
+        if (TurboRushButton != 0) {
+            TextureHelper.freeTexture(TurboRushButton);
+        }
+        TurboRushButton = TextureHelper.loadTexture(game, "PauseButton.png");
+        if (SilentSkillButton != 0) {
+            TextureHelper.freeTexture(SilentSkillButton);
+        }
+        SilentSkillButton = TextureHelper.loadTexture(game, "PauseButton.png");
+    }
+
+    private static void freePvPFixedTexture() {
         // Texture free
         if (Base != 0) {
             TextureHelper.freeTexture(Base);
@@ -232,14 +292,30 @@ public class AssetsAndResource {
             TextureHelper.freeTexture(pauseButton);
         }
         pauseButton = 0;
-
-        RemoveAllCardTexture();
-
-        // Light free
-        Light.clear();
-
-        // Object Pools
-        widgetTouchEventPool.clear();
+        if (SummonButton != 0) {
+            TextureHelper.freeTexture(SummonButton);
+        }
+        SummonButton = 0;
+        if (AddToManaButton != 0) {
+            TextureHelper.freeTexture(AddToManaButton);
+        }
+        AddToManaButton = 0;
+        if (AttackButton != 0) {
+            TextureHelper.freeTexture(AttackButton);
+        }
+        AttackButton = 0;
+        if (BlockButton != 0) {
+            TextureHelper.freeTexture(BlockButton);
+        }
+        BlockButton = 0;
+        if (TurboRushButton != 0) {
+            TextureHelper.freeTexture(TurboRushButton);
+        }
+        TurboRushButton = 0;
+        if (SilentSkillButton != 0) {
+            TextureHelper.freeTexture(SilentSkillButton);
+        }
+        SilentSkillButton = 0;
     }
 
     public static int getCardTexture(String CardName) {
@@ -305,5 +381,53 @@ public class AssetsAndResource {
 
         CardImages.clear();
         CardCount.clear();
+    }
+
+    public static int getFixedTexture(int ID) {
+        if (ID == BaseID) {
+            return Base;
+        } else if (ID == cardBacksideID) {
+            return cardBackside;
+        } else if (ID == cardBorderID) {
+            return cardBorder;
+        } else if (ID == cardDeckSidesID) {
+            return cardDeckSides;
+        } else if (ID == pauseButtonID) {
+            return pauseButton;
+        } else if (ID == SummonButtonID) {
+            return SummonButton;
+        } else if (ID == AddToManaButtonID) {
+            return AddToManaButton;
+        } else if (ID == AttackButtonID) {
+            return AttackButton;
+        } else if (ID == BlockButtonID) {
+            return BlockButton;
+        } else if (ID == TurboRushButtonID) {
+            return TurboRushButton;
+        } else if (ID == SilentSkillButtonID) {
+            return SilentSkillButton;
+        } else {
+            return 0;
+        }
+    }
+
+    public static int getTextureIdForButton(ControllerButton button) {
+        if (button == ControllerButton.Pause) {
+            return pauseButtonID;
+        } else if (button == ControllerButton.Summon) {
+            return SummonButtonID;
+        } else if (button == ControllerButton.AddToMana) {
+            return AddToManaButtonID;
+        } else if (button == ControllerButton.Attack) {
+            return AttackButtonID;
+        } else if (button == ControllerButton.Block) {
+            return BlockButtonID;
+        } else if (button == ControllerButton.TurboRush) {
+            return TurboRushButtonID;
+        } else if (button == ControllerButton.SilentSkill) {
+            return SilentSkillButtonID;
+        } else {
+            throw new RuntimeException("Invalid Button type");
+        }
     }
 }

@@ -8,6 +8,7 @@ import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetMode;
 import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetPosition;
 import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetTouchEvent;
 import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetTouchFocusLevel;
+import koustav.duelmasters.main.androidgameduelmasterwidgetlayout.ControllerButton;
 import koustav.duelmasters.main.androidgameopenglobjectmodels.ScreenRectangle;
 import koustav.duelmasters.main.androidgameopenglutil.DrawObjectHelper;
 import koustav.duelmasters.main.androidgameopenglutil.MatrixHelper;
@@ -27,8 +28,8 @@ public class RectangleButtonWidget implements Widget {
     // GL object
     ScreenRectangle glrectangle;
 
-    // Texture
-    int texture;
+    // Button Type
+    ControllerButton button;
 
     public RectangleButtonWidget() {
         Position = new WidgetPosition();
@@ -37,7 +38,7 @@ public class RectangleButtonWidget implements Widget {
 
     @Override
     public void draw() {
-        DrawObjectHelper.drawOneScreenRectangle(glrectangle, texture);
+        DrawObjectHelper.drawOneScreenRectangle(glrectangle, AssetsAndResource.getFixedTexture(AssetsAndResource.getTextureIdForButton(button)));
     }
 
     @Override
@@ -77,7 +78,7 @@ public class RectangleButtonWidget implements Widget {
             if (width <= (glrectangle.width * Position.X_scale)/2 && length <= (glrectangle.length * Position.Y_scale)/2) {
                 widgetTouchEvent.isTouched = true;
                 widgetTouchEvent.isTouchedDown = true;
-                widgetTouchEvent.object = null;
+                widgetTouchEvent.object = button;
                 return widgetTouchEvent;
             }
         } else {
@@ -99,7 +100,7 @@ public class RectangleButtonWidget implements Widget {
                     if (width <= (glrectangle.width * Position.X_scale)/2 && length <= (glrectangle.length * Position.Y_scale)/2) {
                         widgetTouchEvent.isTouched = true;
                         widgetTouchEvent.isTouchedDown = false;
-                        widgetTouchEvent.object = null;
+                        widgetTouchEvent.object = button;
                         break;
                     }
                 }
@@ -134,7 +135,7 @@ public class RectangleButtonWidget implements Widget {
 
     @Override
     public void LinkLogicalObject(Object obj) {
-        texture = (int) obj;
+        button = (ControllerButton) obj;
     }
 
     @Override

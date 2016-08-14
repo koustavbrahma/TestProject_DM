@@ -68,7 +68,7 @@ public class MatrixHelper {
         multiplyMM(
                 AssetsAndResource.modelOrthoProjectionMatrix, 0,
                 AssetsAndResource.OrthoProjectionMatrix, 0,
-                AssetsAndResource.modelViewMatrix, 0);
+                AssetsAndResource.modelMatrix, 0);
     }
 
     public static GLGeometry.GLAngularRotaion getCombinedRotation(ArrayList<GLGeometry.GLAngularRotaion> rotations) {

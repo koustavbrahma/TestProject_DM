@@ -8,21 +8,26 @@ import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAnd
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
 import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetPosition;
 import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetTouchEvent;
+import koustav.duelmasters.main.androidgameduelmasterwidgetlayout.ControllerButton;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayout.HeadOrientation;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoutmodels.BattleZoneLayout;
+import koustav.duelmasters.main.androidgameduelmasterwidgetlayoutmodels.ControllerLayout;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoutmodels.HandZoneLayout;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoutmodels.ManaZoneLayout;
 import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.CardStackWidget;
 import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.CardWidget;
 import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetMode;
+import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.RectangleButtonWidget;
 import koustav.duelmasters.main.androidgameopenglobjectmodels.Cube;
 import koustav.duelmasters.main.androidgameopenglobjectmodels.FullScreenRectangle;
 import koustav.duelmasters.main.androidgameopenglobjectmodels.Points;
 import koustav.duelmasters.main.androidgameopenglobjectmodels.ScreenRectangle;
 import koustav.duelmasters.main.androidgameopenglobjectmodels.XZRectangle;
+import koustav.duelmasters.main.androidgameopenglutil.DrawObjectHelper;
 import koustav.duelmasters.main.androidgameopenglutil.GLGeometry;
 import koustav.duelmasters.main.androidgameopenglutil.GLGeometry.*;
 import koustav.duelmasters.main.androidgameopenglutil.GLMaterial;
+import koustav.duelmasters.main.androidgameopenglutil.MatrixHelper;
 import koustav.duelmasters.main.androidgamesframework.Input;
 import koustav.duelmasters.main.androidgamesframework.Screen;
 import koustav.duelmasters.main.androidgamesframeworkimpl.AndroidGame;
@@ -54,6 +59,7 @@ public class PvPDuelScreenTesting extends Screen{
     private Cube cube;
     private Cube glcard2;
     private ScreenRectangle DisplayCard;
+    private ScreenRectangle glRbutton;
 
     // Layout
     BattleZoneLayout battleZoneLayout;
@@ -74,6 +80,12 @@ public class PvPDuelScreenTesting extends Screen{
     CardWidget CardWg2;
     CardWidget CardWg3;
     CardWidget CardWg4;
+
+    ControllerLayout controllerLayout;
+
+    RectangleButtonWidget SummonButton;
+    RectangleButtonWidget AddToManaButton;
+    RectangleButtonWidget AttackButton;
 
     ArrayList<CardWidget> tmplist;
     public PvPDuelScreenTesting(AndroidGame game) {
@@ -111,6 +123,7 @@ public class PvPDuelScreenTesting extends Screen{
         glcard2 = new Cube(new GLMaterial(new float[] {0.8f, 0.8f, 0.8f}, new float[] {0.8f, 0.8f, 0.8f},
                 new float[] {0.1f, 0.1f, 0.1f}, 10.0f), AssetsAndResource.CardWidth, AssetsAndResource.CardLength, AssetsAndResource.CardHeight, true);
         DisplayCard = new ScreenRectangle(0.4f, 0.6f);
+        glRbutton = new ScreenRectangle(0.15f, 0.15f);
 
         battleZoneLayout = new BattleZoneLayout();
         manaZoneLayout = new ManaZoneLayout();
@@ -122,6 +135,25 @@ public class PvPDuelScreenTesting extends Screen{
         CardWg3 = new CardWidget();
         CardWg4 = new CardWidget();
 
+        SummonButton = new RectangleButtonWidget();
+        AddToManaButton = new RectangleButtonWidget();
+        AttackButton = new RectangleButtonWidget();
+
+        controllerLayout = new ControllerLayout();
+
+        SummonButton.LinkGLobject(glRbutton);
+        AddToManaButton.LinkGLobject(glRbutton);
+        AttackButton.LinkGLobject(glRbutton);
+
+        SummonButton.LinkLogicalObject(ControllerButton.Summon);
+        AddToManaButton.LinkLogicalObject(ControllerButton.AddToMana);
+        AttackButton.LinkLogicalObject(ControllerButton.Attack);
+
+        controllerLayout.AddButtonWidget(ControllerButton.Summon, SummonButton);
+        controllerLayout.AddButtonWidget(ControllerButton.AddToMana, AddToManaButton);
+        controllerLayout.AddButtonWidget(ControllerButton.Attack, AttackButton);
+
+        controllerLayout.setControllerButton(ControllerButton.Summon, ControllerButton.AddToMana);
         tmplist = new ArrayList<CardWidget>();
     }
 
@@ -153,6 +185,7 @@ public class PvPDuelScreenTesting extends Screen{
 
         float c = 1.0f;
 
+
         List<Input.TouchEvent> touchEvents = game.getInput().getTouchEvents();
         WidgetPosition position = new WidgetPosition();
         position.Centerposition.x = 0f;
@@ -166,8 +199,10 @@ public class PvPDuelScreenTesting extends Screen{
         position.Z_scale = 1f;
         CardWg.setTranslateRotateScale(position);
         CardWg.draw();
-        WidgetTouchEvent tmp2 = CardWg.isTouched(touchEvents);
-        if (tmp2.isTouched && !tmp2.isTouchedDown) {
+        //WidgetTouchEvent tmp2 = CardWg.isTouched(touchEvents);
+
+        WidgetTouchEvent tmp2 = controllerLayout.TouchResponse(touchEvents);
+        if (tmp2 != null && tmp2.isTouched && !tmp2.isTouchedDown && tmp2.object == ControllerButton.Summon) {
             /*GLPoint intersectingPoint = GLGeometry.GLRayIntersectionWithXZPlane(
                     new GLRay(game.getInput().getNearPoint(0), GLGeometry.GLVectorBetween(game.getInput().getNearPoint(0),
                             game.getInput().getFarPoint(0))), 0);
@@ -220,9 +255,9 @@ public class PvPDuelScreenTesting extends Screen{
         position.Z_scale = 1f;
         CardWg2.setTranslateRotateScale(position);
         CardWg2.draw();
-        tmp2 = CardWg2.isTouched(touchEvents);
+        //tmp2 = CardWg2.isTouched(touchEvents);
         boolean remove = false;
-        if (tmp2.isTouched && !tmp2.isTouchedDown) {
+        if (tmp2 != null && tmp2.isTouched && !tmp2.isTouchedDown && tmp2.object == ControllerButton.AddToMana) {
            /* GLPoint intersectingPoint = GLGeometry.GLRayIntersectionWithXZPlane(
                     new GLRay(game.getInput().getNearPoint(0), GLGeometry.GLVectorBetween(game.getInput().getNearPoint(0),
                             game.getInput().getFarPoint(0))), 0);
@@ -235,6 +270,7 @@ public class PvPDuelScreenTesting extends Screen{
             point.bindData(AssetsAndResource.colorShaderProgram.getPositionAttributeLocation(),
                     AssetsAndResource.colorShaderProgram.getColorAttributeLocation());
             point.draw(); */
+            /*
             Random R = new Random();
             int tempindex;
             CardWidget rmwg = null;
@@ -245,7 +281,7 @@ public class PvPDuelScreenTesting extends Screen{
                 //manaZoneLayout.RemoveCardWidgetFromZone(rmwg);
                 handZoneLayout.RemoveCardWidgetFromZone(rmwg);
                 remove = true;
-            }
+            }*/
 /*
             if (tmplist.size() > 0) {
                 tempindex = (int) R.nextInt(tmplist.size());
@@ -268,7 +304,7 @@ public class PvPDuelScreenTesting extends Screen{
                 battleZoneLayout.PutCardWidgetOnTopOfExistingCardWidget(CardWgtmp, rmwg);
                 tmplist.add(CardWgtmp);
             } */
-
+            controllerLayout.setControllerButton(ControllerButton.Summon, ControllerButton.AddToMana, ControllerButton.Attack);
         }
 
         position.Centerposition.x = 0.5f;
@@ -282,8 +318,8 @@ public class PvPDuelScreenTesting extends Screen{
         position.Z_scale = 1f;
         CardWg3.setTranslateRotateScale(position);
         CardWg3.draw();
-        tmp2 = CardWg3.isTouched(touchEvents);
-        if (tmp2.isTouched && !tmp2.isTouchedDown) {
+        //tmp2 = CardWg3.isTouched(touchEvents);
+        if (tmp2 != null && tmp2.isTouched && !tmp2.isTouchedDown && tmp2.object == ControllerButton.Attack) {
             CardWidget CardWgtmp = new CardWidget();
             CardWgtmp.LinkGLobject(glcard2);
             CardWgtmp.ShadowEnable(false);
@@ -298,10 +334,11 @@ public class PvPDuelScreenTesting extends Screen{
             position2.rotaion.z = 0f;
             position2.X_scale = 1f;
             position2.Z_scale = 1f;
-            CardWgtmp.setTranslateRotateScale(position2);
+          //  CardWgtmp.setTranslateRotateScale(position2);
             //battleZoneLayout.AddCardWidgetToZone(CardWgtmp);
             //manaZoneLayout.TransferCardWidgetToCoupleSlotZone(CardWgtmp);
-            tmplist.add(CardWgtmp);
+            //tmplist.add(CardWgtmp);
+            controllerLayout.setControllerButton(ControllerButton.Summon, ControllerButton.AddToMana);
         }
 
         //if (!remove) {
@@ -363,13 +400,25 @@ public class PvPDuelScreenTesting extends Screen{
         DeckWg.draw();
 
         glDisable(GL_DEPTH_TEST);
-        positionObjectInScene(0f, 0f, 0f, 0f, 0f, 0f, 0f, 1f, 1f, 1f);
-        AssetsAndResource.textureProgram.useProgram();
-        multiplyMM(AssetsAndResource.tempMatrix, 0, AssetsAndResource.projectionMatrix, 0, AssetsAndResource.viewMatrix, 0);
-        AssetsAndResource.textureProgram.setUniforms(AssetsAndResource.OrthoProjectionMatrix, AssetsAndResource.cardBackside);
+        //positionObjectInScene(0f, 0f, 0f, 0f, 0f, 0f, 0f, 1f, 1f, 1f);
+        //AssetsAndResource.textureProgram.useProgram();
+        //multiplyMM(AssetsAndResource.tempMatrix, 0, AssetsAndResource.projectionMatrix, 0, AssetsAndResource.viewMatrix, 0);
+        //AssetsAndResource.textureProgram.setUniforms(AssetsAndResource.OrthoProjectionMatrix, AssetsAndResource.cardBackside);
 
-        DisplayCard.bindData(AssetsAndResource.textureProgram.getPositionAttributeLocation(), AssetsAndResource.textureProgram.getTextureCoordinatesAttributeLocation());
-        DisplayCard.draw();
+        //DisplayCard.bindData(AssetsAndResource.textureProgram.getPositionAttributeLocation(), AssetsAndResource.textureProgram.getTextureCoordinatesAttributeLocation());
+        //DisplayCard.draw();
+        WidgetPosition position2 = new WidgetPosition();
+        position2.Centerposition.x = 0.2f;
+        position2.Centerposition.y = 0.2f;
+        position2.Centerposition.z = 0;
+        position2.rotaion.angle = 0;
+        position2.rotaion.y = 0;
+        position2.rotaion.x = 0;
+        position2.rotaion.z = 0;
+//        MatrixHelper.setTranslate(position2);
+//        DrawObjectHelper.drawOneScreenRectangle(DisplayCard, AssetsAndResource.cardBackside);
+        controllerLayout.update(deltaTime, totalTime);
+        controllerLayout.draw();
 
         if (AssetsAndResource.game.getInput().isTouchDown(0)) {
             if (Math.abs(game.getInput().getNormalizedX(0)) <= DisplayCard.width/2 &&
