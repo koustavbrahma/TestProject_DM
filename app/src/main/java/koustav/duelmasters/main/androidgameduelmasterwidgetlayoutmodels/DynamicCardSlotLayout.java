@@ -6,7 +6,7 @@ import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAnd
 import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetPosition;
 import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetTouchEvent;
 import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetTouchFocusLevel;
-import koustav.duelmasters.main.androidgameduelmasterwidgetlayout.Layout;
+import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.Layout;
 import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.CardWidget;
 import koustav.duelmasters.main.androidgameopenglanimation.DriftSystem;
 import koustav.duelmasters.main.androidgameopenglutil.GLGeometry;

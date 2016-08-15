@@ -9,7 +9,7 @@ import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetMode;
 import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetPosition;
 import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetTouchEvent;
 import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetTouchFocusLevel;
-import koustav.duelmasters.main.androidgameduelmasterwidgetlayout.Layout;
+import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.Layout;
 import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.CardStackWidget;
 import koustav.duelmasters.main.androidgamesframework.Input;
 
@@ -93,6 +93,7 @@ public class CardStackZoneLayout implements Layout {
             if (widgetTouchEvent.isTouched) {
                 return widgetTouchEvent;
             } else {
+                AssetsAndResource.widgetTouchEventPool.free(widgetTouchEvent);
                 return null;
             }
         }
@@ -102,9 +103,11 @@ public class CardStackZoneLayout implements Layout {
                 widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Medium;
                 return widgetTouchEvent;
             } else {
+                AssetsAndResource.widgetTouchEventPool.free(widgetTouchEvent);
                 return null;
             }
         }
+        AssetsAndResource.widgetTouchEventPool.free(widgetTouchEvent);
         return null;
     }
 

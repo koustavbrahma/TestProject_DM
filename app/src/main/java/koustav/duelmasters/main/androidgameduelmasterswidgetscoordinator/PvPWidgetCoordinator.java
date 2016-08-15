@@ -6,9 +6,10 @@ import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAnd
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Maze;
 import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetTouchFocusLevel;
-import koustav.duelmasters.main.androidgameduelmasterwidgetlayout.ControllerButton;
-import koustav.duelmasters.main.androidgameduelmasterwidgetlayout.HeadOrientation;
-import koustav.duelmasters.main.androidgameduelmasterwidgetlayout.Layout;
+import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.ControllerButton;
+import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.HeadOrientation;
+import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.Layout;
+import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.WidgetTouchListener;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoutmodels.BattleZoneLayout;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoutmodels.ButtonSlotLayout;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoutmodels.CardStackZoneLayout;
@@ -128,25 +129,21 @@ public class PvPWidgetCoordinator {
         Graveyard.LinkGLobject(cube, glCard);
         Graveyard.setFlip(false);
         Graveyard.ShadowEnable(ShadowEnable);
-        Graveyard.LinkLogicalObject(this.maze.getZoneList().get(Maze.graveyard).getZoneArray());
         Deck.LinkGLobject(cube, glCard);
         Deck.setFlip(true);
         Deck.ShadowEnable(ShadowEnable);
-        Deck.LinkLogicalObject(this.maze.getZoneList().get(Maze.deck).getZoneArray());
         Opponent_Graveyard.LinkGLobject(cube, glCard);
         Opponent_Graveyard.setFlip(false);
         Opponent_Graveyard.ShadowEnable(ShadowEnable);
-        Opponent_Graveyard.LinkLogicalObject(this.maze.getZoneList().get(Maze.Opponent_graveyard).getZoneArray());
         Opponent_Deck.LinkGLobject(cube, glCard);
         Opponent_Deck.setFlip(true);
         Opponent_Deck.ShadowEnable(ShadowEnable);
-        Opponent_Deck.LinkLogicalObject(this.maze.getZoneList().get(Maze.Opponent_deck).getZoneArray());
 
         // Link to its Logical Object (Zones)
-        Graveyard.LinkLogicalObject(maze.getZoneList().get(Maze.graveyard).getZoneArray());
-        Deck.LinkLogicalObject(maze.getZoneList().get(Maze.deck).getZoneArray());
-        Opponent_Graveyard.LinkLogicalObject(maze.getZoneList().get(Maze.Opponent_graveyard).getZoneArray());
-        Opponent_Deck.LinkLogicalObject(maze.getZoneList().get(Maze.Opponent_deck).getZoneArray());
+        Graveyard.LinkLogicalObject(this.maze.getZoneList().get(Maze.graveyard).getZoneArray());
+        Deck.LinkLogicalObject(this.maze.getZoneList().get(Maze.deck).getZoneArray());
+        Opponent_Graveyard.LinkLogicalObject(this.maze.getZoneList().get(Maze.Opponent_graveyard).getZoneArray());
+        Opponent_Deck.LinkLogicalObject(this.maze.getZoneList().get(Maze.Opponent_deck).getZoneArray());
 
         // Link to its GLObject (controller)
         pauseButton.LinkGLobject(glRbutton);

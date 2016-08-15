@@ -7,11 +7,9 @@ import java.util.Set;
 
 import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAndResource;
 import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetTouchEvent;
-import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetTouchFocusLevel;
-import koustav.duelmasters.main.androidgameduelmasterwidgetlayout.ControllerButton;
-import koustav.duelmasters.main.androidgameduelmasterwidgetlayout.Layout;
+import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.ControllerButton;
+import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.Layout;
 import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.RectangleButtonWidget;
-import koustav.duelmasters.main.androidgameopenglutil.TextureHelper;
 import koustav.duelmasters.main.androidgamesframework.Input;
 
 /**
@@ -122,16 +120,20 @@ public class ControllerLayout implements Layout {
                     ControllerButton button = Buttons.get(index);
                     ButtonSlotLayout slotLayout = ControllerTypeToLayout.get(button);
 
-                    widgetTouchEvent = slotLayout.TouchResponse(touchEvents);
-                    if (widgetTouchEvent.isTouched) {
-                        TouchedButtons.add(0, button);
-                        widgetTouchEventList.add(0, widgetTouchEvent);
+                    if (slotLayout != null) {
+                        widgetTouchEvent = slotLayout.TouchResponse(touchEvents);
+                        if (widgetTouchEvent.isTouched) {
+                            TouchedButtons.add(0, button);
+                            widgetTouchEventList.add(0, widgetTouchEvent);
 
-                        if (button != widgetTouchEvent.object) {
-                            throw new RuntimeException("Invaild Condition");
+                            if (button != widgetTouchEvent.object) {
+                                throw new RuntimeException("Invaild Condition");
+                            }
+                        } else {
+                            AssetsAndResource.widgetTouchEventPool.free(widgetTouchEvent);
+                            break;
                         }
                     } else {
-                        AssetsAndResource.widgetTouchEventPool.free(widgetTouchEvent);
                         break;
                     }
                 }
@@ -140,15 +142,19 @@ public class ControllerLayout implements Layout {
                     ControllerButton button = Buttons.get(i);
                     ButtonSlotLayout slotLayout = ControllerTypeToLayout.get(button);
 
-                    widgetTouchEvent = slotLayout.TouchResponse(touchEvents);
-                    if (widgetTouchEvent.isTouched) {
-                        TouchedButtons.add(button);
-                        widgetTouchEventList.add(widgetTouchEvent);
-                        if (button != widgetTouchEvent.object) {
-                            throw new RuntimeException("Invaild Condition");
+                    if (slotLayout != null) {
+                        widgetTouchEvent = slotLayout.TouchResponse(touchEvents);
+                        if (widgetTouchEvent.isTouched) {
+                            TouchedButtons.add(button);
+                            widgetTouchEventList.add(widgetTouchEvent);
+                            if (button != widgetTouchEvent.object) {
+                                throw new RuntimeException("Invaild Condition");
+                            }
+                        } else {
+                            AssetsAndResource.widgetTouchEventPool.free(widgetTouchEvent);
+                            break;
                         }
                     } else {
-                        AssetsAndResource.widgetTouchEventPool.free(widgetTouchEvent);
                         break;
                     }
                 }

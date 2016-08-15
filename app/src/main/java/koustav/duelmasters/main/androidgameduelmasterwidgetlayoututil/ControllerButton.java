@@ -1,4 +1,4 @@
-package koustav.duelmasters.main.androidgameduelmasterwidgetlayout;
+package koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil;
 
 /**
  * Created by Koustav on 8/7/2016.

@@ -5,7 +5,7 @@ import java.util.Hashtable;
 import java.util.Set;
 
 import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetTouchEvent;
-import koustav.duelmasters.main.androidgameduelmasterwidgetlayout.ControllerButton;
+import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.ControllerButton;
 import koustav.duelmasters.main.androidgameopenglutil.FrameBufferObject;
 import koustav.duelmasters.main.androidgameopenglutil.GLGeometry;
 import koustav.duelmasters.main.androidgameopenglutil.GLLight;
