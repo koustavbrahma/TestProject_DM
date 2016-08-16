@@ -5,10 +5,10 @@ import java.util.List;
 
 import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAndResource;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
-import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetMode;
-import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetPosition;
-import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetTouchEvent;
-import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetTouchFocusLevel;
+import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetMode;
+import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetPosition;
+import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetTouchEvent;
+import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetTouchFocusLevel;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.Layout;
 import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.CardStackWidget;
 import koustav.duelmasters.main.androidgamesframework.Input;

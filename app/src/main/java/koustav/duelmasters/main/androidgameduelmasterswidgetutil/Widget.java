@@ -1,4 +1,4 @@
-package koustav.duelmasters.main.androidgameduelmasterswidget;
+package koustav.duelmasters.main.androidgameduelmasterswidgetutil;
 
 import java.util.List;
 

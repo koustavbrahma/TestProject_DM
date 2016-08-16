@@ -53,6 +53,10 @@ public class OnTurn {
     boolean SummonTapped;
     boolean UnTapAllAtEndOfTurn;
 
+    // Stores the present state
+    SubStates currentState;
+
+    SubStates IdealOnTurn;
 
     public OnTurn(PvPWorld world) {
         this.world = world;
@@ -63,6 +67,23 @@ public class OnTurn {
         UnTapCreaturesInstruction = new InstructionSet(instruction2);
         SummonTapped = false;
         UnTapAllAtEndOfTurn = false;
+
+        DefineStates();
+        currentState = IdealOnTurn;
+    }
+
+    private void setCurrentState(SubStates state) {
+        currentState = state;
+    }
+
+    private void DefineStates() {
+        IdealOnTurn = new SubStates() {
+            @Override
+            public boolean updateState() {
+
+                return false;
+            }
+        };
     }
 /*
  Main API which controls the states and calls other API according to 'S' value

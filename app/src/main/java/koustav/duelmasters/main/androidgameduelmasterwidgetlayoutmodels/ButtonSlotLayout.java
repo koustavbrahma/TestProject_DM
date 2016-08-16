@@ -3,9 +3,9 @@ package koustav.duelmasters.main.androidgameduelmasterwidgetlayoutmodels;
 import java.util.List;
 
 import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAndResource;
-import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetPosition;
-import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetTouchEvent;
-import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetTouchFocusLevel;
+import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetPosition;
+import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetTouchEvent;
+import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetTouchFocusLevel;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.Layout;
 import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.RectangleButtonWidget;
 import koustav.duelmasters.main.androidgameopenglanimation.DriftSystem;

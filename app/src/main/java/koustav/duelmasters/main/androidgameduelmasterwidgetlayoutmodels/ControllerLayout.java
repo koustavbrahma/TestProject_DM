@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAndResource;
-import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetTouchEvent;
+import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetTouchEvent;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.ControllerButton;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.Layout;
 import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.RectangleButtonWidget;
@@ -85,11 +85,13 @@ public class ControllerLayout implements Layout {
             return null;
         }
 
+        if (Buttons.size() == 0) {
+            return null;
+        }
         TouchedButtons.clear();
         widgetTouchEventList.clear();
 
         WidgetTouchEvent widgetTouchEvent = null;
-        ButtonSlotLayout layout;
         int size = Buttons.size();
         float totalLength = gap * (size);
         float startingPoint = (gap * (size - 1)) /2;

@@ -5,7 +5,9 @@ import java.util.List;
 import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAndResource;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Maze;
-import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetTouchFocusLevel;
+import koustav.duelmasters.main.androidgameduelmastersuifeedbackloop.Acknowledge;
+import koustav.duelmasters.main.androidgameduelmastersuifeedbackloop.UIRequest;
+import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetTouchFocusLevel;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.ControllerButton;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.HeadOrientation;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.Layout;
@@ -18,7 +20,7 @@ import koustav.duelmasters.main.androidgameduelmasterwidgetlayoutmodels.HandZone
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoutmodels.ManaZoneLayout;
 import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.CardStackWidget;
 import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.CardWidget;
-import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetTouchEvent;
+import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetTouchEvent;
 import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.RectangleButtonWidget;
 import koustav.duelmasters.main.androidgameopenglobjectmodels.Cube;
 import koustav.duelmasters.main.androidgameopenglobjectmodels.ScreenRectangle;
@@ -46,12 +48,13 @@ public class PvPWidgetCoordinator {
 
     // ControllerWidget
     RectangleButtonWidget pauseButton;
-    RectangleButtonWidget SummonButton;
+    RectangleButtonWidget AcceptButton;
+    RectangleButtonWidget DeclineButton;
+    RectangleButtonWidget SummonOrCastButton;
     RectangleButtonWidget AddToManaButton;
     RectangleButtonWidget AttackButton;
     RectangleButtonWidget BlockButton;
-    RectangleButtonWidget TurboRushButton;
-    RectangleButtonWidget SilentSkillButton;
+    RectangleButtonWidget TapAbilityButton;
 
     // GLObjects
     Cube cube;
@@ -84,6 +87,10 @@ public class PvPWidgetCoordinator {
     WidgetTouchListener HighFocusListener;
     WidgetTouchListener Listener;
 
+    // UI Requests and Acknowledge
+    UIRequest requests;
+    Acknowledge acknowledge;
+
     public PvPWidgetCoordinator(Maze maze) {
         this.maze = maze;
 
@@ -109,12 +116,13 @@ public class PvPWidgetCoordinator {
 
         // Controller widget
         pauseButton = new RectangleButtonWidget();
-        SummonButton = new RectangleButtonWidget();
+        AcceptButton = new RectangleButtonWidget();
+        DeclineButton = new RectangleButtonWidget();
+        SummonOrCastButton = new RectangleButtonWidget();
         AddToManaButton = new RectangleButtonWidget();
         AttackButton = new RectangleButtonWidget();
         BlockButton = new RectangleButtonWidget();
-        TurboRushButton = new RectangleButtonWidget();
-        SilentSkillButton = new RectangleButtonWidget();
+        TapAbilityButton = new RectangleButtonWidget();
 
         // Initialize GLObject
         cube = new Cube(new GLMaterial(new float[] {0.8f, 0.8f, 0.8f}, new float[] {0.8f, 0.8f, 0.8f},
@@ -147,21 +155,23 @@ public class PvPWidgetCoordinator {
 
         // Link to its GLObject (controller)
         pauseButton.LinkGLobject(glRbutton);
-        SummonButton.LinkGLobject(glRbutton);
+        AcceptButton.LinkGLobject(glRbutton);
+        DeclineButton.LinkGLobject(glRbutton);
+        SummonOrCastButton.LinkGLobject(glRbutton);
         AddToManaButton.LinkGLobject(glRbutton);
         AttackButton.LinkGLobject(glRbutton);
         BlockButton.LinkGLobject(glRbutton);
-        TurboRushButton.LinkGLobject(glRbutton);
-        SilentSkillButton.LinkGLobject(glRbutton);
+        TapAbilityButton.LinkGLobject(glRbutton);
 
         // Link to its texture (controller)
         pauseButton.LinkLogicalObject(ControllerButton.Pause);
-        SummonButton.LinkLogicalObject(ControllerButton.Summon);
+        AcceptButton.LinkLogicalObject(ControllerButton.Accept);
+        DeclineButton.LinkLogicalObject(ControllerButton.Decline);
+        SummonOrCastButton.LinkLogicalObject(ControllerButton.SummonOrCast);
         AddToManaButton.LinkLogicalObject(ControllerButton.AddToMana);
         AttackButton.LinkLogicalObject(ControllerButton.Attack);
         BlockButton.LinkLogicalObject(ControllerButton.Block);
-        TurboRushButton.LinkLogicalObject(ControllerButton.TurboRush);
-        SilentSkillButton.LinkLogicalObject(ControllerButton.SilentSkill);
+        TapAbilityButton.LinkLogicalObject(ControllerButton.TapAbility);
 
         // Initialize Zone Layouts
         battleZoneLayout = new BattleZoneLayout();
@@ -198,18 +208,31 @@ public class PvPWidgetCoordinator {
         controllerLayout = new ControllerLayout();
 
         // Added Button To the Controller Layout
-        controllerLayout.AddButtonWidget(ControllerButton.Summon, SummonButton);
+        controllerLayout.AddButtonWidget(ControllerButton.Accept, AttackButton);
+        controllerLayout.AddButtonWidget(ControllerButton.Decline, DeclineButton);
+        controllerLayout.AddButtonWidget(ControllerButton.SummonOrCast, SummonOrCastButton);
         controllerLayout.AddButtonWidget(ControllerButton.AddToMana, AddToManaButton);
         controllerLayout.AddButtonWidget(ControllerButton.Attack, AttackButton);
         controllerLayout.AddButtonWidget(ControllerButton.Block, BlockButton);
-        controllerLayout.AddButtonWidget(ControllerButton.TurboRush, TurboRushButton);
-        controllerLayout.AddButtonWidget(ControllerButton.SilentSkill, SilentSkillButton);
+        controllerLayout.AddButtonWidget(ControllerButton.TapAbility, TapAbilityButton);
 
         pauseButtonLayout.intializeButton(-0.85f, 0.85f, 0, pauseButton, 1f, 1f);
+
+        // UI Requests and Acknowledge
+        requests = new UIRequest();
+        acknowledge = new Acknowledge();
 
         // Define Listener
         DefineListener();
         Listener = LowFocusListener;
+    }
+
+    public UIRequest getRequests() {
+        return requests;
+    }
+
+    public Acknowledge getAcknowledge() {
+        return acknowledge;
     }
 
     private void setWidgetCoordinatorListener(WidgetTouchListener listener) {
@@ -261,7 +284,7 @@ public class PvPWidgetCoordinator {
                                 }
                             }
 
-                            if (widgetTouchEvent == null && intersectingPoint.x > 0) {
+                            if (widgetTouchEvent == null && intersectingPoint.x > 0.50f * AssetsAndResource.MazeWidth) {
                                 if (intersectingPoint.z > 0.25f * AssetsAndResource.MazeHeight) {
                                     widgetTouchEvent = graveyardLayout.TouchResponse(touchEvents);
                                     if (widgetTouchEvent != null && widgetTouchEvent.isFocus != WidgetTouchFocusLevel.Low) {
@@ -290,42 +313,59 @@ public class PvPWidgetCoordinator {
                             }
                         }
                     } else {
-                        if (Math.abs(intersectingPoint.x) <= AssetsAndResource.MazeWidth/2) {
-                            if (Math.abs(intersectingPoint.z + AssetsAndResource.MazeHeight / 10) <= AssetsAndResource.MazeHeight / 10) {
-                                widgetTouchEvent = opponentBattleZoneLayout.TouchResponse(touchEvents);
-                                if (widgetTouchEvent != null && widgetTouchEvent.isFocus != WidgetTouchFocusLevel.Low) {
-                                    FocusLayout = opponentBattleZoneLayout;
+                        if (input.getNormalizedX(0) < -0.8f && input.getNormalizedY(0) > 0.8f) {
+                            widgetTouchEvent = pauseButtonLayout.TouchResponse(touchEvents);
+                            if (widgetTouchEvent.isTouched) {
+                                if (!widgetTouchEvent.isTouchedDown) {
+
                                 }
-                            } else if (Math.abs(intersectingPoint.z + ((3f * AssetsAndResource.MazeHeight)/10)) <= AssetsAndResource.CardHeight / 10) {
-                                widgetTouchEvent = opponentManaZoneLayout.TouchResponse(touchEvents);
-                                if (widgetTouchEvent != null && widgetTouchEvent.isFocus != WidgetTouchFocusLevel.Low) {
-                                    FocusLayout = opponentManaZoneLayout;
-                                }
+                            } else {
+                                AssetsAndResource.widgetTouchEventPool.free(widgetTouchEvent);
+                                widgetTouchEvent = null;
                             }
-                        } else {
-                            if (intersectingPoint.x < 0) {
-                                if (intersectingPoint.z > -(0.25f * AssetsAndResource.MazeHeight)) {
-                                    widgetTouchEvent = opponentGraveyardLayout.TouchResponse(touchEvents);
-                                    if (widgetTouchEvent != null && widgetTouchEvent.isFocus != WidgetTouchFocusLevel.Low) {
-                                        FocusLayout = opponentGraveyardLayout;
-                                    }
+                        }
+                        if (widgetTouchEvent == null && selectedCard != null && (input.getNormalizedY(0) > 0.8f)) {
+                            widgetTouchEvent = controllerLayout.TouchResponse(touchEvents);
+                        }
 
-                                    if (widgetTouchEvent == null) {
-                                        widgetTouchEvent = opponentDeckLayout.TouchResponse(touchEvents);
-                                    }
+                        if (widgetTouchEvent == null) {
+                            if (Math.abs(intersectingPoint.x) <= AssetsAndResource.MazeWidth / 2) {
+                                if (Math.abs(intersectingPoint.z + AssetsAndResource.MazeHeight / 10) <= AssetsAndResource.MazeHeight / 10) {
+                                    widgetTouchEvent = opponentBattleZoneLayout.TouchResponse(touchEvents);
                                     if (widgetTouchEvent != null && widgetTouchEvent.isFocus != WidgetTouchFocusLevel.Low) {
-                                        FocusLayout = opponentDeckLayout;
+                                        FocusLayout = opponentBattleZoneLayout;
                                     }
-                                } else {
-                                    widgetTouchEvent = opponentDeckLayout.TouchResponse(touchEvents);
+                                } else if (Math.abs(intersectingPoint.z + ((3f * AssetsAndResource.MazeHeight) / 10)) <= AssetsAndResource.CardHeight / 10) {
+                                    widgetTouchEvent = opponentManaZoneLayout.TouchResponse(touchEvents);
                                     if (widgetTouchEvent != null && widgetTouchEvent.isFocus != WidgetTouchFocusLevel.Low) {
-                                        FocusLayout = opponentDeckLayout;
+                                        FocusLayout = opponentManaZoneLayout;
                                     }
-
-                                    if (widgetTouchEvent == null) {
+                                }
+                            } else {
+                                if (intersectingPoint.x < -(0.5f * AssetsAndResource.MazeWidth)) {
+                                    if (intersectingPoint.z > -(0.25f * AssetsAndResource.MazeHeight)) {
                                         widgetTouchEvent = opponentGraveyardLayout.TouchResponse(touchEvents);
                                         if (widgetTouchEvent != null && widgetTouchEvent.isFocus != WidgetTouchFocusLevel.Low) {
                                             FocusLayout = opponentGraveyardLayout;
+                                        }
+
+                                        if (widgetTouchEvent == null) {
+                                            widgetTouchEvent = opponentDeckLayout.TouchResponse(touchEvents);
+                                        }
+                                        if (widgetTouchEvent != null && widgetTouchEvent.isFocus != WidgetTouchFocusLevel.Low) {
+                                            FocusLayout = opponentDeckLayout;
+                                        }
+                                    } else {
+                                        widgetTouchEvent = opponentDeckLayout.TouchResponse(touchEvents);
+                                        if (widgetTouchEvent != null && widgetTouchEvent.isFocus != WidgetTouchFocusLevel.Low) {
+                                            FocusLayout = opponentDeckLayout;
+                                        }
+
+                                        if (widgetTouchEvent == null) {
+                                            widgetTouchEvent = opponentGraveyardLayout.TouchResponse(touchEvents);
+                                            if (widgetTouchEvent != null && widgetTouchEvent.isFocus != WidgetTouchFocusLevel.Low) {
+                                                FocusLayout = opponentGraveyardLayout;
+                                            }
                                         }
                                     }
                                 }
@@ -373,7 +413,7 @@ public class PvPWidgetCoordinator {
                                         }
                                     }
 
-                                    if (widgetTouchEvent == null && intersectingPoint.x > 0) {
+                                    if (widgetTouchEvent == null && intersectingPoint.x > 0.5f * AssetsAndResource.MazeWidth) {
                                         if (intersectingPoint.z > 0.25f * AssetsAndResource.MazeHeight) {
                                             widgetTouchEvent = graveyardLayout.TouchResponse(touchEvents);
                                             if (widgetTouchEvent != null && widgetTouchEvent.isFocus != WidgetTouchFocusLevel.Low) {
@@ -402,42 +442,59 @@ public class PvPWidgetCoordinator {
                                     }
                                 }
                             } else {
-                                if (Math.abs(intersectingPoint.x) <= AssetsAndResource.MazeWidth/2) {
-                                    if (Math.abs(intersectingPoint.z + AssetsAndResource.MazeHeight / 10) <= AssetsAndResource.MazeHeight / 10) {
-                                        widgetTouchEvent = opponentBattleZoneLayout.TouchResponse(touchEvents);
-                                        if (widgetTouchEvent != null && widgetTouchEvent.isFocus != WidgetTouchFocusLevel.Low) {
-                                            FocusLayout = opponentBattleZoneLayout;
-                                        }
-                                    } else if (Math.abs(intersectingPoint.z + ((3f * AssetsAndResource.MazeHeight)/10)) <= AssetsAndResource.CardHeight / 10) {
-                                        widgetTouchEvent = opponentManaZoneLayout.TouchResponse(touchEvents);
-                                        if (widgetTouchEvent != null && widgetTouchEvent.isFocus != WidgetTouchFocusLevel.Low) {
-                                            FocusLayout = opponentManaZoneLayout;
-                                        }
-                                    }
-                                } else {
-                                    if (intersectingPoint.x < 0) {
-                                        if (intersectingPoint.z > -(0.25f * AssetsAndResource.MazeHeight)) {
-                                            widgetTouchEvent = opponentGraveyardLayout.TouchResponse(touchEvents);
-                                            if (widgetTouchEvent != null && widgetTouchEvent.isFocus != WidgetTouchFocusLevel.Low) {
-                                                FocusLayout = opponentGraveyardLayout;
-                                            }
+                                if (event.normalizedX < -0.8f && event.normalizedY > 0.8f) {
+                                    widgetTouchEvent = pauseButtonLayout.TouchResponse(touchEvents);
+                                    if (widgetTouchEvent.isTouched) {
+                                        if (!widgetTouchEvent.isTouchedDown) {
 
-                                            if (widgetTouchEvent == null) {
+                                        }
+                                    } else {
+                                        AssetsAndResource.widgetTouchEventPool.free(widgetTouchEvent);
+                                        widgetTouchEvent = null;
+                                    }
+                                }
+                                if (widgetTouchEvent == null && selectedCard != null && (event.normalizedY > 0.8f)) {
+                                    widgetTouchEvent = controllerLayout.TouchResponse(touchEvents);
+                                }
+
+                                if (widgetTouchEvent == null) {
+                                    if (Math.abs(intersectingPoint.x) <= AssetsAndResource.MazeWidth / 2) {
+                                        if (Math.abs(intersectingPoint.z + AssetsAndResource.MazeHeight / 10) <= AssetsAndResource.MazeHeight / 10) {
+                                            widgetTouchEvent = opponentBattleZoneLayout.TouchResponse(touchEvents);
+                                            if (widgetTouchEvent != null && widgetTouchEvent.isFocus != WidgetTouchFocusLevel.Low) {
+                                                FocusLayout = opponentBattleZoneLayout;
+                                            }
+                                        } else if (Math.abs(intersectingPoint.z + ((3f * AssetsAndResource.MazeHeight) / 10)) <= AssetsAndResource.CardHeight / 10) {
+                                            widgetTouchEvent = opponentManaZoneLayout.TouchResponse(touchEvents);
+                                            if (widgetTouchEvent != null && widgetTouchEvent.isFocus != WidgetTouchFocusLevel.Low) {
+                                                FocusLayout = opponentManaZoneLayout;
+                                            }
+                                        }
+                                    } else {
+                                        if (intersectingPoint.x < -(0.5f * AssetsAndResource.MazeWidth)) {
+                                            if (intersectingPoint.z > -(0.25f * AssetsAndResource.MazeHeight)) {
+                                                widgetTouchEvent = opponentGraveyardLayout.TouchResponse(touchEvents);
+                                                if (widgetTouchEvent != null && widgetTouchEvent.isFocus != WidgetTouchFocusLevel.Low) {
+                                                    FocusLayout = opponentGraveyardLayout;
+                                                }
+
+                                                if (widgetTouchEvent == null) {
+                                                    widgetTouchEvent = opponentDeckLayout.TouchResponse(touchEvents);
+                                                    if (widgetTouchEvent != null && widgetTouchEvent.isFocus != WidgetTouchFocusLevel.Low) {
+                                                        FocusLayout = opponentDeckLayout;
+                                                    }
+                                                }
+                                            } else {
                                                 widgetTouchEvent = opponentDeckLayout.TouchResponse(touchEvents);
                                                 if (widgetTouchEvent != null && widgetTouchEvent.isFocus != WidgetTouchFocusLevel.Low) {
                                                     FocusLayout = opponentDeckLayout;
                                                 }
-                                            }
-                                        } else {
-                                            widgetTouchEvent = opponentDeckLayout.TouchResponse(touchEvents);
-                                            if (widgetTouchEvent != null && widgetTouchEvent.isFocus != WidgetTouchFocusLevel.Low) {
-                                                FocusLayout = opponentDeckLayout;
-                                            }
 
-                                            if (widgetTouchEvent == null) {
-                                                widgetTouchEvent = opponentGraveyardLayout.TouchResponse(touchEvents);
-                                                if (widgetTouchEvent != null && widgetTouchEvent.isFocus != WidgetTouchFocusLevel.Low) {
-                                                    FocusLayout = opponentGraveyardLayout;
+                                                if (widgetTouchEvent == null) {
+                                                    widgetTouchEvent = opponentGraveyardLayout.TouchResponse(touchEvents);
+                                                    if (widgetTouchEvent != null && widgetTouchEvent.isFocus != WidgetTouchFocusLevel.Low) {
+                                                        FocusLayout = opponentGraveyardLayout;
+                                                    }
                                                 }
                                             }
                                         }
@@ -471,6 +528,8 @@ public class PvPWidgetCoordinator {
                     setWidgetCoordinatorListener(HighFocusListener);
                     return;
                 }
+
+
             }
         };
 

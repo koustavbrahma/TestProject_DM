@@ -6,8 +6,8 @@ import java.util.Random;
 
 import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAndResource;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
-import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetPosition;
-import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetTouchEvent;
+import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetPosition;
+import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetTouchEvent;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.ControllerButton;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.HeadOrientation;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoutmodels.BattleZoneLayout;
@@ -141,15 +141,15 @@ public class PvPDuelScreenTesting extends Screen{
         AddToManaButton.LinkGLobject(glRbutton);
         AttackButton.LinkGLobject(glRbutton);
 
-        SummonButton.LinkLogicalObject(ControllerButton.Summon);
+        SummonButton.LinkLogicalObject(ControllerButton.SummonOrCast);
         AddToManaButton.LinkLogicalObject(ControllerButton.AddToMana);
         AttackButton.LinkLogicalObject(ControllerButton.Attack);
 
-        controllerLayout.AddButtonWidget(ControllerButton.Summon, SummonButton);
+        controllerLayout.AddButtonWidget(ControllerButton.SummonOrCast, SummonButton);
         controllerLayout.AddButtonWidget(ControllerButton.AddToMana, AddToManaButton);
         controllerLayout.AddButtonWidget(ControllerButton.Attack, AttackButton);
 
-        controllerLayout.setControllerButton(ControllerButton.Summon, ControllerButton.AddToMana);
+        controllerLayout.setControllerButton(ControllerButton.SummonOrCast, ControllerButton.AddToMana);
         tmplist = new ArrayList<CardWidget>();
     }
 
@@ -198,7 +198,7 @@ public class PvPDuelScreenTesting extends Screen{
         //WidgetTouchEvent tmp2 = CardWg.isTouched(touchEvents);
 
         WidgetTouchEvent tmp2 = controllerLayout.TouchResponse(touchEvents);
-        if (tmp2 != null && tmp2.isTouched && !tmp2.isTouchedDown && tmp2.object == ControllerButton.Summon) {
+        if (tmp2 != null && tmp2.isTouched && !tmp2.isTouchedDown && tmp2.object == ControllerButton.SummonOrCast) {
             /*GLPoint intersectingPoint = GLGeometry.GLRayIntersectionWithXZPlane(
                     new GLRay(game.getInput().getNearPoint(0), GLGeometry.GLVectorBetween(game.getInput().getNearPoint(0),
                             game.getInput().getFarPoint(0))), 0);
@@ -300,7 +300,7 @@ public class PvPDuelScreenTesting extends Screen{
                 battleZoneLayout.PutCardWidgetOnTopOfExistingCardWidget(CardWgtmp, rmwg);
                 tmplist.add(CardWgtmp);
             } */
-            controllerLayout.setControllerButton(ControllerButton.Summon, ControllerButton.AddToMana, ControllerButton.Attack);
+            controllerLayout.setControllerButton(ControllerButton.SummonOrCast, ControllerButton.AddToMana, ControllerButton.Attack);
         }
 
         position.Centerposition.x = 0.5f;
@@ -334,7 +334,7 @@ public class PvPDuelScreenTesting extends Screen{
             //battleZoneLayout.AddCardWidgetToZone(CardWgtmp);
             //manaZoneLayout.TransferCardWidgetToCoupleSlotZone(CardWgtmp);
             //tmplist.add(CardWgtmp);
-            controllerLayout.setControllerButton(ControllerButton.Summon, ControllerButton.AddToMana);
+            controllerLayout.setControllerButton(ControllerButton.SummonOrCast, ControllerButton.AddToMana);
         }
 
         //if (!remove) {

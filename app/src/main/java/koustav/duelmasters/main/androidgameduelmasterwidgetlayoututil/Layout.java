@@ -2,7 +2,7 @@ package koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil;
 
 import java.util.List;
 
-import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetTouchEvent;
+import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetTouchEvent;
 import koustav.duelmasters.main.androidgamesframework.Input;
 
 /**

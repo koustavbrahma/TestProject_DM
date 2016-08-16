@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Set;
 
-import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetTouchEvent;
+import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetTouchEvent;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.ControllerButton;
 import koustav.duelmasters.main.androidgameopenglutil.FrameBufferObject;
 import koustav.duelmasters.main.androidgameopenglutil.GLGeometry;
@@ -79,8 +79,7 @@ public class AssetsAndResource {
     public static int AddToManaButton;
     public static int AttackButton;
     public static int BlockButton;
-    public static int TurboRushButton;
-    public static int SilentSkillButton;
+    public static int TapAbilityButton;
 
     // Fixed textures ID
     public static int BaseID = 0;
@@ -92,8 +91,7 @@ public class AssetsAndResource {
     public static int AddToManaButtonID = 6;
     public static int AttackButtonID = 7;
     public static int BlockButtonID = 8;
-    public static int TurboRushButtonID = 9;
-    public static int SilentSkillButtonID = 10;
+    public static int TapAbilityButtonID = 9;
 
     // flexible textures
     private static Hashtable<String, Integer> CardImages;
@@ -260,14 +258,10 @@ public class AssetsAndResource {
             TextureHelper.freeTexture(BlockButton);
         }
         BlockButton = TextureHelper.loadTexture(game, "PauseButton.png");
-        if (TurboRushButton != 0) {
-            TextureHelper.freeTexture(TurboRushButton);
+        if (TapAbilityButton != 0) {
+            TextureHelper.freeTexture(TapAbilityButton);
         }
-        TurboRushButton = TextureHelper.loadTexture(game, "PauseButton.png");
-        if (SilentSkillButton != 0) {
-            TextureHelper.freeTexture(SilentSkillButton);
-        }
-        SilentSkillButton = TextureHelper.loadTexture(game, "PauseButton.png");
+        TapAbilityButton = TextureHelper.loadTexture(game, "PauseButton.png");
     }
 
     private static void freePvPFixedTexture() {
@@ -308,14 +302,10 @@ public class AssetsAndResource {
             TextureHelper.freeTexture(BlockButton);
         }
         BlockButton = 0;
-        if (TurboRushButton != 0) {
-            TextureHelper.freeTexture(TurboRushButton);
+        if (TapAbilityButton != 0) {
+            TextureHelper.freeTexture(TapAbilityButton);
         }
-        TurboRushButton = 0;
-        if (SilentSkillButton != 0) {
-            TextureHelper.freeTexture(SilentSkillButton);
-        }
-        SilentSkillButton = 0;
+        TapAbilityButton = 0;
     }
 
     public static int getCardTexture(String CardName) {
@@ -402,10 +392,8 @@ public class AssetsAndResource {
             return AttackButton;
         } else if (ID == BlockButtonID) {
             return BlockButton;
-        } else if (ID == TurboRushButtonID) {
-            return TurboRushButton;
-        } else if (ID == SilentSkillButtonID) {
-            return SilentSkillButton;
+        } else if (ID == TapAbilityButtonID) {
+            return TapAbilityButton;
         } else {
             return 0;
         }
@@ -414,7 +402,7 @@ public class AssetsAndResource {
     public static int getTextureIdForButton(ControllerButton button) {
         if (button == ControllerButton.Pause) {
             return pauseButtonID;
-        } else if (button == ControllerButton.Summon) {
+        } else if (button == ControllerButton.SummonOrCast) {
             return SummonButtonID;
         } else if (button == ControllerButton.AddToMana) {
             return AddToManaButtonID;
@@ -422,10 +410,8 @@ public class AssetsAndResource {
             return AttackButtonID;
         } else if (button == ControllerButton.Block) {
             return BlockButtonID;
-        } else if (button == ControllerButton.TurboRush) {
-            return TurboRushButtonID;
-        } else if (button == ControllerButton.SilentSkill) {
-            return SilentSkillButtonID;
+        } else if (button == ControllerButton.TapAbility) {
+            return TapAbilityButton;
         } else {
             throw new RuntimeException("Invalid Button type");
         }

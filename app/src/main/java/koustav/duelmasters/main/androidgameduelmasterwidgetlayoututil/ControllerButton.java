@@ -5,10 +5,11 @@ package koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil;
  */
 public enum ControllerButton {
     Pause,
-    Summon,
+    Accept,
+    Decline,
+    SummonOrCast,
     AddToMana,
     Attack,
     Block,
-    TurboRush,
-    SilentSkill
+    TapAbility,
 }

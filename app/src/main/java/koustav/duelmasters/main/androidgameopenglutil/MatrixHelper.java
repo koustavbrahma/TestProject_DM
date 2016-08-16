@@ -3,7 +3,7 @@ package koustav.duelmasters.main.androidgameopenglutil;
 import java.util.ArrayList;
 
 import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAndResource;
-import koustav.duelmasters.main.androidgameduelmasterswidget.WidgetPosition;
+import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetPosition;
 
 import static android.opengl.Matrix.*;
 
