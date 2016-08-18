@@ -1,13 +1,17 @@
 package koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator;
 
+import java.util.Arrays;
 import java.util.List;
 
 import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAndResource;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Maze;
 import koustav.duelmasters.main.androidgameduelmastersuifeedbackloop.Acknowledge;
+import koustav.duelmasters.main.androidgameduelmastersuifeedbackloop.Requests;
 import koustav.duelmasters.main.androidgameduelmastersuifeedbackloop.UIRequest;
+import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetSelectedCardTracker;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetTouchFocusLevel;
+import koustav.duelmasters.main.androidgameduelmasterwidgetlayoutmodels.FixedButtonsLayout;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.ControllerButton;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.HeadOrientation;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.Layout;
@@ -35,6 +39,35 @@ import koustav.duelmasters.main.androidgamesframework.Pool;
  */
 
 public class PvPWidgetCoordinator {
+    public enum ZoomLevel {
+        No_Zooming,
+        Button,
+        Touched,
+        Button_Touched
+    }
+
+    ZoomLevel zoomLevel;
+    public enum Expand {
+        Battle_Z,
+        Battle_OZ,
+        Mana_Z,
+        Mana_OZ,
+        Deck,
+        Deck_O,
+        Graveyard,
+        Graveyard_O,
+        Hand_O,
+        Player,
+        Opponent
+    }
+
+    public enum Drag {
+        Mana_Z,
+        Hand,
+    }
+
+    boolean FlushButtons;
+
     Maze maze;
 
     // CardWidget Pool
@@ -46,8 +79,9 @@ public class PvPWidgetCoordinator {
     CardStackWidget Opponent_Graveyard;
     CardStackWidget Opponent_Deck;
 
-    // ControllerWidget
+    // ButtonWidget
     RectangleButtonWidget pauseButton;
+
     RectangleButtonWidget AcceptButton;
     RectangleButtonWidget DeclineButton;
     RectangleButtonWidget SummonOrCastButton;
@@ -55,6 +89,7 @@ public class PvPWidgetCoordinator {
     RectangleButtonWidget AttackButton;
     RectangleButtonWidget BlockButton;
     RectangleButtonWidget TapAbilityButton;
+    RectangleButtonWidget ZoomButton;
 
     // GLObjects
     Cube cube;
@@ -72,14 +107,16 @@ public class PvPWidgetCoordinator {
     CardStackZoneLayout opponentGraveyardLayout;
     HandZoneLayout handZoneLayout;
 
+    // Menu Buttons
+    FixedButtonsLayout fixedButtonsLayout;
+
     // Control Buttons
-    ButtonSlotLayout pauseButtonLayout;
     ControllerLayout controllerLayout;
 
     // Misc var
     boolean ShadowEnable;
     Layout FocusLayout;
-    Cards selectedCard;
+    WidgetSelectedCardTracker selectedCardTracker;
 
     // Listener
     WidgetTouchListener LowFocusListener;
@@ -97,7 +134,7 @@ public class PvPWidgetCoordinator {
         // Misc var
         this.ShadowEnable = true;
         FocusLayout = null;
-        selectedCard = null;
+        selectedCardTracker = new WidgetSelectedCardTracker();
 
         // CardWidget Pool
         Pool.PoolObjectFactory<CardWidget> factory = new Pool.PoolObjectFactory<CardWidget>() {
@@ -116,6 +153,7 @@ public class PvPWidgetCoordinator {
 
         // Controller widget
         pauseButton = new RectangleButtonWidget();
+
         AcceptButton = new RectangleButtonWidget();
         DeclineButton = new RectangleButtonWidget();
         SummonOrCastButton = new RectangleButtonWidget();
@@ -123,6 +161,7 @@ public class PvPWidgetCoordinator {
         AttackButton = new RectangleButtonWidget();
         BlockButton = new RectangleButtonWidget();
         TapAbilityButton = new RectangleButtonWidget();
+        ZoomButton = new RectangleButtonWidget();
 
         // Initialize GLObject
         cube = new Cube(new GLMaterial(new float[] {0.8f, 0.8f, 0.8f}, new float[] {0.8f, 0.8f, 0.8f},
@@ -155,6 +194,7 @@ public class PvPWidgetCoordinator {
 
         // Link to its GLObject (controller)
         pauseButton.LinkGLobject(glRbutton);
+
         AcceptButton.LinkGLobject(glRbutton);
         DeclineButton.LinkGLobject(glRbutton);
         SummonOrCastButton.LinkGLobject(glRbutton);
@@ -162,9 +202,11 @@ public class PvPWidgetCoordinator {
         AttackButton.LinkGLobject(glRbutton);
         BlockButton.LinkGLobject(glRbutton);
         TapAbilityButton.LinkGLobject(glRbutton);
+        ZoomButton.LinkGLobject(glRbutton);
 
         // Link to its texture (controller)
         pauseButton.LinkLogicalObject(ControllerButton.Pause);
+
         AcceptButton.LinkLogicalObject(ControllerButton.Accept);
         DeclineButton.LinkLogicalObject(ControllerButton.Decline);
         SummonOrCastButton.LinkLogicalObject(ControllerButton.SummonOrCast);
@@ -172,6 +214,7 @@ public class PvPWidgetCoordinator {
         AttackButton.LinkLogicalObject(ControllerButton.Attack);
         BlockButton.LinkLogicalObject(ControllerButton.Block);
         TapAbilityButton.LinkLogicalObject(ControllerButton.TapAbility);
+        ZoomButton.LinkLogicalObject(ControllerButton.Zoom);
 
         // Initialize Zone Layouts
         battleZoneLayout = new BattleZoneLayout();
@@ -203,8 +246,11 @@ public class PvPWidgetCoordinator {
         handZoneLayout.InitializeHandZoneLayout(AssetsAndResource.MazeWidth, -0.8f, AssetsAndResource.CameraPosition.x/4,
                 AssetsAndResource.CameraPosition.y/4, AssetsAndResource.CameraPosition.z/4, 4f, 4f);
 
+        // Initialize Menu Button
+        fixedButtonsLayout = new FixedButtonsLayout();
+        fixedButtonsLayout.InitializeFixedButtonLayout(pauseButton);
+
         // Initialize Control Button
-        pauseButtonLayout = new ButtonSlotLayout();
         controllerLayout = new ControllerLayout();
 
         // Added Button To the Controller Layout
@@ -215,8 +261,9 @@ public class PvPWidgetCoordinator {
         controllerLayout.AddButtonWidget(ControllerButton.Attack, AttackButton);
         controllerLayout.AddButtonWidget(ControllerButton.Block, BlockButton);
         controllerLayout.AddButtonWidget(ControllerButton.TapAbility, TapAbilityButton);
+        controllerLayout.AddButtonWidget(ControllerButton.Zoom, ZoomButton);
 
-        pauseButtonLayout.intializeButton(-0.85f, 0.85f, 0, pauseButton, 1f, 1f);
+
 
         // UI Requests and Acknowledge
         requests = new UIRequest();
@@ -225,6 +272,98 @@ public class PvPWidgetCoordinator {
         // Define Listener
         DefineListener();
         Listener = LowFocusListener;
+
+        // Misc Flag
+        zoomLevel = ZoomLevel.Button_Touched;
+        FlushButtons = true;
+    }
+
+    private void ResetFlags() {
+        zoomLevel = ZoomLevel.Button_Touched;
+
+        battleZoneLayout.setExpandMode(false);
+        opponentBattleZoneLayout.setExpandMode(false);
+        manaZoneLayout.setExpandMode(false);
+        opponentManaZoneLayout.setExpandMode(false);
+        graveyardLayout.setExpandMode(false);
+        opponentGraveyardLayout.setExpandMode(false);
+        deckLayout.setExpandMode(false);
+        opponentDeckLayout.setExpandMode(false);
+
+        manaZoneLayout.SetDraggingMode(false);
+        opponentManaZoneLayout.SetDraggingMode(false);
+        handZoneLayout.SetDraggingMode(false);
+    }
+
+    public void SetFlags(ZoomLevel zoomLevel, Expand[] expands, Drag[] drags, boolean flushButtons) {
+        ResetFlags();
+
+        this.zoomLevel= zoomLevel;
+        FlushButtons = flushButtons;
+
+        for (int i = 0; i < expands.length; i++) {
+            Expand expand = expands[i];
+
+            switch (expand) {
+                case Battle_Z:
+                    battleZoneLayout.setExpandMode(true);
+                    break;
+                case  Battle_OZ:
+                    opponentDeckLayout.setExpandMode(true);
+                    break;
+                case  Mana_Z:
+                    manaZoneLayout.setExpandMode(true);
+                    break;
+                case Mana_OZ:
+                    opponentManaZoneLayout.setExpandMode(true);
+                    break;
+                case Deck:
+                    deckLayout.setExpandMode(true);
+                    break;
+                case Deck_O:
+                    opponentDeckLayout.setExpandMode(true);
+                    break;
+                case Graveyard:
+                    graveyardLayout.setExpandMode(true);
+                    break;
+                case Graveyard_O:
+                    opponentGraveyardLayout.setExpandMode(true);
+                    break;
+                case Hand_O:
+                    break;
+                case Player:
+                    break;
+                case Opponent:
+                    break;
+                default:
+            }
+        }
+
+        for (int i = 0; i < drags.length; i++) {
+            Drag drag = drags[i];
+
+            switch (drag) {
+                case Hand:
+                    handZoneLayout.SetDraggingMode(true);
+                    break;
+                case Mana_Z:
+                    manaZoneLayout.SetDraggingMode(true);
+                    break;
+                default:
+            }
+        }
+    }
+
+    public void setControlButton(ControllerButton[] controllerButtons) {
+        if ((zoomLevel == ZoomLevel.Button_Touched || zoomLevel == ZoomLevel.Button) && selectedCardTracker.getSelectedCard() != null) {
+            controllerButtons = Arrays.copyOf(controllerButtons, controllerButtons.length + 1);
+            controllerButtons[controllerButtons.length - 1] = ControllerButton.Zoom;
+        }
+        controllerLayout.setControllerButton(controllerButtons);
+    }
+
+    public void clearControlButton() {
+        controllerLayout.unsetControllerButton();
     }
 
     public UIRequest getRequests() {
@@ -314,17 +453,12 @@ public class PvPWidgetCoordinator {
                         }
                     } else {
                         if (input.getNormalizedX(0) < -0.8f && input.getNormalizedY(0) > 0.8f) {
-                            widgetTouchEvent = pauseButtonLayout.TouchResponse(touchEvents);
-                            if (widgetTouchEvent.isTouched) {
-                                if (!widgetTouchEvent.isTouchedDown) {
+                            widgetTouchEvent = fixedButtonsLayout.TouchResponse(touchEvents);
+                            if (widgetTouchEvent != null) {
 
-                                }
-                            } else {
-                                AssetsAndResource.widgetTouchEventPool.free(widgetTouchEvent);
-                                widgetTouchEvent = null;
                             }
                         }
-                        if (widgetTouchEvent == null && selectedCard != null && (input.getNormalizedY(0) > 0.8f)) {
+                        if (widgetTouchEvent == null && selectedCardTracker.getSelectedCard() != null && (input.getNormalizedY(0) > 0.8f)) {
                             widgetTouchEvent = controllerLayout.TouchResponse(touchEvents);
                         }
 
@@ -443,17 +577,12 @@ public class PvPWidgetCoordinator {
                                 }
                             } else {
                                 if (event.normalizedX < -0.8f && event.normalizedY > 0.8f) {
-                                    widgetTouchEvent = pauseButtonLayout.TouchResponse(touchEvents);
-                                    if (widgetTouchEvent.isTouched) {
-                                        if (!widgetTouchEvent.isTouchedDown) {
+                                    widgetTouchEvent = fixedButtonsLayout.TouchResponse(touchEvents);
+                                    if (widgetTouchEvent != null) {
 
-                                        }
-                                    } else {
-                                        AssetsAndResource.widgetTouchEventPool.free(widgetTouchEvent);
-                                        widgetTouchEvent = null;
                                     }
                                 }
-                                if (widgetTouchEvent == null && selectedCard != null && (event.normalizedY > 0.8f)) {
+                                if (widgetTouchEvent == null && selectedCardTracker.getSelectedCard() != null && (event.normalizedY > 0.8f)) {
                                     widgetTouchEvent = controllerLayout.TouchResponse(touchEvents);
                                 }
 
@@ -506,6 +635,8 @@ public class PvPWidgetCoordinator {
                     }
                 }
 
+                requests.resetRequest();
+
                 if (widgetTouchEvent == null) {
                     return;
                 }
@@ -515,21 +646,36 @@ public class PvPWidgetCoordinator {
                     throw new RuntimeException("Invalid condition");
                 }
 
-                if (widgetTouchEvent.object instanceof Cards) {
-                    selectedCard = (Cards) widgetTouchEvent.object;
+                boolean selectedCardTouched = false;
+                if (!widgetTouchEvent.isTouchedDown &&
+                        (widgetTouchEvent.isFocus == WidgetTouchFocusLevel.Low) && (widgetTouchEvent.object instanceof Cards)) {
+                    if (selectedCardTracker.getSelectedCard() == widgetTouchEvent.object) {
+                        selectedCardTouched = true;
+                    } else {
+                        selectedCardTracker.setSelectedCard((Cards) widgetTouchEvent.object);
+                        requests.setRequest(Requests.CardSelected, false);
+                        requests.setCard(selectedCardTracker.getSelectedCard());
+                    }
                 }
 
                 if (widgetTouchEvent.isFocus == WidgetTouchFocusLevel.Medium) {
+                    selectedCardTracker.setSelectedCard(null);
+                    controllerLayout.unsetControllerButton();
                     setWidgetCoordinatorListener(MediumFocusListener);
                     return;
                 }
 
                 if (widgetTouchEvent.isFocus == WidgetTouchFocusLevel.High) {
+                    selectedCardTracker.setSelectedCard(null);
+                    controllerLayout.unsetControllerButton();
                     setWidgetCoordinatorListener(HighFocusListener);
                     return;
                 }
 
-
+                if (widgetTouchEvent.object == null) {
+                    selectedCardTracker.setSelectedCard(null);
+                    controllerLayout.unsetControllerButton();
+                }
             }
         };
 

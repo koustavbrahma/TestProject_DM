@@ -5,6 +5,7 @@ import java.util.Hashtable;
 import java.util.List;
 
 import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAndResource;
+import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetTouchEvent;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetTouchFocusLevel;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.Layout;
@@ -644,5 +645,17 @@ public class HandZoneLayout implements Layout  {
         cardSlotLayoutPool.free(slotLayout);
 
         return widget;
+    }
+
+    public void LockCardWidget(CardWidget widget, float x, float y, float z, float angle, float x_axis, float y_axis, float z_axis) {
+        DynamicCardSlotLayout slotLayout = WidgetToSlotMapping.get(widget);
+
+        slotLayout.lockSlot(x, y, z, angle, x_axis, y_axis, z_axis);
+    }
+
+    public void UnlockCardWidget(CardWidget widget) {
+        DynamicCardSlotLayout slotLayout = WidgetToSlotMapping.get(widget);
+
+        slotLayout.unlockSlot();
     }
 }

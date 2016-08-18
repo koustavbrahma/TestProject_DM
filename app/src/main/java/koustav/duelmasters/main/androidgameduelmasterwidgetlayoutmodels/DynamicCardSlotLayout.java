@@ -34,6 +34,7 @@ public class DynamicCardSlotLayout implements Layout {
 
     boolean Disturbed;
     boolean running;
+    boolean locked;
     boolean TwoStepTracking;
     boolean TwoStepTransition;
 
@@ -56,6 +57,7 @@ public class DynamicCardSlotLayout implements Layout {
 
         Disturbed = false;
         running = false;
+        locked = false;
         TwoStepTracking = false;
         TwoStepTransition = false;
 
@@ -232,7 +234,7 @@ public class DynamicCardSlotLayout implements Layout {
 
     @Override
     public WidgetTouchEvent TouchResponse(List<Input.TouchEvent> touchEvents) {
-        if (TopCardWidget != null && !running) {
+        if (TopCardWidget != null && !running && !locked) {
             return TopCardWidget.isTouched(touchEvents);
         }
 
@@ -270,6 +272,7 @@ public class DynamicCardSlotLayout implements Layout {
     public void resetSlot() {
         this.TopCardWidget = null;
         TwoStepTransition = false;
+        locked = false;
     }
 
     public CardWidget getCardWidget() {
@@ -289,14 +292,63 @@ public class DynamicCardSlotLayout implements Layout {
     }
 
     public void setSlotPosition(float x, float y, float z) {
-        TopSlotPosition.Centerposition.x = x;
-        TopSlotPosition.Centerposition.y = y;
-        TopSlotPosition.Centerposition.z = z;
+        if (!locked) {
+            TopSlotPosition.Centerposition.x = x;
+            TopSlotPosition.Centerposition.y = y;
+            TopSlotPosition.Centerposition.z = z;
 
-        Disturbed = true;
+            Disturbed = true;
+        }
     }
 
     public void setTwoStepTransition(boolean val) {
         this.TwoStepTransition = val;
+    }
+
+    public void lockSlot(float x, float y, float z, float angle, float x_axis, float y_axis, float z_axis ) {
+        if (locked) {
+            return;
+        }
+        locked = true;
+        OldTopSlotPosition.Centerposition.x = TopSlotPosition.Centerposition.x;
+        OldTopSlotPosition.Centerposition.y = TopSlotPosition.Centerposition.y;
+        OldTopSlotPosition.Centerposition.z = TopSlotPosition.Centerposition.z;
+        OldTopSlotPosition.rotaion.angle = TopSlotPosition.rotaion.angle;
+        OldTopSlotPosition.rotaion.x = TopSlotPosition.rotaion.x;
+        OldTopSlotPosition.rotaion.y = TopSlotPosition.rotaion.y;
+        OldTopSlotPosition.rotaion.z = TopSlotPosition.rotaion.z;
+        OldTopSlotPosition.X_scale = TopSlotPosition.X_scale;
+        OldTopSlotPosition.Y_scale = TopSlotPosition.Y_scale;
+        OldTopSlotPosition.Z_scale = TopSlotPosition.Z_scale;
+
+        TopSlotPosition.Centerposition.x = x;
+        TopSlotPosition.Centerposition.y = y;
+        TopSlotPosition.Centerposition.z = z;
+        TopSlotPosition.rotaion.angle = angle;
+        TopSlotPosition.rotaion.x = x_axis;
+        TopSlotPosition.rotaion.y = y_axis;
+        TopSlotPosition.rotaion.z = z_axis;
+
+        Disturbed = true;
+    }
+
+    public void unlockSlot() {
+        if (!locked) {
+            return;
+        }
+        locked = false;
+
+        TopSlotPosition.Centerposition.x = OldTopSlotPosition.Centerposition.x;
+        TopSlotPosition.Centerposition.y = OldTopSlotPosition.Centerposition.y;
+        TopSlotPosition.Centerposition.z = OldTopSlotPosition.Centerposition.z;
+        TopSlotPosition.rotaion.angle = OldTopSlotPosition.rotaion.angle;
+        TopSlotPosition.rotaion.x = OldTopSlotPosition.rotaion.x;
+        TopSlotPosition.rotaion.y = OldTopSlotPosition.rotaion.y;
+        TopSlotPosition.rotaion.z = OldTopSlotPosition.rotaion.z;
+        TopSlotPosition.X_scale = OldTopSlotPosition.X_scale;
+        TopSlotPosition.Y_scale = OldTopSlotPosition.Y_scale;
+        TopSlotPosition.Z_scale = OldTopSlotPosition.Z_scale;
+
+        Disturbed = true;
     }
 }

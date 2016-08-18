@@ -149,7 +149,7 @@ public class PvPDuelScreenTesting extends Screen{
         controllerLayout.AddButtonWidget(ControllerButton.AddToMana, AddToManaButton);
         controllerLayout.AddButtonWidget(ControllerButton.Attack, AttackButton);
 
-        controllerLayout.setControllerButton(ControllerButton.SummonOrCast, ControllerButton.AddToMana);
+        controllerLayout.setControllerButton(new ControllerButton[] {ControllerButton.SummonOrCast, ControllerButton.AddToMana});
         tmplist = new ArrayList<CardWidget>();
     }
 
@@ -300,7 +300,7 @@ public class PvPDuelScreenTesting extends Screen{
                 battleZoneLayout.PutCardWidgetOnTopOfExistingCardWidget(CardWgtmp, rmwg);
                 tmplist.add(CardWgtmp);
             } */
-            controllerLayout.setControllerButton(ControllerButton.SummonOrCast, ControllerButton.AddToMana, ControllerButton.Attack);
+            controllerLayout.setControllerButton(new ControllerButton[] {ControllerButton.SummonOrCast, ControllerButton.AddToMana, ControllerButton.Attack});
         }
 
         position.Centerposition.x = 0.5f;
@@ -334,7 +334,7 @@ public class PvPDuelScreenTesting extends Screen{
             //battleZoneLayout.AddCardWidgetToZone(CardWgtmp);
             //manaZoneLayout.TransferCardWidgetToCoupleSlotZone(CardWgtmp);
             //tmplist.add(CardWgtmp);
-            controllerLayout.setControllerButton(ControllerButton.SummonOrCast, ControllerButton.AddToMana);
+            controllerLayout.setControllerButton(new ControllerButton[] {ControllerButton.SummonOrCast, ControllerButton.AddToMana});
         }
 
         //if (!remove) {

@@ -24,7 +24,8 @@ public class ControllerLayout implements Layout {
     float k1;
     float k2;
 
-    float gap;
+    float default_gap;
+    float max_span;
     float Y;
 
     ArrayList<ControllerButton> TouchedButtons;
@@ -39,7 +40,8 @@ public class ControllerLayout implements Layout {
         k1 = 4f;
         k2 = 4f;
 
-        gap = 0.4f;
+        default_gap = 0.4f;
+        max_span = 1.4f;
         Y = 0.85f;
 
         TouchedButtons = new ArrayList<ControllerButton>();
@@ -91,8 +93,13 @@ public class ControllerLayout implements Layout {
         TouchedButtons.clear();
         widgetTouchEventList.clear();
 
-        WidgetTouchEvent widgetTouchEvent = null;
         int size = Buttons.size();
+        float gap = default_gap;
+        float actualLength = default_gap * (size - 1);
+        if (actualLength > max_span) {
+            gap = (max_span)/ (size -1);
+        }
+        WidgetTouchEvent widgetTouchEvent = null;
         float totalLength = gap * (size);
         float startingPoint = (gap * (size - 1)) /2;
 
@@ -324,10 +331,10 @@ public class ControllerLayout implements Layout {
         ControllerTypeToLayout.put(button, layout);
     }
 
-    public void setControllerButton(Object ...obj) {
+    public void setControllerButton(ControllerButton[] controllerButtons) {
         Buttons.clear();
-        for (int i = 0; i < obj.length; i++) {
-            ControllerButton button = (ControllerButton) obj[i];
+        for (int i = 0; i < controllerButtons.length; i++) {
+            ControllerButton button = controllerButtons[i];
             Buttons.add(button);
         }
 
@@ -345,6 +352,11 @@ public class ControllerLayout implements Layout {
         }
 
         int size = Buttons.size();
+        float gap = default_gap;
+        float actualLength = default_gap * (size - 1);
+        if (actualLength > max_span) {
+            gap = (max_span)/ (size -1);
+        }
         float length = gap * (size - 1);
 
         for (int i = 0; i < Buttons.size(); i++) {

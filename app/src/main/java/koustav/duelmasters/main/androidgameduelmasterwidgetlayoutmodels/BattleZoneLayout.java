@@ -64,7 +64,7 @@ public class BattleZoneLayout implements Layout {
 
         this.Opponent = false;
 
-        ExpandMode = true;
+        ExpandMode = false;
 
         cardSlotLayoutPool = new Pool<CardSlotLayoutXZPlaner>(factory, 40);
 

@@ -12,4 +12,5 @@ public enum ControllerButton {
     Attack,
     Block,
     TapAbility,
+    Zoom
 }

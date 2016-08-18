@@ -98,7 +98,7 @@ public class ManaZoneLayout implements Layout{
         DragMode = false;
         DragLock = false;
         DragCount = 0;
-        ExpandMode = true;
+        ExpandMode = false;
 
         SlotsToRemoveDuringTransition = new ArrayList<CardSlotLayoutXZPlaner>();
     }
@@ -124,7 +124,7 @@ public class ManaZoneLayout implements Layout{
         DragMode = val;
     }
 
-    public void SetExpandMode(boolean val) {
+    public void setExpandMode(boolean val) {
         ExpandMode = val;
     }
 

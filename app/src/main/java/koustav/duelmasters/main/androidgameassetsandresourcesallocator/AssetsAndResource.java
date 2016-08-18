@@ -75,11 +75,14 @@ public class AssetsAndResource {
     public static int cardBorder;
     public static int cardDeckSides;
     public static int pauseButton;
+    public static int AcceptButton;
+    public static int DeclineButton;
     public static int SummonButton;
     public static int AddToManaButton;
     public static int AttackButton;
     public static int BlockButton;
     public static int TapAbilityButton;
+    public static int ZoomButton;
 
     // Fixed textures ID
     public static int BaseID = 0;
@@ -88,10 +91,13 @@ public class AssetsAndResource {
     public static int cardDeckSidesID = 3;
     public static int pauseButtonID = 4;
     public static int SummonButtonID = 5;
-    public static int AddToManaButtonID = 6;
-    public static int AttackButtonID = 7;
-    public static int BlockButtonID = 8;
-    public static int TapAbilityButtonID = 9;
+    public static int AcceptButtonID = 6;
+    public static int DeclineButtonID = 7;
+    public static int AddToManaButtonID = 8;
+    public static int AttackButtonID = 9;
+    public static int BlockButtonID = 10;
+    public static int TapAbilityButtonID = 11;
+    public static int ZoomButtonID = 12;
 
     // flexible textures
     private static Hashtable<String, Integer> CardImages;
@@ -242,6 +248,14 @@ public class AssetsAndResource {
             TextureHelper.freeTexture(pauseButton);
         }
         pauseButton = TextureHelper.loadTexture(game, "PauseButton.png");
+        if (AcceptButton != 0) {
+            TextureHelper.freeTexture(AcceptButton);
+        }
+        AcceptButton = TextureHelper.loadTexture(game, "PauseButton.png");
+        if (DeclineButton != 0) {
+            TextureHelper.freeTexture(DeclineButton);
+        }
+        DeclineButton = TextureHelper.loadTexture(game, "PauseButton.png");
         if (SummonButton != 0) {
             TextureHelper.freeTexture(SummonButton);
         }
@@ -262,6 +276,10 @@ public class AssetsAndResource {
             TextureHelper.freeTexture(TapAbilityButton);
         }
         TapAbilityButton = TextureHelper.loadTexture(game, "PauseButton.png");
+        if (ZoomButton != 0) {
+            TextureHelper.freeTexture(ZoomButton);
+        }
+        ZoomButton = TextureHelper.loadTexture(game, "PauseButton.png");
     }
 
     private static void freePvPFixedTexture() {
@@ -286,6 +304,14 @@ public class AssetsAndResource {
             TextureHelper.freeTexture(pauseButton);
         }
         pauseButton = 0;
+        if (AcceptButton != 0) {
+            TextureHelper.freeTexture(AcceptButton);
+        }
+        AcceptButton = 0;
+        if (DeclineButton != 0) {
+            TextureHelper.freeTexture(DeclineButton);
+        }
+        DeclineButton = 0;
         if (SummonButton != 0) {
             TextureHelper.freeTexture(SummonButton);
         }
@@ -306,6 +332,10 @@ public class AssetsAndResource {
             TextureHelper.freeTexture(TapAbilityButton);
         }
         TapAbilityButton = 0;
+        if (ZoomButton != 0) {
+            TextureHelper.freeTexture(ZoomButton);
+        }
+        ZoomButton = 0;
     }
 
     public static int getCardTexture(String CardName) {
@@ -384,6 +414,10 @@ public class AssetsAndResource {
             return cardDeckSides;
         } else if (ID == pauseButtonID) {
             return pauseButton;
+        }else if (ID == AcceptButtonID) {
+            return AcceptButton;
+        } else if (ID == DeclineButtonID) {
+            return DeclineButton;
         } else if (ID == SummonButtonID) {
             return SummonButton;
         } else if (ID == AddToManaButtonID) {
@@ -394,6 +428,8 @@ public class AssetsAndResource {
             return BlockButton;
         } else if (ID == TapAbilityButtonID) {
             return TapAbilityButton;
+        } else if (ID == ZoomButtonID) {
+            return ZoomButton;
         } else {
             return 0;
         }
@@ -402,6 +438,10 @@ public class AssetsAndResource {
     public static int getTextureIdForButton(ControllerButton button) {
         if (button == ControllerButton.Pause) {
             return pauseButtonID;
+        } else if (button == ControllerButton.Accept) {
+            return AcceptButtonID;
+        } else if (button == ControllerButton.Decline) {
+            return DeclineButtonID;
         } else if (button == ControllerButton.SummonOrCast) {
             return SummonButtonID;
         } else if (button == ControllerButton.AddToMana) {
@@ -411,7 +451,9 @@ public class AssetsAndResource {
         } else if (button == ControllerButton.Block) {
             return BlockButtonID;
         } else if (button == ControllerButton.TapAbility) {
-            return TapAbilityButton;
+            return TapAbilityButtonID;
+        } else if (button == ControllerButton.Zoom) {
+            return ZoomButtonID;
         } else {
             throw new RuntimeException("Invalid Button type");
         }
