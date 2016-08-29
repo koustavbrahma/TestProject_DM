@@ -5,4 +5,5 @@ package koustav.duelmasters.main.androidgameduelmastersstatemachine;
  */
 public interface SubStates {
     public boolean updateState();
+    public void StateSetting();
 }

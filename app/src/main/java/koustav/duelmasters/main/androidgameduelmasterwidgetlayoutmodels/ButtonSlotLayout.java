@@ -41,9 +41,24 @@ public class ButtonSlotLayout implements Layout {
     @Override
     public void update(float deltaTime, float totalTime) {
         if (Disturbed) {
-            driftSystem.setDriftInfo(buttonWidget.getPosition(), ButtonSlotPosition, k1, k2, totalTime);
+            boolean change = false;
+            if (buttonWidget.getPosition().rotaion.angle != ButtonSlotPosition.rotaion.angle) {
+                change = true;
+            } else if (buttonWidget.getPosition().Centerposition.x != ButtonSlotPosition.Centerposition.x) {
+                change = true;
+            } else if (buttonWidget.getPosition().Centerposition.y != ButtonSlotPosition.Centerposition.y) {
+                change = true;
+            } else if (buttonWidget.getPosition().X_scale != ButtonSlotPosition.X_scale) {
+                change = true;
+            } else if (buttonWidget.getPosition().Y_scale != ButtonWidgetPosition.Y_scale) {
+                change = true;
+            }
+
+            if (change) {
+                driftSystem.setDriftInfo(buttonWidget.getPosition(), ButtonSlotPosition, k1, k2, totalTime);
+                running = true;
+            }
             Disturbed = false;
-            running = true;
         }
 
         if (running) {
@@ -81,12 +96,7 @@ public class ButtonSlotLayout implements Layout {
         }
 
         WidgetTouchEvent widgetTouchEvent = AssetsAndResource.widgetTouchEventPool.newObject();
-        widgetTouchEvent.isTouched = false;
-        widgetTouchEvent.isTouchedDown = false;
-        widgetTouchEvent.isMoving = false;
-        widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Low;
-        widgetTouchEvent.isDoubleTouched = false;
-        widgetTouchEvent.object = null;
+        widgetTouchEvent.resetTouchEvent();
         return widgetTouchEvent;
     }
 

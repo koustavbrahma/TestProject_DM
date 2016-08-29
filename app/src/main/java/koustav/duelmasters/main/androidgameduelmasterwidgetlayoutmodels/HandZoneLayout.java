@@ -239,6 +239,7 @@ public class HandZoneLayout implements Layout  {
         Input input = AssetsAndResource.game.getInput();
         if (input.isTouchDown(0)) {
             widgetTouchEvent = AssetsAndResource.widgetTouchEventPool.newObject();
+            widgetTouchEvent.resetTouchEvent();
             widgetTouchEvent.isTouched = true;
             widgetTouchEvent.isTouchedDown = true;
             if (input.TouchType(0) == Input.TouchEvent.TOUCH_DRAGGED) {
@@ -254,6 +255,7 @@ public class HandZoneLayout implements Layout  {
         } else {
             touchMode = TouchModeHandZone.NormalMode;
             widgetTouchEvent = AssetsAndResource.widgetTouchEventPool.newObject();
+            widgetTouchEvent.resetTouchEvent();
             widgetTouchEvent.isTouched = true;
             widgetTouchEvent.isTouchedDown = false;
             widgetTouchEvent.isMoving = false;
@@ -367,6 +369,7 @@ public class HandZoneLayout implements Layout  {
                     if (index < CardSlot.indexOf(TouchedSlots.get(0))) {
                         SelectedCardSlot = TouchedSlots.get(0);
                         widgetTouchEvent = widgetTouchEventList.remove(0);
+                        widgetTouchEvent.wasUnderTheStack = true;
 
                         for (int i = 0; i < widgetTouchEventList.size(); i++) {
                             AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
@@ -384,6 +387,7 @@ public class HandZoneLayout implements Layout  {
                     } else if (index > CardSlot.indexOf(TouchedSlots.get(TouchedSlots.size() -1))) {
                         SelectedCardSlot = TouchedSlots.get(TouchedSlots.size() - 1);
                         widgetTouchEvent = widgetTouchEventList.remove(TouchedSlots.size() - 1);
+                        widgetTouchEvent.wasUnderTheStack = true;
 
                         for (int i = 0; i < widgetTouchEventList.size(); i++) {
                             AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
@@ -421,12 +425,9 @@ public class HandZoneLayout implements Layout  {
                 TouchedSlots.clear();
 
                 widgetTouchEvent = AssetsAndResource.widgetTouchEventPool.newObject();
+                widgetTouchEvent.resetTouchEvent();
                 widgetTouchEvent.isTouched = true;
                 widgetTouchEvent.isTouchedDown = true;
-                widgetTouchEvent.isMoving = false;
-                widgetTouchEvent.isDoubleTouched = false;
-                widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Low;
-                widgetTouchEvent.object = null;
 
                 return widgetTouchEvent;
             }
@@ -505,6 +506,7 @@ public class HandZoneLayout implements Layout  {
                             if (index < CardSlot.indexOf(TouchedSlots.get(0))) {
                                 SelectedCardSlot = TouchedSlots.get(0);
                                 widgetTouchEvent = widgetTouchEventList.remove(0);
+                                widgetTouchEvent.wasUnderTheStack = true;
 
                                 for (int i = 0; i < widgetTouchEventList.size(); i++) {
                                     AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
@@ -517,6 +519,7 @@ public class HandZoneLayout implements Layout  {
                             } else if (index > CardSlot.indexOf(TouchedSlots.get(TouchedSlots.size() -1))) {
                                 SelectedCardSlot = TouchedSlots.get(TouchedSlots.size() - 1);
                                 widgetTouchEvent = widgetTouchEventList.remove(TouchedSlots.size() - 1);
+                                widgetTouchEvent.wasUnderTheStack = true;
 
                                 for (int i = 0; i < widgetTouchEventList.size(); i++) {
                                     AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
@@ -551,12 +554,8 @@ public class HandZoneLayout implements Layout  {
                 return widgetTouchEventOutCome;
             } else if (isTouched) {
                 widgetTouchEventOutCome = AssetsAndResource.widgetTouchEventPool.newObject();
+                widgetTouchEventOutCome.resetTouchEvent();
                 widgetTouchEventOutCome.isTouched = true;
-                widgetTouchEventOutCome.isTouchedDown = false;
-                widgetTouchEventOutCome.isMoving = false;
-                widgetTouchEventOutCome.isDoubleTouched = false;
-                widgetTouchEventOutCome.isFocus = WidgetTouchFocusLevel.Low;
-                widgetTouchEventOutCome.object = null;
 
                 return widgetTouchEventOutCome;
             }

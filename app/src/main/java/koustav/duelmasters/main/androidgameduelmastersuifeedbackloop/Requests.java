@@ -10,8 +10,9 @@ public enum Requests {
     PlayerOrShield,
     Accept,
     Decline,
-    Summon,
+    SummonOrCast,
     Attack,
+    Block,
     AddToMana,
     TapAbility
 }

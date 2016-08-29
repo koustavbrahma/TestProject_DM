@@ -39,7 +39,7 @@ public class TestScreen extends Screen {
         if(state == GameState.Ready)
             updateReady();
         if(state == GameState.Running)
-            updateRunning(deltaTime);
+            updateRunning(deltaTime, totalTime);
         if(state == GameState.Paused)
             updatePaused();
     }
@@ -64,7 +64,7 @@ public class TestScreen extends Screen {
         }
     }
 
-    private void updateRunning(float deltaTime) {
+    private void updateRunning(float deltaTime, float totalTime) {
         List<TouchEvent> touchEvents = game.getInput().getTouchEvents();
         game.getInput().getKeyEvents();
         world.setTouchEvents(touchEvents);
@@ -81,7 +81,7 @@ public class TestScreen extends Screen {
         }
 
         if (run) {
-            world.update(deltaTime);
+            world.update(deltaTime, totalTime);
         }
     }
 

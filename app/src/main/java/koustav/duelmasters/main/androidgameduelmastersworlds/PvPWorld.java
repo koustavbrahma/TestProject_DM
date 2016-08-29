@@ -17,13 +17,14 @@ import koustav.duelmasters.main.androidgameduelmastersstatemachine.WorldUpdateOf
 import koustav.duelmasters.main.androidgameduelmastersstatemachine.WorldUpdateOnTurn;
 import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.GridIndexTrackingTable;
 import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.GridPositionIndex;
+import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.PvPWidgetCoordinator;
 import koustav.duelmasters.main.androidgamesframework.Input.TouchEvent;
 import koustav.duelmasters.main.androidgamesframeworkimpl.AndroidGame;
 
 /**
  * Created by Koustav on 2/16/2015.
  */
-public class PvPWorld {
+public class PvPWorld implements World {
     AndroidGame game;
     Maze maze;
     GridIndexTrackingTable gridIndexTrackingTable;
@@ -38,6 +39,7 @@ public class PvPWorld {
     EventLog eventLog;
     int frameBufferWidth;
     int frameBufferHeight;
+    PvPWidgetCoordinator widgetCoordinator;
 
     public PvPWorld(AndroidGame game, boolean Turn) {
         this.game = game;
@@ -54,6 +56,7 @@ public class PvPWorld {
         eventLog = new EventLog();
         frameBufferWidth = game.getframeBufferWidth();
         frameBufferHeight = game.getframeBufferHeight();
+        widgetCoordinator = new PvPWidgetCoordinator(maze);
         CreateMyDeck();
         CreateOppDeck();
     }
@@ -64,6 +67,10 @@ public class PvPWorld {
 
     public Maze getMaze() {
         return maze;
+    }
+
+    public PvPWidgetCoordinator getWidgetCoordinator() {
+        return widgetCoordinator;
     }
 
     public GridIndexTrackingTable getGridIndexTrackingTable() {
@@ -256,10 +263,16 @@ public class PvPWorld {
         }
     }
 
-    public void update(float deltatime) {
+    @Override
+    public void update(float deltatime, float totalTime) {
         if(TURN)
             worldUpdateOnTurn.update(deltatime);
         else
             worldUpdateOffTurn.update(deltatime);
+    }
+
+    @Override
+    public void draw() {
+
     }
 }

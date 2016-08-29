@@ -239,12 +239,7 @@ public class DynamicCardSlotLayout implements Layout {
         }
 
         WidgetTouchEvent widgetTouchEvent = AssetsAndResource.widgetTouchEventPool.newObject();
-        widgetTouchEvent.isTouched = false;
-        widgetTouchEvent.isTouchedDown = false;
-        widgetTouchEvent.isMoving = false;
-        widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Low;
-        widgetTouchEvent.isDoubleTouched = false;
-        widgetTouchEvent.object = null;
+        widgetTouchEvent.resetTouchEvent();
         return widgetTouchEvent;
     }
 

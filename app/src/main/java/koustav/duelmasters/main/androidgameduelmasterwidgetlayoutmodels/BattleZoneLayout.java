@@ -98,7 +98,7 @@ public class BattleZoneLayout implements Layout {
         this.ExpandMode = val;
     }
 
-    public boolean BattleZoneCardOverlapping() {
+    private boolean BattleZoneCardOverlapping() {
         float gap = (this.width)/(1f + LeftWingOfCardSlot.size() +RightWingOfCardSlot.size());
 
         if (gap >= AssetsAndResource.CardHeight) {
@@ -203,7 +203,15 @@ public class BattleZoneLayout implements Layout {
         if (widgetTouchEvent.isTouched) {
             widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Medium;
         } else {
-            if (!input.isTouchDown(0) && touchEvents.size() > 0) {
+            boolean touchUp = false;
+            Input.TouchEvent event = null;
+            for (int j = 0; j < touchEvents.size(); j++) {
+                event = touchEvents.get(j);
+                if (event.type == Input.TouchEvent.TOUCH_UP) {
+                    touchUp = true;
+                }
+            }
+            if (!input.isTouchDown(0) && touchUp) {
                 widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Low;
                 touchMode = TouchModeBattleZone.NormalMode;
                 SelectedCardSlot.ExpandOrShrinkSlot(false, 0f, 0f);
@@ -452,6 +460,10 @@ public class BattleZoneLayout implements Layout {
                         TouchedSlots.clear();
                         return widgetTouchEvent;
                     } else {
+                        boolean wasUnderTheStack = false;
+                        if (BattleZoneCardOverlapping()) {
+                            wasUnderTheStack = true;
+                        }
                         if (LeftWingOfCardSlot.contains(SelectedCardSlot)) {
                             if (LeftWingOfCardSlot.contains(TouchedSlots.get(0))) {
                                 int index1 = LeftWingOfCardSlot.indexOf(SelectedCardSlot);
@@ -460,6 +472,7 @@ public class BattleZoneLayout implements Layout {
                                 if (index1 > index2) {
                                     SelectedCardSlot = TouchedSlots.get(0);
                                     widgetTouchEvent = widgetTouchEventList.remove(0);
+                                    widgetTouchEvent.wasUnderTheStack = wasUnderTheStack;
 
                                     for (int i = 0; i < widgetTouchEventList.size(); i++) {
                                         AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
@@ -483,6 +496,7 @@ public class BattleZoneLayout implements Layout {
 
                                     SelectedCardSlot = TouchedSlots.get(TouchedSlots.size() - 1);
                                     widgetTouchEvent = widgetTouchEventList.remove(TouchedSlots.size() - 1);
+                                    widgetTouchEvent.wasUnderTheStack = wasUnderTheStack;
 
                                     for (int i = 0; i < widgetTouchEventList.size(); i++) {
                                         AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
@@ -503,6 +517,7 @@ public class BattleZoneLayout implements Layout {
                             } else {
                                 SelectedCardSlot = TouchedSlots.get(0);
                                 widgetTouchEvent = widgetTouchEventList.remove(0);
+                                widgetTouchEvent.wasUnderTheStack = wasUnderTheStack;
 
                                 for (int i = 0; i < widgetTouchEventList.size(); i++) {
                                     AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
@@ -528,6 +543,7 @@ public class BattleZoneLayout implements Layout {
                                 if (index1 > index2) {
                                     SelectedCardSlot = TouchedSlots.get(TouchedSlots.size() - 1);
                                     widgetTouchEvent = widgetTouchEventList.remove(TouchedSlots.size() - 1);
+                                    widgetTouchEvent.wasUnderTheStack = wasUnderTheStack;
 
                                     for (int i = 0; i < widgetTouchEventList.size(); i++) {
                                         AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
@@ -551,6 +567,7 @@ public class BattleZoneLayout implements Layout {
 
                                     SelectedCardSlot = TouchedSlots.get(0);
                                     widgetTouchEvent = widgetTouchEventList.remove(0);
+                                    widgetTouchEvent.wasUnderTheStack = wasUnderTheStack;
 
                                     for (int i = 0; i < widgetTouchEventList.size(); i++) {
                                         AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
@@ -571,6 +588,7 @@ public class BattleZoneLayout implements Layout {
                             } else {
                                 SelectedCardSlot = TouchedSlots.get(TouchedSlots.size() - 1);
                                 widgetTouchEvent = widgetTouchEventList.remove(TouchedSlots.size() -1);
+                                widgetTouchEvent.wasUnderTheStack = wasUnderTheStack;
 
                                 for (int i = 0; i < widgetTouchEventList.size(); i++) {
                                     AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
@@ -592,6 +610,7 @@ public class BattleZoneLayout implements Layout {
                             if (RightWingOfCardSlot.contains(TouchedSlots.get(0))) {
                                 SelectedCardSlot = TouchedSlots.get(0);
                                 widgetTouchEvent = widgetTouchEventList.remove(0);
+                                widgetTouchEvent.wasUnderTheStack = wasUnderTheStack;
 
                                 for (int i = 0; i < widgetTouchEventList.size(); i++) {
                                     AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
@@ -611,6 +630,7 @@ public class BattleZoneLayout implements Layout {
                             } else if (LeftWingOfCardSlot.contains(TouchedSlots.get(TouchedSlots.size() -1))) {
                                 SelectedCardSlot = TouchedSlots.get(TouchedSlots.size() - 1);
                                 widgetTouchEvent = widgetTouchEventList.remove(TouchedSlots.size() - 1);
+                                widgetTouchEvent.wasUnderTheStack = wasUnderTheStack;
 
                                 for (int i = 0; i < widgetTouchEventList.size(); i++) {
                                     AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
@@ -640,12 +660,9 @@ public class BattleZoneLayout implements Layout {
                 TouchedSlots.clear();
 
                 widgetTouchEvent = AssetsAndResource.widgetTouchEventPool.newObject();
+                widgetTouchEvent.resetTouchEvent();
                 widgetTouchEvent.isTouched = true;
                 widgetTouchEvent.isTouchedDown = true;
-                widgetTouchEvent.isMoving = false;
-                widgetTouchEvent.isDoubleTouched = false;
-                widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Low;
-                widgetTouchEvent.object = null;
 
                 return widgetTouchEvent;
             }
@@ -866,6 +883,10 @@ public class BattleZoneLayout implements Layout {
                                 widgetTouchEventOutCome = widgetTouchEvent;
                                 break;
                             } else {
+                                boolean wasUnderTheStack = false;
+                                if (BattleZoneCardOverlapping()) {
+                                    wasUnderTheStack = true;
+                                }
                                 if (LeftWingOfCardSlot.contains(SelectedCardSlot)) {
                                     if (LeftWingOfCardSlot.contains(TouchedSlots.get(0))) {
                                         int index1 = LeftWingOfCardSlot.indexOf(SelectedCardSlot);
@@ -874,6 +895,7 @@ public class BattleZoneLayout implements Layout {
                                         if (index1 > index2) {
                                             SelectedCardSlot = TouchedSlots.get(0);
                                             widgetTouchEvent = widgetTouchEventList.remove(0);
+                                            widgetTouchEvent.wasUnderTheStack = wasUnderTheStack;
 
                                             for (int i = 0; i < widgetTouchEventList.size(); i++) {
                                                 AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
@@ -888,6 +910,7 @@ public class BattleZoneLayout implements Layout {
 
                                             SelectedCardSlot = TouchedSlots.get(TouchedSlots.size() - 1);
                                             widgetTouchEvent = widgetTouchEventList.remove(TouchedSlots.size() - 1);
+                                            widgetTouchEvent.wasUnderTheStack = wasUnderTheStack;
 
                                             for (int i = 0; i < widgetTouchEventList.size(); i++) {
                                                 AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
@@ -899,6 +922,7 @@ public class BattleZoneLayout implements Layout {
                                     } else {
                                         SelectedCardSlot = TouchedSlots.get(0);
                                         widgetTouchEvent = widgetTouchEventList.remove(0);
+                                        widgetTouchEvent.wasUnderTheStack = wasUnderTheStack;
 
                                         for (int i = 0; i < widgetTouchEventList.size(); i++) {
                                             AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
@@ -915,6 +939,7 @@ public class BattleZoneLayout implements Layout {
                                         if (index1 > index2) {
                                             SelectedCardSlot = TouchedSlots.get(TouchedSlots.size() - 1);
                                             widgetTouchEvent = widgetTouchEventList.remove(TouchedSlots.size() - 1);
+                                            widgetTouchEvent.wasUnderTheStack = wasUnderTheStack;
 
                                             for (int i = 0; i < widgetTouchEventList.size(); i++) {
                                                 AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
@@ -929,6 +954,7 @@ public class BattleZoneLayout implements Layout {
 
                                             SelectedCardSlot = TouchedSlots.get(0);
                                             widgetTouchEvent = widgetTouchEventList.remove(0);
+                                            widgetTouchEvent.wasUnderTheStack = wasUnderTheStack;
 
                                             for (int i = 0; i < widgetTouchEventList.size(); i++) {
                                                 AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
@@ -940,6 +966,7 @@ public class BattleZoneLayout implements Layout {
                                     } else {
                                         SelectedCardSlot = TouchedSlots.get(TouchedSlots.size() - 1);
                                         widgetTouchEvent = widgetTouchEventList.remove(TouchedSlots.size() - 1);
+                                        widgetTouchEvent.wasUnderTheStack = wasUnderTheStack;
 
                                         for (int i = 0; i < widgetTouchEventList.size(); i++) {
                                             AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
@@ -952,6 +979,7 @@ public class BattleZoneLayout implements Layout {
                                     if (RightWingOfCardSlot.contains(TouchedSlots.get(0))) {
                                         SelectedCardSlot = TouchedSlots.get(0);
                                         widgetTouchEvent = widgetTouchEventList.remove(0);
+                                        widgetTouchEvent.wasUnderTheStack = wasUnderTheStack;
 
                                         for (int i = 0; i < widgetTouchEventList.size(); i++) {
                                             AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
@@ -962,6 +990,7 @@ public class BattleZoneLayout implements Layout {
                                     } else if (LeftWingOfCardSlot.contains(TouchedSlots.get(TouchedSlots.size() - 1))) {
                                         SelectedCardSlot = TouchedSlots.get(TouchedSlots.size() - 1);
                                         widgetTouchEvent = widgetTouchEventList.remove(TouchedSlots.size() - 1);
+                                        widgetTouchEvent.wasUnderTheStack = wasUnderTheStack;
 
                                         for (int i = 0; i < widgetTouchEventList.size(); i++) {
                                             AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
@@ -995,12 +1024,8 @@ public class BattleZoneLayout implements Layout {
                 return widgetTouchEventOutCome;
             } else if (isTouched) {
                 widgetTouchEventOutCome = AssetsAndResource.widgetTouchEventPool.newObject();
+                widgetTouchEventOutCome.resetTouchEvent();
                 widgetTouchEventOutCome.isTouched = true;
-                widgetTouchEventOutCome.isTouchedDown = false;
-                widgetTouchEventOutCome.isMoving = false;
-                widgetTouchEventOutCome.isDoubleTouched = false;
-                widgetTouchEventOutCome.isFocus = WidgetTouchFocusLevel.Low;
-                widgetTouchEventOutCome.object = null;
 
                 return widgetTouchEventOutCome;
             }

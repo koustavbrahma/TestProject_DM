@@ -5,6 +5,7 @@ import java.util.Hashtable;
 import java.util.Set;
 
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetTouchEvent;
+import koustav.duelmasters.main.androidgameduelmastersworlds.World;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.ControllerButton;
 import koustav.duelmasters.main.androidgameopenglutil.FrameBufferObject;
 import koustav.duelmasters.main.androidgameopenglutil.GLGeometry;
@@ -42,6 +43,9 @@ public class AssetsAndResource {
 
     // Game reference
     public static AndroidGame game;
+
+    // Current World reference
+    public static World world;
 
     // Shaders
     public static TextureShaderProgram textureProgram;

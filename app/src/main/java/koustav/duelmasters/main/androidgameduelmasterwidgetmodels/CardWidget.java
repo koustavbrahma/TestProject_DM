@@ -72,12 +72,7 @@ public class CardWidget implements Widget {
     @Override
     public WidgetTouchEvent isTouched(List<Input.TouchEvent> touchEvents) {
         WidgetTouchEvent widgetTouchEvent = AssetsAndResource.widgetTouchEventPool.newObject();
-        widgetTouchEvent.isTouched = false;
-        widgetTouchEvent.isTouchedDown = false;
-        widgetTouchEvent.isMoving = false;
-        widgetTouchEvent.isDoubleTouched = false;
-        widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Low;
-        widgetTouchEvent.object = null;
+        widgetTouchEvent.resetTouchEvent();
 
         int touchCount = 0;
 
@@ -150,7 +145,6 @@ public class CardWidget implements Widget {
                         widgetTouchEvent.isTouched = true;
                         widgetTouchEvent.object = card;
                         touchCount++;
-                        continue;
                     }
                 }
             }

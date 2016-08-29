@@ -132,7 +132,7 @@ public class ManaZoneLayout implements Layout{
         NewCoupleSlot = null;
     }
 
-    public boolean FreeManaCardOverlapping() {
+    private boolean FreeManaCardOverlapping() {
         float gap = (this.width - this.CoupleSlotWidth)/(1f + LeftWingOfCardSlot.size() +RightWingOfCardSlot.size());
 
         if (gap >= AssetsAndResource.CardHeight) {
@@ -142,7 +142,7 @@ public class ManaZoneLayout implements Layout{
         return  (gap < AssetsAndResource.CardWidth);
     }
 
-    public boolean CoupleManaCardOverlapping() {
+    private boolean CoupleManaCardOverlapping() {
         if (CoupleCardSlot.size() == 0) {
             return false;
         }
@@ -336,6 +336,7 @@ public class ManaZoneLayout implements Layout{
         Input input = AssetsAndResource.game.getInput();
         if (input.isTouchDown(0)) {
             widgetTouchEvent = AssetsAndResource.widgetTouchEventPool.newObject();
+            widgetTouchEvent.resetTouchEvent();
             widgetTouchEvent.isTouched = true;
             widgetTouchEvent.isTouchedDown = true;
             if (input.TouchType(0) == Input.TouchEvent.TOUCH_DRAGGED) {
@@ -360,6 +361,7 @@ public class ManaZoneLayout implements Layout{
                     (ExpandMode && (NewCoupleSlot != null && SelectedCoupleCardSlot == NewCoupleSlot) && NewCoupleSlot.stackCount() > 1)) {
                 touchMode = TouchModeManaZone.SlotExpandMode;
                 widgetTouchEvent = AssetsAndResource.widgetTouchEventPool.newObject();
+                widgetTouchEvent.resetTouchEvent();
                 widgetTouchEvent.isTouched = true;
                 widgetTouchEvent.isTouchedDown = false;
                 widgetTouchEvent.isMoving = false;
@@ -373,6 +375,7 @@ public class ManaZoneLayout implements Layout{
             } else {
                 touchMode = TouchModeManaZone.NormalMode;
                 widgetTouchEvent = AssetsAndResource.widgetTouchEventPool.newObject();
+                widgetTouchEvent.resetTouchEvent();
                 widgetTouchEvent.isTouched = true;
                 widgetTouchEvent.isTouchedDown = false;
                 widgetTouchEvent.isMoving = false;
@@ -394,6 +397,7 @@ public class ManaZoneLayout implements Layout{
         if (input.isTouchDown(0)) {
             if (DraggingSlot != null) {
                 widgetTouchEvent = AssetsAndResource.widgetTouchEventPool.newObject();
+                widgetTouchEvent.resetTouchEvent();
                 widgetTouchEvent.isTouched = true;
                 widgetTouchEvent.isTouchedDown = true;
                 if (input.TouchType(0) == Input.TouchEvent.TOUCH_DRAGGED) {
@@ -413,12 +417,16 @@ public class ManaZoneLayout implements Layout{
                         widgetTouchEvent.isFocus = WidgetTouchFocusLevel.High;
                         DraggingSlot = SelectedCoupleCardSlot;
                     }
+                } else {
+                    AssetsAndResource.widgetTouchEventPool.free(widgetTouchEvent);
+                    widgetTouchEvent = null;
                 }
             }
             return widgetTouchEvent;
         } else {
             if (DraggingSlot != null) {
                 widgetTouchEvent = AssetsAndResource.widgetTouchEventPool.newObject();
+                widgetTouchEvent.resetTouchEvent();
                 widgetTouchEvent.isTouched = true;
                 widgetTouchEvent.isTouchedDown = false;
                 widgetTouchEvent.isMoving = false;
@@ -427,19 +435,21 @@ public class ManaZoneLayout implements Layout{
                 widgetTouchEvent.object = DraggingSlot.getCardWidget().getLogicalObject();
                 DraggingSlot.SetSlotDisturbed();
             } else {
-                if (SelectedCoupleCardSlot!= null) {
-                    widgetTouchEvent = SelectedCoupleCardSlot.TouchResponse(touchEvents);
-                } else {
-                    touchMode = TouchModeManaZone.NormalMode;
-                    DraggingSlot = null;
-                    return null;
-                }
+                widgetTouchEvent = SelectedCoupleCardSlot.TouchResponse(touchEvents);
             }
             DraggingSlot = null;
             if (widgetTouchEvent.isTouched) {
                 widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Medium;
             } else {
-                if (touchEvents.size() > 0) {
+                boolean touchUp = false;
+                Input.TouchEvent event = null;
+                for (int j = 0; j < touchEvents.size(); j++) {
+                    event = touchEvents.get(j);
+                    if (event.type == Input.TouchEvent.TOUCH_UP) {
+                        touchUp = true;
+                    }
+                }
+                if (touchUp) {
                     widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Low;
                     touchMode = TouchModeManaZone.NormalMode;
                     SelectedCoupleCardSlot.ExpandOrShrinkSlot(false, 0f, 0f);
@@ -729,10 +739,15 @@ public class ManaZoneLayout implements Layout{
 
                 if (TouchedSlots.size() > 0) {
                     if (CoupleCardSlot.contains(TouchedSlots.get(0))) {
+                        boolean wasUnderTheStack = false;
+                        if (CoupleManaCardOverlapping()) {
+                            wasUnderTheStack = true;
+                        }
                         index = CoupleCardSlot.indexOf(SelectedCoupleCardSlot);
                         if (index < CoupleCardSlot.indexOf(TouchedSlots.get(0))) {
                             SelectedCoupleCardSlot = TouchedSlots.get(0);
                             widgetTouchEvent = widgetTouchEventList.remove(0);
+                            widgetTouchEvent.wasUnderTheStack = wasUnderTheStack;
 
                             for (int i = 0; i < widgetTouchEventList.size(); i++) {
                                 AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
@@ -764,6 +779,7 @@ public class ManaZoneLayout implements Layout{
                         } else if (index > CoupleCardSlot.indexOf(TouchedSlots.get(TouchedSlots.size() -1))) {
                             SelectedCoupleCardSlot = TouchedSlots.get(TouchedSlots.size() - 1);
                             widgetTouchEvent = widgetTouchEventList.remove(TouchedSlots.size() - 1);
+                            widgetTouchEvent.wasUnderTheStack = wasUnderTheStack;
 
                             for (int i = 0; i < widgetTouchEventList.size(); i++) {
                                 AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
@@ -843,6 +859,10 @@ public class ManaZoneLayout implements Layout{
                             TouchedSlots.clear();
                             return widgetTouchEvent;
                         } else {
+                            boolean wasUnderTheStack = false;
+                            if (FreeManaCardOverlapping()) {
+                                wasUnderTheStack = true;
+                            }
                             if (LeftWingOfCardSlot.contains(SelectedCardSlot)) {
                                 if (LeftWingOfCardSlot.contains(TouchedSlots.get(0))) {
                                     int index1 = LeftWingOfCardSlot.indexOf(SelectedCardSlot);
@@ -851,6 +871,7 @@ public class ManaZoneLayout implements Layout{
                                     if (index1 > index2) {
                                         SelectedCardSlot = TouchedSlots.get(0);
                                         widgetTouchEvent = widgetTouchEventList.remove(0);
+                                        widgetTouchEvent.wasUnderTheStack = wasUnderTheStack;
 
                                         for (int i = 0; i < widgetTouchEventList.size(); i++) {
                                             AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
@@ -872,6 +893,7 @@ public class ManaZoneLayout implements Layout{
 
                                         SelectedCardSlot = TouchedSlots.get(TouchedSlots.size() - 1);
                                         widgetTouchEvent = widgetTouchEventList.remove(TouchedSlots.size() - 1);
+                                        widgetTouchEvent.wasUnderTheStack = wasUnderTheStack;
 
                                         for (int i = 0; i < widgetTouchEventList.size(); i++) {
                                             AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
@@ -890,6 +912,7 @@ public class ManaZoneLayout implements Layout{
                                 } else {
                                     SelectedCardSlot = TouchedSlots.get(0);
                                     widgetTouchEvent = widgetTouchEventList.remove(0);
+                                    widgetTouchEvent.wasUnderTheStack = wasUnderTheStack;
 
                                     for (int i = 0; i < widgetTouchEventList.size(); i++) {
                                         AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
@@ -913,6 +936,7 @@ public class ManaZoneLayout implements Layout{
                                     if (index1 > index2) {
                                         SelectedCardSlot = TouchedSlots.get(TouchedSlots.size() - 1);
                                         widgetTouchEvent = widgetTouchEventList.remove(TouchedSlots.size() - 1);
+                                        widgetTouchEvent.wasUnderTheStack = wasUnderTheStack;
 
                                         for (int i = 0; i < widgetTouchEventList.size(); i++) {
                                             AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
@@ -934,6 +958,7 @@ public class ManaZoneLayout implements Layout{
 
                                         SelectedCardSlot = TouchedSlots.get(0);
                                         widgetTouchEvent = widgetTouchEventList.remove(0);
+                                        widgetTouchEvent.wasUnderTheStack = wasUnderTheStack;
 
                                         for (int i = 0; i < widgetTouchEventList.size(); i++) {
                                             AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
@@ -952,6 +977,7 @@ public class ManaZoneLayout implements Layout{
                                 } else {
                                     SelectedCardSlot = TouchedSlots.get(TouchedSlots.size() - 1);
                                     widgetTouchEvent = widgetTouchEventList.remove(TouchedSlots.size() - 1);
+                                    widgetTouchEvent.wasUnderTheStack = wasUnderTheStack;
 
                                     for (int i = 0; i < widgetTouchEventList.size(); i++) {
                                         AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
@@ -971,6 +997,7 @@ public class ManaZoneLayout implements Layout{
                                 if (RightWingOfCardSlot.contains(TouchedSlots.get(0))) {
                                     SelectedCardSlot = TouchedSlots.get(0);
                                     widgetTouchEvent = widgetTouchEventList.remove(0);
+                                    widgetTouchEvent.wasUnderTheStack = wasUnderTheStack;
 
                                     for (int i = 0; i < widgetTouchEventList.size(); i++) {
                                         AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
@@ -988,6 +1015,7 @@ public class ManaZoneLayout implements Layout{
                                 } else if (LeftWingOfCardSlot.contains(TouchedSlots.get(TouchedSlots.size() - 1))) {
                                     SelectedCardSlot = TouchedSlots.get(TouchedSlots.size() - 1);
                                     widgetTouchEvent = widgetTouchEventList.remove(TouchedSlots.size() - 1);
+                                    widgetTouchEvent.wasUnderTheStack = wasUnderTheStack;
 
                                     for (int i = 0; i < widgetTouchEventList.size(); i++) {
                                         AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
@@ -1015,12 +1043,9 @@ public class ManaZoneLayout implements Layout{
                 TouchedSlots.clear();
 
                 widgetTouchEvent = AssetsAndResource.widgetTouchEventPool.newObject();
+                widgetTouchEvent.resetTouchEvent();
                 widgetTouchEvent.isTouched = true;
                 widgetTouchEvent.isTouchedDown = true;
-                widgetTouchEvent.isMoving = false;
-                widgetTouchEvent.isDoubleTouched = false;
-                widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Low;
-                widgetTouchEvent.object = null;
 
                 return widgetTouchEvent;
             }
@@ -1278,10 +1303,15 @@ public class ManaZoneLayout implements Layout{
 
                         if (TouchedSlots.size() > 0) {
                             if (CoupleCardSlot.contains(TouchedSlots.get(0))) {
+                                boolean wasUnderTheStack = false;
+                                if (CoupleManaCardOverlapping()) {
+                                    wasUnderTheStack = true;
+                                }
                                 index = CoupleCardSlot.indexOf(SelectedCoupleCardSlot);
                                 if (index < CoupleCardSlot.indexOf(TouchedSlots.get(0))) {
                                     SelectedCoupleCardSlot = TouchedSlots.get(0);
                                     widgetTouchEvent = widgetTouchEventList.remove(0);
+                                    widgetTouchEvent.wasUnderTheStack = wasUnderTheStack;
 
                                     for (int i = 0; i < widgetTouchEventList.size(); i++) {
                                         AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
@@ -1291,6 +1321,7 @@ public class ManaZoneLayout implements Layout{
                                 } else if (index > CoupleCardSlot.indexOf(TouchedSlots.get(TouchedSlots.size() - 1))) {
                                     SelectedCoupleCardSlot = TouchedSlots.get(TouchedSlots.size() - 1);
                                     widgetTouchEvent = widgetTouchEventList.remove(TouchedSlots.size() - 1);
+                                    widgetTouchEvent.wasUnderTheStack = wasUnderTheStack;
 
                                     for (int i = 0; i < widgetTouchEventList.size(); i++) {
                                         AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
@@ -1338,6 +1369,10 @@ public class ManaZoneLayout implements Layout{
                                     widgetTouchEventOutCome = widgetTouchEvent;
                                     break;
                                 } else {
+                                    boolean wasUnderTheStack = false;
+                                    if (FreeManaCardOverlapping()) {
+                                        wasUnderTheStack = true;
+                                    }
                                     if (LeftWingOfCardSlot.contains(SelectedCardSlot)) {
                                         if (LeftWingOfCardSlot.contains(TouchedSlots.get(0))) {
                                             int index1 = LeftWingOfCardSlot.indexOf(SelectedCardSlot);
@@ -1346,6 +1381,7 @@ public class ManaZoneLayout implements Layout{
                                             if (index1 > index2) {
                                                 SelectedCardSlot = TouchedSlots.get(0);
                                                 widgetTouchEvent = widgetTouchEventList.remove(0);
+                                                widgetTouchEvent.wasUnderTheStack = wasUnderTheStack;
 
                                                 for (int i = 0; i < widgetTouchEventList.size(); i++) {
                                                     AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
@@ -1360,6 +1396,7 @@ public class ManaZoneLayout implements Layout{
 
                                                 SelectedCardSlot = TouchedSlots.get(TouchedSlots.size() - 1);
                                                 widgetTouchEvent = widgetTouchEventList.remove(TouchedSlots.size() - 1);
+                                                widgetTouchEvent.wasUnderTheStack = wasUnderTheStack;
 
                                                 for (int i = 0; i < widgetTouchEventList.size(); i++) {
                                                     AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
@@ -1371,6 +1408,7 @@ public class ManaZoneLayout implements Layout{
                                         } else {
                                             SelectedCardSlot = TouchedSlots.get(0);
                                             widgetTouchEvent = widgetTouchEventList.remove(0);
+                                            widgetTouchEvent.wasUnderTheStack = wasUnderTheStack;
 
                                             for (int i = 0; i < widgetTouchEventList.size(); i++) {
                                                 AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
@@ -1387,6 +1425,7 @@ public class ManaZoneLayout implements Layout{
                                             if (index1 > index2) {
                                                 SelectedCardSlot = TouchedSlots.get(TouchedSlots.size() - 1);
                                                 widgetTouchEvent = widgetTouchEventList.remove(TouchedSlots.size() - 1);
+                                                widgetTouchEvent.wasUnderTheStack = wasUnderTheStack;
 
                                                 for (int i = 0; i < widgetTouchEventList.size(); i++) {
                                                     AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
@@ -1401,6 +1440,7 @@ public class ManaZoneLayout implements Layout{
 
                                                 SelectedCardSlot = TouchedSlots.get(0);
                                                 widgetTouchEvent = widgetTouchEventList.remove(0);
+                                                widgetTouchEvent.wasUnderTheStack = wasUnderTheStack;
 
                                                 for (int i = 0; i < widgetTouchEventList.size(); i++) {
                                                     AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
@@ -1412,6 +1452,7 @@ public class ManaZoneLayout implements Layout{
                                         } else {
                                             SelectedCardSlot = TouchedSlots.get(TouchedSlots.size() - 1);
                                             widgetTouchEvent = widgetTouchEventList.remove(TouchedSlots.size() - 1);
+                                            widgetTouchEvent.wasUnderTheStack = wasUnderTheStack;
 
                                             for (int i = 0; i < widgetTouchEventList.size(); i++) {
                                                 AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
@@ -1424,6 +1465,7 @@ public class ManaZoneLayout implements Layout{
                                         if (RightWingOfCardSlot.contains(TouchedSlots.get(0))) {
                                             SelectedCardSlot = TouchedSlots.get(0);
                                             widgetTouchEvent = widgetTouchEventList.remove(0);
+                                            widgetTouchEvent.wasUnderTheStack = wasUnderTheStack;
 
                                             for (int i = 0; i < widgetTouchEventList.size(); i++) {
                                                 AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
@@ -1434,6 +1476,7 @@ public class ManaZoneLayout implements Layout{
                                         } else if (LeftWingOfCardSlot.contains(TouchedSlots.get(TouchedSlots.size() - 1))) {
                                             SelectedCardSlot = TouchedSlots.get(TouchedSlots.size() - 1);
                                             widgetTouchEvent = widgetTouchEventList.remove(TouchedSlots.size() - 1);
+                                            widgetTouchEvent.wasUnderTheStack = wasUnderTheStack;
 
                                             for (int i = 0; i < widgetTouchEventList.size(); i++) {
                                                 AssetsAndResource.widgetTouchEventPool.free(widgetTouchEventList.get(i));
@@ -1461,12 +1504,8 @@ public class ManaZoneLayout implements Layout{
                 return widgetTouchEventOutCome;
             } else if (isTouched) {
                 widgetTouchEventOutCome = AssetsAndResource.widgetTouchEventPool.newObject();
+                widgetTouchEventOutCome.resetTouchEvent();
                 widgetTouchEventOutCome.isTouched = true;
-                widgetTouchEventOutCome.isTouchedDown = false;
-                widgetTouchEventOutCome.isMoving = false;
-                widgetTouchEventOutCome.isDoubleTouched = false;
-                widgetTouchEventOutCome.isFocus = WidgetTouchFocusLevel.Low;
-                widgetTouchEventOutCome.object = null;
 
                 return widgetTouchEventOutCome;
             }

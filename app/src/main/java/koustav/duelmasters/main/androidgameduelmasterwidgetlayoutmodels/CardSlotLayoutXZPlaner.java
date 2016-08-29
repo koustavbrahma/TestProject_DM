@@ -369,9 +369,14 @@ public class CardSlotLayoutXZPlaner implements Layout {
                         WidgetTouchEventList.clear();
                         return widgetTouchEvent;
                     } else {
+                        boolean wasUnderTheStack = false;
+                        if (Math.abs(gap) < AssetsAndResource.CardWidth) {
+                            wasUnderTheStack = true;
+                        }
                         if (SelectedCardWidget == TopCardWidget) {
                             SelectedCardWidget = TouchedWidget.get(TouchedWidget.size() -1);
                             widgetTouchEvent = WidgetTouchEventList.remove(TouchedWidget.size() - 1);
+                            widgetTouchEvent.wasUnderTheStack = wasUnderTheStack;
 
                             for (int i = 0; i < WidgetTouchEventList.size(); i++) {
                                 AssetsAndResource.widgetTouchEventPool.free(WidgetTouchEventList.get(i));
@@ -388,6 +393,7 @@ public class CardSlotLayoutXZPlaner implements Layout {
                                 if (index2 < index1) {
                                     SelectedCardWidget = TouchedWidget.get(0);
                                     widgetTouchEvent = WidgetTouchEventList.remove(0);
+                                    widgetTouchEvent.wasUnderTheStack = wasUnderTheStack;
 
                                     for (int i = 0; i < WidgetTouchEventList.size(); i++) {
                                         AssetsAndResource.widgetTouchEventPool.free(WidgetTouchEventList.get(i));
@@ -402,6 +408,7 @@ public class CardSlotLayoutXZPlaner implements Layout {
                                     }
                                     SelectedCardWidget = TouchedWidget.get(TouchedWidget.size() -1);
                                     widgetTouchEvent = WidgetTouchEventList.remove(TouchedWidget.size() - 1);
+                                    widgetTouchEvent.wasUnderTheStack = wasUnderTheStack;
 
                                     for (int i = 0; i < WidgetTouchEventList.size(); i++) {
                                         AssetsAndResource.widgetTouchEventPool.free(WidgetTouchEventList.get(i));
@@ -419,6 +426,7 @@ public class CardSlotLayoutXZPlaner implements Layout {
                                 int i = TouchedWidget.indexOf(TopCardWidget);
 
                                 widgetTouchEvent = WidgetTouchEventList.remove(i);
+                                widgetTouchEvent.wasUnderTheStack = wasUnderTheStack;
 
                                 for (i = 0; i < WidgetTouchEventList.size(); i++) {
                                     AssetsAndResource.widgetTouchEventPool.free(WidgetTouchEventList.get(i));
@@ -510,9 +518,14 @@ public class CardSlotLayoutXZPlaner implements Layout {
                                 widgetTouchEventOutCome = widgetTouchEvent;
                                 break;
                             } else {
+                                boolean wasUnderTheStack = false;
+                                if (Math.abs(gap) < AssetsAndResource.CardWidth) {
+                                    wasUnderTheStack = true;
+                                }
                                 if (SelectedCardWidget == TopCardWidget) {
                                     SelectedCardWidget = TouchedWidget.get(TouchedWidget.size() -1);
                                     widgetTouchEvent = WidgetTouchEventList.remove(TouchedWidget.size() - 1);
+                                    widgetTouchEvent.wasUnderTheStack = wasUnderTheStack;
 
                                     for (int i = 0; i < WidgetTouchEventList.size(); i++) {
                                         AssetsAndResource.widgetTouchEventPool.free(WidgetTouchEventList.get(i));
@@ -528,6 +541,7 @@ public class CardSlotLayoutXZPlaner implements Layout {
                                         if (index2 < index1) {
                                             SelectedCardWidget = TouchedWidget.get(0);
                                             widgetTouchEvent = WidgetTouchEventList.remove(0);
+                                            widgetTouchEvent.wasUnderTheStack = wasUnderTheStack;
 
                                             for (int i = 0; i < WidgetTouchEventList.size(); i++) {
                                                 AssetsAndResource.widgetTouchEventPool.free(WidgetTouchEventList.get(i));
@@ -541,6 +555,7 @@ public class CardSlotLayoutXZPlaner implements Layout {
                                             }
                                             SelectedCardWidget = TouchedWidget.get(TouchedWidget.size() -1);
                                             widgetTouchEvent = WidgetTouchEventList.remove(TouchedWidget.size() - 1);
+                                            widgetTouchEvent.wasUnderTheStack = wasUnderTheStack;
 
                                             for (int i = 0; i < WidgetTouchEventList.size(); i++) {
                                                 AssetsAndResource.widgetTouchEventPool.free(WidgetTouchEventList.get(i));
@@ -557,6 +572,7 @@ public class CardSlotLayoutXZPlaner implements Layout {
                                         int i = TouchedWidget.indexOf(TopCardWidget);
 
                                         widgetTouchEvent = WidgetTouchEventList.remove(i);
+                                        widgetTouchEvent.wasUnderTheStack = wasUnderTheStack;
 
                                         for (i = 0; i < WidgetTouchEventList.size(); i++) {
                                             AssetsAndResource.widgetTouchEventPool.free(WidgetTouchEventList.get(i));
@@ -583,12 +599,7 @@ public class CardSlotLayoutXZPlaner implements Layout {
         WidgetTouchEventList.clear();
 
         widgetTouchEvent = AssetsAndResource.widgetTouchEventPool.newObject();
-        widgetTouchEvent.isTouched = false;
-        widgetTouchEvent.isTouchedDown = false;
-        widgetTouchEvent.isMoving = false;
-        widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Low;
-        widgetTouchEvent.isDoubleTouched = false;
-        widgetTouchEvent.object = null;
+        widgetTouchEvent.resetTouchEvent();
 
         return widgetTouchEvent;
     }
@@ -604,12 +615,7 @@ public class CardSlotLayoutXZPlaner implements Layout {
         }
 
         WidgetTouchEvent widgetTouchEvent = AssetsAndResource.widgetTouchEventPool.newObject();
-        widgetTouchEvent.isTouched = false;
-        widgetTouchEvent.isTouchedDown = false;
-        widgetTouchEvent.isMoving = false;
-        widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Low;
-        widgetTouchEvent.isDoubleTouched = false;
-        widgetTouchEvent.object = null;
+        widgetTouchEvent.resetTouchEvent();
         return widgetTouchEvent;
     }
 
@@ -900,20 +906,24 @@ public class CardSlotLayoutXZPlaner implements Layout {
     }
 
     public void setSlotXPosition(float x) {
-        TopSlotPosition.Centerposition.x = x;
+        if (!Expanded) {
+            TopSlotPosition.Centerposition.x = x;
 
-        for (int i = 0; i < cardWidgets.size(); i++) {
-            CardWidget cardWidget = cardWidgets.get(i);
-            WidgetPosition widgetPosition = SlotPositions.get(cardWidget);
+            for (int i = 0; i < cardWidgets.size(); i++) {
+                CardWidget cardWidget = cardWidgets.get(i);
+                WidgetPosition widgetPosition = SlotPositions.get(cardWidget);
 
-            widgetPosition.Centerposition.x = x + (i+ 1) * AssetsAndResource.CardStackShift;
+                widgetPosition.Centerposition.x = x + (i + 1) * AssetsAndResource.CardStackShift;
+            }
+
+            Disturbed = true;
+        } else {
+            OldTopSlotPosition.Centerposition.x = x;
         }
-
-        Disturbed = true;
     }
 
     public CardWidget getCardWidget() {
-        return TopCardWidget;
+        return (SelectedCardWidget == null) ? TopCardWidget : SelectedCardWidget;
     }
 
     public int stackCount() {

@@ -49,12 +49,7 @@ public class RectangleButtonWidget implements Widget {
     @Override
     public WidgetTouchEvent isTouched(List<Input.TouchEvent> touchEvents) {
         WidgetTouchEvent widgetTouchEvent = AssetsAndResource.widgetTouchEventPool.newObject();
-        widgetTouchEvent.isTouched = false;
-        widgetTouchEvent.isTouchedDown = false;
-        widgetTouchEvent.isMoving = false;
-        widgetTouchEvent.isDoubleTouched = false;
-        widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Low;
-        widgetTouchEvent.object = null;
+        widgetTouchEvent.resetTouchEvent();
 
         setIdentityM(AssetsAndResource.tempMatrix, 0);
         if (Position.rotaion.angle != 0) {

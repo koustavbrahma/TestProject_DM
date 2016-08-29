@@ -8,6 +8,7 @@ import koustav.duelmasters.main.androidgameduelmastersdatastructure.InactiveCard
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.ActiveCard;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.TypeOfCard;
+import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.PvPWidgetCoordinator.*;
 import koustav.duelmasters.main.androidgameduelmastersworlds.PvPWorld;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.WorldFlags;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Zone;
@@ -82,6 +83,12 @@ public class OnTurn {
             public boolean updateState() {
 
                 return false;
+            }
+
+            @Override
+            public void StateSetting() {
+                world.getWidgetCoordinator().SetFlags(ZoomLevel.Button_Touched, new Expand[] {Expand.Deck, Expand.Mana_Z, Expand.Mana_OZ},
+                        new Drag[] {Drag.Nil}, true);
             }
         };
     }

@@ -634,12 +634,7 @@ public class CardStackWidget implements Widget{
 
     private WidgetTouchEvent isTouchedForNormalMode(List<Input.TouchEvent> touchEvents) {
         WidgetTouchEvent widgetTouchEvent = AssetsAndResource.widgetTouchEventPool.newObject();
-        widgetTouchEvent.isTouched = false;
-        widgetTouchEvent.isTouchedDown = false;
-        widgetTouchEvent.isMoving = false;
-        widgetTouchEvent.isDoubleTouched = false;
-        widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Low;
-        widgetTouchEvent.object = null;
+        widgetTouchEvent.resetTouchEvent();
 
         int touchCount = 0;
 
@@ -851,24 +846,14 @@ public class CardStackWidget implements Widget{
 
     private WidgetTouchEvent isTouchedForTransition(List<Input.TouchEvent> touchEvents) {
         WidgetTouchEvent widgetTouchEvent = AssetsAndResource.widgetTouchEventPool.newObject();
-        widgetTouchEvent.isTouched = false;
-        widgetTouchEvent.isTouchedDown = false;
-        widgetTouchEvent.isMoving = false;
-        widgetTouchEvent.isDoubleTouched = false;
-        widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Low;
-        widgetTouchEvent.object = null;
+        widgetTouchEvent.resetTouchEvent();
 
         return widgetTouchEvent;
     }
 
     private WidgetTouchEvent isTouchedForExpandMode(List<Input.TouchEvent> touchEvents) {
         WidgetTouchEvent widgetTouchEvent = AssetsAndResource.widgetTouchEventPool.newObject();
-        widgetTouchEvent.isTouched = false;
-        widgetTouchEvent.isTouchedDown = false;
-        widgetTouchEvent.isMoving = false;
-        widgetTouchEvent.isDoubleTouched = false;
-        widgetTouchEvent.isFocus = WidgetTouchFocusLevel.Low;
-        widgetTouchEvent.object = null;
+        widgetTouchEvent.resetTouchEvent();
 
         indexTouched.clear();
         int touchCount = 0;
@@ -964,9 +949,11 @@ public class CardStackWidget implements Widget{
                     }
                     if (index < indexTouched.get(0)) {
                         widgetTouchEvent.object = cardStack.get(indexTouched.get(0));
+                        widgetTouchEvent.wasUnderTheStack = true;
                         SelectedCard = (Cards) widgetTouchEvent.object;
                     } else if (index > indexTouched.get(indexTouched.size() -1)) {
                         widgetTouchEvent.object = cardStack.get(indexTouched.get(indexTouched.size() -1));
+                        widgetTouchEvent.wasUnderTheStack = true;
                         SelectedCard = (Cards) widgetTouchEvent.object;
                     } else {
                         widgetTouchEvent.object = SelectedCard;
@@ -1053,10 +1040,12 @@ public class CardStackWidget implements Widget{
                             if (index < indexTouched.get(0)) {
                                 temporaryCardList.add(cardStack.get(indexTouched.get(0)));
                                 widgetTouchEvent.object = cardStack.get(indexTouched.get(0));
+                                widgetTouchEvent.wasUnderTheStack = true;
                                 SelectedCard = (Cards) widgetTouchEvent.object;
                             } else if (index > indexTouched.get(indexTouched.size() - 1)) {
                                 temporaryCardList.add(cardStack.get(indexTouched.get(indexTouched.size() - 1)));
                                 widgetTouchEvent.object = cardStack.get(indexTouched.get(indexTouched.size() - 1));
+                                widgetTouchEvent.wasUnderTheStack = true;
                                 SelectedCard = (Cards) widgetTouchEvent.object;
                             } else {
                                 temporaryCardList.add(SelectedCard);
