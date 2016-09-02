@@ -3,6 +3,7 @@ package koustav.duelmasters.main.androidgameduelmasterwidgetlayoutmodels;
 import java.util.List;
 
 import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAndResource;
+import koustav.duelmasters.main.androidgameduelmasterswidgetutil.Widget;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetPosition;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetTouchEvent;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetTouchFocusLevel;
@@ -18,7 +19,7 @@ public class ButtonSlotLayout implements Layout {
     WidgetPosition ButtonSlotPosition;
     WidgetPosition ButtonWidgetPosition;
     DriftSystem driftSystem;
-    RectangleButtonWidget buttonWidget;
+    Widget buttonWidget;
 
     float k1;
     float k2;
@@ -100,8 +101,11 @@ public class ButtonSlotLayout implements Layout {
         return widgetTouchEvent;
     }
 
-    public void intializeButton(float x, float y, float angle, RectangleButtonWidget buttonWidget, float k1,
+    public void intializeButton(float x, float y, float angle, Widget buttonWidget, float k1,
                                 float k2) {
+        if (!(buttonWidget instanceof RectangleButtonWidget)) {
+            throw new IllegalArgumentException("Invalid Type");
+        }
         ButtonSlotPosition.Centerposition.x = ButtonWidgetPosition.Centerposition.x = x;
         ButtonSlotPosition.Centerposition.y = ButtonWidgetPosition.Centerposition.y = y;
         ButtonSlotPosition.rotaion.angle = ButtonWidgetPosition.rotaion.angle = angle;

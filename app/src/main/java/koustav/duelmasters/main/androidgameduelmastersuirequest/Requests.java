@@ -1,4 +1,4 @@
-package koustav.duelmasters.main.androidgameduelmastersuifeedbackloop;
+package koustav.duelmasters.main.androidgameduelmastersuirequest;
 
 /**
  * Created by Koustav on 8/15/2016.

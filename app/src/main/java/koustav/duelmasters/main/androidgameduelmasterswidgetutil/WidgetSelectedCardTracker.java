@@ -10,10 +10,12 @@ import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
 public class WidgetSelectedCardTracker {
     Cards selectedCard;
     ArrayList<Cards> selectedCards;
+    ArrayList<Cards> selectedPileCards;
 
     public WidgetSelectedCardTracker() {
         selectedCard = null;
         selectedCards = new ArrayList<Cards>();
+        selectedPileCards = new ArrayList<Cards>();
     }
 
     public void setSelectedCard(Cards card) {
@@ -26,5 +28,9 @@ public class WidgetSelectedCardTracker {
 
     public ArrayList<Cards> getSelectedCardsList() {
         return selectedCards;
+    }
+
+    public ArrayList<Cards> getSelectedPileCards() {
+        return selectedPileCards;
     }
 }

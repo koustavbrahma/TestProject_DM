@@ -88,7 +88,7 @@ public class OnTurn {
             @Override
             public void StateSetting() {
                 world.getWidgetCoordinator().SetFlags(ZoomLevel.Button_Touched, new Expand[] {Expand.Deck, Expand.Mana_Z, Expand.Mana_OZ},
-                        new Drag[] {Drag.Nil}, true);
+                        new Drag[] {Drag.Hand}, true, CardSelectMode.OFF);
             }
         };
     }

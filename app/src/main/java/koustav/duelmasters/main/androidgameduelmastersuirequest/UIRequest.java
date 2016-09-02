@@ -1,4 +1,4 @@
-package koustav.duelmasters.main.androidgameduelmastersuifeedbackloop;
+package koustav.duelmasters.main.androidgameduelmastersuirequest;
 
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
 
@@ -7,18 +7,18 @@ import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
  */
 public class UIRequest {
     Requests request;
-    boolean force;
+    boolean Dragged;
     Cards card;
 
     public UIRequest() {
         request = Requests.None;
-        force = false;
+        Dragged = false;
         card = null;
     }
 
     public void resetRequest() {
         request = Requests.None;
-        force = false;
+        Dragged = false;
         card = null;
     }
 
@@ -27,16 +27,16 @@ public class UIRequest {
     }
 
     public boolean isForce() {
-        return force;
+        return Dragged;
     }
 
     public Cards getCard() {
         return card;
     }
 
-    public void setRequest(Requests request, boolean force) {
+    public void setRequest(Requests request, boolean Dragged) {
         this.request = request;
-        this.force = force;
+        this.Dragged = Dragged;
     }
 
     public void setCard(Cards card) {

@@ -87,6 +87,7 @@ public class AssetsAndResource {
     public static int BlockButton;
     public static int TapAbilityButton;
     public static int ZoomButton;
+    public static int EndTurnButton;
 
     // Fixed textures ID
     public static int BaseID = 0;
@@ -102,6 +103,7 @@ public class AssetsAndResource {
     public static int BlockButtonID = 10;
     public static int TapAbilityButtonID = 11;
     public static int ZoomButtonID = 12;
+    public static int EndTurnButtonID = 13;
 
     // flexible textures
     private static Hashtable<String, Integer> CardImages;
@@ -284,6 +286,10 @@ public class AssetsAndResource {
             TextureHelper.freeTexture(ZoomButton);
         }
         ZoomButton = TextureHelper.loadTexture(game, "PauseButton.png");
+        if (EndTurnButton != 0) {
+            TextureHelper.freeTexture(EndTurnButton);
+        }
+        EndTurnButton = TextureHelper.loadTexture(game, "PauseButton.png");
     }
 
     private static void freePvPFixedTexture() {
@@ -340,6 +346,10 @@ public class AssetsAndResource {
             TextureHelper.freeTexture(ZoomButton);
         }
         ZoomButton = 0;
+        if (EndTurnButton != 0) {
+            TextureHelper.freeTexture(EndTurnButton);
+        }
+        EndTurnButton = 0;
     }
 
     public static int getCardTexture(String CardName) {
@@ -434,6 +444,8 @@ public class AssetsAndResource {
             return TapAbilityButton;
         } else if (ID == ZoomButtonID) {
             return ZoomButton;
+        }else if (ID == EndTurnButtonID) {
+            return EndTurnButton;
         } else {
             return 0;
         }
@@ -458,6 +470,8 @@ public class AssetsAndResource {
             return TapAbilityButtonID;
         } else if (button == ControllerButton.Zoom) {
             return ZoomButtonID;
+        }else if (button == ControllerButton.EndTurn) {
+            return EndTurnButtonID;
         } else {
             throw new RuntimeException("Invalid Button type");
         }
