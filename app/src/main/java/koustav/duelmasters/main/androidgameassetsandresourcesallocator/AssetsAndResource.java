@@ -88,6 +88,8 @@ public class AssetsAndResource {
     public static int TapAbilityButton;
     public static int ZoomButton;
     public static int EndTurnButton;
+    public static int PlayerImage;
+    public static int OpponentImage;
 
     // Fixed textures ID
     public static int BaseID = 0;
@@ -104,6 +106,8 @@ public class AssetsAndResource {
     public static int TapAbilityButtonID = 11;
     public static int ZoomButtonID = 12;
     public static int EndTurnButtonID = 13;
+    public static int PlayerImageID = 14;
+    public static int OpponentImageID = 15;
 
     // flexible textures
     private static Hashtable<String, Integer> CardImages;
@@ -290,6 +294,14 @@ public class AssetsAndResource {
             TextureHelper.freeTexture(EndTurnButton);
         }
         EndTurnButton = TextureHelper.loadTexture(game, "PauseButton.png");
+        if (PlayerImage != 0) {
+            TextureHelper.freeTexture(PlayerImage);
+        }
+        PlayerImage = TextureHelper.loadTexture(game, "PauseButton.png");
+        if (OpponentImage != 0) {
+            TextureHelper.freeTexture(OpponentImage);
+        }
+        OpponentImage = TextureHelper.loadTexture(game, "PauseButton.png");
     }
 
     private static void freePvPFixedTexture() {
@@ -350,6 +362,14 @@ public class AssetsAndResource {
             TextureHelper.freeTexture(EndTurnButton);
         }
         EndTurnButton = 0;
+        if (PlayerImage != 0) {
+            TextureHelper.freeTexture(PlayerImage);
+        }
+        PlayerImage = 0;
+        if (OpponentImage != 0) {
+            TextureHelper.freeTexture(OpponentImage);
+        }
+        OpponentImage = 0;
     }
 
     public static int getCardTexture(String CardName) {
@@ -428,7 +448,7 @@ public class AssetsAndResource {
             return cardDeckSides;
         } else if (ID == pauseButtonID) {
             return pauseButton;
-        }else if (ID == AcceptButtonID) {
+        } else if (ID == AcceptButtonID) {
             return AcceptButton;
         } else if (ID == DeclineButtonID) {
             return DeclineButton;
@@ -444,8 +464,12 @@ public class AssetsAndResource {
             return TapAbilityButton;
         } else if (ID == ZoomButtonID) {
             return ZoomButton;
-        }else if (ID == EndTurnButtonID) {
+        } else if (ID == EndTurnButtonID) {
             return EndTurnButton;
+        } else if (ID == PlayerImageID) {
+            return PlayerImage;
+        } else if (ID == OpponentImageID) {
+            return OpponentImage;
         } else {
             return 0;
         }
@@ -470,8 +494,12 @@ public class AssetsAndResource {
             return TapAbilityButtonID;
         } else if (button == ControllerButton.Zoom) {
             return ZoomButtonID;
-        }else if (button == ControllerButton.EndTurn) {
+        } else if (button == ControllerButton.EndTurn) {
             return EndTurnButtonID;
+        } else if (button == ControllerButton.Player) {
+            return PlayerImageID;
+        } else if (button == ControllerButton.Opponent) {
+            return OpponentImageID;
         } else {
             throw new RuntimeException("Invalid Button type");
         }

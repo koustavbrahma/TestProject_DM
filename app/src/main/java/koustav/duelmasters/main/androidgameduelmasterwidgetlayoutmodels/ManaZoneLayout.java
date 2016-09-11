@@ -126,10 +126,20 @@ public class ManaZoneLayout implements Layout{
 
     public void setExpandMode(boolean val) {
         ExpandMode = val;
+        if (!val) {
+            ForceShrink();
+        }
     }
 
     public void FreezeNewCoupleSlot() {
         NewCoupleSlot = null;
+    }
+
+    public void ForceShrink() {
+        if (SelectedCoupleCardSlot != null && touchMode == TouchModeManaZone.SlotExpandMode) {
+            touchMode = TouchModeManaZone.NormalMode;
+            SelectedCoupleCardSlot.ExpandOrShrinkSlot(false, 0f, 0f);
+        }
     }
 
     private boolean FreeManaCardOverlapping() {
@@ -1723,6 +1733,7 @@ public class ManaZoneLayout implements Layout{
             slotLayout.resetSlot();
             cardSlotLayoutPool.free(slotLayout);
         } else if (slotLayout.stackCount() == 1 && CoupleCardSlot.contains(slotLayout)) {
+            touchMode = TouchModeManaZone.NormalMode;
             slotLayout.ExpandOrShrinkSlot(false, 0f, 0f);
         }
 

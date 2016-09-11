@@ -7,7 +7,11 @@ import koustav.duelmasters.main.androidgameduelmasterscardrulehandler.Instructio
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.InactiveCard;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.ActiveCard;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
+import koustav.duelmasters.main.androidgameduelmastersdatastructure.Maze;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.TypeOfCard;
+import koustav.duelmasters.main.androidgameduelmastersuirequestandaction.Actions;
+import koustav.duelmasters.main.androidgameduelmastersuirequestandaction.Requests;
+import koustav.duelmasters.main.androidgameduelmastersuirequestandaction.UIRequest;
 import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.PvPWidgetCoordinator.*;
 import koustav.duelmasters.main.androidgameduelmastersworlds.PvPWorld;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.WorldFlags;
@@ -19,6 +23,7 @@ import koustav.duelmasters.main.androidgameduelmastersutil.InstSetUtil;
 import koustav.duelmasters.main.androidgameduelmastersutil.NetworkUtil;
 import koustav.duelmasters.main.androidgameduelmastersutil.SetUnsetUtil;
 import koustav.duelmasters.main.androidgameduelmastersutillegacycode.UIUtil;
+import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.ControllerButton;
 
 /**
  * Created by Koustav on 3/28/2015.
@@ -57,7 +62,11 @@ public class OnTurn {
     // Stores the present state
     SubStates currentState;
 
+    // Sub states
     SubStates IdealOnTurn;
+    SubStates MayUnTapCreatureAtTheEndOfTurn;
+    SubStates EndingTurn;
+    SubStates SummonOrCastUpdate;
 
     public OnTurn(PvPWorld world) {
         this.world = world;
@@ -75,20 +84,457 @@ public class OnTurn {
 
     private void setCurrentState(SubStates state) {
         currentState = state;
+        currentState.StateSetting();
     }
 
     private void DefineStates() {
         IdealOnTurn = new SubStates() {
             @Override
             public boolean updateState() {
+                UIRequest uiRequest = world.getWidgetCoordinator().getUIRequests();
+                if (uiRequest.getRequest() == Requests.None) {
+                    return false;
+                }
+
+                if (GetUtil.IsAllowedToEndTurn(world) && uiRequest.getRequest() == Requests.EndTurn) {
+                    String CollectAttackMarkedCard = InstSetUtil.GenerateCopyCardToTempZoneBasedOnAttribute("Tapped", 1);
+                    InstructionSet CollectInst = new InstructionSet(CollectAttackMarkedCard);
+                    world.getInstructionHandler().setCardAndInstruction(null, CollectInst);
+                    world.getInstructionHandler().execute();
+                    world.getWidgetCoordinator().getSelectedCardTracker().getOnFocusCards().clear();
+                    ArrayList<Cards> CollectedCardList = world.getMaze().getZoneList().get(Maze.temporaryZone).getZoneArray();
+                    ArrayList<Cards> tmplist = new ArrayList<Cards>();
+                    for (int i =0; i < CollectedCardList.size(); i++) {
+                        InactiveCard card = (InactiveCard) CollectedCardList.get(i);
+                        world.getWidgetCoordinator().getSelectedCardTracker().getOnFocusCards().add(card);
+                        if (GetUtil.IsMayUntapAtEndOfTheTurn(card)) {
+                            tmplist.add(card);
+                        }
+                    }
+                    UnTapAllAtEndOfTurn = GetUtil.IsUnTapAllAtEndOfTurn(world);
+                    CollectedCardList.clear();
+                    for (int i = 0; i < tmplist.size(); i++) {
+                        CollectedCardList.add(tmplist.get(i));
+                    }
+                    if (!UnTapAllAtEndOfTurn) {
+                        world.getWidgetCoordinator().getSelectedCardTracker().getOnFocusCards().clear();
+                        if (CollectedCardList.size() > 0) {
+                            world.getWidgetCoordinator().getSelectedCardTracker().getOnFocusCards().add(CollectedCardList.get(0));
+                        }
+                    }
+                    setCurrentState(MayUnTapCreatureAtTheEndOfTurn);
+                }
+
+                if (uiRequest.getRequest() == Requests.CardSelected) {
+                    Cards card = uiRequest.getCard();
+                    if (card == null) {
+                        throw new RuntimeException("Invalid Condition");
+                    }
+
+                    ArrayList<ControllerButton> controllerButtons = new ArrayList<ControllerButton>();
+                    int zone = card.GridPosition().getZone();
+                    if (zone == Maze.battleZone) {
+                        if (!GetUtil.IsTapped((InactiveCard)card)) {
+                            if (GetUtil.IsAllowedToAttack((InactiveCard) card, world)) {
+                                controllerButtons.add(ControllerButton.Attack);
+                            }
+                        }
+
+                        if (!GetUtil.IsTapped((InactiveCard) card)) {
+                            if (GetUtil.IsHasTapAbility((InactiveCard) card) && !GetUtil.CantUseTapAbility((InactiveCard) card) &&
+                                    !(GetUtil.NewSummonedCreature((InactiveCard) card) && !GetUtil.NoSummoningSickness((InactiveCard) card))) {
+                                controllerButtons.add(ControllerButton.TapAbility);
+                            }
+                        }
+                    }
+
+                    if (zone == Maze.hand) {
+                        if (GetUtil.IsAllowedToSummonOrCast((InactiveCard) card, world)) {
+                            controllerButtons.add(ControllerButton.SummonOrCast);
+                        }
+
+                        if (!world.getWorldFlag(WorldFlags.CantAddToMana)) {
+                            controllerButtons.add(ControllerButton.AddToMana);
+                        }
+                    }
+
+                    if (controllerButtons.size() > 0) {
+                        world.getWidgetCoordinator().SendAction(Actions.AddControlButton, controllerButtons);
+                    }
+                }
+
+                if (uiRequest.getRequest() == Requests.Attack) {
+                    InactiveCard card = (InactiveCard) uiRequest.getCard();
+                    if (card == null) {
+                        throw new RuntimeException("Invalid Condition");
+                    }
+
+                    int zone = card.GridPosition().getZone();
+                    if (zone != Maze.battleZone) {
+                        throw new RuntimeException("Invalid Condition");
+                    }
+
+                    if (!GetUtil.IsTapped(card)) {
+                        if (GetUtil.IsAllowedToAttack(card, world)) {
+                            world.setFetchCard(card);
+                            world.getMaze().getZoneList().get(Maze.temporaryZone).getZoneArray().clear();
+                            //S = OnTurnState.S3;
+                        }
+                    }
+
+                    return false;
+                }
+
+                if (uiRequest.getRequest() == Requests.SummonOrCast) {
+                    InactiveCard card = (InactiveCard) uiRequest.getCard();
+                    if (card == null) {
+                        throw new RuntimeException("Invalid Condition");
+                    }
+
+                    int zone = card.GridPosition().getZone();
+                    if (zone != Maze.hand) {
+                        throw new RuntimeException("Invalid Condition");
+                    }
+                    if (GetUtil.IsAllowedToSummonOrCast(card, world)) {
+                        world.setFetchCard(card);
+                        world.getMaze().getZoneList().get(Maze.temporaryZone).getZoneArray().clear();
+                        world.getEventLog().setRecording(true);
+                        setCurrentState(SummonOrCastUpdate);
+                    }
+
+                    return false;
+                }
+
+                if (uiRequest.getRequest() == Requests.TapAbility) {
+                    InactiveCard card = (InactiveCard) uiRequest.getCard();
+                    if (card == null) {
+                        throw new RuntimeException("Invalid Condition");
+                    }
+
+                    int zone = card.GridPosition().getZone();
+                    if (zone != Maze.battleZone) {
+                        throw new RuntimeException("Invalid Condition");
+                    }
+
+                    if (!GetUtil.IsTapped(card)) {
+                        if (GetUtil.IsHasTapAbility(card) && !GetUtil.CantUseTapAbility(card)  &&
+                                !(GetUtil.NewSummonedCreature(card) && !GetUtil.NoSummoningSickness(card))) {
+                            world.setFetchCard(card);
+                            ActiveCard Acard = (ActiveCard) card;
+                            ArrayList<InstructionSet> instructions = Acard.getPrimaryInstructionForTheInstructionID(InstructionID.TapAbility);
+                            world.getInstructionIteratorHandler().setCard(Acard);
+                            world.getInstructionIteratorHandler().setInstructions(instructions);
+                            world.getEventLog().setRecording(true);
+                            SetUnsetUtil.SetTappedAttr(Acard);
+                            world.getEventLog().registerEvent(Acard, false, 0 , "Tapped", true ,1);
+                            // S = OnTurnState.S8;
+                        }
+                    }
+
+                    return false;
+                }
+
+                if (uiRequest.getRequest() == Requests.AddToMana) {
+                    InactiveCard card = (InactiveCard) uiRequest.getCard();
+                    if (card == null) {
+                        throw new RuntimeException("Invalid Condition");
+                    }
+
+                    int zone = card.GridPosition().getZone();
+                    if (zone != Maze.hand) {
+                        throw new RuntimeException("Invalid Condition");
+                    }
+                    if (!world.getWorldFlag(WorldFlags.CantAddToMana)) {
+                        world.setFetchCard(card);
+                        world.getEventLog().setRecording(true);
+                        // S = OnTurnState.S6;
+                    }
+
+                    return false;
+                }
 
                 return false;
             }
 
             @Override
             public void StateSetting() {
+                world.getWidgetCoordinator().SendAction(Actions.ClearControlButton, (Object) null);
                 world.getWidgetCoordinator().SetFlags(ZoomLevel.Button_Touched, new Expand[] {Expand.Deck, Expand.Mana_Z, Expand.Mana_OZ},
                         new Drag[] {Drag.Hand}, true, CardSelectMode.OFF);
+            }
+        };
+
+        MayUnTapCreatureAtTheEndOfTurn = new SubStates() {
+            @Override
+            public boolean updateState() {
+                UIRequest uiRequest = world.getWidgetCoordinator().getUIRequests();
+                ArrayList<Cards> CollectedCardList = world.getMaze().getZoneList().get(Maze.temporaryZone).getZoneArray();
+
+                if (uiRequest.getRequest() == Requests.None) {
+                    return false;
+                }
+
+                if (UnTapAllAtEndOfTurn) {
+                    if (uiRequest.getRequest() == Requests.Accept) {
+                        world.getInstructionHandler().setCardAndInstruction(null, UnTapCreaturesInstruction);
+                        world.getInstructionHandler().execute();
+                        CollectedCardList.clear();
+                        world.getWidgetCoordinator().getSelectedCardTracker().getOnFocusCards().clear();
+                        UnTapAllAtEndOfTurn = false;
+                    }
+
+                    if (uiRequest.getRequest() == Requests.Decline) {
+                        world.getWidgetCoordinator().getSelectedCardTracker().getOnFocusCards().clear();
+                        if (CollectedCardList.size() > 0) {
+                            world.getWidgetCoordinator().getSelectedCardTracker().getOnFocusCards().add(CollectedCardList.get(0));
+                        }
+                        UnTapAllAtEndOfTurn = false;
+                    }
+                }else if (CollectedCardList.size() > 0) {
+                    InactiveCard card = (InactiveCard) CollectedCardList.get(0);
+                    if (uiRequest.getRequest() == Requests.Accept) {
+                        SetUnsetUtil.UnSetTappedAttr(card);
+                        CollectedCardList.remove(card);
+                        world.getWidgetCoordinator().getSelectedCardTracker().getOnFocusCards().clear();
+                        if (CollectedCardList.size() > 0) {
+                            world.getWidgetCoordinator().getSelectedCardTracker().getOnFocusCards().add(CollectedCardList.get(0));
+                        }
+                    }
+
+                    if (uiRequest.getRequest() == Requests.Decline) {
+                        CollectedCardList.remove(card);
+                        world.getWidgetCoordinator().getSelectedCardTracker().getOnFocusCards().clear();
+                        if (CollectedCardList.size() > 0) {
+                            world.getWidgetCoordinator().getSelectedCardTracker().getOnFocusCards().add(CollectedCardList.get(0));
+                        }
+                    }
+                } else {
+                    UnTapAllAtEndOfTurn = false;
+                    setCurrentState(EndingTurn);
+                }
+                return false;
+            }
+
+            @Override
+            public void StateSetting() {
+                ArrayList<Cards> CollectedCardList = world.getMaze().getZoneList().get(Maze.temporaryZone).getZoneArray();
+                if (UnTapAllAtEndOfTurn || CollectedCardList.size() > 0) {
+                    ArrayList<ControllerButton> controllerButtons = new ArrayList<ControllerButton>();
+                    controllerButtons.add(ControllerButton.Accept);
+                    controllerButtons.add(ControllerButton.Decline);
+                    world.getWidgetCoordinator().SendAction(Actions.AddControlButton, controllerButtons);
+                }
+                world.getWidgetCoordinator().SetFlags(ZoomLevel.Button_Touched, new Expand[] {Expand.Nil},
+                        new Drag[] {Drag.Nil}, false, CardSelectMode.OFF);
+
+            }
+        };
+
+        EndingTurn = new SubStates() {
+            @Override
+            public boolean updateState() {
+                if (!NetworkUtil.sendDirectiveUpdates(world, DirectiveHeader.EndOfTurn, null, null)) {
+                    //handle the case when socket is closed
+                }
+                setCurrentState(IdealOnTurn);
+
+                return true;
+            }
+
+            @Override
+            public void StateSetting() {
+
+            }
+        };
+
+        SummonOrCastUpdate = new SubStates() {
+            @Override
+            public boolean updateState() {
+                UIRequest uiRequest = world.getWidgetCoordinator().getUIRequests();
+                if (uiRequest.getRequest() == Requests.None) {
+                    return false;
+                }
+
+                ActiveCard SummoningOrCastCard = (ActiveCard) world.getFetchCard();
+                ArrayList<Cards> CollectedCardList = world.getMaze().getZoneList().get(Maze.temporaryZone).getZoneArray();
+                ArrayList<Cards> ManaCards = world.getMaze().getZoneList().get(Maze.manaZone).getZoneArray();
+
+                if (CollectedCardList.size() == SummoningOrCastCard.getCost()) {
+                    if (uiRequest.getRequest() == Requests.Accept){
+                        for (int i = 0; i < CollectedCardList.size(); i++) {
+                            InactiveCard tcard = (InactiveCard) CollectedCardList.get(i);
+                            SetUnsetUtil.SetTappedAttr(tcard);
+                            world.getEventLog().registerEvent(tcard, false, 0 , "Tapped", true ,1);
+                        }
+                        if (SummoningOrCastCard.getType() == TypeOfCard.Creature) {
+                            SummonTapped = false;
+                            if (GetUtil.SummonTapped(SummoningOrCastCard)) {
+                                SummonTapped = true;
+                            }
+                            boolean ActiveWaveStriker = GetUtil.IsActiveWaveStriker(SummoningOrCastCard);
+                            String SummonCardInstruction = InstSetUtil.GenerateSelfChangeZoneInstruction(Maze.battleZone);
+                            InstructionSet instruction = new InstructionSet(SummonCardInstruction);
+                            world.getInstructionHandler().setCardAndInstruction(SummoningOrCastCard, instruction);
+                            world.getInstructionHandler().execute();
+                            if (SummonTapped) {
+                                SetUnsetUtil.SetTappedAttr((InactiveCard) world.getFetchCard());
+                                world.getEventLog().registerEvent(world.getFetchCard(), false, 0 , "Tapped", true ,1);
+                                SummonTapped = false;
+                            }
+                            //sendeventlog
+                            String msg = world.getEventLog().getAndClearEvents();
+                            NetworkUtil.sendDirectiveUpdates(world,DirectiveHeader.ApplyEvents, msg, null);
+                            if (((ActiveCard)world.getFetchCard()).getPrimaryInstructionForTheInstructionID(InstructionID.SummonOrCastAbility) == null &&
+                                    ((ActiveCard)world.getFetchCard()).getPrimaryInstructionForTheInstructionID(InstructionID.WaveStrikerSummonOrCastAbility) == null &&
+                                    ! GetUtil.IsSurvivor((ActiveCard) world.getFetchCard())) {
+                                S = OnTurnState.SX;
+                                world.getEventLog().setRecording(false);
+                                world.setFetchCard(null);
+                            } else {
+                                world.getInstructionIteratorHandler().setCard((InactiveCard) world.getFetchCard());
+                                ArrayList<InstructionSet> instructions =
+                                        ((ActiveCard) world.getFetchCard()).getPrimaryInstructionForTheInstructionID(InstructionID.SummonOrCastAbility);
+                                if (GetUtil.IsWaveStriker((InactiveCard) world.getFetchCard()) && ActiveWaveStriker) {
+                                    ArrayList<InstructionSet> tmp =
+                                            ((ActiveCard) world.getFetchCard()).getPrimaryInstructionForTheInstructionID(InstructionID.WaveStrikerSummonOrCastAbility);
+                                    if (instructions != null && tmp != null) {
+                                        for (int i = 0; i < tmp.size(); i++) {
+                                            instructions.add(tmp.get(i));
+                                        }
+                                    } else if (tmp != null) {
+                                        instructions = tmp;
+                                    }
+                                }
+
+                                if (GetUtil.IsSurvivor((ActiveCard) world.getFetchCard())) {
+                                    Zone zone = world.getMaze().getZoneList().get(Maze.battleZone);
+                                    ArrayList<InstructionSet> tmp = null;
+                                    for (int i = 0; i < zone.zoneSize(); i++) {
+                                        ActiveCard tcard = (ActiveCard) zone.getZoneArray().get(i);
+                                        if ((tcard != world.getFetchCard()) && GetUtil.IsSurvivor(tcard)) {
+                                            ArrayList<InstructionSet> tmp2 = tcard.getPrimaryInstructionForTheInstructionID(InstructionID.SummonOrCastAbility);
+                                            if (tmp != null && tmp2 != null) {
+                                                for (int j = 0; j < tmp.size(); j++) {
+                                                    tmp.add(tmp.get(j));
+                                                }
+                                            } else if (tmp2 != null) {
+                                                tmp = tmp2;
+                                            }
+                                        }
+                                    }
+                                    if (instructions != null && tmp != null) {
+                                        for (int i = 0; i < tmp.size(); i++) {
+                                            instructions.add(tmp.get(i));
+                                        }
+                                    } else if (tmp != null) {
+                                        instructions = tmp;
+                                    }
+                                }
+
+                                if (instructions.size() > 0) {
+                                    world.getInstructionIteratorHandler().setInstructions(instructions);
+                                    S = OnTurnState.S4;
+                                } else {
+                                    S = OnTurnState.SX;
+                                    world.getEventLog().setRecording(false);
+                                    world.setFetchCard(null);
+                                }
+                            }
+                        }
+
+                        if (SummoningOrCastCard.getType() == TypeOfCard.Spell) {
+                            world.getInstructionIteratorHandler().setCard((InactiveCard) world.getFetchCard());
+                            ArrayList<InstructionSet> instructions =
+                                    ((ActiveCard) world.getFetchCard()).getPrimaryInstructionForTheInstructionID(InstructionID.SummonOrCastAbility);
+                            world.getInstructionIteratorHandler().setInstructions(instructions);
+                            //sendeventlog
+                            String msg = world.getEventLog().getAndClearEvents();
+                            NetworkUtil.sendDirectiveUpdates(world,DirectiveHeader.ApplyEvents, msg, null);
+                            S = OnTurnState.S5;
+                        }
+
+                        if (SummoningOrCastCard.getType() == TypeOfCard.Evolution) {
+                            SummonTapped = false;
+                            if (GetUtil.SummonTapped(SummoningOrCastCard)) {
+                                SummonTapped = true;
+                            }
+                            String EvolutionInst = InstSetUtil.GenerateEvolutionInstruction(SummoningOrCastCard.getEvolutionCompareString());
+                            InstructionSet Einstruction = new InstructionSet(EvolutionInst);
+                            world.getInstructionHandler().setCardAndInstruction(SummoningOrCastCard, Einstruction);
+                            //sendEventlog
+                            String msg = world.getEventLog().getAndClearEvents();
+                            NetworkUtil.sendDirectiveUpdates(world,DirectiveHeader.ApplyEvents, msg, null);
+                            S = OnTurnState.S4a;
+                        }
+
+                        world.clearWorldFlag(WorldFlags.ManaSelectMode);
+                        CollectedCardList.clear();
+                        return false;
+                    }
+                }
+
+                if (uiRequest.getRequest() == Requests.Decline){
+                    setCurrentState(IdealOnTurn);
+                    CollectedCardList.clear();
+                    world.getEventLog().setRecording(false);
+                    return false;
+                }
+
+                if (uiRequest.getRequest() == Requests.CardSelected) {
+                    Cards card = uiRequest.getCard();
+
+                    if (card == null) {
+                        throw new RuntimeException("Invalid Condition");
+                    }
+                    if (card.GridPosition().getZone() != Maze.manaZone) {
+                        return false;
+                    }
+                    InactiveCard SelectedCard = (InactiveCard) card;
+                    if (GetUtil.IsTapped(SelectedCard)) {
+                        return false;
+                    }
+
+                    if (CollectedCardList.contains(SelectedCard)) {
+                        UIUtil.TrackSelectedCardsWhenUserIsChoosing(CollectedCardList, ManaCards, SelectedCard);
+                        return false;
+                    }
+
+                    if (!(CollectedCardList.size() < GetUtil.getTotalManaCost(SummoningOrCastCard))) {
+                        return false;
+                    }
+
+                    boolean matchedCivilization = false;
+                    for (int i = 0; i < CollectedCardList.size(); i++) {
+                        InactiveCard tcard = (InactiveCard) CollectedCardList.get(i);
+                        if (GetUtil.RequiredCivilization(tcard, SummoningOrCastCard.getCivilization())) {
+                            matchedCivilization = true;
+                            break;
+                        }
+                    }
+
+                    if (matchedCivilization) {
+                        UIUtil.TrackSelectedCardsWhenUserIsChoosing(CollectedCardList, ManaCards, SelectedCard);
+                    } else {
+                        int NumberOfCollectedCard = CollectedCardList.size();
+                        if (NumberOfCollectedCard < (SummoningOrCastCard.getCost() - 1)) {
+                            UIUtil.TrackSelectedCardsWhenUserIsChoosing(CollectedCardList, ManaCards, SelectedCard);
+                        } else {
+                            if (GetUtil.RequiredCivilization(SelectedCard, SummoningOrCastCard.getCivilization())) {
+                                UIUtil.TrackSelectedCardsWhenUserIsChoosing(CollectedCardList, ManaCards, SelectedCard);
+                            }
+                        }
+                    }
+                }
+                return false;
+            }
+
+            @Override
+            public void StateSetting() {
+                ArrayList<ControllerButton> controllerButtons = new ArrayList<ControllerButton>();
+                controllerButtons.add(ControllerButton.Decline);
+                world.getWidgetCoordinator().SendAction(Actions.AddControlButton, controllerButtons);
+                world.getWidgetCoordinator().SetFlags(ZoomLevel.Button, new Expand[] {Expand.Mana_Z},
+                        new Drag[] {Drag.Mana_Z}, false, CardSelectMode.ON);
             }
         };
     }
@@ -98,7 +544,7 @@ public class OnTurn {
     public boolean update(){
         boolean status = false;
         if (S == OnTurnState.S1)
-            IdealOnTurn();
+            IdealOnTurn(); // done
         if (S == OnTurnState.S2)
             SummonOrCastUpdate();
         if (S == OnTurnState.S3)
@@ -136,15 +582,16 @@ public class OnTurn {
         if (S == OnTurnState.SX)
             FlagSpreadingUpdate();
         if (S == OnTurnState.SY)
-            MayUnTapAtTheEndOfTurnCreatureUpdate();
+            MayUnTapAtTheEndOfTurnCreatureUpdate(); // done
         if (S == OnTurnState.SY2)
-            status = TurnEnding();
+            status = TurnEnding(); // done
 
         return status;
     }
 /*
  This is the Ideal state when User make decision what he/she is going to do next (attack,summon,cast,draw card etc.)
  S1
+ done
  */
     private void IdealOnTurn() {
         if (GetUtil.IsAllowedToEndTurn(world) && UIUtil.TouchedSkippedButton(world)) {
@@ -276,6 +723,7 @@ public class OnTurn {
 /*
   This API update the creature that can be UnTapped at the end of turn
   SY
+  Done
  */
     private void MayUnTapAtTheEndOfTurnCreatureUpdate() {
         ArrayList<Cards> CollectedCardList = world.getMaze().getZoneList().get(6).getZoneArray();
@@ -312,6 +760,7 @@ public class OnTurn {
 /*
    This API end the turn
    SY2
+   done
      */
     private boolean TurnEnding() {
         if (!NetworkUtil.sendDirectiveUpdates(world, DirectiveHeader.EndOfTurn, null, null)) {

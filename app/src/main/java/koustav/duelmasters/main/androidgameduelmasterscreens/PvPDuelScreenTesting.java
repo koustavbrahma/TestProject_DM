@@ -195,10 +195,10 @@ public class PvPDuelScreenTesting extends Screen{
         position.Z_scale = 1f;
         CardWg.setTranslateRotateScale(position);
         CardWg.draw();
-        //WidgetTouchEvent tmp2 = CardWg.isTouched(touchEvents);
+        WidgetTouchEvent tmp2 = CardWg.isTouched(touchEvents);
 
-        WidgetTouchEvent tmp2 = controllerLayout.TouchResponse(touchEvents);
-        if (tmp2 != null && tmp2.isTouched && !tmp2.isTouchedDown && tmp2.object == ControllerButton.SummonOrCast) {
+       // WidgetTouchEvent tmp2 = controllerLayout.TouchResponse(touchEvents);
+        if (tmp2 != null && tmp2.isTouched && !tmp2.isTouchedDown /*&& tmp2.object == ControllerButton.SummonOrCast */) {
             /*GLPoint intersectingPoint = GLGeometry.GLRayIntersectionWithXZPlane(
                     new GLRay(game.getInput().getNearPoint(0), GLGeometry.GLVectorBetween(game.getInput().getNearPoint(0),
                             game.getInput().getFarPoint(0))), 0);
@@ -251,9 +251,9 @@ public class PvPDuelScreenTesting extends Screen{
         position.Z_scale = 1f;
         CardWg2.setTranslateRotateScale(position);
         CardWg2.draw();
-        //tmp2 = CardWg2.isTouched(touchEvents);
+        tmp2 = CardWg2.isTouched(touchEvents);
         boolean remove = false;
-        if (tmp2 != null && tmp2.isTouched && !tmp2.isTouchedDown && tmp2.object == ControllerButton.AddToMana) {
+        if (tmp2 != null && tmp2.isTouched && !tmp2.isTouchedDown /*&& tmp2.object == ControllerButton.AddToMana */) {
            /* GLPoint intersectingPoint = GLGeometry.GLRayIntersectionWithXZPlane(
                     new GLRay(game.getInput().getNearPoint(0), GLGeometry.GLVectorBetween(game.getInput().getNearPoint(0),
                             game.getInput().getFarPoint(0))), 0);
@@ -266,18 +266,20 @@ public class PvPDuelScreenTesting extends Screen{
             point.bindData(AssetsAndResource.colorShaderProgram.getPositionAttributeLocation(),
                     AssetsAndResource.colorShaderProgram.getColorAttributeLocation());
             point.draw(); */
-            /*
+
             Random R = new Random();
             int tempindex;
             CardWidget rmwg = null;
             if (tmplist.size() > 0) {
                 tempindex = (int) R.nextInt(tmplist.size());
-                rmwg = tmplist.remove(tempindex);
+             //   rmwg = tmplist.remove(tempindex);
+                rmwg = tmplist.get(tempindex);
                // battleZoneLayout.RemoveCardWidgetFromZone(rmwg);
                 //manaZoneLayout.RemoveCardWidgetFromZone(rmwg);
-                handZoneLayout.RemoveCardWidgetFromZone(rmwg);
+                //handZoneLayout.RemoveCardWidgetFromZone(rmwg);
+                handZoneLayout.LockCardWidget(rmwg, 0, 0);
                 remove = true;
-            }*/
+            }
 /*
             if (tmplist.size() > 0) {
                 tempindex = (int) R.nextInt(tmplist.size());
@@ -300,7 +302,7 @@ public class PvPDuelScreenTesting extends Screen{
                 battleZoneLayout.PutCardWidgetOnTopOfExistingCardWidget(CardWgtmp, rmwg);
                 tmplist.add(CardWgtmp);
             } */
-            controllerLayout.setControllerButton(new ControllerButton[] {ControllerButton.SummonOrCast, ControllerButton.AddToMana, ControllerButton.Attack});
+//            controllerLayout.setControllerButton(new ControllerButton[] {ControllerButton.SummonOrCast, ControllerButton.AddToMana, ControllerButton.Attack});
         }
 
         position.Centerposition.x = 0.5f;
@@ -334,7 +336,7 @@ public class PvPDuelScreenTesting extends Screen{
             //battleZoneLayout.AddCardWidgetToZone(CardWgtmp);
             //manaZoneLayout.TransferCardWidgetToCoupleSlotZone(CardWgtmp);
             //tmplist.add(CardWgtmp);
-            controllerLayout.setControllerButton(new ControllerButton[] {ControllerButton.SummonOrCast, ControllerButton.AddToMana});
+     //       controllerLayout.setControllerButton(new ControllerButton[] {ControllerButton.SummonOrCast, ControllerButton.AddToMana});
         }
 
         //if (!remove) {
@@ -413,8 +415,8 @@ public class PvPDuelScreenTesting extends Screen{
         position2.rotaion.z = 0;
 //        MatrixHelper.setTranslate(position2);
 //        DrawObjectHelper.drawOneScreenRectangle(DisplayCard, AssetsAndResource.cardBackside);
-        controllerLayout.update(deltaTime, totalTime);
-        controllerLayout.draw();
+  //      controllerLayout.update(deltaTime, totalTime);
+   //     controllerLayout.draw();
 
         if (AssetsAndResource.game.getInput().isTouchDown(0)) {
             if (Math.abs(game.getInput().getNormalizedX(0)) <= DisplayCard.width/2 &&

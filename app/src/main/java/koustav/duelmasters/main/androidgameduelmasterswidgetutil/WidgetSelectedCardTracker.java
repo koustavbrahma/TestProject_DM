@@ -11,11 +11,13 @@ public class WidgetSelectedCardTracker {
     Cards selectedCard;
     ArrayList<Cards> selectedCards;
     ArrayList<Cards> selectedPileCards;
+    ArrayList<Cards> onFocusCards;
 
     public WidgetSelectedCardTracker() {
         selectedCard = null;
         selectedCards = new ArrayList<Cards>();
         selectedPileCards = new ArrayList<Cards>();
+        onFocusCards = new ArrayList<Cards>();
     }
 
     public void setSelectedCard(Cards card) {
@@ -32,5 +34,9 @@ public class WidgetSelectedCardTracker {
 
     public ArrayList<Cards> getSelectedPileCards() {
         return selectedPileCards;
+    }
+
+    public ArrayList<Cards> getOnFocusCards() {
+        return onFocusCards;
     }
 }

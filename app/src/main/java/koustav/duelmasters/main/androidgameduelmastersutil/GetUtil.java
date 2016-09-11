@@ -578,15 +578,23 @@ public class GetUtil {
 
     public static boolean IsUnTapAllAtEndOfTurn(PvPWorld world) {
         boolean status = false;
+        boolean tapped = false;
 
         Zone zone = world.getMaze().getZoneList().get(0);
         for (int i = 0; i < zone.zoneSize(); i++) {
             InactiveCard card = (InactiveCard) zone.getZoneArray().get(i);
             if (GetUtil.IsMayUntapAllAtEndOfTheTurn(card)) {
                 status = true;
+            }
+
+            if (GetUtil.IsTapped(card)) {
+                tapped = true;
+            }
+
+            if (status && tapped) {
                 break;
             }
         }
-        return status;
+        return (status && tapped);
     }
 }

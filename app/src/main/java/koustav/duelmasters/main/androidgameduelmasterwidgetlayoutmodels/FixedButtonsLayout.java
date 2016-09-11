@@ -14,15 +14,20 @@ import koustav.duelmasters.main.androidgamesframework.Input;
 public class FixedButtonsLayout implements Layout {
     ButtonSlotLayout pauseButtonLayout;
     ButtonSlotLayout EndTurnButtonLayout;
+    ButtonSlotLayout PlayerButtonLayout;
+    ButtonSlotLayout OpponentButtonLayout;
 
     public FixedButtonsLayout() {
         pauseButtonLayout = new ButtonSlotLayout();
         EndTurnButtonLayout = new ButtonSlotLayout();
     }
 
-    public void InitializeFixedButtonLayout(RectangleButtonWidget pauseButton, RectangleButtonWidget EndTurnButton) {
+    public void InitializeFixedButtonLayout(RectangleButtonWidget pauseButton, RectangleButtonWidget EndTurnButton,
+                                            RectangleButtonWidget PlayerButton, RectangleButtonWidget OpponentButton) {
         pauseButtonLayout.intializeButton(-0.85f, 0.85f, 0, pauseButton, 1f, 1f);
         EndTurnButtonLayout.intializeButton(-0.9f, 0f, 0, EndTurnButton, 1f, 1f);
+        PlayerButtonLayout.intializeButton(-0.9f, -0.9f, 0, PlayerButton, 1f, 1f);
+        OpponentButtonLayout.intializeButton(0.9f, 0.9f, 0, OpponentButton, 1f, 1f);
     }
 
     @Override
@@ -42,19 +47,36 @@ public class FixedButtonsLayout implements Layout {
         Input input = AssetsAndResource.game.getInput();
         if (input.isTouchDown(0)) {
             if (input.getNormalizedY(0) > 0.5f) {
-                widgetTouchEvent = pauseButtonLayout.TouchResponse(touchEvents);
+                if (input.getNormalizedX(0) < 0) {
+                    widgetTouchEvent = pauseButtonLayout.TouchResponse(touchEvents);
+                } else {
+                    widgetTouchEvent = OpponentButtonLayout.TouchResponse(touchEvents);
+                }
             } else {
-                widgetTouchEvent = EndTurnButtonLayout.TouchResponse(touchEvents);
+                if (input.getNormalizedY(0) > -0.5f) {
+                    widgetTouchEvent = EndTurnButtonLayout.TouchResponse(touchEvents);
+                } else {
+                    widgetTouchEvent = PlayerButtonLayout.TouchResponse(touchEvents);
+                }
             }
         } else {
             for (int i = 0; i < touchEvents.size(); i++) {
                 Input.TouchEvent event = touchEvents.get(i);
                 if (event.type == Input.TouchEvent.TOUCH_UP) {
                     if (event.normalizedY > 0.5f) {
-                        widgetTouchEvent = pauseButtonLayout.TouchResponse(touchEvents);
+                        if (event.normalizedX < 0) {
+                            widgetTouchEvent = pauseButtonLayout.TouchResponse(touchEvents);
+                        } else {
+                            widgetTouchEvent = OpponentButtonLayout.TouchResponse(touchEvents);
+                        }
                     } else {
-                        widgetTouchEvent = EndTurnButtonLayout.TouchResponse(touchEvents);
+                        if (event.normalizedY > -0.5f) {
+                            widgetTouchEvent = EndTurnButtonLayout.TouchResponse(touchEvents);
+                        } else {
+                            widgetTouchEvent = PlayerButtonLayout.TouchResponse(touchEvents);
+                        }
                     }
+                    break;
                 }
             }
         }

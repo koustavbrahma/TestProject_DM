@@ -146,8 +146,8 @@ public class GLGeometry {
     }
 
     public static class GLRay {
-        public static GLPoint point;
-        public static GLVector vector;
+        public GLPoint point;
+        public GLVector vector;
         public GLRay(GLPoint point, GLVector vector) {
             this.point = point;
             this.vector = vector;
@@ -155,8 +155,8 @@ public class GLGeometry {
     }
 
     public static class GLPlane {
-        public static GLPoint point;
-        public static GLVector normal;
+        public GLPoint point;
+        public GLVector normal;
         public GLPlane(GLPoint point, GLVector vector) {
             this.point = point;
             this.normal = vector;

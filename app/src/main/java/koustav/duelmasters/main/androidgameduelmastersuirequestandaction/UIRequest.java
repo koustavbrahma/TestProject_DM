@@ -1,4 +1,4 @@
-package koustav.duelmasters.main.androidgameduelmastersuirequest;
+package koustav.duelmasters.main.androidgameduelmastersuirequestandaction;
 
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
 
@@ -26,7 +26,7 @@ public class UIRequest {
         return request;
     }
 
-    public boolean isForce() {
+    public boolean isDragged() {
         return Dragged;
     }
 

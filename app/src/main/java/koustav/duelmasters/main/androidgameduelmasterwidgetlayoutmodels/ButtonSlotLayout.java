@@ -56,7 +56,7 @@ public class ButtonSlotLayout implements Layout {
             }
 
             if (change) {
-                driftSystem.setDriftInfo(buttonWidget.getPosition(), ButtonSlotPosition, k1, k2, totalTime);
+                driftSystem.setDriftInfo(buttonWidget.getPosition(), ButtonSlotPosition, null, null, k1, k2, totalTime);
                 running = true;
             }
             Disturbed = false;

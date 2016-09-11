@@ -108,14 +108,14 @@ public class CardSlotLayoutXZPlaner implements Layout {
         }
 
         if (Disturbed) {
-            TopDriftSystem.setDriftInfo(TopCardWidget.getPosition(), TopSlotPosition, k1, k2, totalTime);
+            TopDriftSystem.setDriftInfo(TopCardWidget.getPosition(), TopSlotPosition, null, null, k1, k2, totalTime);
 
             for (int i =0; i < cardWidgets.size(); i++) {
                 CardWidget cardWidget = cardWidgets.get(i);
                 WidgetPosition widgetSlotPosition = SlotPositions.get(cardWidget);
                 DriftSystem driftSystem = driftSystems.get(cardWidget);
 
-                driftSystem.setDriftInfo(cardWidget.getPosition(), widgetSlotPosition, k1, k2, totalTime);
+                driftSystem.setDriftInfo(cardWidget.getPosition(), widgetSlotPosition, null, null,k1, k2, totalTime);
             }
             Disturbed = false;
             running = true;

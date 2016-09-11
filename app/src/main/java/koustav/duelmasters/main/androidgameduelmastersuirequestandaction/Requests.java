@@ -1,4 +1,4 @@
-package koustav.duelmasters.main.androidgameduelmastersuirequest;
+package koustav.duelmasters.main.androidgameduelmastersuirequestandaction;
 
 /**
  * Created by Koustav on 8/15/2016.
@@ -8,6 +8,7 @@ public enum Requests {
     EndTurn,
     CardSelected,
     PlayerOrShield,
+    Opponent_PlayerOrShield,
     Accept,
     Decline,
     SummonOrCast,

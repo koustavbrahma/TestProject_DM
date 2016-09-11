@@ -59,7 +59,7 @@ public class CardStackZoneLayout implements Layout {
         this.ExpandMode = val;
     }
 
-    public void CloseExpandMode() {
+    public void ForceShrink() {
         cardStackWidget.setMode(WidgetMode.Normal);
     }
 

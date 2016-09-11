@@ -205,7 +205,7 @@ public class CardStackWidget implements Widget{
                         init_position.X_scale = Position.X_scale;
                         init_position.Y_scale = 1f;
                         init_position.Z_scale = Position.Z_scale;
-                        driftSystem.setDriftInfo(init_position, ref_position, k1, k2, totalTime);
+                        driftSystem.setDriftInfo(init_position, ref_position, null, null, k1, k2, totalTime);
                     }
 
                     float percentageComplete = driftSystem.getPercentageComplete(totalTime);
@@ -306,7 +306,7 @@ public class CardStackWidget implements Widget{
                         init_position.Y_scale = 1.0f;
                         init_position.Z_scale = widgetPosition.Z_scale;
 
-                        driftSystem.setDriftInfo(init_position, ref_position, k1, k2, totalTime);
+                        driftSystem.setDriftInfo(init_position, ref_position, null, null, k1, k2, totalTime);
                     }
 
                     float percentageComplete = driftSystem.getPercentageComplete(totalTime);

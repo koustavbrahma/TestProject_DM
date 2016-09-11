@@ -96,6 +96,16 @@ public class BattleZoneLayout implements Layout {
 
     public void setExpandMode(boolean val) {
         this.ExpandMode = val;
+        if (!val) {
+            ForceShrink();
+        }
+    }
+
+    public void ForceShrink() {
+        if (SelectedCardSlot != null && touchMode == TouchModeBattleZone.SlotExpandMode) {
+            touchMode = TouchModeBattleZone.NormalMode;
+            SelectedCardSlot.ExpandOrShrinkSlot(false, 0f, 0f);
+        }
     }
 
     private boolean BattleZoneCardOverlapping() {
@@ -1210,6 +1220,7 @@ public class BattleZoneLayout implements Layout {
             slotLayout.resetSlot();
             cardSlotLayoutPool.free(slotLayout);
         } else if (slotLayout.stackCount() == 1) {
+            touchMode = TouchModeBattleZone.NormalMode;
             slotLayout.ExpandOrShrinkSlot(false, 0f, 0f);
         }
 

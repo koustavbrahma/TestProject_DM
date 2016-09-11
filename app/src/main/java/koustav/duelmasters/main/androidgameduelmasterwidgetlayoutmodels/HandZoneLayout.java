@@ -55,6 +55,9 @@ public class HandZoneLayout implements Layout  {
     float gap_vec_x;
     float gap_vec_y;
     float gap_vec_z;
+    float clearance_x;
+    float clearance_y;
+    float clearance_z;
 
     boolean DragMode;
 
@@ -173,6 +176,24 @@ public class HandZoneLayout implements Layout  {
         gap_vec_x = gapVec.x;
         gap_vec_y = gapVec.y;
         gap_vec_z = gapVec.z;
+
+        setIdentityM(AssetsAndResource.tempMatrix, 0);
+        if (angle != 0) {
+            rotateM(AssetsAndResource.tempMatrix, 0, angle, rotationDir_x, rotationDir_y, rotationDir_z);
+        }
+        float[] PointAfterRot = new float[4];
+        multiplyMV(PointAfterRot, 0, AssetsAndResource.tempMatrix, 0, new float[] {0, 0, -1, 0f}, 0);
+
+        setIdentityM(AssetsAndResource.tempMatrix, 0);
+        if (angle != 0) {
+            rotateM(AssetsAndResource.tempMatrix, 0, angle, rotationDir_x, rotationDir_y, rotationDir_z);
+        }
+        float[] PointAfterRot2 = new float[4];
+        multiplyMV(PointAfterRot2, 0, AssetsAndResource.tempMatrix, 0, new float[] {0, 1, 0, 0f}, 0);
+
+        clearance_x = center_x + 1.2f * PointAfterRot[0] * AssetsAndResource.CardHeight + 0.1f * PointAfterRot2[0];
+        clearance_y = center_y + 1.2f * PointAfterRot[1] * AssetsAndResource.CardHeight + 0.1f * PointAfterRot2[1];
+        clearance_z = center_z + 1.2f * PointAfterRot[2] * AssetsAndResource.CardHeight + 0.1f * PointAfterRot2[2];
     }
 
     public void SetDraggingMode(boolean val) {
@@ -263,7 +284,7 @@ public class HandZoneLayout implements Layout  {
             widgetTouchEvent.isDoubleTouched = false;
             widgetTouchEvent.object = DraggingSlot.getCardWidget().getLogicalObject();
             DraggingSlot.SetSlotDisturbed();
-            DraggingSlot.setTwoStepTransition(true);
+            DraggingSlot.setTwoStepTransition(true, clearance_x, clearance_y, clearance_z, gap_vec_x, gap_vec_y, gap_vec_z);
             DraggingSlot = null;
 
             return widgetTouchEvent;
@@ -646,15 +667,17 @@ public class HandZoneLayout implements Layout  {
         return widget;
     }
 
-    public void LockCardWidget(CardWidget widget, float x, float y, float z, float angle, float x_axis, float y_axis, float z_axis) {
+    public void LockCardWidget(CardWidget widget, float x, float z) {
         DynamicCardSlotLayout slotLayout = WidgetToSlotMapping.get(widget);
 
-        slotLayout.lockSlot(x, y, z, angle, x_axis, y_axis, z_axis);
+        slotLayout.lockSlot(x, AssetsAndResource.CardHeight/2, z, 0, 0, 1f, 0);
+        slotLayout.setTwoStepTransition(true, clearance_x, clearance_y, clearance_z, gap_vec_x, gap_vec_y, gap_vec_z);
     }
 
     public void UnlockCardWidget(CardWidget widget) {
         DynamicCardSlotLayout slotLayout = WidgetToSlotMapping.get(widget);
 
         slotLayout.unlockSlot();
+        slotLayout.setTwoStepTransition(true, clearance_x, clearance_y, clearance_z, gap_vec_x, gap_vec_y, gap_vec_z);
     }
 }

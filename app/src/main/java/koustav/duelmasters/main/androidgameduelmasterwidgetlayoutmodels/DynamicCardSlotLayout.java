@@ -1,5 +1,6 @@
 package koustav.duelmasters.main.androidgameduelmasterwidgetlayoutmodels;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAndResource;
@@ -42,6 +43,7 @@ public class DynamicCardSlotLayout implements Layout {
     float[] relativeFarPointAfterRot;
     GLGeometry.GLPoint relativeNearPoint;
     GLGeometry.GLPoint relativeFarPoint;
+    GLGeometry.GLRay clearance_ray;
 
     public DynamicCardSlotLayout() {
         TopSlotPosition = new WidgetPosition();
@@ -66,6 +68,7 @@ public class DynamicCardSlotLayout implements Layout {
 
         relativeNearPoint = new GLGeometry.GLPoint(0, 0, 0);
         relativeFarPoint = new GLGeometry.GLPoint(0, 0, 0);
+        clearance_ray = new GLGeometry.GLRay(new GLGeometry.GLPoint(0, 0, 0), new GLGeometry.GLVector(0, 0, 0));
     }
 
     @Override
@@ -87,39 +90,30 @@ public class DynamicCardSlotLayout implements Layout {
             }
             TwoStepTransition = false;
             if (TwoStepTracking) {
-                setIdentityM(AssetsAndResource.tempMatrix, 0);
-                if (TopSlotPosition.rotaion.angle != 0) {
-                    rotateM(AssetsAndResource.tempMatrix, 0, TopSlotPosition.rotaion.angle, TopSlotPosition.rotaion.x, TopSlotPosition.rotaion.y,
-                            TopSlotPosition.rotaion.z);
-                }
-                float[] PointAfterRot = new float[4];
-                multiplyMV(PointAfterRot, 0, AssetsAndResource.tempMatrix, 0, new float[] {0, 0, -1, 0f}, 0);
+                GLGeometry.GLPoint point1 = GLGeometry.GLRayIntersectionWithPlane(clearance_ray,
+                        new GLGeometry.GLPlane(TopCardWidget.getPosition().Centerposition, clearance_ray.vector));
+                GLGeometry.GLPoint point2 = GLGeometry.GLRayIntersectionWithPlane(clearance_ray,
+                        new GLGeometry.GLPlane(TopSlotPosition.Centerposition, clearance_ray.vector));
 
-                setIdentityM(AssetsAndResource.tempMatrix, 0);
-                if (TopSlotPosition.rotaion.angle != 0) {
-                    rotateM(AssetsAndResource.tempMatrix, 0, TopSlotPosition.rotaion.angle, TopSlotPosition.rotaion.x, TopSlotPosition.rotaion.y,
-                            TopSlotPosition.rotaion.z);
-                }
-                float[] PointAfterRot2 = new float[4];
-                multiplyMV(PointAfterRot2, 0, AssetsAndResource.tempMatrix, 0, new float[] {0, 1, 0, 0f}, 0);
-
-                TopSlotPosition_BreakPoint.Centerposition.x = TopSlotPosition.Centerposition.x +
-                        PointAfterRot[0] * AssetsAndResource.CardHeight + 0.01f * PointAfterRot2[0];
-                TopSlotPosition_BreakPoint.Centerposition.y = TopSlotPosition.Centerposition.y +
-                        PointAfterRot[1] * AssetsAndResource.CardHeight + 0.01f * PointAfterRot2[1];
-                TopSlotPosition_BreakPoint.Centerposition.z = TopSlotPosition.Centerposition.z +
-                        PointAfterRot[2] * AssetsAndResource.CardHeight + 0.01f * PointAfterRot2[2];
-                TopSlotPosition_BreakPoint.rotaion.angle = TopSlotPosition.rotaion.angle;
-                TopSlotPosition_BreakPoint.rotaion.x = TopSlotPosition.rotaion.x;
-                TopSlotPosition_BreakPoint.rotaion.y = TopSlotPosition.rotaion.y;
-                TopSlotPosition_BreakPoint.rotaion.z = TopSlotPosition.rotaion.z;
-                TopSlotPosition_BreakPoint.X_scale = TopSlotPosition.X_scale;
-                TopSlotPosition_BreakPoint.Y_scale = TopSlotPosition.Y_scale;
-                TopSlotPosition_BreakPoint.Z_scale = TopSlotPosition.Z_scale;
-                TopDriftSystem.setDriftInfo(TopCardWidget.getPosition(), TopSlotPosition_BreakPoint, k1, k2, totalTime);
+                TopSlotPosition_BreakPoint.Centerposition.x = (point1.x + point2.x)/ 2.0f;
+                TopSlotPosition_BreakPoint.Centerposition.y = (point1.y + point2.y)/ 2.0f;
+                TopSlotPosition_BreakPoint.Centerposition.z = (point1.z + point2.z)/ 2.0f;
+                TopSlotPosition_BreakPoint.rotaion.angle = TopCardWidget.getPosition().rotaion.angle;
+                TopSlotPosition_BreakPoint.rotaion.x = TopCardWidget.getPosition().rotaion.x;
+                TopSlotPosition_BreakPoint.rotaion.y = TopCardWidget.getPosition().rotaion.y;
+                TopSlotPosition_BreakPoint.rotaion.z = TopCardWidget.getPosition().rotaion.z;
+                TopSlotPosition_BreakPoint.X_scale = TopCardWidget.getPosition().X_scale;
+                TopSlotPosition_BreakPoint.Y_scale = TopCardWidget.getPosition().Y_scale;
+                TopSlotPosition_BreakPoint.Z_scale = TopCardWidget.getPosition().Z_scale;
+                ArrayList<WidgetPosition> trans_position = new ArrayList<WidgetPosition>();
+                trans_position.add(TopSlotPosition_BreakPoint);
+                ArrayList<Float> tracking_point = new ArrayList<Float>();
+                tracking_point.add(new Float(0.5f));
+                TopDriftSystem.setDriftInfo(TopCardWidget.getPosition(), TopSlotPosition, trans_position, tracking_point, k1, k2, totalTime);
             } else {
-                TopDriftSystem.setDriftInfo(TopCardWidget.getPosition(), TopSlotPosition, k1, k2, totalTime);
+                TopDriftSystem.setDriftInfo(TopCardWidget.getPosition(), TopSlotPosition, null, null, k1, k2, totalTime);
             }
+            TwoStepTracking = false;
             Disturbed = false;
             running = true;
         }
@@ -142,14 +136,6 @@ public class DynamicCardSlotLayout implements Layout {
             this.TopWidgetPosition.X_scale = widgetPositionUpdate.X_scale;
             this.TopWidgetPosition.Y_scale = widgetPositionUpdate.Y_scale;
             this.TopWidgetPosition.Z_scale = widgetPositionUpdate.Z_scale;
-
-            if (TwoStepTracking) {
-                if (!running) {
-                    TopDriftSystem.setDriftInfo(TopCardWidget.getPosition(), TopSlotPosition, k1, k2, totalTime);
-                    running = true;
-                    TwoStepTracking = false;
-                }
-            }
         } else {
             this.TopWidgetPosition.rotaion.angle = TopSlotPosition.rotaion.angle;
             this.TopWidgetPosition.rotaion.x = TopSlotPosition.rotaion.x;
@@ -296,8 +282,14 @@ public class DynamicCardSlotLayout implements Layout {
         }
     }
 
-    public void setTwoStepTransition(boolean val) {
+    public void setTwoStepTransition(boolean val, float x, float y, float z, float dir_x, float dir_y, float dir_z) {
         this.TwoStepTransition = val;
+        clearance_ray.point.x = x;
+        clearance_ray.point.y = y;
+        clearance_ray.point.z = z;
+        clearance_ray.vector.x = dir_x;
+        clearance_ray.vector.y = dir_y;
+        clearance_ray.vector.z = dir_z;
     }
 
     public void lockSlot(float x, float y, float z, float angle, float x_axis, float y_axis, float z_axis ) {

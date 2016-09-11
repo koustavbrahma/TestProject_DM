@@ -13,5 +13,7 @@ public enum ControllerButton {
     Block,
     TapAbility,
     Zoom,
-    EndTurn
+    EndTurn,
+    Player,
+    Opponent
 }

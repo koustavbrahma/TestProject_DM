@@ -368,17 +368,96 @@ public class ControllerLayout implements Layout {
         }
     }
 
-    public void unsetControllerButton() {
+    public void unsetControllerButton(boolean removeZoom) {
+        boolean addZoom =  false;
+        if (!removeZoom) {
+            if (Buttons.contains(ControllerButton.Zoom)) {
+                addZoom = true;
+            }
+        }
         Buttons.clear();
 
-        selectedButton = null;
+        if (addZoom) {
+            Buttons.add(ControllerButton.Zoom);
+            selectedButton = ControllerButton.Zoom;
+        }
+
+        if (Buttons.size() == 0) {
+            selectedButton = null;
+        }
 
         Set<ControllerButton> keys = ControllerTypeToLayout.keySet();
         for (ControllerButton key: keys){
-            ButtonSlotLayout layout = ControllerTypeToLayout.get(key);
+            if (!Buttons.contains(key)) {
+                ButtonSlotLayout layout = ControllerTypeToLayout.get(key);
+                if (layout != null) {
+                    layout.setButtonPosition(0, 1.1f);
+                    layout.forceLoadButtonPosition();
+                }
+            }
+        }
+    }
+
+    public void removeZoomButton() {
+        if (Buttons.contains(ControllerButton.Zoom)) {
+            if (selectedButton == ControllerButton.Zoom) {
+                int index = Buttons.indexOf(ControllerButton.Zoom);
+                if (index == Buttons.size() -1) {
+                    if (Buttons.size() > 1) {
+                        selectedButton = Buttons.get(index - 1);
+                    } else {
+                        selectedButton = null;
+                    }
+                } else {
+                    selectedButton = Buttons.get(index + 1);
+                }
+            }
+            Buttons.remove(ControllerButton.Zoom);
+            ButtonSlotLayout layout = ControllerTypeToLayout.get(ControllerButton.Zoom);
             if (layout != null) {
                 layout.setButtonPosition(0, 1.1f);
                 layout.forceLoadButtonPosition();
+            }
+
+            int size = Buttons.size();
+            float gap = default_gap;
+            float actualLength = default_gap * (size - 1);
+            if (actualLength > max_span) {
+                gap = (max_span)/ (size -1);
+            }
+            float length = gap * (size - 1);
+
+            for (int i = 0; i < Buttons.size(); i++) {
+                ControllerButton button = Buttons.get(i);
+                layout = ControllerTypeToLayout.get(button);
+                if (layout != null) {
+                    layout.setButtonPosition((-length / 2) + (gap * i), Y);
+                }
+            }
+        }
+    }
+
+    public void addZoomButton() {
+        if (!Buttons.contains(ControllerButton.Zoom)) {
+            Buttons.add(ControllerButton.Zoom);
+
+            if (Buttons.size() == 1) {
+                selectedButton = Buttons.get(0);
+            }
+            int size = Buttons.size();
+            float gap = default_gap;
+            float actualLength = default_gap * (size - 1);
+            if (actualLength > max_span) {
+                gap = (max_span)/ (size -1);
+            }
+            float length = gap * (size - 1);
+
+            for (int i = 0; i < Buttons.size(); i++) {
+                ControllerButton button = Buttons.get(i);
+                ButtonSlotLayout layout = ControllerTypeToLayout.get(button);
+                if (layout != null) {
+                    layout.setButtonPosition((-length / 2) + (gap * i), Y);
+                }
             }
         }
     }
