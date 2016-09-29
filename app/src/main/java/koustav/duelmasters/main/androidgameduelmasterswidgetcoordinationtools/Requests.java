@@ -1,4 +1,4 @@
-package koustav.duelmasters.main.androidgameduelmastersuirequestandaction;
+package koustav.duelmasters.main.androidgameduelmasterswidgetcoordinationtools;
 
 /**
  * Created by Koustav on 8/15/2016.

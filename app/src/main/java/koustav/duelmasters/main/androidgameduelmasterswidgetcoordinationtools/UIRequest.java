@@ -1,4 +1,4 @@
-package koustav.duelmasters.main.androidgameduelmastersuirequestandaction;
+package koustav.duelmasters.main.androidgameduelmasterswidgetcoordinationtools;
 
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
 

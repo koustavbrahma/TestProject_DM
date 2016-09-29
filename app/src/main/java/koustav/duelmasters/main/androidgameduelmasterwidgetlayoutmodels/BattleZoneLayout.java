@@ -108,6 +108,15 @@ public class BattleZoneLayout implements Layout {
         }
     }
 
+    public boolean IsWidgetInTransition(CardWidget widget) {
+        CardSlotLayoutXZPlaner slotLayout = WidgetToSlotMapping.get(widget);
+        if (slotLayout == null) {
+            return false;
+        }
+
+        return slotLayout.IsTransition();
+    }
+
     private boolean BattleZoneCardOverlapping() {
         float gap = (this.width)/(1f + LeftWingOfCardSlot.size() +RightWingOfCardSlot.size());
 
@@ -205,7 +214,7 @@ public class BattleZoneLayout implements Layout {
         return null;
     }
 
-    public WidgetTouchEvent TouchResponseInExpandMode(List<Input.TouchEvent> touchEvents) {
+    private WidgetTouchEvent TouchResponseInExpandMode(List<Input.TouchEvent> touchEvents) {
         WidgetTouchEvent widgetTouchEvent;
         widgetTouchEvent = SelectedCardSlot.TouchResponse(touchEvents);
         Input input = AssetsAndResource.game.getInput();
@@ -233,7 +242,7 @@ public class BattleZoneLayout implements Layout {
         return widgetTouchEvent;
     }
 
-    public WidgetTouchEvent TouchResponseInNormalMode(List<Input.TouchEvent> touchEvents) {
+    private WidgetTouchEvent TouchResponseInNormalMode(List<Input.TouchEvent> touchEvents) {
         if (HeadCardSlot == null) {
             return null;
         }

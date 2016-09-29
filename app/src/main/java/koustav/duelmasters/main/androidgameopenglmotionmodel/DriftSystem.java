@@ -1,10 +1,9 @@
-package koustav.duelmasters.main.androidgameopenglanimation;
+package koustav.duelmasters.main.androidgameopenglmotionmodel;
 
 import java.util.ArrayList;
 
-import koustav.duelmasters.main.androidgameduelmastersdatastructure.FlagAttribute;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetPosition;
-import koustav.duelmasters.main.androidgameopenglmotionmodel.GLReferenceTracking;
+import koustav.duelmasters.main.androidgameopenglmotionutil.GLReferenceTracking;
 import koustav.duelmasters.main.androidgameopenglutil.GLGeometry;
 
 /**

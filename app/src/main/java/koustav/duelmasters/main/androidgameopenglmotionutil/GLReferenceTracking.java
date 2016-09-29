@@ -1,6 +1,5 @@
-package koustav.duelmasters.main.androidgameopenglmotionmodel;
+package koustav.duelmasters.main.androidgameopenglmotionutil;
 
-import java.util.ArrayList;
 import java.util.Hashtable;
 
 

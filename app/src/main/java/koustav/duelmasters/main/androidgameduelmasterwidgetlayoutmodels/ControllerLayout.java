@@ -333,6 +333,11 @@ public class ControllerLayout implements Layout {
 
     public void setControllerButton(ControllerButton[] controllerButtons) {
         Buttons.clear();
+
+        if (controllerButtons.length == 0) {
+            return;
+        }
+
         for (int i = 0; i < controllerButtons.length; i++) {
             ControllerButton button = controllerButtons[i];
             Buttons.add(button);

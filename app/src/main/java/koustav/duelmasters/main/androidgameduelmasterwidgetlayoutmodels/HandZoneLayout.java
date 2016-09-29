@@ -60,6 +60,7 @@ public class HandZoneLayout implements Layout  {
     float clearance_z;
 
     boolean DragMode;
+    boolean LockMode;
 
     float[] relativeNearPointAfterRot;
     float[] relativeFarPointAfterRot;
@@ -105,6 +106,7 @@ public class HandZoneLayout implements Layout  {
         gap_vec_z = 0f;
 
         DragMode = false;
+        LockMode = false;
 
         relativeFarPointAfterRot = new float[4];
         relativeNearPointAfterRot = new float[4];
@@ -200,6 +202,14 @@ public class HandZoneLayout implements Layout  {
         DragMode = val;
     }
 
+    public boolean IsWidgetInTransition(CardWidget widget) {
+        DynamicCardSlotLayout slotLayout = WidgetToSlotMapping.get(widget);
+        if (slotLayout == null) {
+            return false;
+        }
+
+        return slotLayout.IsTransition();
+    }
     @Override
     public void update(float deltaTime, float totalTime) {
         for (int i = 0; i < CardSlot.size(); i++) {
@@ -243,6 +253,10 @@ public class HandZoneLayout implements Layout  {
 
     @Override
     public WidgetTouchEvent TouchResponse(List<Input.TouchEvent> touchEvents) {
+        if (LockMode) {
+            return null;
+        }
+
         if (touchMode == TouchModeHandZone.NormalMode) {
             return TouchResponseInNormalMode(touchEvents);
         } else if (touchMode == TouchModeHandZone.DragMode) {
@@ -252,7 +266,7 @@ public class HandZoneLayout implements Layout  {
         return null;
     }
 
-    public WidgetTouchEvent TouchResponseInDragMode(List<Input.TouchEvent> touchEvents) {
+    private WidgetTouchEvent TouchResponseInDragMode(List<Input.TouchEvent> touchEvents) {
         if (DraggingSlot == null) {
             throw new RuntimeException("Dragging Slot cannot be null");
         }
@@ -291,7 +305,7 @@ public class HandZoneLayout implements Layout  {
         }
     }
 
-    public WidgetTouchEvent TouchResponseInNormalMode(List<Input.TouchEvent> touchEvents) {
+    private WidgetTouchEvent TouchResponseInNormalMode(List<Input.TouchEvent> touchEvents) {
         if (CardSlot.size() == 0) {
             return null;
         }
@@ -672,6 +686,7 @@ public class HandZoneLayout implements Layout  {
 
         slotLayout.lockSlot(x, AssetsAndResource.CardHeight/2, z, 0, 0, 1f, 0);
         slotLayout.setTwoStepTransition(true, clearance_x, clearance_y, clearance_z, gap_vec_x, gap_vec_y, gap_vec_z);
+        LockMode = true;
     }
 
     public void UnlockCardWidget(CardWidget widget) {
@@ -679,5 +694,6 @@ public class HandZoneLayout implements Layout  {
 
         slotLayout.unlockSlot();
         slotLayout.setTwoStepTransition(true, clearance_x, clearance_y, clearance_z, gap_vec_x, gap_vec_y, gap_vec_z);
+        LockMode = false;
     }
 }

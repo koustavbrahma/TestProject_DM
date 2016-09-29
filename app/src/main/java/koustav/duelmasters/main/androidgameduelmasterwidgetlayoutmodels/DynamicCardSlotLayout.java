@@ -6,10 +6,9 @@ import java.util.List;
 import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAndResource;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetPosition;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetTouchEvent;
-import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetTouchFocusLevel;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.Layout;
 import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.CardWidget;
-import koustav.duelmasters.main.androidgameopenglanimation.DriftSystem;
+import koustav.duelmasters.main.androidgameopenglmotionmodel.DriftSystem;
 import koustav.duelmasters.main.androidgameopenglutil.GLGeometry;
 import koustav.duelmasters.main.androidgamesframework.Input;
 
@@ -45,6 +44,12 @@ public class DynamicCardSlotLayout implements Layout {
     GLGeometry.GLPoint relativeFarPoint;
     GLGeometry.GLRay clearance_ray;
 
+    ArrayList<Float> intermediate_x;
+    ArrayList<Float> intermediate_y;
+    ArrayList<Float> intermediate_z;
+    ArrayList<Float> time_steps;
+    boolean hasIntermediatePoints;
+
     public DynamicCardSlotLayout() {
         TopSlotPosition = new WidgetPosition();
         TopWidgetPosition = new WidgetPosition();
@@ -69,6 +74,12 @@ public class DynamicCardSlotLayout implements Layout {
         relativeNearPoint = new GLGeometry.GLPoint(0, 0, 0);
         relativeFarPoint = new GLGeometry.GLPoint(0, 0, 0);
         clearance_ray = new GLGeometry.GLRay(new GLGeometry.GLPoint(0, 0, 0), new GLGeometry.GLVector(0, 0, 0));
+
+        intermediate_x = new ArrayList<Float>();
+        intermediate_y = new ArrayList<Float>();
+        intermediate_z = new ArrayList<Float>();
+        time_steps = new ArrayList<Float>();
+        hasIntermediatePoints = false;
     }
 
     @Override
@@ -110,6 +121,8 @@ public class DynamicCardSlotLayout implements Layout {
                 ArrayList<Float> tracking_point = new ArrayList<Float>();
                 tracking_point.add(new Float(0.5f));
                 TopDriftSystem.setDriftInfo(TopCardWidget.getPosition(), TopSlotPosition, trans_position, tracking_point, k1, k2, totalTime);
+            } else if (hasIntermediatePoints) {
+
             } else {
                 TopDriftSystem.setDriftInfo(TopCardWidget.getPosition(), TopSlotPosition, null, null, k1, k2, totalTime);
             }
@@ -256,6 +269,35 @@ public class DynamicCardSlotLayout implements Layout {
         locked = false;
     }
 
+    public void addIntermediatePoint(ArrayList<GLGeometry.GLPoint> points, ArrayList<Float> time_steps) {
+        if (Disturbed) {
+            if (points.size() != time_steps.size()) {
+                throw new IllegalArgumentException("size must match");
+            }
+            intermediate_x.clear();
+            intermediate_y.clear();
+            intermediate_z.clear();
+            this.time_steps.clear();
+
+            for (int i = 0; i < points.size(); i++) {
+                intermediate_x.add(new Float(points.get(i).x));
+                intermediate_y.add(new Float(points.get(i).y));
+                intermediate_z.add(new Float(points.get(i).z));
+            }
+
+            for (int i = 0; i < time_steps.size(); i++) {
+                float val = time_steps.get(i);
+                if (!(val > 0 && val < 1)) {
+                    throw new IllegalArgumentException("Value must be inside 0 and 1");
+                }
+                this.time_steps.add(new Float(val));
+            }
+            if (points.size() > 0) {
+                hasIntermediatePoints = true;
+            }
+        }
+    }
+
     public CardWidget getCardWidget() {
         return TopCardWidget;
     }
@@ -270,6 +312,10 @@ public class DynamicCardSlotLayout implements Layout {
 
     public void SetSlotDisturbed() {
         this.Disturbed = true;
+    }
+
+    public void UpdateTopWidgetPosition() {
+        TopCardWidget.setTranslateRotateScale(TopWidgetPosition);
     }
 
     public void setSlotPosition(float x, float y, float z) {

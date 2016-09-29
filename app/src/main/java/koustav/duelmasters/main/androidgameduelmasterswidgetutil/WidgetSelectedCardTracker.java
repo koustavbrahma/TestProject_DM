@@ -32,8 +32,48 @@ public class WidgetSelectedCardTracker {
         return selectedCards;
     }
 
-    public ArrayList<Cards> getSelectedPileCards() {
-        return selectedPileCards;
+    public void ClearSelectedCard() {
+        selectedCards.clear();
+        selectedPileCards.clear();
+    }
+
+    public boolean IsSelectedCard(Cards card) {
+        if (selectedCards.contains(card)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean IsSelectedPileCard(Cards card) {
+        if (selectedPileCards.contains(card)) {
+            if (!selectedCards.contains(card)) {
+                throw new RuntimeException("Invalid Condition");
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void AddCardToSelectedList(Cards card, boolean pile) {
+        if (!selectedCards.contains(card)) {
+            selectedCards.add(card);
+        }
+        if (pile) {
+            if (!selectedPileCards.contains(card)) {
+                selectedPileCards.add(card);
+            }
+        }
+    }
+
+    public void RemoveCardFromSelectedList(Cards card) {
+        if (selectedCards.contains(card)) {
+            selectedCards.remove(card);
+        }
+        if (selectedPileCards.contains(card)) {
+            selectedPileCards.remove(card);
+        }
     }
 
     public ArrayList<Cards> getOnFocusCards() {

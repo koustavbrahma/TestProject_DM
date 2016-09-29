@@ -1,4 +1,4 @@
-package koustav.duelmasters.main.androidgameopenglanimation;
+package koustav.duelmasters.main.androidgameopenglmotionmodel;
 
 import java.util.Random;
 

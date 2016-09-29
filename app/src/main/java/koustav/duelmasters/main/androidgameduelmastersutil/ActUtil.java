@@ -186,7 +186,7 @@ public class ActUtil {
     }
 
     public static void CopyCardsToTempZone(PvPWorld world, Cards Card) {
-        world.getMaze().getZoneList().get(6).getZoneArray().add(Card);
+        world.getMaze().getZoneList().get(Maze.temporaryZone).getZoneArray().add(Card);
     }
 
     public static Cards EvolveCreature(Cards Ecard, Cards Bcard, PvPWorld world) {

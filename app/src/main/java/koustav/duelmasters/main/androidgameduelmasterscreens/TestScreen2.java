@@ -5,9 +5,9 @@ import android.graphics.Color;
 import java.util.ArrayList;
 
 import static android.opengl.GLES20.*;
-import koustav.duelmasters.main.androidgameopenglanimation.ParticleShooter;
-import koustav.duelmasters.main.androidgameopenglanimation.ParticleSystem;
-import koustav.duelmasters.main.androidgameopenglmotionmodel.GLKinematic;
+import koustav.duelmasters.main.androidgameopenglmotionmodel.ParticleShooter;
+import koustav.duelmasters.main.androidgameopenglmotionmodel.ParticleSystem;
+import koustav.duelmasters.main.androidgameopenglmotionutil.GLKinematic;
 import koustav.duelmasters.main.androidgameopenglobjectmodels.Cube;
 import koustav.duelmasters.main.androidgameopenglobjectmodels.FullScreenRectangle;
 import koustav.duelmasters.main.androidgameopenglobjectmodels.Puck;

@@ -1,4 +1,4 @@
-package koustav.duelmasters.main.androidgameopenglmotionmodel;
+package koustav.duelmasters.main.androidgameopenglmotionutil;
 
 import koustav.duelmasters.main.androidgameopenglutil.GLGeometry.*;
 

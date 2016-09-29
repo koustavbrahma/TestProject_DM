@@ -5,15 +5,15 @@ import java.util.Hashtable;
 import java.util.List;
 
 import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAndResource;
+import koustav.duelmasters.main.androidgameduelmastersdatastructure.ActiveCard;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.InactiveCard;
 import koustav.duelmasters.main.androidgameduelmastersutil.GetUtil;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetPosition;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetTouchEvent;
-import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetTouchFocusLevel;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.HeadOrientation;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.Layout;
 import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.CardWidget;
-import koustav.duelmasters.main.androidgameopenglanimation.DriftSystem;
+import koustav.duelmasters.main.androidgameopenglmotionmodel.DriftSystem;
 import koustav.duelmasters.main.androidgameopenglutil.GLGeometry;
 import koustav.duelmasters.main.androidgamesframework.Input;
 
@@ -34,8 +34,8 @@ public class CardSlotLayoutXZPlaner implements Layout {
 
     boolean Disturbed;
     boolean running;
-    boolean TappedPreviousValue;
     boolean Expanded;
+
     CardWidget SelectedCardWidget;
     ArrayList<CardWidget> TouchedWidget;
     ArrayList<WidgetTouchEvent> WidgetTouchEventList;
@@ -60,7 +60,6 @@ public class CardSlotLayoutXZPlaner implements Layout {
 
         Disturbed = false;
         running = false;
-        TappedPreviousValue = false;
         Expanded = false;
         TopCardWidget = null;
         SelectedCardWidget = null;
@@ -86,25 +85,34 @@ public class CardSlotLayoutXZPlaner implements Layout {
 
         boolean tapped = (card != null) ? GetUtil.IsTapped(card): false;
 
-        if (!running && !Expanded && tapped != TappedPreviousValue) {
-            TappedPreviousValue = tapped;
-            if (tapped) {
+        if (!running && !Expanded) {
+            if (tapped && TopCardWidget.getPosition().rotaion.angle != (90f * (headOrientationAngle - 1f))) {
                 TopSlotPosition.rotaion.angle = 90f * (headOrientationAngle - 1f);
-            } else {
-                TopSlotPosition.rotaion.angle = 90f * headOrientationAngle;
-            }
-
-            for (int i =0; i < cardWidgets.size(); i++) {
-                CardWidget cardWidget = cardWidgets.get(i);
-                WidgetPosition widgetPosition = SlotPositions.get(cardWidget);
-
-                if (tapped) {
+                for (int i =0; i < cardWidgets.size(); i++) {
+                    CardWidget cardWidget = cardWidgets.get(i);
+                    WidgetPosition widgetPosition = SlotPositions.get(cardWidget);
                     widgetPosition.rotaion.angle = 90f * (headOrientationAngle - 1f);
-                } else {
-                    widgetPosition.rotaion.angle = 90f * headOrientationAngle;
+                    if (((cardWidget.getLogicalObject() instanceof  InactiveCard) ||
+                            (cardWidget.getLogicalObject() instanceof ActiveCard)) &&
+                            !GetUtil.IsTapped((InactiveCard)cardWidget.getLogicalObject())) {
+                        throw new RuntimeException("Inconsistency");
+                    }
                 }
+                Disturbed = true;
+            } else if (!tapped && TopCardWidget.getPosition().rotaion.angle != (90f * headOrientationAngle)){
+                TopSlotPosition.rotaion.angle = 90f * headOrientationAngle;
+                for (int i =0; i < cardWidgets.size(); i++) {
+                    CardWidget cardWidget = cardWidgets.get(i);
+                    WidgetPosition widgetPosition = SlotPositions.get(cardWidget);
+                    widgetPosition.rotaion.angle = 90f * headOrientationAngle;
+                    if (((cardWidget.getLogicalObject() instanceof  InactiveCard) ||
+                            (cardWidget.getLogicalObject() instanceof ActiveCard)) &&
+                            GetUtil.IsTapped((InactiveCard)cardWidget.getLogicalObject())) {
+                        throw new RuntimeException("Inconsistency");
+                    }
+                }
+                Disturbed = true;
             }
-            Disturbed = true;
         }
 
         if (Disturbed) {
@@ -265,7 +273,7 @@ public class CardSlotLayoutXZPlaner implements Layout {
         }
     }
 
-    public WidgetTouchEvent TouchResponseInExpandedMode(List<Input.TouchEvent> touchEvents) {
+    private WidgetTouchEvent TouchResponseInExpandedMode(List<Input.TouchEvent> touchEvents) {
         WidgetPosition widgetPosition;
         CardWidget cardWidget;
         if (cardWidgets.size() > 0) {
@@ -846,8 +854,6 @@ public class CardSlotLayoutXZPlaner implements Layout {
             OldTopSlotPosition.Y_scale = TopSlotPosition.Y_scale;
             OldTopSlotPosition.Z_scale = TopSlotPosition.Z_scale;
 
-            TappedPreviousValue = false;
-
             float gap;
             float expandMaxLength = ExpandLimit_X - OldTopSlotPosition.Centerposition.x;
             gap = expandMaxLength/ (stackCount());
@@ -901,7 +907,6 @@ public class CardSlotLayoutXZPlaner implements Layout {
         driftSystems.clear();
         cardWidgets.clear();
         Expanded = false;
-        TappedPreviousValue = false;
         SelectedCardWidget = null;
     }
 
