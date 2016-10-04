@@ -66,7 +66,7 @@ public class CreateScenarioUtil {
                 CardLibList.close();
                 InactiveCard icard = new InactiveCard(card.ExtractCardInfo(), card.GridPosition());
                 world.getMaze().getZoneList().get(1).getZoneArray().add(icard);
-                world.getGridIndexTrackingTable().trackGridIndex(icard.GridPosition(), icard);
+               // world.getGridIndexTrackingTable().trackGridIndex(icard.GridPosition(), icard);
             }
             bufferedReaderDeckList.close();
             DeckList.close();
@@ -123,7 +123,7 @@ public class CreateScenarioUtil {
                 CardLibList.close();
                 InactiveCard icard = new InactiveCard(card.ExtractCardInfo(), card.GridPosition());
                 world.getMaze().getZoneList().get(9).getZoneArray().add(icard);
-                world.getGridIndexTrackingTable().trackGridIndex(icard.GridPosition(), icard);
+                //world.getGridIndexTrackingTable().trackGridIndex(icard.GridPosition(), icard);
             }
             bufferedReaderDeckList.close();
             DeckList.close();
@@ -180,7 +180,7 @@ public class CreateScenarioUtil {
                 CardLibList.close();
                 InactiveCard icard = new InactiveCard(card.ExtractCardInfo(), card.GridPosition());
                 world.getMaze().getZoneList().get(7).getZoneArray().add(icard);
-                world.getGridIndexTrackingTable().trackGridIndex(icard.GridPosition(), icard);
+                //world.getGridIndexTrackingTable().trackGridIndex(icard.GridPosition(), icard);
                 SetUnsetUtil.SetTappedAttr(icard);
             }
             bufferedReaderDeckList.close();
@@ -240,7 +240,7 @@ public class CreateScenarioUtil {
                     CardLibList.close();
                     InactiveCard icard = new InactiveCard(card.ExtractCardInfo(), card.GridPosition());
                     world.getMaze().getZoneList().get(8).getZoneArray().add(icard);
-                    world.getGridIndexTrackingTable().trackGridIndex(icard.GridPosition(), icard);
+                  //  world.getGridIndexTrackingTable().trackGridIndex(icard.GridPosition(), icard);
                 }
                 bufferedReaderDeckList.close();
                 DeckList.close();
@@ -297,7 +297,7 @@ public class CreateScenarioUtil {
                     CardLibList.close();
                     InactiveCard icard = new InactiveCard(card.ExtractCardInfo(), card.GridPosition());
                     world.getMaze().getZoneList().get(2).getZoneArray().add(icard);
-                    world.getGridIndexTrackingTable().trackGridIndex(icard.GridPosition(), icard);
+                    //world.getGridIndexTrackingTable().trackGridIndex(icard.GridPosition(), icard);
                 }
                 bufferedReaderDeckList.close();
                 DeckList.close();
@@ -354,7 +354,7 @@ public class CreateScenarioUtil {
                     CardLibList.close();
                     ActiveCard icard = new ActiveCard(card.ExtractCardInfo(), card.GridPosition());
                     world.getMaze().getZoneList().get(0).getZoneArray().add(icard);
-                    world.getGridIndexTrackingTable().trackGridIndex(icard.GridPosition(), icard);
+                    //world.getGridIndexTrackingTable().trackGridIndex(icard.GridPosition(), icard);
                     SetUnsetUtil.SetTappedAttr(icard);
                 }
                 bufferedReaderDeckList.close();

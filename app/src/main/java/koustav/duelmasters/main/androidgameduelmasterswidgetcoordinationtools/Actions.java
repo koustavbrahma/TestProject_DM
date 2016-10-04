@@ -13,5 +13,7 @@ public enum Actions {
     AddCardToFocusCardList,
     RemoveCardFromFocusCardList,
     FreezeSelectedManaCards,
+    CleanSelectedCardIfMatch,
+    SetUpScenario,
     Simulate
 }

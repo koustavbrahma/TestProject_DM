@@ -154,12 +154,12 @@ public class PvPDuelScreenTesting extends Screen{
     }
 
     @Override
-    public void update(float deltaTime, float totalTime) {
+    public void present() {
 
     }
 
     @Override
-    public void present(float deltaTime, float totalTime) {
+    public void update(float deltaTime, float totalTime) {
         AssetsAndResource.ResetCardUsageCount();
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);

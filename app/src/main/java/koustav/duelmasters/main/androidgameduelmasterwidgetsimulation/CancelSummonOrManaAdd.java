@@ -16,12 +16,15 @@ public class CancelSummonOrManaAdd implements Simulate {
         this.handZoneLayout = handZoneLayout;
         start = false;
     }
+
+    @Override
     public void Start(Object ...obj) {
         start = true;
         cardWidget = (CardWidget) obj[0];
         handZoneLayout.UnlockCardWidget((CardWidget) obj[0]);
     }
 
+    @Override
     public boolean IsFinish() {
         if (!start) {
             return true;
@@ -30,6 +33,7 @@ public class CancelSummonOrManaAdd implements Simulate {
         }
     }
 
+    @Override
     public void update() {
         if (start) {
             start = handZoneLayout.IsWidgetInTransition(cardWidget);

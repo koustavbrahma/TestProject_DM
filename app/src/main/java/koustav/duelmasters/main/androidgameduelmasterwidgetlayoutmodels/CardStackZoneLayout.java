@@ -73,12 +73,18 @@ public class CardStackZoneLayout implements Layout {
         int count = ((ArrayList<Cards>)cardStackWidget.getLogicalObject()).size();
         widgetPosition.Centerposition.y = length + ((AssetsAndResource.CardLength * count) - (AssetsAndResource.CardLength * 40f))/2f;
         widgetPosition.Y_scale = ((float)count)/40f;
-        cardStackWidget.setTranslateRotateScale(widgetPosition);
-        cardStackWidget.draw();
+        if (count > 0) {
+            cardStackWidget.setTranslateRotateScale(widgetPosition);
+            cardStackWidget.draw();
+        }
     }
 
     @Override
     public WidgetTouchEvent TouchResponse(List<Input.TouchEvent> touchEvents) {
+        int count = ((ArrayList<Cards>)cardStackWidget.getLogicalObject()).size();
+        if (count == 0) {
+            return null;
+        }
         WidgetTouchEvent widgetTouchEvent = cardStackWidget.isTouched(touchEvents);
 
         if (touchMode == TouchModeCardStackZone.NormalMode) {

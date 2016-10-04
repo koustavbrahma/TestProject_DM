@@ -99,7 +99,7 @@ public class TestScreen extends Screen {
     }
 
     @Override
-    public void present(float deltaTime, float totalTime) {
+    public void present() {
         Graphics g = game.getGraphics();
         g.drawPixmap(AssetsAndResource.background, 0, 0);
         g.drawPixmap(AssetsAndResource.Button, 0, 0);

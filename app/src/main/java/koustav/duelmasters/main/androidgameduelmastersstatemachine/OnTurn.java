@@ -895,6 +895,7 @@ public class OnTurn {
 /*
  Main API which controls the states and calls other API according to 'S' value
  */
+    /*
     public boolean update(){
         boolean status = false;
         if (S == OnTurnState.S1)
@@ -910,7 +911,7 @@ public class OnTurn {
         if (S == OnTurnState.S5)
             CastUpdate(); //done
         if (S == OnTurnState.S6)
-            ManaUpdate();
+            ManaUpdate();  // done
         if (S == OnTurnState.S7)
             ShowInfoUpdate();
         if (S == OnTurnState.S8)
@@ -941,6 +942,10 @@ public class OnTurn {
             status = TurnEnding(); // done
 
         return status;
+    }
+    */
+    public boolean update(){
+        return currentState.updateState();
     }
 /*
  This is the Ideal state when User make decision what he/she is going to do next (attack,summon,cast,draw card etc.)
@@ -1346,7 +1351,7 @@ public class OnTurn {
 
         int BCardzone = Integer.parseInt(msg[0]);
         int BGridIndex = Integer.parseInt(msg[1]);
-        InactiveCard BlockerCard = (InactiveCard) world.getGridIndexTrackingTable().getCardMappedToGivenGridPosition(BCardzone, BGridIndex);
+        InactiveCard BlockerCard = null; //(InactiveCard) world.getGridIndexTrackingTable().getCardMappedToGivenGridPosition(BCardzone, BGridIndex);
         if (!BlockerCard.getNameID().equals(msg[2]))
             throw new IllegalArgumentException("Data inconsistency");
 

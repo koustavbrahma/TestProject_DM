@@ -17,9 +17,9 @@ public class WorldUpdateOnTurn {
     OnTurn onTurn;
     PostTurn postTurn;
 
-    public WorldUpdateOnTurn(PvPWorld world, boolean trun) {
+    public WorldUpdateOnTurn(PvPWorld world, boolean turn) {
         this.world = world;
-        if (trun) {
+        if (turn) {
             stateOnTurn = WorldStateOnTurn.OnTurn;
         } else {
             stateOnTurn = WorldStateOnTurn.PreTurn;
@@ -29,26 +29,26 @@ public class WorldUpdateOnTurn {
         postTurn = new PostTurn(world);
     }
 
-    public void update(float deltatime) {
+    public void update() {
         if (stateOnTurn == WorldStateOnTurn.PreTurn)
-            RunPreTurnHandler(deltatime);
+            RunPreTurnHandler();
         if (stateOnTurn == WorldStateOnTurn.OnTurn)
-            RunOnTurnHandler(deltatime);
+            RunOnTurnHandler();
         if (stateOnTurn == WorldStateOnTurn.PostTurn)
-            RunPostTurnHandler(deltatime);
+            RunPostTurnHandler();
     }
 
-    public void RunPreTurnHandler(float deltatime) {
+    private void RunPreTurnHandler() {
         if(preTurn.update())
             stateOnTurn = WorldStateOnTurn.OnTurn;
     }
 
-    public void RunOnTurnHandler(float deltatime) {
+    private void RunOnTurnHandler() {
         if(onTurn.update())
             stateOnTurn = WorldStateOnTurn.PostTurn;
     }
 
-    public void RunPostTurnHandler(float deltatime) {
+    private void RunPostTurnHandler() {
         if (postTurn.update()) {
             stateOnTurn = WorldStateOnTurn.PreTurn;
             world.setTurn(false);

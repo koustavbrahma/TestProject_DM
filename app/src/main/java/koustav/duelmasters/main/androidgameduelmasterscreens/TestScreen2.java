@@ -196,6 +196,11 @@ public class TestScreen2 extends Screen {
     }
 
     @Override
+    public void present() {
+
+    }
+
+    @Override
     public void update(float deltaTime, float totalTime) {
         GLRay ray;
         /*
@@ -221,10 +226,6 @@ public class TestScreen2 extends Screen {
             tmpx = point.x;
             tmpz = point.z;
         }
-    }
-
-    @Override
-    public void present(float deltaTime, float totalTime) {
         // Clear the rendering surface.
         //glViewport(0, 0, 512, 512);
         multiplyMV(spotLightDirectionInEyeSpace, 0, viewMatrix, 0, vectorToLight, 0);

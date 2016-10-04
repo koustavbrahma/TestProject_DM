@@ -7,10 +7,14 @@ import koustav.duelmasters.main.androidgameduelmasterscardrulehandler.Instructio
 import koustav.duelmasters.main.androidgameduelmasterscardrulehandler.InstructionSet;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.ActiveCard;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
+import koustav.duelmasters.main.androidgameduelmasterswidgetcoordinationtools.Actions;
 import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.GridPositionIndex;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.InactiveCard;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Maze;
+import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.PvPWidgetCoordinator;
 import koustav.duelmasters.main.androidgameduelmastersworlds.PvPWorld;
+import koustav.duelmasters.main.androidgameduelmastersworlds.World;
+import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.CardWidget;
 
 /**
  * Created by Koustav on 4/26/2015.
@@ -18,6 +22,7 @@ import koustav.duelmasters.main.androidgameduelmastersworlds.PvPWorld;
 public class ActUtil {
     public static Cards ChangeZoneOperator(PvPWorld world, Cards card, InstructionSet instruction) {
         GridPositionIndex gridPosition = card.GridPosition();
+        PvPWidgetCoordinator coordinator = world.getWidgetCoordinator();
         Cards NewCard = null;
         if (card.GridPosition().getZone() == Maze.battleZone || card.GridPosition().getZone() == Maze.Opponent_battleZone) {
             ArrayList<InstructionSet> CleanUpInst = ((InactiveCard)card).getCrossInstructionForTheInstructionID(InstructionID.CleanUp);
@@ -50,38 +55,54 @@ public class ActUtil {
             world.getEventLog().registerEvent(card, true, d, null, false, 0);
             int i = world.getMaze().getZoneList().get(z).getZoneArray().indexOf(card);
             world.getMaze().getZoneList().get(z).getZoneArray().remove(i);
+            coordinator.SendAction(Actions.CleanSelectedCardIfMatch, card);
             if (z-Maze.graveyard != 0 &&  z- Maze.deck != 0) {
-                world.getGridIndexTrackingTable().clearGridIndex(card.GridPosition());
+//                world.getGridIndexTrackingTable().clearGridIndex(card.GridPosition());
             }
             if (d == Maze.battleZone || d == Maze.hand) {
-                int GridIndex = world.getGridIndexTrackingTable().getNewGridIndex(d);
+  //              int GridIndex = world.getGridIndexTrackingTable().getNewGridIndex(d);
+                int GridIndex = 0;
                 Cards Bcard = world.getMaze().GetBaseCard(card);
                 ActiveCard Acard = new ActiveCard(card.ExtractCardInfo(), new GridPositionIndex(d, GridIndex));
                 NewCard = Acard;
                 world.getMaze().getZoneList().get(d).getZoneArray().add(Acard);
-                world.getGridIndexTrackingTable().trackGridIndex(Acard.GridPosition(), Acard);
+                CardWidget cardWidget = world.getWidgetCoordinator().DecoupleWidgetFormCard(card);
+                world.getWidgetCoordinator().CoupleWidgetForCard(NewCard, cardWidget);
+                world.UpdateCardInfoToCardTable(card, NewCard);
+                //world.getGridIndexTrackingTable().trackGridIndex(Acard.GridPosition(), Acard);
                 if (Bcard != null) {
                     world.getMaze().ClearEvolutionTrack(card);
-                    GridIndex = world.getGridIndexTrackingTable().getNewGridIndex(d);
+                  //  GridIndex = world.getGridIndexTrackingTable().getNewGridIndex(d);
                     Acard = new ActiveCard(Bcard.ExtractCardInfo(), new GridPositionIndex(d, GridIndex));
                     world.getMaze().getZoneList().get(d).getZoneArray().add(Acard);
-                    world.getGridIndexTrackingTable().trackGridIndex(Acard.GridPosition(), Acard);
+                    cardWidget = world.getWidgetCoordinator().DecoupleWidgetFormCard(Bcard);
+                    world.getWidgetCoordinator().CoupleWidgetForCard(Acard, cardWidget);
+                    world.UpdateCardInfoToCardTable(Bcard, Acard);
+                    coordinator.SendAction(Actions.CleanSelectedCardIfMatch, Bcard);
+                   // world.getGridIndexTrackingTable().trackGridIndex(Acard.GridPosition(), Acard);
                 }
             }
 
             if (d == Maze.manaZone || d == Maze.shieldZone) {
-                int GridIndex = world.getGridIndexTrackingTable().getNewGridIndex(d);
+                int GridIndex = 0 ; //world.getGridIndexTrackingTable().getNewGridIndex(d);
                 Cards Bcard = world.getMaze().GetBaseCard(card);
                 InactiveCard Icard = new InactiveCard(card.ExtractCardInfo(), new GridPositionIndex(d, GridIndex));
                 NewCard  = Icard;
                 world.getMaze().getZoneList().get(d).getZoneArray().add(Icard);
-                world.getGridIndexTrackingTable().trackGridIndex(Icard.GridPosition(), Icard);
+                CardWidget cardWidget = world.getWidgetCoordinator().DecoupleWidgetFormCard(card);
+                world.getWidgetCoordinator().CoupleWidgetForCard(NewCard, cardWidget);
+                world.UpdateCardInfoToCardTable(card, NewCard);
+                //world.getGridIndexTrackingTable().trackGridIndex(Icard.GridPosition(), Icard);
                 if (Bcard != null) {
                     world.getMaze().ClearEvolutionTrack(card);
-                    GridIndex = world.getGridIndexTrackingTable().getNewGridIndex(d);
+                  //  GridIndex = world.getGridIndexTrackingTable().getNewGridIndex(d);
                     Icard = new InactiveCard(Bcard.ExtractCardInfo(), new GridPositionIndex(d, GridIndex));
                     world.getMaze().getZoneList().get(d).getZoneArray().add(Icard);
-                    world.getGridIndexTrackingTable().trackGridIndex(Icard.GridPosition(), Icard);
+                    cardWidget = world.getWidgetCoordinator().DecoupleWidgetFormCard(Bcard);
+                    world.getWidgetCoordinator().CoupleWidgetForCard(Icard, cardWidget);
+                    world.UpdateCardInfoToCardTable(Bcard, Icard);
+                    coordinator.SendAction(Actions.CleanSelectedCardIfMatch, Bcard);
+                   // world.getGridIndexTrackingTable().trackGridIndex(Icard.GridPosition(), Icard);
                 }
             }
 
@@ -89,10 +110,17 @@ public class ActUtil {
                 Cards Bcard = world.getMaze().GetBaseCard(card);
                 Cards Dcard = new Cards(card.ExtractCardInfo(), new GridPositionIndex(d, 0));
                 world.getMaze().getZoneList().get(d).getZoneArray().add(0,Dcard);
+                CardWidget cardWidget = world.getWidgetCoordinator().DecoupleWidgetFormCard(card);
+                world.getWidgetCoordinator().CoupleWidgetForCard(Dcard, cardWidget);
+                world.UpdateCardInfoToCardTable(card, Dcard);
                 if (Bcard != null) {
                     world.getMaze().ClearEvolutionTrack(card);
                     Dcard = new InactiveCard(Bcard.ExtractCardInfo(), new GridPositionIndex(d, 0));
                     world.getMaze().getZoneList().get(d).getZoneArray().add(0, Dcard);
+                    cardWidget = world.getWidgetCoordinator().DecoupleWidgetFormCard(Bcard);
+                    world.getWidgetCoordinator().CoupleWidgetForCard(Dcard, cardWidget);
+                    world.UpdateCardInfoToCardTable(Bcard, Dcard);
+                    coordinator.SendAction(Actions.CleanSelectedCardIfMatch, Bcard);
                 }
             }
         } else if (gridPosition.getZone() >= Maze.Opponent_battleZone && gridPosition.getZone() <= Maze.Opponent_deck) {
@@ -114,33 +142,48 @@ public class ActUtil {
             world.getEventLog().registerEvent(card, true, d, null, false, 0);
             int i = world.getMaze().getZoneList().get(z).getZoneArray().indexOf(card);
             world.getMaze().getZoneList().get(z).getZoneArray().remove(i);
+            coordinator.SendAction(Actions.CleanSelectedCardIfMatch, card);
             if (z != Maze.Opponent_graveyard &&  z != Maze.Opponent_deck) {
-                world.getGridIndexTrackingTable().clearGridIndex(card.GridPosition());
+               // world.getGridIndexTrackingTable().clearGridIndex(card.GridPosition());
             }
             if (d >= Maze.battleZone && d <= Maze.hand) {
-                int GridIndex = world.getGridIndexTrackingTable().getNewGridIndex(d+7);
+                int GridIndex = 0;//world.getGridIndexTrackingTable().getNewGridIndex(d+Maze.Opponent_battleZone);
                 Cards Bcard = world.getMaze().GetBaseCard(card);
-                InactiveCard Icard = new InactiveCard(card.ExtractCardInfo(), new GridPositionIndex(d+7, GridIndex));
+                InactiveCard Icard = new InactiveCard(card.ExtractCardInfo(), new GridPositionIndex(d+ Maze.Opponent_battleZone, GridIndex));
                 NewCard  = Icard;
-                world.getMaze().getZoneList().get(d+7).getZoneArray().add(Icard);
-                world.getGridIndexTrackingTable().trackGridIndex(Icard.GridPosition(), Icard);
+                world.getMaze().getZoneList().get(d+ Maze.Opponent_battleZone).getZoneArray().add(Icard);
+                CardWidget cardWidget = world.getWidgetCoordinator().DecoupleWidgetFormCard(card);
+                world.getWidgetCoordinator().CoupleWidgetForCard(NewCard, cardWidget);
+                world.UpdateCardInfoToCardTable(card, NewCard);
+                //world.getGridIndexTrackingTable().trackGridIndex(Icard.GridPosition(), Icard);
                 if (Bcard != null) {
                     world.getMaze().ClearEvolutionTrack(card);
-                    GridIndex = world.getGridIndexTrackingTable().getNewGridIndex(d+7);
-                    Icard = new InactiveCard(Bcard.ExtractCardInfo(), new GridPositionIndex(d+7, GridIndex));
-                    world.getMaze().getZoneList().get(d+7).getZoneArray().add(Icard);
-                    world.getGridIndexTrackingTable().trackGridIndex(Icard.GridPosition(), Icard);
+                  //  GridIndex = world.getGridIndexTrackingTable().getNewGridIndex(d+ Maze.Opponent_battleZone);
+                    Icard = new InactiveCard(Bcard.ExtractCardInfo(), new GridPositionIndex(d+ Maze.Opponent_battleZone, GridIndex));
+                    world.getMaze().getZoneList().get(d+ Maze.Opponent_battleZone).getZoneArray().add(Icard);
+                    cardWidget = world.getWidgetCoordinator().DecoupleWidgetFormCard(Bcard);
+                    world.getWidgetCoordinator().CoupleWidgetForCard(Icard, cardWidget);
+                    world.UpdateCardInfoToCardTable(Bcard, Icard);
+                    coordinator.SendAction(Actions.CleanSelectedCardIfMatch, Bcard);
+                  //  world.getGridIndexTrackingTable().trackGridIndex(Icard.GridPosition(), Icard);
                 }
             }
 
             if (d == Maze.graveyard || d == Maze.deck) {
                 Cards Bcard = world.getMaze().GetBaseCard(card);
-                Cards Dcard = new Cards(card.ExtractCardInfo(), new GridPositionIndex(d+7, 0));
-                world.getMaze().getZoneList().get(d+7).getZoneArray().add(0,Dcard);
+                Cards Dcard = new Cards(card.ExtractCardInfo(), new GridPositionIndex(d+ Maze.Opponent_battleZone, 0));
+                world.getMaze().getZoneList().get(d+ Maze.Opponent_battleZone).getZoneArray().add(0,Dcard);
+                CardWidget cardWidget = world.getWidgetCoordinator().DecoupleWidgetFormCard(card);
+                world.getWidgetCoordinator().CoupleWidgetForCard(Dcard, cardWidget);
+                world.UpdateCardInfoToCardTable(card, Dcard);
                 if (Bcard != null) {
                     world.getMaze().ClearEvolutionTrack(card);
-                    Dcard = new InactiveCard(Bcard.ExtractCardInfo(), new GridPositionIndex(d+7, 0));
-                    world.getMaze().getZoneList().get(d+7).getZoneArray().add(0,Dcard);
+                    Dcard = new InactiveCard(Bcard.ExtractCardInfo(), new GridPositionIndex(d+ Maze.Opponent_battleZone, 0));
+                    world.getMaze().getZoneList().get(d+ Maze.Opponent_battleZone).getZoneArray().add(0,Dcard);
+                    cardWidget = world.getWidgetCoordinator().DecoupleWidgetFormCard(Bcard);
+                    world.getWidgetCoordinator().CoupleWidgetForCard(Dcard, cardWidget);
+                    world.UpdateCardInfoToCardTable(Bcard, Dcard);
+                    coordinator.SendAction(Actions.CleanSelectedCardIfMatch, Bcard);
                 }
             }
         } else {
@@ -190,10 +233,12 @@ public class ActUtil {
     }
 
     public static Cards EvolveCreature(Cards Ecard, Cards Bcard, PvPWorld world) {
+        PvPWidgetCoordinator coordinator = world.getWidgetCoordinator();
         int zoneOfbase = Bcard.GridPosition().getZone();
         int zoneOfevo = Ecard.GridPosition().getZone();
 
-        if ((zoneOfbase != 0 && zoneOfbase != 7) || (zoneOfevo != 3 && zoneOfevo != 10))
+        if ((zoneOfbase != Maze.battleZone && zoneOfbase != Maze.Opponent_battleZone) ||
+                (zoneOfevo != Maze.hand && zoneOfevo != Maze.Opponent_hand))
             throw new IllegalArgumentException("invalid evolution config");
 
         int i = world.getMaze().getZoneList().get(zoneOfbase).getZoneArray().indexOf(Bcard);
@@ -201,23 +246,43 @@ public class ActUtil {
         world.getMaze().getZoneList().get(zoneOfbase).getZoneArray().remove(i);
         world.getMaze().getZoneList().get(zoneOfevo).getZoneArray().remove(j);
 
-        world.getGridIndexTrackingTable().clearGridIndex(Bcard.GridPosition());
-        world.getGridIndexTrackingTable().clearGridIndex(Ecard.GridPosition());
+       // world.getGridIndexTrackingTable().clearGridIndex(Bcard.GridPosition());
+        //world.getGridIndexTrackingTable().clearGridIndex(Ecard.GridPosition());
 
         Cards newCard;
-        if (zoneOfbase == 0) {
-            ActiveCard Ncard = new ActiveCard(Ecard.ExtractCardInfo(), new GridPositionIndex(0, Bcard.GridPosition().getGridIndex()));
-            world.getMaze().getZoneList().get(0).getZoneArray().add(Ncard);
-            world.getGridIndexTrackingTable().trackGridIndex(Ncard.GridPosition(), Ncard);
-            Cards Nbcard = new Cards(Bcard.ExtractCardInfo(), null);
+        if (zoneOfbase == Maze.battleZone) {
+            ActiveCard Ncard = new ActiveCard(Ecard.ExtractCardInfo(), new GridPositionIndex(Maze.battleZone,
+                    Bcard.GridPosition().getGridIndex()));
+            world.getMaze().getZoneList().get(Maze.battleZone).getZoneArray().add(Ncard);
+            CardWidget cardWidget = world.getWidgetCoordinator().DecoupleWidgetFormCard(Ecard);
+            world.getWidgetCoordinator().CoupleWidgetForCard(Ncard, cardWidget);
+            world.UpdateCardInfoToCardTable(Ecard, Ncard);
+            coordinator.SendAction(Actions.CleanSelectedCardIfMatch, Ecard);
+          //  world.getGridIndexTrackingTable().trackGridIndex(Ncard.GridPosition(), Ncard);
+            Cards Nbcard = new Cards(Bcard.ExtractCardInfo(), new GridPositionIndex(Maze.battleZone,
+                    Bcard.GridPosition().getGridIndex()));
             world.getMaze().TrackEvolution(Ncard, Nbcard);
+            cardWidget = world.getWidgetCoordinator().DecoupleWidgetFormCard(Bcard);
+            world.getWidgetCoordinator().CoupleWidgetForCard(Nbcard, cardWidget);
+            world.UpdateCardInfoToCardTable(Bcard, Nbcard);
+            coordinator.SendAction(Actions.CleanSelectedCardIfMatch, Bcard);
             newCard = Ncard;
         } else {
-            InactiveCard Ncard = new ActiveCard(Ecard.ExtractCardInfo(), new GridPositionIndex(7, Bcard.GridPosition().getGridIndex()));
-            world.getMaze().getZoneList().get(7).getZoneArray().add(Ncard);
-            world.getGridIndexTrackingTable().trackGridIndex(Ncard.GridPosition(), Ncard);
-            Cards Nbcard = new Cards(Bcard.ExtractCardInfo(), null);
+            InactiveCard Ncard = new ActiveCard(Ecard.ExtractCardInfo(), new GridPositionIndex(Maze.Opponent_battleZone,
+                    Bcard.GridPosition().getGridIndex()));
+            world.getMaze().getZoneList().get(Maze.Opponent_battleZone).getZoneArray().add(Ncard);
+            CardWidget cardWidget = world.getWidgetCoordinator().DecoupleWidgetFormCard(Ecard);
+            world.getWidgetCoordinator().CoupleWidgetForCard(Ncard, cardWidget);
+            world.UpdateCardInfoToCardTable(Ecard, Ncard);
+            coordinator.SendAction(Actions.CleanSelectedCardIfMatch, Ecard);
+          //  world.getGridIndexTrackingTable().trackGridIndex(Ncard.GridPosition(), Ncard);
+            Cards Nbcard = new Cards(Bcard.ExtractCardInfo(), new GridPositionIndex(Maze.Opponent_battleZone,
+                    Bcard.GridPosition().getGridIndex()));
             world.getMaze().TrackEvolution(Ncard, Nbcard);
+            cardWidget = world.getWidgetCoordinator().DecoupleWidgetFormCard(Bcard);
+            world.getWidgetCoordinator().CoupleWidgetForCard(Nbcard, cardWidget);
+            world.UpdateCardInfoToCardTable(Bcard, Nbcard);
+            coordinator.SendAction(Actions.CleanSelectedCardIfMatch, Bcard);
             newCard = Ncard;
         }
 
@@ -236,7 +301,7 @@ public class ActUtil {
         boolean move = eventField[3].equals("0") ? false : true;
         boolean set = eventField[6].equals("0") ? false : true;
         if (Cardzone != 4 && Cardzone != 5 && Cardzone != 11 && Cardzone != 12) {
-            InactiveCard card = (InactiveCard) world.getGridIndexTrackingTable().getCardMappedToGivenGridPosition(Cardzone,GridIndex);
+            InactiveCard card = null;//(InactiveCard) world.getGridIndexTrackingTable().getCardMappedToGivenGridPosition(Cardzone,GridIndex);
             if (!card.getNameID().equals(eventField[2]))
                 throw new IllegalArgumentException("Data inconsistency");
 

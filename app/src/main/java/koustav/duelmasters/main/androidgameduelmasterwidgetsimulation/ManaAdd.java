@@ -21,6 +21,7 @@ public class ManaAdd implements Simulate {
         start = false;
     }
 
+    @Override
     public void Start(Object ...obj) {
         if ((boolean) obj[1]) {
             start = true;
@@ -35,6 +36,7 @@ public class ManaAdd implements Simulate {
         }
     }
 
+    @Override
     public boolean IsFinish() {
         if (!start) {
             return true;
@@ -43,6 +45,7 @@ public class ManaAdd implements Simulate {
         }
     }
 
+    @Override
     public void update() {
         if (start) {
             if (!handZoneLayout.IsWidgetInTransition(cardWidget)) {

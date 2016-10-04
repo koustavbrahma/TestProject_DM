@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -27,24 +28,37 @@ import koustav.duelmasters.main.androidgamesframeworkimpl.AndroidGame;
 public class PvPWorld implements World {
     AndroidGame game;
     Maze maze;
-    GridIndexTrackingTable gridIndexTrackingTable;
+    InstructionHandler instructionHandler;
+    GridIndexTrackingTable gridIndexTrackingTable; // nr
+    ArrayList<PackedCardInfo> cardInfos;
+    ArrayList<PackedCardInfo> oppCardInfos;
+    Hashtable<PackedCardInfo, Cards> cardInfoToCard;
+    Hashtable<PackedCardInfo, Cards> oppCardInfoToCard;
     boolean TURN;
+
+    // State Machines
     WorldUpdateOnTurn worldUpdateOnTurn;
     WorldUpdateOffTurn worldUpdateOffTurn;
-    List<TouchEvent> touchEvents;
+    InstructionIteratorHandler instructionIteratorHandler;
+    List<TouchEvent> touchEvents; // nr
+
     Cards FetchCard;
     Hashtable<String, Integer> WorldFlag;
-    InstructionHandler instructionHandler;
-    InstructionIteratorHandler instructionIteratorHandler;
     EventLog eventLog;
-    int frameBufferWidth;
-    int frameBufferHeight;
+
+    int frameBufferWidth; // nr
+    int frameBufferHeight; //nr
+    // Coordinator
     PvPWidgetCoordinator widgetCoordinator;
 
     public PvPWorld(AndroidGame game, boolean Turn) {
         this.game = game;
         maze = new Maze();
         gridIndexTrackingTable = new GridIndexTrackingTable();
+        cardInfos = new ArrayList<PackedCardInfo>();
+        oppCardInfos = new ArrayList<PackedCardInfo>();
+        cardInfoToCard = new Hashtable<PackedCardInfo, Cards>();
+        oppCardInfoToCard = new Hashtable<PackedCardInfo, Cards>();
         TURN = Turn;
         worldUpdateOnTurn = new WorldUpdateOnTurn(this, Turn);
         worldUpdateOffTurn = new WorldUpdateOffTurn(this);
@@ -57,8 +71,6 @@ public class PvPWorld implements World {
         frameBufferWidth = game.getframeBufferWidth();
         frameBufferHeight = game.getframeBufferHeight();
         widgetCoordinator = new PvPWidgetCoordinator(maze);
-        CreateMyDeck();
-        CreateOppDeck();
     }
 
     public AndroidGame getGame() {
@@ -73,9 +85,9 @@ public class PvPWorld implements World {
         return widgetCoordinator;
     }
 
-    public GridIndexTrackingTable getGridIndexTrackingTable() {
+   public GridIndexTrackingTable getGridIndexTrackingTable() {
         return gridIndexTrackingTable;
-    }
+   }
 
     public void setTouchEvents(List<TouchEvent> touchEvents) {
         this.touchEvents = touchEvents;
@@ -139,7 +151,70 @@ public class PvPWorld implements World {
         return this.eventLog;
     }
 
-    public void CreateMyDeck() {
+    public int GetRefIndexOfMyCard(Cards card) {
+        int index = cardInfos.indexOf(card.cardInfo());
+        if (index == -1) {
+            throw new RuntimeException("Invalid Condition");
+        }
+
+        return index;
+    }
+
+    public int GetRefIndexOfOppCard(Cards card) {
+        int index = oppCardInfos.indexOf(card.cardInfo());
+        if (index == -1) {
+            throw new RuntimeException("Invalid Condition");
+        }
+
+        return index;
+    }
+
+    public Cards GetMyCardForGivenRefIndex(int index) {
+        PackedCardInfo cardInfo = cardInfos.get(index);
+        if (cardInfo == null) {
+            throw new RuntimeException("Invalid Condition");
+        }
+
+        return cardInfoToCard.get(cardInfo);
+    }
+
+    public Cards GetOppCardForGivenRefIndex(int index) {
+        PackedCardInfo cardInfo = oppCardInfos.get(index);
+        if (cardInfo == null) {
+            throw new RuntimeException("Invalid Condition");
+        }
+
+        return cardInfoToCard.get(cardInfo);
+    }
+
+    public void UpdateCardInfoToCardTable(Cards oldCard, Cards newCard) {
+        GridPositionIndex gridPosition = newCard.GridPosition();
+
+        if (gridPosition.getZone() < Maze.temporaryZone) {
+            PackedCardInfo cardInfo = newCard.cardInfo();
+            Cards card = cardInfoToCard.remove(cardInfo);
+            if (card != oldCard) {
+                throw new RuntimeException("Invalid Condition");
+            }
+            cardInfoToCard.put(cardInfo, newCard);
+        } else if (gridPosition.getZone() > Maze.temporaryZone) {
+            PackedCardInfo cardInfo = newCard.cardInfo();
+            Cards card = oppCardInfoToCard.remove(cardInfo);
+            if (card != oldCard) {
+                throw new RuntimeException("Invalid Condition");
+            }
+            oppCardInfoToCard.put(cardInfo, newCard);
+        } else {
+            throw new RuntimeException("Invalid Condition");
+        }
+    }
+
+    public void load() {
+        CreateMyDeck();
+        CreateOppDeck();
+    }
+
+    private void CreateMyDeck() {
         try {
             InputStream DeckList = game.getFileIO().readAsset("Deck.txt");
             BufferedReader bufferedReaderDeckList = new BufferedReader(new InputStreamReader(DeckList));
@@ -188,7 +263,9 @@ public class PvPWorld implements World {
                         }
                         CardPackedInfo = bufferedReaderCardLibList.readLine();
                     }
-                    maze.getZoneList().get(5).getZoneArray().add(card);
+                    maze.getZoneList().get(Maze.deck).getZoneArray().add(card);
+                    cardInfos.add(card.cardInfo());
+                    cardInfoToCard.put(card.cardInfo(), card);
                 }
                 bufferedReaderCardLibList.close();
                 CardLibList.close();
@@ -201,7 +278,7 @@ public class PvPWorld implements World {
         }
     }
 
-    public void CreateOppDeck() {
+    private void CreateOppDeck() {
         try {
             InputStream DeckList = game.getFileIO().readAsset("Deck.txt");
             BufferedReader bufferedReaderDeckList = new BufferedReader(new InputStreamReader(DeckList));
@@ -250,7 +327,9 @@ public class PvPWorld implements World {
                         }
                         CardPackedInfo = bufferedReaderCardLibList.readLine();
                     }
-                    maze.getZoneList().get(12).getZoneArray().add(card);
+                    maze.getZoneList().get(Maze.Opponent_deck).getZoneArray().add(card);
+                    oppCardInfos.add(card.cardInfo());
+                    oppCardInfoToCard.put(card.cardInfo(), card);
                 }
                 bufferedReaderCardLibList.close();
                 CardLibList.close();
@@ -265,14 +344,19 @@ public class PvPWorld implements World {
 
     @Override
     public void update(float deltatime, float totalTime) {
-        if(TURN)
-            worldUpdateOnTurn.update(deltatime);
-        else
-            worldUpdateOffTurn.update(deltatime);
+        widgetCoordinator.PvPWidgetsTouchListener();
+
+        if(TURN) {
+            worldUpdateOnTurn.update();
+        } else {
+            worldUpdateOffTurn.update();
+        }
+
+        widgetCoordinator.update(deltatime, totalTime);
     }
 
     @Override
     public void draw() {
-
+        widgetCoordinator.draw();
     }
 }

@@ -146,7 +146,7 @@ public class ClientLoginScreen extends Screen {
     }
 
     @Override
-    public void present(float deltaTime, float totalTime) {
+    public void present() {
     }
 
     @Override

@@ -306,12 +306,12 @@ public class UIUtil {
     public static boolean WorldFetchCard(PvPWorld world) {
         GridPositionIndex gridPositionIndex = TouchedGridPositionIndex(world);
 
-        if (gridPositionIndex != null) {
+        /*if (gridPositionIndex != null) {
             Cards card = world.getGridIndexTrackingTable().getCardMappedToGivenGridPosition(gridPositionIndex.getZone(),
                     gridPositionIndex.getGridIndex());
             world.setFetchCard(card);
             return true;
-        }
+        } */
 
         return false;
     }
@@ -320,9 +320,9 @@ public class UIUtil {
         GridPositionIndex gridPositionIndex = TouchedGridPositionIndex(world);
 
         if (gridPositionIndex != null) {
-            Cards card = world.getGridIndexTrackingTable().getCardMappedToGivenGridPosition(gridPositionIndex.getZone(),
-                    gridPositionIndex.getGridIndex());
-            return card;
+         //   Cards card = world.getGridIndexTrackingTable().getCardMappedToGivenGridPosition(gridPositionIndex.getZone(),
+             //       gridPositionIndex.getGridIndex());
+           // return card;
         }
 
         return null;

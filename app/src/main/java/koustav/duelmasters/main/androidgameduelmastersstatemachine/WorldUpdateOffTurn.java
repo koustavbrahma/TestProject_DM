@@ -54,7 +54,7 @@ public class WorldUpdateOffTurn {
         NotYetSpreadCleanup = new InstructionSet(instruction);
     }
 
-    public void update(float deltatime) {
+    public void update() {
         if (S == WorldUpdateoffTurnState.S1) {
             IdealOffTurn();
         }

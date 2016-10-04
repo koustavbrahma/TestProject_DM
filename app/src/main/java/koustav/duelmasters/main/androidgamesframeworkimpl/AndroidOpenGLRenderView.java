@@ -96,7 +96,7 @@ public class AndroidOpenGLRenderView extends GLSurfaceView implements GLSurfaceV
             float totalTime = (presentTime - startTime) / 1000000000.0f;
 
             game.getCurrentScreen().update(deltaTime, totalTime);
-            game.getCurrentScreen().present(deltaTime, totalTime);
+            game.getCurrentScreen().present();
         }
 
         if (glstate == GLGameState.Pasued) {
