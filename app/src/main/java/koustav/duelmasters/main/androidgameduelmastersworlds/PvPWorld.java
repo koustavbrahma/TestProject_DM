@@ -9,6 +9,7 @@ import java.util.Hashtable;
 import java.util.List;
 
 import koustav.duelmasters.main.androidgameduelmasterscardrulehandler.InstructionHandler;
+import koustav.duelmasters.main.androidgameduelmasterscardrulehandler.InstructionSet;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Maze;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.PackedCardInfo;
@@ -16,6 +17,9 @@ import koustav.duelmasters.main.androidgameduelmasterseventlogmodule.EventLog;
 import koustav.duelmasters.main.androidgameduelmastersstatemachine.InstructionIteratorHandler;
 import koustav.duelmasters.main.androidgameduelmastersstatemachine.WorldUpdateOffTurn;
 import koustav.duelmasters.main.androidgameduelmastersstatemachine.WorldUpdateOnTurn;
+import koustav.duelmasters.main.androidgameduelmastersutil.ActUtil;
+import koustav.duelmasters.main.androidgameduelmastersutil.InstSetUtil;
+import koustav.duelmasters.main.androidgameduelmasterswidgetcoordinationtools.Actions;
 import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.GridIndexTrackingTable;
 import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.GridPositionIndex;
 import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.PvPWidgetCoordinator;
@@ -28,8 +32,11 @@ import koustav.duelmasters.main.androidgamesframeworkimpl.AndroidGame;
 public class PvPWorld implements World {
     AndroidGame game;
     Maze maze;
+    // Coordinator
+    PvPWidgetCoordinator widgetCoordinator;
     InstructionHandler instructionHandler;
     GridIndexTrackingTable gridIndexTrackingTable; // nr
+
     ArrayList<PackedCardInfo> cardInfos;
     ArrayList<PackedCardInfo> oppCardInfos;
     Hashtable<PackedCardInfo, Cards> cardInfoToCard;
@@ -48,12 +55,11 @@ public class PvPWorld implements World {
 
     int frameBufferWidth; // nr
     int frameBufferHeight; //nr
-    // Coordinator
-    PvPWidgetCoordinator widgetCoordinator;
 
     public PvPWorld(AndroidGame game, boolean Turn) {
         this.game = game;
         maze = new Maze();
+        widgetCoordinator = new PvPWidgetCoordinator(maze);
         gridIndexTrackingTable = new GridIndexTrackingTable();
         cardInfos = new ArrayList<PackedCardInfo>();
         oppCardInfos = new ArrayList<PackedCardInfo>();
@@ -70,7 +76,6 @@ public class PvPWorld implements World {
         eventLog = new EventLog();
         frameBufferWidth = game.getframeBufferWidth();
         frameBufferHeight = game.getframeBufferHeight();
-        widgetCoordinator = new PvPWidgetCoordinator(maze);
     }
 
     public AndroidGame getGame() {
@@ -85,7 +90,7 @@ public class PvPWorld implements World {
         return widgetCoordinator;
     }
 
-   public GridIndexTrackingTable getGridIndexTrackingTable() {
+    public GridIndexTrackingTable getGridIndexTrackingTable() {
         return gridIndexTrackingTable;
    }
 
@@ -212,6 +217,7 @@ public class PvPWorld implements World {
     public void load() {
         CreateMyDeck();
         CreateOppDeck();
+        CreateScenario();
     }
 
     private void CreateMyDeck() {
@@ -337,6 +343,62 @@ public class PvPWorld implements World {
             bufferedReaderDeckList.close();
             DeckList.close();
 
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void CreateScenario() {
+        try {
+            InputStream scenario = game.getFileIO().readAsset("Scenario");
+            BufferedReader scenarioStream = new BufferedReader(new InputStreamReader(scenario));
+            String MyHeader;
+            String scenarioInfo;
+            ArrayList<Cards> cardList = new ArrayList<Cards>();
+            while (!(MyHeader = scenarioStream.readLine()).equals("#MY"));
+            while (!(MyHeader = scenarioStream.readLine()).equals("#MYEND")) {
+                cardList.clear();
+                while (!(scenarioInfo = scenarioStream.readLine()).equals("HandZoneEnd")) {
+                    int val = Integer.parseInt(scenarioInfo);
+                    Cards card = GetMyCardForGivenRefIndex(val);
+                    cardList.add(card);
+                }
+                getWidgetCoordinator().SendAction(Actions.SetUpScenario, Maze.hand, cardList);
+                for (int i = 0; i < cardList.size(); i++) {
+                    Cards card = cardList.get(i);
+                    String Instructionstr = InstSetUtil.GenerateSelfChangeZoneInstruction(Maze.hand);
+                    InstructionSet instruction = new InstructionSet(Instructionstr);
+                    ActUtil.ChangeZoneOperator(this, card, instruction);
+                }
+                scenarioInfo = scenarioStream.readLine();
+                cardList.clear();
+                while (!(scenarioInfo = scenarioStream.readLine()).equals("BattleZoneEnd")) {
+                    int val = Integer.parseInt(scenarioInfo);
+                    Cards card = GetMyCardForGivenRefIndex(val);
+                    cardList.add(card);
+                }
+                getWidgetCoordinator().SendAction(Actions.SetUpScenario, Maze.battleZone, cardList);
+                for (int i = 0; i < cardList.size(); i++) {
+                    Cards card = cardList.get(i);
+                    String Instructionstr = InstSetUtil.GenerateSelfChangeZoneInstruction(Maze.battleZone);
+                    InstructionSet instruction = new InstructionSet(Instructionstr);
+                    ActUtil.ChangeZoneOperator(this, card, instruction);
+                }
+                scenarioInfo = scenarioStream.readLine();
+                cardList.clear();
+                while (!(scenarioInfo = scenarioStream.readLine()).equals("ManaZoneEnd")) {
+                    int val = Integer.parseInt(scenarioInfo);
+                    Cards card = GetMyCardForGivenRefIndex(val);
+                    cardList.add(card);
+                }
+                getWidgetCoordinator().SendAction(Actions.SetUpScenario, Maze.manaZone, cardList);
+                for (int i = 0; i < cardList.size(); i++) {
+                    Cards card = cardList.get(i);
+                    String Instructionstr = InstSetUtil.GenerateSelfChangeZoneInstruction(Maze.manaZone);
+                    InstructionSet instruction = new InstructionSet(Instructionstr);
+                    ActUtil.ChangeZoneOperator(this, card, instruction);
+                }
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

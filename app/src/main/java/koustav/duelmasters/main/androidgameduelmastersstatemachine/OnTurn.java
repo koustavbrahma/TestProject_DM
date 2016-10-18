@@ -2,7 +2,6 @@ package koustav.duelmasters.main.androidgameduelmastersstatemachine;
 
 import java.util.ArrayList;
 
-import koustav.duelmasters.main.androidgameduelmasterscardrulehandler.Action;
 import koustav.duelmasters.main.androidgameduelmasterscardrulehandler.InstructionID;
 import koustav.duelmasters.main.androidgameduelmasterscardrulehandler.InstructionSet;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.InactiveCard;
@@ -28,8 +27,6 @@ import koustav.duelmasters.main.androidgameduelmastersutil.NetworkUtil;
 import koustav.duelmasters.main.androidgameduelmastersutil.SetUnsetUtil;
 import koustav.duelmasters.main.androidgameduelmastersutillegacycode.UIUtil;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.ControllerButton;
-import koustav.duelmasters.main.androidgameduelmasterwidgetsimulation.PreManaAdd;
-import koustav.duelmasters.main.androidgameduelmasterwidgetsimulation.TransientManaCard;
 
 /**
  * Created by Koustav on 3/28/2015.
@@ -79,6 +76,7 @@ public class OnTurn {
     SubStates CastUpdate;
     SubStates PreManaUpdate;
     SubStates ManaUpdate;
+    SubStates DrawCardUpdate;
     SubStates FlagSpreadingUpdate;
 
     public OnTurn(PvPWorld world) {
@@ -92,7 +90,7 @@ public class OnTurn {
         UnTapAllAtEndOfTurn = false;
 
         DefineStates();
-        currentState = IdealOnTurn;
+        setCurrentState(IdealOnTurn);
     }
 
     private void setCurrentState(SubStates state) {
@@ -272,14 +270,24 @@ public class OnTurn {
                     return false;
                 }
 
+                if (uiRequest.getRequest() == Requests.DeckStack) {
+                    if ((world.getMaze().getZoneList().get(Maze.deck).zoneSize()> 0) &&
+                            !world.getWorldFlag(WorldFlags.CantDrawCard)) {
+                        setCurrentState(DrawCardUpdate);
+                        world.getEventLog().setRecording(true);
+                    }
+
+                    return false;
+                }
+
                 return false;
             }
 
             @Override
             public void StateSetting() {
-                world.getWidgetCoordinator().SendAction(Actions.ClearControlButton, (Object) null);
+                world.getWidgetCoordinator().SendAction(Actions.ClearControlButton, null);
                 world.getWidgetCoordinator().SetFlags(ZoomLevel.Button_Touched, new Expand[] {Expand.Mana_Z, Expand.Mana_OZ},
-                        new Drag[] {Drag.Hand}, true, CardSelectMode.OFF);
+                        new Drag[] {Drag.Hand}, true, CardSelectMode.OFF, true);
             }
         };
 
@@ -347,7 +355,7 @@ public class OnTurn {
                     world.getWidgetCoordinator().SendAction(Actions.ClearControlButton, (Object) null);
                 }
                 world.getWidgetCoordinator().SetFlags(ZoomLevel.Button_Touched, new Expand[] {Expand.Nil},
-                        new Drag[] {Drag.Nil}, false, CardSelectMode.OFF);
+                        new Drag[] {Drag.Nil}, false, CardSelectMode.OFF, true);
             }
         };
 
@@ -366,7 +374,7 @@ public class OnTurn {
             public void StateSetting() {
                 world.getWidgetCoordinator().SendAction(Actions.ClearControlButton, (Object) null);
                 world.getWidgetCoordinator().SetFlags(ZoomLevel.Button_Touched, new Expand[] {Expand.Nil},
-                        new Drag[] {Drag.Nil}, false, CardSelectMode.OFF);
+                        new Drag[] {Drag.Nil}, false, CardSelectMode.OFF, true);
             }
         };
 
@@ -404,6 +412,7 @@ public class OnTurn {
                     setCurrentState(IdealOnTurn);
                     coordinator.SendAction(Actions.ClearSelectedCards, null);
                     coordinator.SendAction(Actions.Simulate, Simulation.CancelSummonOrManaAdd, SummoningOrCastCard);
+                    coordinator.SendAction(Actions.Simulate, Simulation.CancelManaCard, null);
                     world.getEventLog().setRecording(false);
                     return false;
                 }
@@ -490,7 +499,7 @@ public class OnTurn {
                 controllerButtons.add(ControllerButton.Decline);
                 world.getWidgetCoordinator().SendAction(Actions.AddControlButton, controllerButtons);
                 world.getWidgetCoordinator().SetFlags(ZoomLevel.Button, new Expand[] {Expand.Mana_Z},
-                        new Drag[] {Drag.Mana_Z}, false, CardSelectMode.ON);
+                        new Drag[] {Drag.Mana_Z}, false, CardSelectMode.ON, true);
             }
         };
 
@@ -501,7 +510,6 @@ public class OnTurn {
                 if (!(boolean)coordinator.GetInfo(Query.IsSimulationDone, Simulation.TransientManaCard)) {
                     return false;
                 }
-
 
                 ActiveCard SummoningOrCastCard = (ActiveCard) world.getFetchCard();
                 ArrayList<Cards> CollectedCardList = world.getMaze().getZoneList().get(Maze.temporaryZone).getZoneArray();
@@ -529,7 +537,7 @@ public class OnTurn {
                         world.getEventLog().registerEvent(world.getFetchCard(), false, 0 , "Tapped", true ,1);
                         SummonTapped = false;
                     }
-                    coordinator.SendAction(Actions.Simulate, Simulation.SummonCreatureCard, SummoningOrCastCard);
+                    coordinator.SendAction(Actions.Simulate, Simulation.SummonCreatureCard, world.getFetchCard());
 
                     //sendeventlog
                     String msg = world.getEventLog().getAndClearEvents();
@@ -634,7 +642,7 @@ public class OnTurn {
             public void StateSetting() {
                 world.getWidgetCoordinator().SendAction(Actions.ClearControlButton, (Object) null);
                 world.getWidgetCoordinator().SetFlags(ZoomLevel.Button_Touched, new Expand[] {Expand.Nil},
-                        new Drag[] {Drag.Nil}, false, CardSelectMode.OFF);
+                        new Drag[] {Drag.Nil}, false, CardSelectMode.OFF, true);
             }
         };
 
@@ -657,7 +665,7 @@ public class OnTurn {
             public void StateSetting() {
                 world.getWidgetCoordinator().SendAction(Actions.ClearControlButton, (Object) null);
                 world.getWidgetCoordinator().SetFlags(ZoomLevel.Button_Touched, new Expand[] {Expand.Nil},
-                        new Drag[] {Drag.Nil}, false, CardSelectMode.OFF);
+                        new Drag[] {Drag.Nil}, false, CardSelectMode.OFF, true);
             }
         };
 
@@ -757,7 +765,7 @@ public class OnTurn {
             public void StateSetting() {
                 world.getWidgetCoordinator().SendAction(Actions.ClearControlButton, (Object) null);
                 world.getWidgetCoordinator().SetFlags(ZoomLevel.Button_Touched, new Expand[] {Expand.Nil},
-                        new Drag[] {Drag.Nil}, false, CardSelectMode.OFF);
+                        new Drag[] {Drag.Nil}, false, CardSelectMode.OFF, true);
             }
         };
 
@@ -799,7 +807,7 @@ public class OnTurn {
             public void StateSetting() {
                 world.getWidgetCoordinator().SendAction(Actions.ClearControlButton, (Object) null);
                 world.getWidgetCoordinator().SetFlags(ZoomLevel.Button_Touched, new Expand[] {Expand.Nil},
-                        new Drag[] {Drag.Nil}, false, CardSelectMode.OFF);
+                        new Drag[] {Drag.Nil}, false, CardSelectMode.OFF, true);
             }
         };
 
@@ -833,7 +841,7 @@ public class OnTurn {
                 controllerButtons.add(ControllerButton.Decline);
                 world.getWidgetCoordinator().SendAction(Actions.AddControlButton, controllerButtons);
                 world.getWidgetCoordinator().SetFlags(ZoomLevel.Button, new Expand[] {Expand.Nil},
-                        new Drag[] {Drag.Nil}, false, CardSelectMode.OFF);
+                        new Drag[] {Drag.Nil}, false, CardSelectMode.OFF, true);
             }
         };
 
@@ -870,7 +878,34 @@ public class OnTurn {
             public void StateSetting() {
                 world.getWidgetCoordinator().SendAction(Actions.ClearControlButton, (Object) null);
                 world.getWidgetCoordinator().SetFlags(ZoomLevel.Button_Touched, new Expand[] {Expand.Nil},
-                        new Drag[] {Drag.Nil}, false, CardSelectMode.OFF);
+                        new Drag[] {Drag.Nil}, false, CardSelectMode.OFF, true);
+            }
+        };
+
+        DrawCardUpdate = new SubStates() {
+            @Override
+            public boolean updateState() {
+                PvPWidgetCoordinator coordinator = world.getWidgetCoordinator();
+                coordinator.SendAction(Actions.Simulate, Simulation.DrawCardFromDeck, 1);
+                String DrawCardInstruction = InstSetUtil.GenerateDrawCardInstruction();
+                InstructionSet instruction = new InstructionSet(DrawCardInstruction);
+                world.getInstructionHandler().setCardAndInstruction(null,instruction);
+                world.getInstructionHandler().execute();
+                world.setWorldFlag(WorldFlags.CantDrawCard);
+                setCurrentState(FlagSpreadingUpdate);
+                world.getEventLog().setRecording(false);
+
+                //sendeventlog
+                String msg = world.getEventLog().getAndClearEvents();
+                NetworkUtil.sendDirectiveUpdates(world,DirectiveHeader.ApplyEvents, msg, null);
+                return false;
+            }
+
+            @Override
+            public void StateSetting() {
+                world.getWidgetCoordinator().SendAction(Actions.ClearControlButton, (Object) null);
+                world.getWidgetCoordinator().SetFlags(ZoomLevel.Button_Touched, new Expand[] {Expand.Nil},
+                        new Drag[] {Drag.Nil}, false, CardSelectMode.OFF, true);
             }
         };
 
@@ -888,7 +923,7 @@ public class OnTurn {
             public void StateSetting() {
                 world.getWidgetCoordinator().SendAction(Actions.ClearControlButton, (Object) null);
                 world.getWidgetCoordinator().SetFlags(ZoomLevel.Button_Touched, new Expand[] {Expand.Nil},
-                        new Drag[] {Drag.Nil}, false, CardSelectMode.OFF);
+                        new Drag[] {Drag.Nil}, false, CardSelectMode.OFF, true);
             }
         };
     }
@@ -917,7 +952,7 @@ public class OnTurn {
         if (S == OnTurnState.S8)
             TapAbilityUpdate();
         if (S == OnTurnState.S9)
-            DrawCardUpdate();
+            DrawCardUpdate(); // done
         if (S == OnTurnState.S10)
             ShieldUpdate();
         if (S == OnTurnState.S11)

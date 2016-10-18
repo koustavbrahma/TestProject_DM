@@ -371,8 +371,8 @@ public class CardStackWidget implements Widget{
         }
         Cards cardT = cardStack.get(0);
         Cards cardB = cardStack.get(cardStack.size() - 1);
-        textureArrays[2] = flip ? AssetsAndResource.getCardTexture(/*cardB.getNameID()*/"AquaHulcus") : AssetsAndResource.cardBackside;
-        textureArrays[3] = flip ? AssetsAndResource.cardBackside : AssetsAndResource.getCardTexture(/*cardT.getNameID()*/"AquaHulcus");
+        textureArrays[2] = flip ? AssetsAndResource.getCardTexture(cardB.getNameID()/*"AquaHulcus"*/) : AssetsAndResource.cardBackside;
+        textureArrays[3] = flip ? AssetsAndResource.cardBackside : AssetsAndResource.getCardTexture(cardT.getNameID()/*"AquaHulcus"*/);
 
         DrawObjectHelper.drawOneCube(cube, textureArrays, shadowEnable);
     }
@@ -405,8 +405,8 @@ public class CardStackWidget implements Widget{
                 }
                 Cards cardT = cardStack.get(moving);
                 Cards cardB = cardStack.get(cardStack.size() - 1);
-                textureArrays[2] = flip ? AssetsAndResource.getCardTexture(/*cardB.getNameID()*/"AquaHulcus") : AssetsAndResource.cardBackside;
-                textureArrays[3] = flip ? AssetsAndResource.cardBackside : AssetsAndResource.getCardTexture(/*cardT.getNameID()*/"AquaHulcus");
+                textureArrays[2] = flip ? AssetsAndResource.getCardTexture(cardB.getNameID()/*"AquaHulcus"*/) : AssetsAndResource.cardBackside;
+                textureArrays[3] = flip ? AssetsAndResource.cardBackside : AssetsAndResource.getCardTexture(cardT.getNameID()/*"AquaHulcus"*/);
 
                 MatrixHelper.setTranslateRotateScale(widgetPosition);
                 DrawObjectHelper.drawOneCube(cube, textureArrays, shadowEnable);
@@ -434,8 +434,8 @@ public class CardStackWidget implements Widget{
                 }
                 Cards cardT = cardStack.get(moving);
                 Cards cardB = cardStack.get(cardStack.size() - 1);
-                textureArrays[2] = flip ? AssetsAndResource.getCardTexture(/*cardB.getNameID()*/"AquaHulcus") : AssetsAndResource.cardBackside;
-                textureArrays[3] = flip ? AssetsAndResource.cardBackside : AssetsAndResource.getCardTexture(/*cardT.getNameID()*/"AquaHulcus");
+                textureArrays[2] = flip ? AssetsAndResource.getCardTexture(cardB.getNameID()/*"AquaHulcus"*/) : AssetsAndResource.cardBackside;
+                textureArrays[3] = flip ? AssetsAndResource.cardBackside : AssetsAndResource.getCardTexture(cardT.getNameID()/*"AquaHulcus"*/);
 
                 MatrixHelper.setTranslateRotateScale(widgetPosition);
                 DrawObjectHelper.drawOneCube(cube, textureArrays, shadowEnable);
@@ -455,7 +455,7 @@ public class CardStackWidget implements Widget{
                     textureArrays[j] = AssetsAndResource.cardBorder;
                 }
                 textureArrays[2] = AssetsAndResource.cardBackside;
-                textureArrays[3] = AssetsAndResource.getCardTexture(/*card.getNameID()*/"AquaHulcus");
+                textureArrays[3] = AssetsAndResource.getCardTexture(card.getNameID()/*"AquaHulcus"*/);
                 DrawObjectHelper.drawOneCube(glcard, textureArrays, shadowEnable);
             }
 
@@ -483,8 +483,8 @@ public class CardStackWidget implements Widget{
                 }
                 Cards cardT = cardStack.get(cardStack.size() - completeCount);
                 Cards cardB = cardStack.get(cardStack.size() - 1);
-                textureArrays[2] = flip ? AssetsAndResource.getCardTexture(/*cardB.getNameID()*/"AquaHulcus") : AssetsAndResource.cardBackside;
-                textureArrays[3] = flip ? AssetsAndResource.cardBackside : AssetsAndResource.getCardTexture(/*cardT.getNameID()*/"AquaHulcus");
+                textureArrays[2] = flip ? AssetsAndResource.getCardTexture(cardB.getNameID()/*"AquaHulcus"*/) : AssetsAndResource.cardBackside;
+                textureArrays[3] = flip ? AssetsAndResource.cardBackside : AssetsAndResource.getCardTexture(cardT.getNameID()/*"AquaHulcus"*/);
 
                 MatrixHelper.setTranslateRotateScale(widgetPosition);
                 DrawObjectHelper.drawOneCube(cube, textureArrays, shadowEnable);
@@ -512,8 +512,8 @@ public class CardStackWidget implements Widget{
                 }
                 Cards cardT = cardStack.get(cardStack.size() - completeCount);
                 Cards cardB = cardStack.get(cardStack.size() - 1);
-                textureArrays[2] = flip ? AssetsAndResource.getCardTexture(/*cardB.getNameID()*/"AquaHulcus") : AssetsAndResource.cardBackside;
-                textureArrays[3] = flip ? AssetsAndResource.cardBackside : AssetsAndResource.getCardTexture(/*cardT.getNameID()*/"AquaHulcus");
+                textureArrays[2] = flip ? AssetsAndResource.getCardTexture(cardB.getNameID()/*"AquaHulcus"*/) : AssetsAndResource.cardBackside;
+                textureArrays[3] = flip ? AssetsAndResource.cardBackside : AssetsAndResource.getCardTexture(cardT.getNameID()/*"AquaHulcus"*/);
 
                 MatrixHelper.setTranslateRotateScale(widgetPosition);
                 DrawObjectHelper.drawOneCube(cube, textureArrays, shadowEnable);
@@ -542,7 +542,7 @@ public class CardStackWidget implements Widget{
                     textureArrays[j] = AssetsAndResource.cardBorder;
                 }
                 textureArrays[2] = AssetsAndResource.cardBackside;
-                textureArrays[3] = AssetsAndResource.getCardTexture(/*card.getNameID()*/"AquaHulcus");
+                textureArrays[3] = AssetsAndResource.getCardTexture(card.getNameID()/*"AquaHulcus"*/);
                 DrawObjectHelper.drawOneCube(glcard, textureArrays, shadowEnable);
             }
 
@@ -560,7 +560,7 @@ public class CardStackWidget implements Widget{
                     textureArrays[j] = AssetsAndResource.cardBorder;
                 }
                 textureArrays[2] = AssetsAndResource.cardBackside;
-                textureArrays[3] = AssetsAndResource.getCardTexture(/*card.getNameID()*/"AquaHulcus");
+                textureArrays[3] = AssetsAndResource.getCardTexture(card.getNameID()/*"AquaHulcus"*/);
                 DrawObjectHelper.drawOneCube(glcard, textureArrays, shadowEnable);
             }
         } else {
@@ -591,7 +591,7 @@ public class CardStackWidget implements Widget{
                 textureArrays[j] = AssetsAndResource.cardBorder;
             }
             textureArrays[2] = AssetsAndResource.cardBackside;
-            textureArrays[3] = AssetsAndResource.getCardTexture(/*card.getNameID()*/"AquaHulcus");
+            textureArrays[3] = AssetsAndResource.getCardTexture(card.getNameID()/*"AquaHulcus"*/);
             DrawObjectHelper.drawOneCube(glcard, textureArrays, shadowEnable);
         }
 
@@ -611,7 +611,7 @@ public class CardStackWidget implements Widget{
                 textureArrays[j] = AssetsAndResource.cardBorder;
             }
             textureArrays[2] = AssetsAndResource.cardBackside;
-            textureArrays[3] = AssetsAndResource.getCardTexture(/*card.getNameID()*/"AquaHulcus");
+            textureArrays[3] = AssetsAndResource.getCardTexture(card.getNameID()/*"AquaHulcus"*/);
             DrawObjectHelper.drawOneCube(glcard, textureArrays, shadowEnable);
         }
     }
@@ -619,6 +619,10 @@ public class CardStackWidget implements Widget{
     @Override
     public WidgetTouchEvent isTouched(List<Input.TouchEvent> touchEvents) {
         WidgetTouchEvent widgetTouchEvent = null;
+        if (cardStack.size() == 0) {
+            return null;
+        }
+
         if (mode == WidgetMode.Normal) {
             widgetTouchEvent = isTouchedForNormalMode(touchEvents);
         }
@@ -1120,7 +1124,12 @@ public class CardStackWidget implements Widget{
     public WidgetPosition getPosition() {
         return Position;
     }
+
     public void setFlip(boolean flip) {
         this.flip = flip;
+    }
+
+    public boolean getFlip() {
+        return flip;
     }
 }

@@ -5,12 +5,16 @@ import java.util.List;
 
 import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAndResource;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
+import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.PvPWidgetCoordinator;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetMode;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetPosition;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetTouchEvent;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetTouchFocusLevel;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.Layout;
 import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.CardStackWidget;
+import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.CardWidget;
+import koustav.duelmasters.main.androidgameopenglutil.GLGeometry;
+import koustav.duelmasters.main.androidgameopenglutil.MatrixHelper;
 import koustav.duelmasters.main.androidgamesframework.Input;
 
 /**
@@ -23,13 +27,15 @@ public class CardStackZoneLayout implements Layout {
     }
     TouchModeCardStackZone touchMode;
 
+    PvPWidgetCoordinator coordinator;
     WidgetPosition widgetPosition;
     CardStackWidget cardStackWidget;
 
     float length;
     boolean ExpandMode;
 
-    public CardStackZoneLayout() {
+    public CardStackZoneLayout(PvPWidgetCoordinator coordinator) {
+        this.coordinator = coordinator;
         widgetPosition = new WidgetPosition();
         cardStackWidget = null;
     }
@@ -61,6 +67,45 @@ public class CardStackZoneLayout implements Layout {
 
     public void ForceShrink() {
         cardStackWidget.setMode(WidgetMode.Normal);
+    }
+
+    public ArrayList<CardWidget> GenerateCardWidgetForFirstNCard(int N) {
+        ArrayList<Cards> cardStack = (ArrayList<Cards>)cardStackWidget.getLogicalObject();
+        int count = cardStack.size();
+        ArrayList<CardWidget> cardWidget = new ArrayList<CardWidget>();
+        for (int i = 0; i < N; i++) {
+            Cards card = cardStack.get(i);
+            if (card.getWidget() != null) {
+                throw new RuntimeException("Invalid Condition");
+            }
+            CardWidget widget = coordinator.newCardWidget();
+            coordinator.CoupleWidgetForCard(card, widget);
+            WidgetPosition cardPosition = new WidgetPosition();
+            cardPosition.Centerposition.x = widgetPosition.Centerposition.x;
+            cardPosition.Centerposition.y = widgetPosition.Centerposition.y +
+                    (AssetsAndResource.CardLength * count)/2 + (AssetsAndResource.CardLength * (N - i));
+            cardPosition.Centerposition.z = widgetPosition.Centerposition.z;
+
+            ArrayList<GLGeometry.GLAngularRotaion> rotaions = new ArrayList<GLGeometry.GLAngularRotaion>();
+            GLGeometry.GLAngularRotaion rotaion;
+            if (cardStackWidget.getFlip()) {
+                rotaion = new GLGeometry.GLAngularRotaion(180f, 0, 0, 1f);
+                rotaions.add(rotaion);
+            }
+            rotaions.add(widgetPosition.rotaion);
+            rotaion = MatrixHelper.getCombinedRotation(rotaions);
+            cardPosition.rotaion.angle = rotaion.angle;
+            cardPosition.rotaion.x = rotaion.x;
+            cardPosition.rotaion.y = rotaion.y;
+            cardPosition.rotaion.z = rotaion.z;
+            cardPosition.X_scale = 1f;
+            cardPosition.Y_scale = 1f;
+            cardPosition.Z_scale = 1f;
+
+            widget.setTranslateRotateScale(cardPosition);
+            cardWidget.add(widget);
+        }
+        return cardWidget;
     }
 
     @Override

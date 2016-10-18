@@ -37,8 +37,9 @@ public class Pool<T> {
     }
 
     public boolean free(T object) {
-        if (freeObjects.size() < maxSize)
+        if ((object != null) && (freeObjects.size() < maxSize)) {
             freeObjects.add(object);
+        }
 
         return true;
     }

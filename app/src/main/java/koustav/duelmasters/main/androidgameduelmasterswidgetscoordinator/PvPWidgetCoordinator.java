@@ -13,6 +13,7 @@ import koustav.duelmasters.main.androidgameduelmasterswidgetcoordinationtools.Qu
 import koustav.duelmasters.main.androidgameduelmasterswidgetcoordinationtools.Requests;
 import koustav.duelmasters.main.androidgameduelmasterswidgetcoordinationtools.Simulation;
 import koustav.duelmasters.main.androidgameduelmasterswidgetcoordinationtools.UIRequest;
+import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetPosition;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetSelectedCardTracker;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetTouchFocusLevel;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoutmodels.FixedButtonsLayout;
@@ -29,7 +30,9 @@ import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.CardStackWidge
 import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.CardWidget;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetTouchEvent;
 import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.RectangleButtonWidget;
+import koustav.duelmasters.main.androidgameduelmasterwidgetsimulation.CancelManaCard;
 import koustav.duelmasters.main.androidgameduelmasterwidgetsimulation.CancelSummonOrManaAdd;
+import koustav.duelmasters.main.androidgameduelmasterwidgetsimulation.DrawCardFromDeck;
 import koustav.duelmasters.main.androidgameduelmasterwidgetsimulation.ManaAdd;
 import koustav.duelmasters.main.androidgameduelmasterwidgetsimulation.PreManaAdd;
 import koustav.duelmasters.main.androidgameduelmasterwidgetsimulation.PreSummonCard;
@@ -38,12 +41,16 @@ import koustav.duelmasters.main.androidgameduelmasterwidgetsimulation.SummonCrea
 import koustav.duelmasters.main.androidgameduelmasterwidgetsimulation.TransientManaCard;
 import koustav.duelmasters.main.androidgameopenglobjectmodels.Cube;
 import koustav.duelmasters.main.androidgameopenglobjectmodels.ScreenRectangle;
+import koustav.duelmasters.main.androidgameopenglobjectmodels.XZRectangle;
+import koustav.duelmasters.main.androidgameopenglutil.DrawObjectHelper;
 import koustav.duelmasters.main.androidgameopenglutil.GLGeometry;
 import koustav.duelmasters.main.androidgameopenglutil.GLGeometry.*;
 import koustav.duelmasters.main.androidgameopenglutil.GLMaterial;
+import koustav.duelmasters.main.androidgameopenglutil.MatrixHelper;
 import koustav.duelmasters.main.androidgamesframework.Input;
 import koustav.duelmasters.main.androidgamesframework.Pool;
 
+import static android.opengl.GLES20.*;
 /**
  * Created by Koustav on 3/12/2016.
  */
@@ -114,6 +121,7 @@ public class PvPWidgetCoordinator {
     RectangleButtonWidget ZoomButton;
 
     // GLObjects
+    XZRectangle Base;
     Cube cube;
     Cube glCard;
     ScreenRectangle glRbutton;
@@ -142,6 +150,7 @@ public class PvPWidgetCoordinator {
     float start_touch_x;
     float start_touch_y;
     Hashtable<Integer, CardWidget> ZoneToLastWidgetForSetup;
+    WidgetPosition basePosition;
 
     // Listener
     WidgetTouchListener LowFocusListener;
@@ -160,6 +169,8 @@ public class PvPWidgetCoordinator {
     CancelSummonOrManaAdd cancelSummonOrManaAdd;
     PreManaAdd preManaAdd;
     ManaAdd manaAdd;
+    CancelManaCard cancelManaCard;
+    DrawCardFromDeck drawCardFromDeck;
 
     //Array list for Simulations
     ArrayList<Simulate> simulationList;
@@ -205,13 +216,16 @@ public class PvPWidgetCoordinator {
         ZoomButton = new RectangleButtonWidget();
 
         // Initialize GLObject
+        Base = new XZRectangle(new GLMaterial(new float[] {0.8f, 0.8f, 0.8f}, new float[] {0.8f, 0.8f, 0.8f},
+                new float[] {0.1f, 0.1f, 0.1f}, 10.0f), 2.0f, 2.0f, 0);
+
         cube = new Cube(new GLMaterial(new float[] {0.8f, 0.8f, 0.8f}, new float[] {0.8f, 0.8f, 0.8f},
                 new float[] {0.1f, 0.1f, 0.1f}, 10.0f), AssetsAndResource.CardWidth, AssetsAndResource.CardLength * 40f, AssetsAndResource.CardHeight, true);
 
         glCard = new Cube(new GLMaterial(new float[] {0.8f, 0.8f, 0.8f}, new float[] {0.8f, 0.8f, 0.8f},
                 new float[] {0.1f, 0.1f, 0.1f}, 10.0f), AssetsAndResource.CardWidth, AssetsAndResource.CardLength, AssetsAndResource.CardHeight, true);
 
-        glRbutton = new ScreenRectangle(0.1f, 0.1f);
+        glRbutton = new ScreenRectangle(0.2f, 0.2f);
 
         // Link to its GLObject (Zones)
         Graveyard.LinkGLobject(cube, glCard);
@@ -268,10 +282,10 @@ public class PvPWidgetCoordinator {
         opponentBattleZoneLayout = new BattleZoneLayout();
         manaZoneLayout = new ManaZoneLayout();
         opponentManaZoneLayout = new ManaZoneLayout();
-        deckLayout = new CardStackZoneLayout();
-        opponentDeckLayout = new CardStackZoneLayout();
-        graveyardLayout = new CardStackZoneLayout();
-        opponentGraveyardLayout = new CardStackZoneLayout();
+        deckLayout = new CardStackZoneLayout(this);
+        opponentDeckLayout = new CardStackZoneLayout(this);
+        graveyardLayout = new CardStackZoneLayout(this);
+        opponentGraveyardLayout = new CardStackZoneLayout(this);
         handZoneLayout = new HandZoneLayout();
 
         battleZoneLayout.InitializeBattleZoneLayout(AssetsAndResource.MazeHeight/10, AssetsAndResource.MazeWidth,
@@ -299,9 +313,10 @@ public class PvPWidgetCoordinator {
 
         // Initialize Control Button
         controllerLayout = new ControllerLayout();
+        controllerLayout.setControllerOrientation(true);
 
         // Added Button To the Controller Layout
-        controllerLayout.AddButtonWidget(ControllerButton.Accept, AttackButton);
+        controllerLayout.AddButtonWidget(ControllerButton.Accept, AcceptButton);
         controllerLayout.AddButtonWidget(ControllerButton.Decline, DeclineButton);
         controllerLayout.AddButtonWidget(ControllerButton.SummonOrCast, SummonOrCastButton);
         controllerLayout.AddButtonWidget(ControllerButton.AddToMana, AddToManaButton);
@@ -309,8 +324,6 @@ public class PvPWidgetCoordinator {
         controllerLayout.AddButtonWidget(ControllerButton.Block, BlockButton);
         controllerLayout.AddButtonWidget(ControllerButton.TapAbility, TapAbilityButton);
         controllerLayout.AddButtonWidget(ControllerButton.Zoom, ZoomButton);
-
-
 
         // UI Requests
         MasterRequests = new UIRequest();
@@ -333,6 +346,7 @@ public class PvPWidgetCoordinator {
         SelectCardMode = CardSelectMode.OFF;
         start_touch_x = 0;
         start_touch_y = 0;
+        basePosition = new WidgetPosition();
     }
 
     private void ResetFlags() {
@@ -352,10 +366,12 @@ public class PvPWidgetCoordinator {
         manaZoneLayout.SetDraggingMode(false);
         opponentManaZoneLayout.SetDraggingMode(false);
         handZoneLayout.SetDraggingMode(false);
+
+        controllerLayout.setControllerOrientation(true);
     }
 
     public void SetFlags(ZoomLevel zoomLevel, Expand[] expands, Drag[] drags, boolean flushButtons,
-                         CardSelectMode selectCardMode) {
+                         CardSelectMode selectCardMode, boolean controllerOrientation) {
         ResetFlags();
 
         this.zoomLevel= zoomLevel;
@@ -365,6 +381,8 @@ public class PvPWidgetCoordinator {
             this.zoomLevel = ZoomLevel.Button;
         }
 
+        controllerLayout.setControllerOrientation(controllerOrientation);
+
         for (int i = 0; i < expands.length; i++) {
             Expand expand = expands[i];
 
@@ -372,10 +390,10 @@ public class PvPWidgetCoordinator {
                 case Battle_Z:
                     battleZoneLayout.setExpandMode(true);
                     break;
-                case  Battle_OZ:
+                case Battle_OZ:
                     opponentDeckLayout.setExpandMode(true);
                     break;
-                case  Mana_Z:
+                case Mana_Z:
                     manaZoneLayout.setExpandMode(true);
                     break;
                 case Mana_OZ:
@@ -566,6 +584,18 @@ public class PvPWidgetCoordinator {
                     simulationList.add(cancelSummonOrManaAdd);
                 }
                 break;
+            case CancelManaCard:
+                cancelManaCard.Start(null);
+                if (!simulationList.contains(cancelManaCard)) {
+                    simulationList.add(cancelManaCard);
+                }
+                break;
+            case DrawCardFromDeck:
+                drawCardFromDeck.Start((int)obj[1]);
+                if (!simulationList.contains(drawCardFromDeck)) {
+                    simulationList.add(drawCardFromDeck);
+                }
+                break;
             default:
         }
     }
@@ -663,6 +693,10 @@ public class PvPWidgetCoordinator {
                 return manaAdd.IsFinish();
             case CancelSummonOrManaAdd:
                 return cancelSummonOrManaAdd.IsFinish();
+            case CancelManaCard:
+                return cancelManaCard.IsFinish();
+            case DrawCardFromDeck:
+                return drawCardFromDeck.IsFinish();
             default:
                 return true;
         }
@@ -722,19 +756,19 @@ public class PvPWidgetCoordinator {
 
                     if (intersectingPoint.z >= 0) {
                         if (Math.abs(intersectingPoint.x) <= (AssetsAndResource.MazeWidth/2)) {
-                            if (Math.abs(intersectingPoint.z - (AssetsAndResource.MazeHeight / 10)) <= (AssetsAndResource.MazeHeight / 5)) {
+                            if (Math.abs(intersectingPoint.z - (AssetsAndResource.MazeHeight / 10)) <= (AssetsAndResource.MazeHeight / 10)) {
                                 widgetTouchEvent = battleZoneLayout.TouchResponse(touchEvents);
                                 if ((widgetTouchEvent != null) && (widgetTouchEvent.isFocus != WidgetTouchFocusLevel.Low)) {
                                     FocusLayout = battleZoneLayout;
                                 }
-                            } else if (Math.abs(intersectingPoint.z - ((3f * AssetsAndResource.MazeHeight)/10)) <= (AssetsAndResource.MazeHeight / 5)) {
+                            } else if (Math.abs(intersectingPoint.z - ((3f * AssetsAndResource.MazeHeight)/10)) <= (AssetsAndResource.MazeHeight / 10)) {
                                 widgetTouchEvent = manaZoneLayout.TouchResponse(touchEvents);
                                 if ((widgetTouchEvent != null) && (widgetTouchEvent.isFocus != WidgetTouchFocusLevel.Low)) {
                                     FocusLayout = manaZoneLayout;
                                 }
                             }
 
-                            if ((widgetTouchEvent == null) && (input.getNormalizedX(0) < -0.85f) &&
+                            if ((widgetTouchEvent == null) && (input.getNormalizedX(0) < -(0.85f * AssetsAndResource.aspectRatio)) &&
                                     (input.getNormalizedY(0) < -0.85f)) {
                                 widgetTouchEvent = fixedButtonsLayout.TouchResponse(touchEvents);
                             }
@@ -746,9 +780,13 @@ public class PvPWidgetCoordinator {
                                 }
                             }
                         } else {
-                            if ((input.getNormalizedX(0) < -0.85f) && ((Math.abs(input.getNormalizedY(0)) < 0.1f) ||
-                                    (input.getNormalizedY(0) < -0.85f))) {
+                            if (((input.getNormalizedX(0) < -(0.85f * AssetsAndResource.aspectRatio)) && (input.getNormalizedY(0) < -0.85f)) ||
+                                    ((input.getNormalizedX(0) > (0.9f * AssetsAndResource.aspectRatio)) && (Math.abs(input.getNormalizedY(0) - 0.3f) < 0.4f))) {
                                 widgetTouchEvent = fixedButtonsLayout.TouchResponse(touchEvents);
+                            }
+                            if (controllerLayout.getControllerOrientation() && (widgetTouchEvent == null) &&
+                                    (input.getNormalizedX(0) < -(0.85f * AssetsAndResource.aspectRatio))) {
+                                widgetTouchEvent = controllerLayout.TouchResponse(touchEvents);
                             }
                             if ((widgetTouchEvent == null) && (intersectingPoint.z > (0.40f * AssetsAndResource.MazeHeight))) {
                                 widgetTouchEvent = handZoneLayout.TouchResponse(touchEvents);
@@ -786,22 +824,28 @@ public class PvPWidgetCoordinator {
                             }
                         }
                     } else {
-                        if (((input.getNormalizedX(0) < -0.8f) && ((input.getNormalizedY(0) > 0.8f) || (Math.abs(input.getNormalizedY(0)) < 0.1f))) ||
-                                ((input.getNormalizedX(0) > 0.85f) && (input.getNormalizedY(0) > 0.85f))) {
+                        if (((input.getNormalizedX(0) < -(0.8f * AssetsAndResource.aspectRatio)) && (input.getNormalizedY(0) > 0.8f)) ||
+                                ((input.getNormalizedX(0) > (0.9f * AssetsAndResource.aspectRatio)) && (Math.abs(input.getNormalizedY(0) - 0.3f) < 0.4f)) ||
+                                ((input.getNormalizedX(0) > (0.85f * AssetsAndResource.aspectRatio)) && (input.getNormalizedY(0) > 0.85f))) {
                             widgetTouchEvent = fixedButtonsLayout.TouchResponse(touchEvents);
                         }
-                        if ((widgetTouchEvent == null) && (input.getNormalizedY(0) > 0.8f)) {
+                        if (!controllerLayout.getControllerOrientation() && (widgetTouchEvent == null) &&
+                                (input.getNormalizedY(0) > 0.8f)) {
+                            widgetTouchEvent = controllerLayout.TouchResponse(touchEvents);
+                        }
+                        if (controllerLayout.getControllerOrientation() && (widgetTouchEvent == null) &&
+                                (input.getNormalizedX(0) < -(0.85f * AssetsAndResource.aspectRatio))) {
                             widgetTouchEvent = controllerLayout.TouchResponse(touchEvents);
                         }
 
                         if (widgetTouchEvent == null) {
                             if (Math.abs(intersectingPoint.x) <= (AssetsAndResource.MazeWidth / 2)) {
-                                if (Math.abs(intersectingPoint.z + (AssetsAndResource.MazeHeight / 10)) <= (AssetsAndResource.MazeHeight / 5)) {
+                                if (Math.abs(intersectingPoint.z + (AssetsAndResource.MazeHeight / 10)) <= (AssetsAndResource.MazeHeight / 10)) {
                                     widgetTouchEvent = opponentBattleZoneLayout.TouchResponse(touchEvents);
                                     if ((widgetTouchEvent != null) && (widgetTouchEvent.isFocus != WidgetTouchFocusLevel.Low)) {
                                         FocusLayout = opponentBattleZoneLayout;
                                     }
-                                } else if (Math.abs(intersectingPoint.z + ((3f * AssetsAndResource.MazeHeight) / 10)) <= (AssetsAndResource.MazeHeight / 5)) {
+                                } else if (Math.abs(intersectingPoint.z + ((3f * AssetsAndResource.MazeHeight) / 10)) <= (AssetsAndResource.MazeHeight / 10)) {
                                     widgetTouchEvent = opponentManaZoneLayout.TouchResponse(touchEvents);
                                     if ((widgetTouchEvent != null) && (widgetTouchEvent.isFocus != WidgetTouchFocusLevel.Low)) {
                                         FocusLayout = opponentManaZoneLayout;
@@ -853,19 +897,19 @@ public class PvPWidgetCoordinator {
 
                             if (intersectingPoint.z >= 0) {
                                 if (Math.abs(intersectingPoint.x) <= (AssetsAndResource.MazeWidth/2)) {
-                                    if (Math.abs(intersectingPoint.z - (AssetsAndResource.MazeHeight / 10)) <= (AssetsAndResource.MazeHeight / 5)) {
+                                    if (Math.abs(intersectingPoint.z - (AssetsAndResource.MazeHeight / 10)) <= (AssetsAndResource.MazeHeight / 10)) {
                                         widgetTouchEvent = battleZoneLayout.TouchResponse(touchEvents);
                                         if ((widgetTouchEvent != null) && (widgetTouchEvent.isFocus != WidgetTouchFocusLevel.Low)) {
                                             FocusLayout = battleZoneLayout;
                                         }
-                                    } else if (Math.abs(intersectingPoint.z - ((3f * AssetsAndResource.MazeHeight)/10)) <= (AssetsAndResource.MazeHeight / 5)) {
+                                    } else if (Math.abs(intersectingPoint.z - ((3f * AssetsAndResource.MazeHeight)/10)) <= (AssetsAndResource.MazeHeight / 10)) {
                                         widgetTouchEvent = manaZoneLayout.TouchResponse(touchEvents);
                                         if ((widgetTouchEvent != null) && (widgetTouchEvent.isFocus != WidgetTouchFocusLevel.Low)) {
                                             FocusLayout = manaZoneLayout;
                                         }
                                     }
 
-                                    if ((widgetTouchEvent == null) && (event.normalizedX < -0.85f) &&
+                                    if ((widgetTouchEvent == null) && (event.normalizedX < -(0.85f * AssetsAndResource.aspectRatio)) &&
                                             (event.normalizedY < -0.85f)) {
                                         widgetTouchEvent = fixedButtonsLayout.TouchResponse(touchEvents);
                                     }
@@ -876,9 +920,13 @@ public class PvPWidgetCoordinator {
                                         }
                                     }
                                 } else {
-                                    if ((event.normalizedX < -0.85f) && ((Math.abs(event.normalizedY) < 0.1f) ||
-                                            (event.normalizedY < -0.85f))) {
+                                    if (((event.normalizedX < -(0.85f * AssetsAndResource.aspectRatio)) && (event.normalizedY < -0.85f)) ||
+                                            ((event.normalizedX > (0.9f * AssetsAndResource.aspectRatio)) && (Math.abs(event.normalizedY - 0.3f) < 0.4f))) {
                                         widgetTouchEvent = fixedButtonsLayout.TouchResponse(touchEvents);
+                                    }
+                                    if (controllerLayout.getControllerOrientation() && (widgetTouchEvent == null) &&
+                                            (event.normalizedX < -(0.85f * AssetsAndResource.aspectRatio))) {
+                                        widgetTouchEvent = controllerLayout.TouchResponse(touchEvents);
                                     }
                                     if ((widgetTouchEvent == null) && (intersectingPoint.z > (0.40f * AssetsAndResource.MazeHeight))) {
                                         widgetTouchEvent = handZoneLayout.TouchResponse(touchEvents);
@@ -916,22 +964,28 @@ public class PvPWidgetCoordinator {
                                     }
                                 }
                             } else {
-                                if (((event.normalizedX < -0.8f) && ((event.normalizedY > 0.8f) || (Math.abs(event.normalizedY) < 0.1f))) ||
-                                        ((event.normalizedX > 0.85f) && (event.normalizedY > 0.85f))) {
+                                if (((event.normalizedX < -(0.8f * AssetsAndResource.aspectRatio)) && (event.normalizedY > 0.8f)) ||
+                                        ((event.normalizedX > (0.9f * AssetsAndResource.aspectRatio)) && (Math.abs(event.normalizedY - 0.3f) < 0.4f)) ||
+                                        ((event.normalizedX > (0.85f * AssetsAndResource.aspectRatio)) && (event.normalizedY > 0.85f))) {
                                     widgetTouchEvent = fixedButtonsLayout.TouchResponse(touchEvents);
                                 }
-                                if ((widgetTouchEvent == null) && (event.normalizedY > 0.8f)) {
+                                if (!controllerLayout.getControllerOrientation() && (widgetTouchEvent == null) &&
+                                        (event.normalizedY > 0.8f)) {
+                                    widgetTouchEvent = controllerLayout.TouchResponse(touchEvents);
+                                }
+                                if (controllerLayout.getControllerOrientation() && (widgetTouchEvent == null) &&
+                                        (event.normalizedX < -(0.85f * AssetsAndResource.aspectRatio))) {
                                     widgetTouchEvent = controllerLayout.TouchResponse(touchEvents);
                                 }
 
                                 if (widgetTouchEvent == null) {
                                     if (Math.abs(intersectingPoint.x) <= (AssetsAndResource.MazeWidth / 2)) {
-                                        if (Math.abs(intersectingPoint.z + (AssetsAndResource.MazeHeight / 10)) <= (AssetsAndResource.MazeHeight / 5)) {
+                                        if (Math.abs(intersectingPoint.z + (AssetsAndResource.MazeHeight / 10)) <= (AssetsAndResource.MazeHeight / 10)) {
                                             widgetTouchEvent = opponentBattleZoneLayout.TouchResponse(touchEvents);
                                             if ((widgetTouchEvent != null) && (widgetTouchEvent.isFocus != WidgetTouchFocusLevel.Low)) {
                                                 FocusLayout = opponentBattleZoneLayout;
                                             }
-                                        } else if (Math.abs(intersectingPoint.z + ((3f * AssetsAndResource.MazeHeight) / 10)) <= (AssetsAndResource.MazeHeight / 5)) {
+                                        } else if (Math.abs(intersectingPoint.z + ((3f * AssetsAndResource.MazeHeight) / 10)) <= (AssetsAndResource.MazeHeight / 10)) {
                                             widgetTouchEvent = opponentManaZoneLayout.TouchResponse(touchEvents);
                                             if ((widgetTouchEvent != null) && (widgetTouchEvent.isFocus != WidgetTouchFocusLevel.Low)) {
                                                 FocusLayout = opponentManaZoneLayout;
@@ -1027,6 +1081,30 @@ public class PvPWidgetCoordinator {
 
                     AssetsAndResource.widgetTouchEventPool.free(widgetTouchEvent);
                     return;
+                }
+
+                if (!widgetTouchEvent.isTouchedDown &&
+                        (widgetTouchEvent.isFocus == WidgetTouchFocusLevel.Low) && (widgetTouchEvent.object instanceof ArrayList)) {
+                    selectedCardTracker.setSelectedCard(null);
+                    if (FlushButtons) {
+                        controllerLayout.unsetControllerButton(true);
+                    } else {
+                        controllerLayout.removeZoomButton();
+                    }
+                    if (((ArrayList)widgetTouchEvent.object).size() > 0) {
+                        Cards card = (Cards)((ArrayList)widgetTouchEvent.object).get(0);
+                        int zone = card.GridPosition().getZone();
+
+                        if (zone == Maze.deck) {
+                            MasterRequests.setRequest(Requests.DeckStack, false);
+                        } else if (zone == Maze.Opponent_deck) {
+                            MasterRequests.setRequest(Requests.OppDeckStack, false);
+                        } else if (zone == Maze.graveyard) {
+                            MasterRequests.setRequest(Requests.Graveyard, false);
+                        } else if (zone == Maze.Opponent_graveyard) {
+                            MasterRequests.setRequest(Requests.OppGraveyard, false);
+                        }
+                    }
                 }
 
                 if (widgetTouchEvent.isFocus == WidgetTouchFocusLevel.Medium) {
@@ -1145,7 +1223,7 @@ public class PvPWidgetCoordinator {
                 WidgetTouchEvent widgetTouchEvent = null;
 
                 if (input.isTouchDown(0)) {
-                    if ((input.getNormalizedX(0) < -0.8f) && (input.getNormalizedY(0) > 0.8f)) {
+                    if ((input.getNormalizedX(0) < -(0.8f * AssetsAndResource.aspectRatio)) && (input.getNormalizedY(0) > 0.8f)) {
                         widgetTouchEvent = fixedButtonsLayout.TouchResponse(touchEvents);
                     }
                     if ((widgetTouchEvent == null) && (input.getNormalizedY(0) > 0.8f)) {
@@ -1159,7 +1237,7 @@ public class PvPWidgetCoordinator {
                     for (int j = 0; j < touchEvents.size(); j++) {
                         event = touchEvents.get(j);
                         if (event.type == Input.TouchEvent.TOUCH_UP) {
-                            if ((event.normalizedX < -0.8f) && (event.normalizedY > 0.8f)) {
+                            if ((event.normalizedX < -(0.8f * AssetsAndResource.aspectRatio)) && (event.normalizedY > 0.8f)) {
                                 widgetTouchEvent = fixedButtonsLayout.TouchResponse(touchEvents);
                             }
                             if ((widgetTouchEvent == null) && (event.normalizedY > 0.8f)) {
@@ -1323,6 +1401,20 @@ public class PvPWidgetCoordinator {
                             MasterRequests.setRequest(Requests.SummonOrCast, false);
                             MasterRequests.setCard(selectedCardTracker.getSelectedCard());
                         }
+                    } else {
+                        if (SelectCardMode == CardSelectMode.OFF) {
+                            selectedCardTracker.setSelectedCard((Cards) widgetTouchEvent.object);
+                            controllerLayout.addZoomButton();
+                            MasterRequests.setRequest(Requests.CardSelected, false);
+                            MasterRequests.setCard(selectedCardTracker.getSelectedCard());
+                        } else {
+                            if (widgetTouchEvent.wasUnderTheStack == false) {
+                                selectedCardTracker.setSelectedCard((Cards) widgetTouchEvent.object);
+                                controllerLayout.addZoomButton();
+                                MasterRequests.setRequest(Requests.CardSelected, false);
+                                MasterRequests.setCard(selectedCardTracker.getSelectedCard());
+                            }
+                        }
                     }
                     FocusLayout = null;
                     setWidgetCoordinatorListener(LowFocusListener);
@@ -1331,8 +1423,8 @@ public class PvPWidgetCoordinator {
                 } else if (FocusLayout == manaZoneLayout) {
                     Input input = AssetsAndResource.game.getInput();
                     boolean moved = false;
-                    if ((Math.abs(input.getNormalizedX(0) - start_touch_x) > 0.01) ||
-                            (Math.abs(input.getNormalizedY(0) - start_touch_y) > 0.01)) {
+                    if ((Math.abs(input.getNormalizedX(0) - start_touch_x) > AssetsAndResource.CardWidth/2) ||
+                            (Math.abs(input.getNormalizedY(0) - start_touch_y) > AssetsAndResource.CardHeight/2)) {
                         moved = true;
                     }
                     if (widgetTouchEvent.isFocus == WidgetTouchFocusLevel.Medium) {
@@ -1352,14 +1444,49 @@ public class PvPWidgetCoordinator {
                     if (widgetTouchEvent.isFocus == WidgetTouchFocusLevel.Low) {
                         if (!selectedCardTracker.IsSelectedCard((Cards) widgetTouchEvent.object) ||
                                 selectedCardTracker.IsSelectedPileCard((Cards) widgetTouchEvent.object)) {
-                            MasterRequests.setRequest(Requests.CardSelected, true);
-                            MasterRequests.setCard(selectedCardTracker.getSelectedCard());
-                        } else {
-                            if (((Cards)widgetTouchEvent.object).GridPosition().getZone() != Maze.manaZone) {
-                                throw new RuntimeException("Invalid Condition");
+                            if (moved) {
+                                MasterRequests.setRequest(Requests.CardSelected, true);
+                                MasterRequests.setCard(selectedCardTracker.getSelectedCard());
+                            } else if (!selectedCardTracker.IsSelectedPileCard((Cards) widgetTouchEvent.object)){
+                                if (SelectCardMode == CardSelectMode.OFF) {
+                                    selectedCardTracker.setSelectedCard((Cards) widgetTouchEvent.object);
+                                    controllerLayout.addZoomButton();
+                                    MasterRequests.setRequest(Requests.CardSelected, false);
+                                    MasterRequests.setCard(selectedCardTracker.getSelectedCard());
+                                } else {
+                                    if (widgetTouchEvent.wasUnderTheStack == false) {
+                                        selectedCardTracker.setSelectedCard((Cards) widgetTouchEvent.object);
+                                        controllerLayout.addZoomButton();
+                                        MasterRequests.setRequest(Requests.CardSelected, false);
+                                        MasterRequests.setCard(selectedCardTracker.getSelectedCard());
+                                    }
+                                }
                             }
-                            transientManaCard.Start(getWidgetForCard((Cards)widgetTouchEvent.object));
-                            selectedCardTracker.AddCardToSelectedList((Cards) widgetTouchEvent.object, true);
+                        } else {
+                            if (moved) {
+                                if (((Cards) widgetTouchEvent.object).GridPosition().getZone() != Maze.manaZone) {
+                                    throw new RuntimeException("Invalid Condition");
+                                }
+                                transientManaCard.Start(getWidgetForCard((Cards) widgetTouchEvent.object));
+                                if (!simulationList.contains(transientManaCard)) {
+                                    simulationList.add(transientManaCard);
+                                }
+                                selectedCardTracker.AddCardToSelectedList((Cards) widgetTouchEvent.object, true);
+                            } else {
+                                if (SelectCardMode == CardSelectMode.OFF) {
+                                    selectedCardTracker.setSelectedCard((Cards) widgetTouchEvent.object);
+                                    controllerLayout.addZoomButton();
+                                    MasterRequests.setRequest(Requests.CardSelected, false);
+                                    MasterRequests.setCard(selectedCardTracker.getSelectedCard());
+                                } else {
+                                    if (widgetTouchEvent.wasUnderTheStack == false) {
+                                        selectedCardTracker.setSelectedCard((Cards) widgetTouchEvent.object);
+                                        controllerLayout.addZoomButton();
+                                        MasterRequests.setRequest(Requests.CardSelected, false);
+                                        MasterRequests.setCard(selectedCardTracker.getSelectedCard());
+                                    }
+                                }
+                            }
                         }
                         FocusLayout = null;
                         setWidgetCoordinatorListener(LowFocusListener);
@@ -1381,6 +1508,8 @@ public class PvPWidgetCoordinator {
         cancelSummonOrManaAdd = new CancelSummonOrManaAdd(handZoneLayout);
         preManaAdd = new PreManaAdd(handZoneLayout);
         manaAdd = new ManaAdd(handZoneLayout, manaZoneLayout);
+        cancelManaCard = new CancelManaCard(manaZoneLayout);
+        drawCardFromDeck = new DrawCardFromDeck(handZoneLayout, deckLayout);
     }
 
     public CardWidget getWidgetForCard(Cards card) {
@@ -1442,8 +1571,6 @@ public class PvPWidgetCoordinator {
     }
 
     public void update(float deltaTime, float totalTime) {
-        SimulationUpdate();
-
         battleZoneLayout.update(deltaTime, totalTime);
         opponentBattleZoneLayout.update(deltaTime, totalTime);
         manaZoneLayout.update(deltaTime, totalTime);
@@ -1455,9 +1582,22 @@ public class PvPWidgetCoordinator {
         handZoneLayout.update(deltaTime, totalTime);
 
         controllerLayout.update(deltaTime, totalTime);
+
+        // Must be last
+        SimulationUpdate();
     }
 
-    public void draw(){
+    public void draw() {
+        AssetsAndResource.ResetCardUsageCount();
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glViewport(0, 0, AssetsAndResource.game.getframeBufferWidth(), AssetsAndResource.game.getframeBufferHeight());
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LEQUAL);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        MatrixHelper.setTranslateRotateScale(basePosition);
+        DrawObjectHelper.drawOneRectangle(Base, AssetsAndResource.Base, ShadowEnable);
         battleZoneLayout.draw();
         opponentBattleZoneLayout.draw();
         manaZoneLayout.draw();

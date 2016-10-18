@@ -11,18 +11,18 @@ import koustav.duelmasters.main.androidgameopenglobjectmodels.XZRectangle;
  */
 public class DrawObjectHelper {
 
-    public static void drawOneCard(Cards card, XZRectangle glcard, boolean shadowEnable) {
+    public static void drawOneRectangle(XZRectangle glret, int texture, boolean shadowEnable) {
         AssetsAndResource.textureShaderProgramLight.useProgram();
         AssetsAndResource.textureShaderProgramLight.setUniforms(AssetsAndResource.modelViewMatrix, AssetsAndResource.it_modelViewMatrix,
                 ((AssetsAndResource.game.getGLFragColoringSkip() == 0)? AssetsAndResource.modelViewProjectionMatrix :
-                        AssetsAndResource.ShadowMatrix), AssetsAndResource.ShadowMatrix, AssetsAndResource.Light, glcard.getMaterial(),
-                AssetsAndResource.getCardTexture(card.getNameID()), AssetsAndResource.ShadowBuffer.getrenderTex(),
+                        AssetsAndResource.ShadowMatrix), AssetsAndResource.ShadowMatrix, AssetsAndResource.Light, glret.getMaterial(),
+                texture, AssetsAndResource.ShadowBuffer.getrenderTex(),
                 ((AssetsAndResource.game.getGLFragColoringSkip() == 0)? shadowEnable: false));
 
-        glcard.bindData(AssetsAndResource.textureShaderProgramLight.getPositionAttributeLocation(),
+        glret.bindData(AssetsAndResource.textureShaderProgramLight.getPositionAttributeLocation(),
                 AssetsAndResource.textureShaderProgramLight.getNormalAttributeLocation(),
                 AssetsAndResource.textureShaderProgramLight.getTextureCoordinatesAttributeLocation());
-        glcard.draw();
+        glret.draw();
     }
 
     public static void drawOneCube(Cube cube, int[] textureArrays, boolean shadowEnable) {

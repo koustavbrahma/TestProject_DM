@@ -23,10 +23,15 @@ public class ControllerLayout implements Layout {
 
     float k1;
     float k2;
-
-    float default_gap;
-    float max_span;
-    float Y;
+    boolean vertical;
+    float V_default_gap;
+    float V_max_span;
+    float V_X;
+    float V_Y;
+    float H_default_gap;
+    float H_max_span;
+    float H_X;
+    float H_Y;
 
     ArrayList<ControllerButton> TouchedButtons;
     ArrayList<WidgetTouchEvent> widgetTouchEventList;
@@ -39,13 +44,31 @@ public class ControllerLayout implements Layout {
 
         k1 = 4f;
         k2 = 4f;
-
-        default_gap = 0.4f;
-        max_span = 1.4f;
-        Y = 0.85f;
+        vertical = true;
+        H_default_gap = 0.4f *(AssetsAndResource.aspectRatio/ 1.778f);
+        H_max_span = 1.4f *(AssetsAndResource.aspectRatio/ 1.778f);
+        H_X = 0f;
+        H_Y = 0.85f;
+        V_default_gap = 0.4f;
+        V_max_span = 0.8f;
+        V_X = -(0.92f * AssetsAndResource.aspectRatio);
+        V_Y = -0.2f;
 
         TouchedButtons = new ArrayList<ControllerButton>();
         widgetTouchEventList = new ArrayList<WidgetTouchEvent>();
+    }
+
+    public void setControllerOrientation(boolean val) {
+        if (vertical != val) {
+            ControllerButton[] controllerButtons = Buttons.toArray(new ControllerButton[Buttons.size()]);
+            unsetControllerButton(true);
+            setControllerButton(controllerButtons);
+        }
+        vertical = val;
+    }
+
+    public boolean getControllerOrientation() {
+        return vertical;
     }
 
     @Override
@@ -61,6 +84,9 @@ public class ControllerLayout implements Layout {
 
     @Override
     public void draw() {
+        if (selectedButton == null) {
+            return;
+        }
         int index = Buttons.indexOf(selectedButton);
         ButtonSlotLayout layout;
 
@@ -94,19 +120,19 @@ public class ControllerLayout implements Layout {
         widgetTouchEventList.clear();
 
         int size = Buttons.size();
-        float gap = default_gap;
-        float actualLength = default_gap * (size - 1);
-        if (actualLength > max_span) {
-            gap = (max_span)/ (size -1);
+        float gap = vertical ? V_default_gap: H_default_gap;
+        float actualLength = vertical ? (V_default_gap * (size - 1)) : (H_default_gap * (size - 1));
+        if (actualLength > (vertical ? V_max_span: H_max_span)) {
+            gap = (vertical? V_max_span: H_max_span)/ (size -1);
         }
         WidgetTouchEvent widgetTouchEvent = null;
         float totalLength = gap * (size);
-        float startingPoint = (gap * (size - 1)) /2;
+        float startingPoint = (vertical ? V_Y: H_X) - (gap * (size - 1)) /2;
 
         Input input = AssetsAndResource.game.getInput();
         if (input.isTouchDown(0)) {
-            float relative_x = input.getNormalizedX(0);
-            float relative_y = input.getNormalizedY(0) - Y;
+            float relative_x = input.getNormalizedX(0) - (vertical? V_X : H_X);
+            float relative_y = input.getNormalizedY(0) - (vertical ? V_Y : H_Y);
 
             float width = Math.abs(relative_x);
             float length = Math.abs(relative_y);
@@ -114,8 +140,9 @@ public class ControllerLayout implements Layout {
             float x;
             int index;
 
-            if (width <= totalLength/2 && length <= gap/2) {
-                x = (relative_x + startingPoint) / gap;
+            if (width <= (vertical ? V_default_gap : totalLength/2) &&
+                    length <= (vertical ? totalLength/2 : H_default_gap)) {
+                x = ((vertical? relative_y : relative_x) - startingPoint) / gap;
 
                 if (x > Buttons.size()) {
                     index = Buttons.size() - 1;
@@ -214,8 +241,8 @@ public class ControllerLayout implements Layout {
                 event = touchEvents.get(j);
                 widgetTouchEvent = null;
                 if (event.type == Input.TouchEvent.TOUCH_UP) {
-                    float relative_x = event.normalizedX;
-                    float relative_y = event.normalizedY - Y;
+                    float relative_x = event.normalizedX - (vertical ? V_X : H_X);
+                    float relative_y = event.normalizedY - (vertical ? V_Y : H_Y);
 
                     float width = Math.abs(relative_x);
                     float length = Math.abs(relative_y);
@@ -223,8 +250,9 @@ public class ControllerLayout implements Layout {
                     float x;
                     int index;
 
-                    if (width <= totalLength/2 && length <= gap/2) {
-                        x = (relative_x + startingPoint) / gap;
+                    if (width <= (vertical ? V_default_gap : totalLength/2) &&
+                            length <= (vertical ? totalLength/2 : H_default_gap)) {
+                        x = ((vertical ? relative_y : relative_x) - startingPoint) / gap;
 
                         if (x > Buttons.size()) {
                             index = Buttons.size() - 1;
@@ -326,7 +354,7 @@ public class ControllerLayout implements Layout {
 
     public void AddButtonWidget(ControllerButton button, RectangleButtonWidget widget) {
         ButtonSlotLayout layout = new ButtonSlotLayout();
-        layout.intializeButton(0, 1.1f, 0, widget, k1, k2);
+        layout.intializeButton(vertical ? V_X - V_default_gap : H_X, vertical ? V_Y : H_Y + H_default_gap, 0, widget, k1, k2);
         ControllerTypeToLayout.remove(button);
         ControllerTypeToLayout.put(button, layout);
     }
@@ -350,17 +378,17 @@ public class ControllerLayout implements Layout {
             if (!Buttons.contains(key)) {
                 ButtonSlotLayout layout = ControllerTypeToLayout.get(key);
                 if (layout != null) {
-                    layout.setButtonPosition(0, 1.1f);
+                    layout.setButtonPosition(vertical ? V_X - V_default_gap : H_X, vertical ? V_Y : H_Y + H_default_gap);
                     layout.forceLoadButtonPosition();
                 }
             }
         }
 
         int size = Buttons.size();
-        float gap = default_gap;
-        float actualLength = default_gap * (size - 1);
-        if (actualLength > max_span) {
-            gap = (max_span)/ (size -1);
+        float gap = vertical ? V_default_gap: H_default_gap;
+        float actualLength = vertical ? (V_default_gap * (size - 1)) : (H_default_gap * (size - 1));
+        if (actualLength > (vertical ? V_max_span: H_max_span)) {
+            gap = (vertical? V_max_span: H_max_span)/ (size -1);
         }
         float length = gap * (size - 1);
 
@@ -368,7 +396,8 @@ public class ControllerLayout implements Layout {
             ControllerButton button = Buttons.get(i);
             ButtonSlotLayout layout = ControllerTypeToLayout.get(button);
             if (layout != null) {
-                layout.setButtonPosition((-length / 2) + (gap * i), Y);
+                layout.setButtonPosition(vertical ? V_X : ((-length / 2) + (gap * i) + H_X),
+                        vertical ? ((-length / 2) + (gap * i)) + V_Y : H_Y);
             }
         }
     }
@@ -396,9 +425,29 @@ public class ControllerLayout implements Layout {
             if (!Buttons.contains(key)) {
                 ButtonSlotLayout layout = ControllerTypeToLayout.get(key);
                 if (layout != null) {
-                    layout.setButtonPosition(0, 1.1f);
+                    layout.setButtonPosition(vertical ? V_X - V_default_gap : H_X, vertical ? V_Y : H_Y + H_default_gap);
                     layout.forceLoadButtonPosition();
                 }
+            }
+        }
+
+        if (Buttons.size() == 0) {
+            return;
+        }
+        int size = Buttons.size();
+        float gap = vertical ? V_default_gap : H_default_gap;
+        float actualLength = vertical ? (V_default_gap * (size - 1)) : (H_default_gap * (size - 1));
+        if (actualLength > (vertical ? V_max_span : H_max_span)) {
+            gap = (vertical? V_max_span: H_max_span)/ (size -1);
+        }
+        float length = gap * (size - 1);
+
+        for (int i = 0; i < Buttons.size(); i++) {
+            ControllerButton button = Buttons.get(i);
+            ButtonSlotLayout layout = ControllerTypeToLayout.get(button);
+            if (layout != null) {
+                layout.setButtonPosition(vertical ? V_X : ((-length / 2) + (gap * i) + H_X),
+                        vertical ? ((-length / 2) + (gap * i)) + V_Y : H_Y);
             }
         }
     }
@@ -420,15 +469,15 @@ public class ControllerLayout implements Layout {
             Buttons.remove(ControllerButton.Zoom);
             ButtonSlotLayout layout = ControllerTypeToLayout.get(ControllerButton.Zoom);
             if (layout != null) {
-                layout.setButtonPosition(0, 1.1f);
+                layout.setButtonPosition(vertical ? V_X - V_default_gap : H_X, vertical ? V_Y : H_Y + H_default_gap);
                 layout.forceLoadButtonPosition();
             }
 
             int size = Buttons.size();
-            float gap = default_gap;
-            float actualLength = default_gap * (size - 1);
-            if (actualLength > max_span) {
-                gap = (max_span)/ (size -1);
+            float gap = vertical ? V_default_gap : H_default_gap;
+            float actualLength = vertical ? (V_default_gap * (size - 1)) : (H_default_gap * (size - 1));
+            if (actualLength > (vertical ? V_max_span: H_max_span)) {
+                gap = (vertical? V_max_span: H_max_span)/ (size -1);
             }
             float length = gap * (size - 1);
 
@@ -436,7 +485,8 @@ public class ControllerLayout implements Layout {
                 ControllerButton button = Buttons.get(i);
                 layout = ControllerTypeToLayout.get(button);
                 if (layout != null) {
-                    layout.setButtonPosition((-length / 2) + (gap * i), Y);
+                    layout.setButtonPosition(vertical ? V_X : ((-length / 2) + (gap * i) + H_X),
+                            vertical ? ((-length / 2) + (gap * i)) + V_Y : H_Y);
                 }
             }
         }
@@ -450,10 +500,10 @@ public class ControllerLayout implements Layout {
                 selectedButton = Buttons.get(0);
             }
             int size = Buttons.size();
-            float gap = default_gap;
-            float actualLength = default_gap * (size - 1);
-            if (actualLength > max_span) {
-                gap = (max_span)/ (size -1);
+            float gap = vertical ? V_default_gap: H_default_gap;
+            float actualLength = vertical ? (V_default_gap * (size - 1)) : (H_default_gap * (size - 1));
+            if (actualLength > (vertical ? V_max_span: H_max_span)) {
+                gap = (vertical? V_max_span: H_max_span)/ (size -1);
             }
             float length = gap * (size - 1);
 
@@ -461,7 +511,8 @@ public class ControllerLayout implements Layout {
                 ControllerButton button = Buttons.get(i);
                 ButtonSlotLayout layout = ControllerTypeToLayout.get(button);
                 if (layout != null) {
-                    layout.setButtonPosition((-length / 2) + (gap * i), Y);
+                    layout.setButtonPosition(vertical ? V_X : ((-length / 2) + (gap * i) + H_X),
+                            vertical ? ((-length / 2) + (gap * i)) + V_Y : H_Y);
                 }
             }
         }

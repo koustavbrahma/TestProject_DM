@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAndResource;
+import koustav.duelmasters.main.androidgameduelmasterswidgetutil.Widget;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetPosition;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetTouchEvent;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.Layout;
@@ -44,9 +45,7 @@ public class DynamicCardSlotLayout implements Layout {
     GLGeometry.GLPoint relativeFarPoint;
     GLGeometry.GLRay clearance_ray;
 
-    ArrayList<Float> intermediate_x;
-    ArrayList<Float> intermediate_y;
-    ArrayList<Float> intermediate_z;
+    ArrayList<WidgetPosition> intermediate_p;
     ArrayList<Float> time_steps;
     boolean hasIntermediatePoints;
 
@@ -75,9 +74,7 @@ public class DynamicCardSlotLayout implements Layout {
         relativeFarPoint = new GLGeometry.GLPoint(0, 0, 0);
         clearance_ray = new GLGeometry.GLRay(new GLGeometry.GLPoint(0, 0, 0), new GLGeometry.GLVector(0, 0, 0));
 
-        intermediate_x = new ArrayList<Float>();
-        intermediate_y = new ArrayList<Float>();
-        intermediate_z = new ArrayList<Float>();
+        intermediate_p = new ArrayList<WidgetPosition>();
         time_steps = new ArrayList<Float>();
         hasIntermediatePoints = false;
     }
@@ -122,7 +119,10 @@ public class DynamicCardSlotLayout implements Layout {
                 tracking_point.add(new Float(0.5f));
                 TopDriftSystem.setDriftInfo(TopCardWidget.getPosition(), TopSlotPosition, trans_position, tracking_point, k1, k2, totalTime);
             } else if (hasIntermediatePoints) {
-
+                TopDriftSystem.setDriftInfo(TopCardWidget.getPosition(), TopSlotPosition, intermediate_p, time_steps, k1, k2, totalTime);
+                hasIntermediatePoints = false;
+                intermediate_p.clear();
+                time_steps.clear();
             } else {
                 TopDriftSystem.setDriftInfo(TopCardWidget.getPosition(), TopSlotPosition, null, null, k1, k2, totalTime);
             }
@@ -258,6 +258,16 @@ public class DynamicCardSlotLayout implements Layout {
         TopSlotPosition.Y_scale = 1f;
         TopSlotPosition.Z_scale = 1f;
 
+        TopWidgetPosition.Centerposition.x = cardWidget.getPosition().Centerposition.x;
+        TopWidgetPosition.Centerposition.y = cardWidget.getPosition().Centerposition.y;
+        TopWidgetPosition.Centerposition.z = cardWidget.getPosition().Centerposition.z;
+        TopWidgetPosition.rotaion.angle = cardWidget.getPosition().rotaion.angle;
+        TopWidgetPosition.rotaion.x = cardWidget.getPosition().rotaion.x;
+        TopWidgetPosition.rotaion.y = cardWidget.getPosition().rotaion.y;
+        TopWidgetPosition.rotaion.z = cardWidget.getPosition().rotaion.z;
+        TopWidgetPosition.X_scale = cardWidget.getPosition().X_scale;
+        TopWidgetPosition.Y_scale = cardWidget.getPosition().Y_scale;
+        TopWidgetPosition.Z_scale = cardWidget.getPosition().Z_scale;
         this.TopCardWidget = cardWidget;
 
         Disturbed = true;
@@ -267,22 +277,19 @@ public class DynamicCardSlotLayout implements Layout {
         this.TopCardWidget = null;
         TwoStepTransition = false;
         locked = false;
+        running = false;
     }
 
-    public void addIntermediatePoint(ArrayList<GLGeometry.GLPoint> points, ArrayList<Float> time_steps) {
+    public void addIntermediatePoint(ArrayList<WidgetPosition> points, ArrayList<Float> time_steps) {
         if (Disturbed) {
             if (points.size() != time_steps.size()) {
                 throw new IllegalArgumentException("size must match");
             }
-            intermediate_x.clear();
-            intermediate_y.clear();
-            intermediate_z.clear();
+            intermediate_p.clear();
             this.time_steps.clear();
 
             for (int i = 0; i < points.size(); i++) {
-                intermediate_x.add(new Float(points.get(i).x));
-                intermediate_y.add(new Float(points.get(i).y));
-                intermediate_z.add(new Float(points.get(i).z));
+                intermediate_p.add(points.get(i));
             }
 
             for (int i = 0; i < time_steps.size(); i++) {

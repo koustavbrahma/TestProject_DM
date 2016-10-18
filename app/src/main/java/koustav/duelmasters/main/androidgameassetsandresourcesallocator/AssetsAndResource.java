@@ -122,12 +122,13 @@ public class AssetsAndResource {
     public static Pool<WidgetTouchEvent> widgetTouchEventPool;
 
     // Misc parameters
-    public static float MazeWidth = 1.0f;
-    public static float MazeHeight = 1.0f;
-    public static float CardWidth = 0.1067f;
-    public static float CardHeight = 0.16f;
-    public static float CardLength =  0.00125f;
-    public static float CardStackShift = 0.00267f;
+    public static float aspectRatio;
+    public static float MazeWidth;
+    public static float MazeHeight;
+    public static float CardWidth;
+    public static float CardHeight;
+    public static float CardLength;
+    public static float CardStackShift;
     public static GLGeometry.GLPoint CameraPosition;
 
     // APIs
@@ -166,6 +167,13 @@ public class AssetsAndResource {
         widgetTouchEventPool = new Pool<WidgetTouchEvent>(factory, 10);
 
         // Misc Parameters
+        aspectRatio = (float) game.getframeBufferWidth() / (float) game.getframeBufferHeight();
+        MazeWidth = 1.0f * (AssetsAndResource.aspectRatio/ 1.778f);
+        MazeHeight = 1.0f;
+        CardWidth = 0.1067f;
+        CardHeight = 0.16f;
+        CardLength =  0.00125f;
+        CardStackShift = 0.00267f;
         CameraPosition = new GLGeometry.GLPoint(camera_x, camera_y, camera_z);
     }
 
@@ -186,7 +194,7 @@ public class AssetsAndResource {
         CardCount = new Hashtable<String, Count>();
 
         // Fixed Matrix initialization
-        MatrixHelper.perspectiveM(projectionMatrix, 18f, (float) game.getframeBufferWidth() / (float) game.getframeBufferHeight(), 1f, 10f);
+        MatrixHelper.perspectiveM(projectionMatrix, 18f, aspectRatio, 1f, 10f);
 
         // setup primary view
         setLookAtM(viewMatrix, 0, CameraPosition.x, CameraPosition.y, CameraPosition.z, 0f, 0f, 0.1f, 0f, 1f, 0f);
@@ -194,9 +202,7 @@ public class AssetsAndResource {
         invertM(invertedViewProjectionMatrix, 0, tempMatrix, 0);
 
         // setup ortho projection matrix
-        orthoM(OrthoProjectionMatrix, 0, -(float) game.getframeBufferWidth() / (float) game.getframeBufferHeight(),
-                (float) game.getframeBufferWidth() / (float) game.getframeBufferHeight(), -1f,
-                1f, -1f, 1f);
+        orthoM(OrthoProjectionMatrix, 0, -aspectRatio, aspectRatio, -1f, 1f, -1f, 1f);
         invertM(invertedOrthoProjectionMatrix, 0, OrthoProjectionMatrix, 0);
 
         setLookAtM(tempMatrix, 0, 0f, 2.5f, 0.0f, 0f, 0f, 0.0f, 0f, 0f, -1.0f);

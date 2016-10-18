@@ -49,6 +49,7 @@ public class ManaAdd implements Simulate {
     public void update() {
         if (start) {
             if (!handZoneLayout.IsWidgetInTransition(cardWidget)) {
+                handZoneLayout.UnlockCardWidget(cardWidget);
                 if (cardWidget != handZoneLayout.RemoveCardWidgetFromZone(cardWidget)) {
                     throw new RuntimeException("Invalid Condition");
                 }

@@ -11,5 +11,7 @@ public enum Simulation {
     CastSpellCard,
     CancelSummonOrManaAdd,
     PreManaAdd,
-    ManaAdd
+    ManaAdd,
+    CancelManaCard,
+    DrawCardFromDeck
 }

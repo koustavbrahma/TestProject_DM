@@ -65,7 +65,7 @@ public class CardWidget implements Widget {
             textureArrays[i] = AssetsAndResource.cardBorder;
         }
         textureArrays[2] = AssetsAndResource.cardBackside;
-        textureArrays[3] = AssetsAndResource.getCardTexture(/*card.getNameID()*/"AquaHulcus");
+        textureArrays[3] = AssetsAndResource.getCardTexture(card.getNameID()/*"AquaHulcus"*/);
         DrawObjectHelper.drawOneCube(glcard, textureArrays, shadowEnable);
     }
 

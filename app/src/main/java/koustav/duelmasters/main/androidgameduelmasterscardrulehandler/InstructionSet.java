@@ -1,10 +1,6 @@
 package koustav.duelmasters.main.androidgameduelmasterscardrulehandler;
 
-import android.graphics.Color;
-import android.widget.Switch;
-
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.FlagAttribute;
-import koustav.duelmasters.main.androidgameduelmastersutil.NetworkUtil;
 
 /**
  * Created by Koustav on 4/13/2015.
@@ -15,7 +11,7 @@ public class InstructionSet {
     int Count;
     int ConditionCount;
     Condition condition;
-    Action action;
+    ActionOnCard actionOnCard;
     int ChangeDestination;
     int AttrCountOrIndex;           /* For selfboost inst 1 == always boost 2 == boost if collect card > 0
                                         3== Exact match */
@@ -188,25 +184,25 @@ public class InstructionSet {
 
             switch (InstructionArray[8]) {
                 case "0":
-                    action = Action.Nil;
+                    actionOnCard = ActionOnCard.Nil;
                     break;
                 case "1":
-                    action = Action.Move;
+                    actionOnCard = ActionOnCard.Move;
                     break;
                 case "2":
-                    action = Action.SetAttr;
+                    actionOnCard = ActionOnCard.SetAttr;
                     break;
                 case "3":
-                    action = Action.Copy;
+                    actionOnCard = ActionOnCard.Copy;
                     break;
                 case "4":
-                    action = Action.Show;
+                    actionOnCard = ActionOnCard.Show;
                     break;
                 case "5":
-                    action = Action.Evolution;
+                    actionOnCard = ActionOnCard.Evolution;
                     break;
                 case "6":
-                    action = Action.SetTmpSpreadInst;
+                    actionOnCard = ActionOnCard.SetTmpSpreadInst;
                     break;
                 default:
                     throw new IllegalArgumentException("Invalid Action type");
@@ -311,8 +307,8 @@ public class InstructionSet {
         return condition;
     }
 
-    public Action getAction() {
-        return action;
+    public ActionOnCard getActionOnCard() {
+        return actionOnCard;
     }
 
     public FlagAttribute getAttr() {

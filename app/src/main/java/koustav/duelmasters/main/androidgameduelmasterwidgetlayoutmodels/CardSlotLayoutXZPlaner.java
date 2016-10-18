@@ -654,6 +654,17 @@ public class CardSlotLayoutXZPlaner implements Layout {
         TopSlotPosition.Y_scale = 1f;
         TopSlotPosition.Z_scale = 1f;
 
+        TopWidgetPosition.Centerposition.x = cardWidget.getPosition().Centerposition.x;
+        TopWidgetPosition.Centerposition.y = cardWidget.getPosition().Centerposition.y;
+        TopWidgetPosition.Centerposition.z = cardWidget.getPosition().Centerposition.z;
+        TopWidgetPosition.rotaion.angle = cardWidget.getPosition().rotaion.angle;
+        TopWidgetPosition.rotaion.x = cardWidget.getPosition().rotaion.x;
+        TopWidgetPosition.rotaion.y = cardWidget.getPosition().rotaion.y;
+        TopWidgetPosition.rotaion.z = cardWidget.getPosition().rotaion.z;
+        TopWidgetPosition.X_scale = cardWidget.getPosition().X_scale;
+        TopWidgetPosition.Y_scale = cardWidget.getPosition().Y_scale;
+        TopWidgetPosition.Z_scale = cardWidget.getPosition().Z_scale;
+
         this.TopCardWidget = cardWidget;
 
         Disturbed = true;
@@ -907,6 +918,7 @@ public class CardSlotLayoutXZPlaner implements Layout {
         driftSystems.clear();
         cardWidgets.clear();
         Expanded = false;
+        running = false;
         SelectedCardWidget = null;
     }
 
@@ -965,5 +977,16 @@ public class CardSlotLayoutXZPlaner implements Layout {
 
     public void SetSlotDisturbed() {
         this.Disturbed = true;
+    }
+
+    public ArrayList<CardWidget> getCardWidgetsStack() {
+        ArrayList<CardWidget> widgets = new ArrayList<CardWidget>();
+
+        widgets.add(TopCardWidget);
+
+        for (int i = 0; i< cardWidgets.size(); i++) {
+            widgets.add(cardWidgets.get(i));
+        }
+        return widgets;
     }
 }

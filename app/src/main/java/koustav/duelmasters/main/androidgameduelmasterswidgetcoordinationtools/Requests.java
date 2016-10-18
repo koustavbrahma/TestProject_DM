@@ -15,5 +15,9 @@ public enum Requests {
     Attack,
     Block,
     AddToMana,
-    TapAbility
+    TapAbility,
+    DeckStack,
+    OppDeckStack,
+    Graveyard,
+    OppGraveyard
 }

@@ -70,6 +70,9 @@ public class HandZoneLayout implements Layout  {
     ArrayList<WidgetTouchEvent> widgetTouchEventList;
     ArrayList<DynamicCardSlotLayout> TouchedSlots;
 
+    ArrayList<CardWidget> cardWidgetsQueue;
+    ArrayList<CardWidget> cardWidgetsToBeRmFromQueue;
+
     public HandZoneLayout() {
         Pool.PoolObjectFactory<DynamicCardSlotLayout> factory = new Pool.PoolObjectFactory<DynamicCardSlotLayout>() {
             @Override
@@ -114,6 +117,9 @@ public class HandZoneLayout implements Layout  {
         relativeFarPoint = new GLGeometry.GLPoint(0, 0, 0);
         widgetTouchEventList = new ArrayList<WidgetTouchEvent>();
         TouchedSlots = new ArrayList<DynamicCardSlotLayout>();
+
+        cardWidgetsQueue = new ArrayList<CardWidget>();
+        cardWidgetsToBeRmFromQueue = new ArrayList<CardWidget>();
     }
 
     public void InitializeHandZoneLayout(float width, float normalizedY, float normalFromOrigin_x, float normalFromOrigin_y,
@@ -210,11 +216,46 @@ public class HandZoneLayout implements Layout  {
 
         return slotLayout.IsTransition();
     }
+
+    public void AddToCardWidgetQueue(ArrayList<CardWidget> cardWidgets) {
+        for (int i = 0; i < cardWidgets.size(); i++) {
+            cardWidgetsQueue.add(cardWidgets.get(i));
+        }
+
+        CardWidget widget = cardWidgetsQueue.get(0);
+        DynamicCardSlotLayout slotLayout = WidgetToSlotMapping.get(widget);
+        if (slotLayout == null) {
+            AddCardWidgetToZone(widget);
+        }
+    }
+
     @Override
     public void update(float deltaTime, float totalTime) {
         for (int i = 0; i < CardSlot.size(); i++) {
             DynamicCardSlotLayout slotLayout = CardSlot.get(i);
             slotLayout.update(deltaTime, totalTime);
+        }
+
+        DynamicCardSlotLayout newSlotLayout = null;
+        cardWidgetsToBeRmFromQueue.clear();
+
+        for (int i = 0; i < cardWidgetsQueue.size(); i++) {
+            CardWidget cardWidget = cardWidgetsQueue.get(i);
+            DynamicCardSlotLayout slotLayout = WidgetToSlotMapping.get(cardWidget);
+            if (slotLayout == null) {
+                if (newSlotLayout.getPercentageComplete() > 0.1f) {
+                    AddCardWidgetToZone(cardWidget);
+                }
+            } else {
+                newSlotLayout = slotLayout;
+                if (!newSlotLayout.IsTransition()) {
+                    cardWidgetsToBeRmFromQueue.add(cardWidget);
+                }
+            }
+        }
+
+        for (int i = 0; i < cardWidgetsToBeRmFromQueue.size(); i++) {
+            cardWidgetsQueue.remove(cardWidgetsToBeRmFromQueue.get(i));
         }
 
         if (DraggingSlot != null) {

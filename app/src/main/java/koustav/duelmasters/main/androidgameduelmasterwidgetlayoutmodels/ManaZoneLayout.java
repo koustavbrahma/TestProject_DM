@@ -5,6 +5,8 @@ import java.util.Hashtable;
 import java.util.List;
 
 import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAndResource;
+import koustav.duelmasters.main.androidgameduelmasterswidgetutil.Widget;
+import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetPosition;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetTouchEvent;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetTouchFocusLevel;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.HeadOrientation;
@@ -213,6 +215,7 @@ public class ManaZoneLayout implements Layout{
                         DynamicCardSlotLayout DslotLayout = dynamicCardSlotLayoutPool.newObject();
                         DslotLayout.initializeSlot(x, AssetsAndResource.CardLength * 40f, ZCoordinateOfZoneCenter,
                                 ((headOrientationOfCard == HeadOrientation.South) ? 180f: 0), 0, 1f, 0 ,widget, k1, k2);
+                        WidgetToDynamicSlotMapping.put(widget, DslotLayout);
                         TransitionSlotFromCoupleToFree.add(DslotLayout);
                         dynamicCardSlotLayout = DslotLayout;
                     } else {
@@ -235,10 +238,12 @@ public class ManaZoneLayout implements Layout{
                                     onRightSide = true;
                                 }
                             } else if (LeftWingOfCardSlot.contains(slotLayout)) {
-                                int index1 = LeftWingOfCardSlot.indexOf(slotLayout);
-                                int index2 = LeftWingOfCardSlot.indexOf(SelectedCardSlot);
-                                if (index1 < index2) {
-                                    onRightSide = true;
+                                if (LeftWingOfCardSlot.contains(SelectedCardSlot)) {
+                                    int index1 = LeftWingOfCardSlot.indexOf(slotLayout);
+                                    int index2 = LeftWingOfCardSlot.indexOf(SelectedCardSlot);
+                                    if (index1 < index2) {
+                                        onRightSide = true;
+                                    }
                                 }
                             } else {
                                 throw new RuntimeException("Invalid Condition");
@@ -249,10 +254,22 @@ public class ManaZoneLayout implements Layout{
                         DynamicCardSlotLayout DslotLayout = dynamicCardSlotLayoutPool.newObject();
                         DslotLayout.initializeSlot(x, AssetsAndResource.CardLength * 40f, ZCoordinateOfZoneCenter,
                                 ((headOrientationOfCard == HeadOrientation.South) ? 180f: 0), 0, 1f, 0, widget, k1, k2);
+                        WidgetToDynamicSlotMapping.put(widget, DslotLayout);
                         if (onRightSide) {
                             float px = widget.getPosition().Centerposition.x + (AssetsAndResource.CardHeight * 2f);
-                            ArrayList<GLGeometry.GLPoint> points = new ArrayList<GLGeometry.GLPoint>();
-                            points.add(new GLGeometry.GLPoint(px, AssetsAndResource.CardLength * 10f, ZCoordinateOfZoneCenter));
+                            ArrayList<WidgetPosition> points = new ArrayList<WidgetPosition>();
+                            WidgetPosition widgetPosition = new WidgetPosition();
+                            widgetPosition.Centerposition.x = px;
+                            widgetPosition.Centerposition.y = AssetsAndResource.CardLength * 10f;
+                            widgetPosition.Centerposition.z = ZCoordinateOfZoneCenter;
+                            widgetPosition.rotaion.angle = widget.getPosition().rotaion.angle;
+                            widgetPosition.rotaion.x = widget.getPosition().rotaion.x;
+                            widgetPosition.rotaion.y = widget.getPosition().rotaion.y;
+                            widgetPosition.rotaion.z = widget.getPosition().rotaion.z;
+                            widgetPosition.X_scale = widget.getPosition().X_scale;
+                            widgetPosition.Y_scale = widget.getPosition().Y_scale;
+                            widgetPosition.Z_scale = widget.getPosition().Z_scale;
+                            points.add(widgetPosition);
                             ArrayList<Float> time_steps = new ArrayList<Float>();
                             time_steps.add(new Float(0.1));
                             DslotLayout.addIntermediatePoint(points, time_steps);
@@ -1905,5 +1922,22 @@ public class ManaZoneLayout implements Layout{
         }
 
         return false;
+    }
+
+    public void FreeNewCoupleSlot() {
+        for (int i = TransitionSlotFromFreeToCouple.size() -1; i >= 0; i--) {
+            DynamicCardSlotLayout DslotLayout = TransitionSlotFromFreeToCouple.get(i);
+            float x = (this.CoupleSlotWidth * (Opponent == true ? -1 : 1)) / 2f;
+            DslotLayout.setSlotPosition(x, AssetsAndResource.CardLength * 40f, ZCoordinateOfZoneCenter);
+            TransitionSlotFromCoupleToFree.add(DslotLayout);
+        }
+        TransitionSlotFromFreeToCouple.clear();
+        if (NewCoupleSlot != null) {
+            ArrayList<CardWidget> widgets = NewCoupleSlot.getCardWidgetsStack();
+            for (int i = 0; i < widgets.size(); i++) {
+                transitionWidgets.add(widgets.get(i));
+            }
+            NewCoupleSlot = null;
+        }
     }
 }

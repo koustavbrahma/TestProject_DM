@@ -593,31 +593,31 @@ public class InstructionHandler {
  */
     private boolean PerformActionOnFilterCard() {
         boolean status = false;
-        if (instruction.getAction() == Action.Move) {
+        if (instruction.getActionOnCard() == ActionOnCard.Move) {
             ChangeZoneAll();
             status = true;
         }
 
-        if (instruction.getAction() == Action.SetAttr) {
+        if (instruction.getActionOnCard() == ActionOnCard.SetAttr) {
             SetFlagAttributeAll();
             status = true;
         }
 
-        if (instruction.getAction() == Action.Copy) {
+        if (instruction.getActionOnCard() == ActionOnCard.Copy) {
             CopyCardToTempZone();
             status = true;
         }
 
-        if (instruction.getAction() == Action.Show) {
+        if (instruction.getActionOnCard() == ActionOnCard.Show) {
             status = ShowInfoOfCard();
         }
 
-        if (instruction.getAction() == Action.Evolution) {
+        if (instruction.getActionOnCard() == ActionOnCard.Evolution) {
             PerformEvolution();
             status = true;
         }
 
-        if (instruction.getAction() == Action.SetTmpSpreadInst) {
+        if (instruction.getActionOnCard() == ActionOnCard.SetTmpSpreadInst) {
             SetTemporarySpreadInstruction();
             status = true;
         }
@@ -1198,8 +1198,8 @@ public class InstructionHandler {
             InactiveCard card;
             for (int i =0; i < zone.zoneSize(); i++) {
                 card = (InactiveCard) zone.getZoneArray().get(i);
-                if ((card.getRace().contains(instruction.getCondition().getValue()) && (!(instruction.getAction() == Action.Evolution) || !GetUtil.IsTapped(card)))
-                        || (instruction.getAction() == Action.Evolution && GetUtil.EvolutionCompatible(card) && !GetUtil.IsTapped(card))) {
+                if ((card.getRace().contains(instruction.getCondition().getValue()) && (!(instruction.getActionOnCard() == ActionOnCard.Evolution) || !GetUtil.IsTapped(card)))
+                        || (instruction.getActionOnCard() == ActionOnCard.Evolution && GetUtil.EvolutionCompatible(card) && !GetUtil.IsTapped(card))) {
                     CollectCardList.add(card);
                 }
             }
@@ -1390,7 +1390,7 @@ public class InstructionHandler {
         String msg = new String();
 
         if (instruction.getCleanUpPlacement() == CleanUpPlacement.PostCleanUp) {
-            if (instruction.getInstructionType() == InstructionType.SetAttr || instruction.getAction() == Action.SetAttr) {
+            if (instruction.getInstructionType() == InstructionType.SetAttr || instruction.getActionOnCard() == ActionOnCard.SetAttr) {
                 for (int i = 0; i < CollectCardList.size(); i++) {
                     String msgT;
                     int zone = CollectCardList.get(i).GridPosition().getZone();
@@ -1432,7 +1432,7 @@ public class InstructionHandler {
         }
 
         if (instruction.getCleanUpPlacement() == CleanUpPlacement.PreCleanUp) {
-            if (instruction.getInstructionType() == InstructionType.SetAttr || instruction.getAction() == Action.SetAttr) {
+            if (instruction.getInstructionType() == InstructionType.SetAttr || instruction.getActionOnCard() == ActionOnCard.SetAttr) {
                 for (int i = 0; i < CollectCardList.size(); i++) {
                     String msgT;
                     int zone = CollectCardList.get(i).GridPosition().getZone();

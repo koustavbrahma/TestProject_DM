@@ -25,7 +25,9 @@ public class TestLoadingScreen extends Screen {
         //game.setScreen(new MenuScreen(game));
         //game.setScreen(new GlTestScreen(game));
         //game.setScreen(new TestScreen2(game));
-        game.setScreen(new PvPDuelScreenTesting(game));
+        //game.setScreen(new PvPDuelScreenTesting(game));
+        AssetsAndResource.Load(game, 0f, 2.4f, 1.6f);
+        game.setScreen(new PvPDuelScreen(game));
     }
 
     @Override
