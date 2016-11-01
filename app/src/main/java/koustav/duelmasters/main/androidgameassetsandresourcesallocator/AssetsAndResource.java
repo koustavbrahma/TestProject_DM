@@ -129,6 +129,8 @@ public class AssetsAndResource {
     public static float CardHeight;
     public static float CardLength;
     public static float CardStackShift;
+    public static float ZoomCardWidth;
+    public static float ZoomCardHeight;
     public static GLGeometry.GLPoint CameraPosition;
 
     // APIs
@@ -174,6 +176,8 @@ public class AssetsAndResource {
         CardHeight = 0.16f;
         CardLength =  0.00125f;
         CardStackShift = 0.00267f;
+        ZoomCardWidth = 1.005f;
+        ZoomCardHeight = 1.5f;
         CameraPosition = new GLGeometry.GLPoint(camera_x, camera_y, camera_z);
     }
 

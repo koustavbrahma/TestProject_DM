@@ -125,6 +125,7 @@ public class PvPWidgetCoordinator {
     Cube cube;
     Cube glCard;
     ScreenRectangle glRbutton;
+    ScreenRectangle ZoomedCard;
 
     // Zone Layouts
     BattleZoneLayout battleZoneLayout;
@@ -149,13 +150,18 @@ public class PvPWidgetCoordinator {
     WidgetSelectedCardTracker selectedCardTracker;
     float start_touch_x;
     float start_touch_y;
+    boolean ZoomMode;
     Hashtable<Integer, CardWidget> ZoneToLastWidgetForSetup;
     WidgetPosition basePosition;
+    WidgetPosition ZoomCardPosition;
+    Cards PreviousSelectedCard;
 
     // Listener
     WidgetTouchListener LowFocusListener;
     WidgetTouchListener MediumFocusListener;
     WidgetTouchListener HighFocusListener;
+    WidgetTouchListener ZoomListener;
+    WidgetTouchListener PreviousListener;
     WidgetTouchListener Listener;
 
     // UI Requests
@@ -226,6 +232,8 @@ public class PvPWidgetCoordinator {
                 new float[] {0.1f, 0.1f, 0.1f}, 10.0f), AssetsAndResource.CardWidth, AssetsAndResource.CardLength, AssetsAndResource.CardHeight, true);
 
         glRbutton = new ScreenRectangle(0.2f, 0.2f);
+
+        ZoomedCard = new ScreenRectangle(AssetsAndResource.ZoomCardWidth, AssetsAndResource.ZoomCardHeight);
 
         // Link to its GLObject (Zones)
         Graveyard.LinkGLobject(cube, glCard);
@@ -346,7 +354,10 @@ public class PvPWidgetCoordinator {
         SelectCardMode = CardSelectMode.OFF;
         start_touch_x = 0;
         start_touch_y = 0;
+        ZoomMode = false;
         basePosition = new WidgetPosition();
+        ZoomCardPosition = new WidgetPosition();
+        PreviousSelectedCard = null;
     }
 
     private void ResetFlags() {
@@ -1063,7 +1074,9 @@ public class PvPWidgetCoordinator {
                         if (((zoomLevel == ZoomLevel.Button_Touched) || (zoomLevel == ZoomLevel.Touched))
                                 && (selectedCardTracker.getSelectedCard() != null) &&
                                 (selectedCardTracker.getSelectedCard() == widgetTouchEvent.object)) {
-                            // Need to implement zoom
+                            ZoomMode = true;
+                            setWidgetCoordinatorListener(ZoomListener);
+                            PreviousListener = LowFocusListener;
                         } else {
                             selectedCardTracker.setSelectedCard((Cards) widgetTouchEvent.object);
                             controllerLayout.addZoomButton();
@@ -1100,9 +1113,9 @@ public class PvPWidgetCoordinator {
                         } else if (zone == Maze.Opponent_deck) {
                             MasterRequests.setRequest(Requests.OppDeckStack, false);
                         } else if (zone == Maze.graveyard) {
-                            MasterRequests.setRequest(Requests.Graveyard, false);
+                            MasterRequests.setRequest(Requests.GraveyardStack, false);
                         } else if (zone == Maze.Opponent_graveyard) {
-                            MasterRequests.setRequest(Requests.OppGraveyard, false);
+                            MasterRequests.setRequest(Requests.OppGraveyardStack, false);
                         }
                     }
                 }
@@ -1123,6 +1136,7 @@ public class PvPWidgetCoordinator {
                     if (!(widgetTouchEvent.object instanceof Cards)) {
                         throw new RuntimeException("Invalid Condition");
                     }
+                    PreviousSelectedCard = selectedCardTracker.getSelectedCard();
                     selectedCardTracker.setSelectedCard((Cards)widgetTouchEvent.object);
                     controllerLayout.addZoomButton();
                     start_touch_x = input.getNormalizedX(0);
@@ -1185,7 +1199,12 @@ public class PvPWidgetCoordinator {
                             controllerLayout.removeZoomButton();
                             break;
                         case Zoom:
-                            //Implement zoom
+                            if (selectedCardTracker.getSelectedCard() == null) {
+                                throw new RuntimeException("Invalid Condition");
+                            }
+                            ZoomMode = true;
+                            setWidgetCoordinatorListener(ZoomListener);
+                            PreviousListener = LowFocusListener;
                             break;
                         case Pause:
                             //Implement pause
@@ -1226,7 +1245,12 @@ public class PvPWidgetCoordinator {
                     if ((input.getNormalizedX(0) < -(0.8f * AssetsAndResource.aspectRatio)) && (input.getNormalizedY(0) > 0.8f)) {
                         widgetTouchEvent = fixedButtonsLayout.TouchResponse(touchEvents);
                     }
-                    if ((widgetTouchEvent == null) && (input.getNormalizedY(0) > 0.8f)) {
+                    if (!controllerLayout.getControllerOrientation() && (widgetTouchEvent == null) &&
+                            (input.getNormalizedY(0) > 0.8f)) {
+                        widgetTouchEvent = controllerLayout.TouchResponse(touchEvents);
+                    }
+                    if (controllerLayout.getControllerOrientation() && (widgetTouchEvent == null) &&
+                            (input.getNormalizedX(0) < -(0.85f * AssetsAndResource.aspectRatio))) {
                         widgetTouchEvent = controllerLayout.TouchResponse(touchEvents);
                     }
                     if (widgetTouchEvent == null) {
@@ -1240,7 +1264,12 @@ public class PvPWidgetCoordinator {
                             if ((event.normalizedX < -(0.8f * AssetsAndResource.aspectRatio)) && (event.normalizedY > 0.8f)) {
                                 widgetTouchEvent = fixedButtonsLayout.TouchResponse(touchEvents);
                             }
-                            if ((widgetTouchEvent == null) && (event.normalizedY > 0.8f)) {
+                            if (!controllerLayout.getControllerOrientation() && (widgetTouchEvent == null) &&
+                                    (event.normalizedY > 0.8f)) {
+                                widgetTouchEvent = controllerLayout.TouchResponse(touchEvents);
+                            }
+                            if (controllerLayout.getControllerOrientation() && (widgetTouchEvent == null) &&
+                                    (event.normalizedX < -(0.85f * AssetsAndResource.aspectRatio))) {
                                 widgetTouchEvent = controllerLayout.TouchResponse(touchEvents);
                             }
                             if (widgetTouchEvent == null) {
@@ -1276,7 +1305,8 @@ public class PvPWidgetCoordinator {
                     return;
                 }
 
-                if (widgetTouchEvent.isFocus == WidgetTouchFocusLevel.Low) {
+                if (widgetTouchEvent.isFocus == WidgetTouchFocusLevel.Low &&
+                        !(widgetTouchEvent.object != null && (widgetTouchEvent.object instanceof ControllerButton))) {
                     selectedCardTracker.setSelectedCard(null);
                     if (FlushButtons) {
                         controllerLayout.unsetControllerButton(true);
@@ -1295,7 +1325,9 @@ public class PvPWidgetCoordinator {
                         if (((zoomLevel == ZoomLevel.Button_Touched) || (zoomLevel == ZoomLevel.Touched))
                                 && (selectedCardTracker.getSelectedCard() != null) &&
                                 (selectedCardTracker.getSelectedCard() == widgetTouchEvent.object)) {
-                            // Need to implement zoom
+                            ZoomMode = true;
+                            setWidgetCoordinatorListener(ZoomListener);
+                            PreviousListener = MediumFocusListener;
                         } else {
                             selectedCardTracker.setSelectedCard((Cards) widgetTouchEvent.object);
                             controllerLayout.addZoomButton();
@@ -1321,6 +1353,7 @@ public class PvPWidgetCoordinator {
                     if (!(widgetTouchEvent.object instanceof Cards)) {
                         throw new RuntimeException("Invalid Condition");
                     }
+                    PreviousSelectedCard = selectedCardTracker.getSelectedCard();
                     selectedCardTracker.setSelectedCard((Cards)widgetTouchEvent.object);
                     controllerLayout.addZoomButton();
                     start_touch_x = input.getNormalizedX(0);
@@ -1352,7 +1385,12 @@ public class PvPWidgetCoordinator {
                             controllerLayout.removeZoomButton();
                             break;
                         case Zoom:
-                            //Implement zoom
+                            if (selectedCardTracker.getSelectedCard() == null) {
+                                throw new RuntimeException("Invalid Condition");
+                            }
+                            ZoomMode = true;
+                            setWidgetCoordinatorListener(ZoomListener);
+                            PreviousListener = MediumFocusListener;
                             break;
                         case Pause:
                             //Implement Pause
@@ -1403,10 +1441,21 @@ public class PvPWidgetCoordinator {
                         }
                     } else {
                         if (SelectCardMode == CardSelectMode.OFF) {
-                            selectedCardTracker.setSelectedCard((Cards) widgetTouchEvent.object);
-                            controllerLayout.addZoomButton();
-                            MasterRequests.setRequest(Requests.CardSelected, false);
-                            MasterRequests.setCard(selectedCardTracker.getSelectedCard());
+                            if (((zoomLevel == ZoomLevel.Button_Touched) || (zoomLevel == ZoomLevel.Touched))
+                                    && (PreviousSelectedCard != null) &&
+                                    (PreviousSelectedCard == widgetTouchEvent.object)) {
+                                ZoomMode = true;
+                                setWidgetCoordinatorListener(ZoomListener);
+                                PreviousListener = LowFocusListener;
+                                FocusLayout = null;
+                                AssetsAndResource.widgetTouchEventPool.free(widgetTouchEvent);
+                                return;
+                            } else {
+                                selectedCardTracker.setSelectedCard((Cards) widgetTouchEvent.object);
+                                controllerLayout.addZoomButton();
+                                MasterRequests.setRequest(Requests.CardSelected, false);
+                                MasterRequests.setCard(selectedCardTracker.getSelectedCard());
+                            }
                         } else {
                             if (widgetTouchEvent.wasUnderTheStack == false) {
                                 selectedCardTracker.setSelectedCard((Cards) widgetTouchEvent.object);
@@ -1496,6 +1545,23 @@ public class PvPWidgetCoordinator {
                     AssetsAndResource.widgetTouchEventPool.free(widgetTouchEvent);
                 } else {
                     throw new RuntimeException("Invalid Condition");
+                }
+            }
+        };
+
+        ZoomListener = new WidgetTouchListener() {
+            @Override
+            public void TouchListener(List<Input.TouchEvent> touchEvents) {
+                Input.TouchEvent event = null;
+                for (int j = 0; j < touchEvents.size(); j++) {
+                    event = touchEvents.get(j);
+                    if (event.type == Input.TouchEvent.TOUCH_UP) {
+                        if (!((Math.abs(event.normalizedX) <= AssetsAndResource.ZoomCardWidth/2f) &&
+                                (Math.abs(event.normalizedY) <= AssetsAndResource.ZoomCardHeight/2f))) {
+                            ZoomMode = false;
+                            setWidgetCoordinatorListener(PreviousListener);
+                        }
+                    }
                 }
             }
         };
@@ -1600,7 +1666,11 @@ public class PvPWidgetCoordinator {
         DrawObjectHelper.drawOneRectangle(Base, AssetsAndResource.Base, ShadowEnable);
         battleZoneLayout.draw();
         opponentBattleZoneLayout.draw();
+      //  glEnable(GL_BLEND);
+      //  glBlendColor(0f, 0f, 0f, 0.5f);
+      //  glBlendFunc(GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA);
         manaZoneLayout.draw();
+      //  glDisable(GL_BLEND);
         opponentManaZoneLayout.draw();
         deckLayout.draw();
         opponentDeckLayout.draw();
@@ -1610,5 +1680,11 @@ public class PvPWidgetCoordinator {
 
         fixedButtonsLayout.draw();
         controllerLayout.draw();
+
+        if (ZoomMode) {
+            MatrixHelper.setTranslate(ZoomCardPosition);
+            DrawObjectHelper.drawOneScreenRectangle(ZoomedCard,
+                    AssetsAndResource.getCardTexture(selectedCardTracker.getSelectedCard().getNameID()));
+        }
     }
 }

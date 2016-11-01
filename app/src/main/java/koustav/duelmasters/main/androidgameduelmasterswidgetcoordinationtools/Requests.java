@@ -18,6 +18,6 @@ public enum Requests {
     TapAbility,
     DeckStack,
     OppDeckStack,
-    Graveyard,
-    OppGraveyard
+    GraveyardStack,
+    OppGraveyardStack
 }
