@@ -126,6 +126,8 @@ public class PvPWidgetCoordinator {
     Cube glCard;
     ScreenRectangle glRbutton;
     ScreenRectangle ZoomedCard;
+    Cube glCurrentSelect;
+    Cube glSelectedCards;
 
     // Zone Layouts
     BattleZoneLayout battleZoneLayout;
@@ -234,6 +236,12 @@ public class PvPWidgetCoordinator {
         glRbutton = new ScreenRectangle(0.2f, 0.2f);
 
         ZoomedCard = new ScreenRectangle(AssetsAndResource.ZoomCardWidth, AssetsAndResource.ZoomCardHeight);
+
+        glCurrentSelect = new Cube(new GLMaterial(new float[] {0.8f, 0.8f, 0.8f}, new float[] {0.8f, 0.8f, 0.8f},
+                new float[] {0.1f, 0.1f, 0.1f}, 10.0f), AssetsAndResource.CardWidth * 1.05f, AssetsAndResource.CardLength * 1.01f, AssetsAndResource.CardHeight * 1.05f, true);
+
+        glSelectedCards = new Cube(new GLMaterial(new float[] {0.8f, 0.8f, 0.8f}, new float[] {0.8f, 0.8f, 0.8f},
+                new float[] {0.1f, 0.1f, 0.1f}, 10.0f), AssetsAndResource.CardWidth * 1.1f, AssetsAndResource.CardLength * 1.01f, AssetsAndResource.CardHeight * 1.1f, true);
 
         // Link to its GLObject (Zones)
         Graveyard.LinkGLobject(cube, glCard);
@@ -731,6 +739,8 @@ public class PvPWidgetCoordinator {
                 return SetUpDone();
             case IsSimulationDone:
                 return SimulationStatus((Simulation)obj[0]);
+            case GetZoomSelectedCard:
+                return selectedCardTracker.getSelectedCard();
             default:
                 return null;
         }
@@ -1608,7 +1618,7 @@ public class PvPWidgetCoordinator {
 
     public CardWidget newCardWidget() {
         CardWidget cardWidget = cardWidgetPool.newObject();
-        cardWidget.LinkGLobject(glCard);
+        cardWidget.LinkGLobject(glCard, glCurrentSelect, glSelectedCards);
         cardWidget.ShadowEnable(ShadowEnable);
 
         return cardWidget;
@@ -1663,14 +1673,10 @@ public class PvPWidgetCoordinator {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         MatrixHelper.setTranslateRotateScale(basePosition);
-        DrawObjectHelper.drawOneRectangle(Base, AssetsAndResource.Base, ShadowEnable);
+        DrawObjectHelper.drawOneRectangle(Base, AssetsAndResource.getFixedTexture(AssetsAndResource.BaseID), ShadowEnable);
         battleZoneLayout.draw();
         opponentBattleZoneLayout.draw();
-      //  glEnable(GL_BLEND);
-      //  glBlendColor(0f, 0f, 0f, 0.5f);
-      //  glBlendFunc(GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA);
         manaZoneLayout.draw();
-      //  glDisable(GL_BLEND);
         opponentManaZoneLayout.draw();
         deckLayout.draw();
         opponentDeckLayout.draw();

@@ -1,22 +1,35 @@
 package koustav.duelmasters.main.androidgameduelmasterwidgetmodels;
 
 
+import android.app.DownloadManager;
+
 import java.util.List;
 
 import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAndResource;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
+import koustav.duelmasters.main.androidgameduelmasterswidgetcoordinationtools.Query;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.Widget;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetMode;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetPosition;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetTouchEvent;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetTouchFocusLevel;
+import koustav.duelmasters.main.androidgameduelmastersworlds.PvPWorld;
 import koustav.duelmasters.main.androidgameopenglobjectmodels.Cube;
+import koustav.duelmasters.main.androidgameopenglobjectmodels.XZRectangle;
 import koustav.duelmasters.main.androidgameopenglutil.DrawObjectHelper;
 import koustav.duelmasters.main.androidgameopenglutil.GLGeometry;
 import koustav.duelmasters.main.androidgameopenglutil.GLGeometry.*;
 import koustav.duelmasters.main.androidgameopenglutil.MatrixHelper;
 import koustav.duelmasters.main.androidgamesframework.Input;
 
+import static android.opengl.GLES20.GL_BLEND;
+import static android.opengl.GLES20.GL_CONSTANT_ALPHA;
+import static android.opengl.GLES20.GL_ONE_MINUS_CONSTANT_ALPHA;
+import static android.opengl.GLES20.glBlendColor;
+import static android.opengl.GLES20.glBlendFunc;
+import static android.opengl.GLES20.glDepthMask;
+import static android.opengl.GLES20.glDisable;
+import static android.opengl.GLES20.glEnable;
 import static android.opengl.Matrix.*;
 
 /**
@@ -37,6 +50,8 @@ public class CardWidget implements Widget {
 
     // OpenGL object model, physical unit
     Cube glcard;
+    Cube glCurrentSelect;
+    Cube glSelectedCards;
 
     // logical unit
     Cards card;
@@ -61,10 +76,41 @@ public class CardWidget implements Widget {
 
     @Override
     public void draw(){
-        for (int i = 0; i< 6; i++) {
-            textureArrays[i] = AssetsAndResource.cardBorder;
+        PvPWorld world = null;
+        if (AssetsAndResource.getWorld() instanceof PvPWorld) {
+            world = (PvPWorld) AssetsAndResource.getWorld();
         }
-        textureArrays[2] = AssetsAndResource.cardBackside;
+        if (world != null && world.getWidgetCoordinator().GetInfo(Query.GetZoomSelectedCard) == card) {
+            for (int i = 0; i< 6; i++) {
+                textureArrays[i] = AssetsAndResource.getFixedTexture(AssetsAndResource.BlueScreenImageID);
+            }
+            glDepthMask(false);
+            glEnable(GL_BLEND);
+            glBlendColor(0f, 0f, 0f, 0.5f);
+            glBlendFunc(GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA);
+            DrawObjectHelper.drawOneCube(glCurrentSelect, textureArrays, shadowEnable);
+            glDisable(GL_BLEND);
+            glDepthMask(true);
+        }
+
+        if (world != null && (boolean) world.getWidgetCoordinator().GetInfo(Query.IsCardSelected, card) &&
+                !((boolean) world.getWidgetCoordinator().GetInfo(Query.IsCardSelectedPile, card))) {
+            for (int i = 0; i< 6; i++) {
+                textureArrays[i] = AssetsAndResource.getFixedTexture(AssetsAndResource.RedScreenImageID);
+            }
+            glDepthMask(false);
+            glEnable(GL_BLEND);
+            glBlendColor(0f, 0f, 0f, 0.5f);
+            glBlendFunc(GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA);
+            DrawObjectHelper.drawOneCube(glSelectedCards, textureArrays, shadowEnable);
+            glDisable(GL_BLEND);
+            glDepthMask(true);
+        }
+
+        for (int i = 0; i< 6; i++) {
+            textureArrays[i] = AssetsAndResource.getFixedTexture(AssetsAndResource.cardBorderID);
+        }
+        textureArrays[2] = AssetsAndResource.getFixedTexture(AssetsAndResource.cardBacksideID);
         textureArrays[3] = AssetsAndResource.getCardTexture(card.getNameID()/*"AquaHulcus"*/);
         DrawObjectHelper.drawOneCube(glcard, textureArrays, shadowEnable);
     }
@@ -184,6 +230,8 @@ public class CardWidget implements Widget {
     @Override
     public void LinkGLobject(Object ...objs) {
         glcard = (Cube) objs[0];
+        glCurrentSelect = (Cube) objs[1];
+        glSelectedCards = (Cube) objs[2];
     }
 
     @Override

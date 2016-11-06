@@ -90,6 +90,8 @@ public class AssetsAndResource {
     public static int EndTurnButton;
     public static int PlayerImage;
     public static int OpponentImage;
+    public static int BlueScreenImage;
+    public static int RedScreenImage;
 
     // Fixed textures ID
     public static int BaseID = 0;
@@ -108,6 +110,8 @@ public class AssetsAndResource {
     public static int EndTurnButtonID = 13;
     public static int PlayerImageID = 14;
     public static int OpponentImageID = 15;
+    public static int BlueScreenImageID = 16;
+    public static int RedScreenImageID = 17;
 
     // flexible textures
     private static Hashtable<String, Integer> CardImages;
@@ -312,6 +316,14 @@ public class AssetsAndResource {
             TextureHelper.freeTexture(OpponentImage);
         }
         OpponentImage = TextureHelper.loadTexture(game, "PauseButton.png");
+        if (BlueScreenImage != 0) {
+            TextureHelper.freeTexture(BlueScreenImage);
+        }
+        BlueScreenImage = TextureHelper.loadTexture(game, "BlueScreen.png");
+        if (RedScreenImage != 0) {
+            TextureHelper.freeTexture(RedScreenImage);
+        }
+        RedScreenImage = TextureHelper.loadTexture(game, "RedScreen.png");
     }
 
     private static void freePvPFixedTexture() {
@@ -380,6 +392,14 @@ public class AssetsAndResource {
             TextureHelper.freeTexture(OpponentImage);
         }
         OpponentImage = 0;
+        if (BlueScreenImage != 0) {
+            TextureHelper.freeTexture(BlueScreenImage);
+        }
+        BlueScreenImage = 0;
+        if (RedScreenImage != 0) {
+            TextureHelper.freeTexture(RedScreenImage);
+        }
+        RedScreenImage = 0;
     }
 
     public static int getCardTexture(String CardName) {
@@ -480,6 +500,10 @@ public class AssetsAndResource {
             return PlayerImage;
         } else if (ID == OpponentImageID) {
             return OpponentImage;
+        } else if (ID == BlueScreenImageID) {
+            return BlueScreenImage;
+        } else if (ID == RedScreenImageID) {
+            return RedScreenImage;
         } else {
             return 0;
         }
@@ -513,5 +537,13 @@ public class AssetsAndResource {
         } else {
             throw new RuntimeException("Invalid Button type");
         }
+    }
+
+    public static void setCurrentWorld(World w) {
+        world = w;
+    }
+
+    public static World getWorld() {
+        return world;
     }
 }

@@ -10,5 +10,6 @@ public enum Query {
     GetSelectedCardCopyList,
     SelectedCardCount,
     IsSetUpDone,
-    IsSimulationDone
+    IsSimulationDone,
+    GetZoomSelectedCard
 }

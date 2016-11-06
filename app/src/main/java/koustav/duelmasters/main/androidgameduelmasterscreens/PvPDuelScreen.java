@@ -29,6 +29,7 @@ public class PvPDuelScreen extends Screen {
     public void update(float deltaTime, float totalTime) {
         if (state == GameState.Initialize) {
             world = new PvPWorld(game, game.getTurn());
+            AssetsAndResource.setCurrentWorld(world);
             state = GameState.Loading;
         }
 

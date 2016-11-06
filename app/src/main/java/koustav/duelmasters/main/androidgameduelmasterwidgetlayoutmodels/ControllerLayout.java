@@ -232,11 +232,17 @@ public class ControllerLayout implements Layout {
                         return widgetTouchEvent;
                     }
                 }
+                widgetTouchEvent = AssetsAndResource.widgetTouchEventPool.newObject();
+                widgetTouchEvent.resetTouchEvent();
+                widgetTouchEvent.isTouched = true;
+                widgetTouchEvent.isTouchedDown = true;
+                widgetTouchEvent.object = ControllerButton.None;
                 return null;
             }
         } else {
             WidgetTouchEvent widgetTouchEventOutCome = null;
             Input.TouchEvent event = null;
+            boolean touched = false;
             for (int j = 0; j < touchEvents.size(); j++) {
                 event = touchEvents.get(j);
                 widgetTouchEvent = null;
@@ -252,6 +258,7 @@ public class ControllerLayout implements Layout {
 
                     if (width <= (vertical ? V_default_gap : totalLength/2) &&
                             length <= (vertical ? totalLength/2 : H_default_gap)) {
+                        touched = true;
                         x = ((vertical ? relative_y : relative_x) - startingPoint) / gap;
 
                         if (x > Buttons.size()) {
@@ -346,7 +353,15 @@ public class ControllerLayout implements Layout {
                 }
             }
 
-            return widgetTouchEventOutCome;
+            if (widgetTouchEventOutCome != null) {
+                return widgetTouchEventOutCome;
+            } else if (touched) {
+                widgetTouchEventOutCome = AssetsAndResource.widgetTouchEventPool.newObject();
+                widgetTouchEventOutCome.resetTouchEvent();
+                widgetTouchEventOutCome.isTouched = true;
+                widgetTouchEventOutCome.object = ControllerButton.None;
+                return widgetTouchEventOutCome;
+            }
         }
 
         return null;
