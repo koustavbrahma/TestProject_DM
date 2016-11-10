@@ -4,6 +4,7 @@ import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAnd
 import koustav.duelmasters.main.androidgameduelmasterswidgetcoordinationtools.Query;
 import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.PvPWidgetCoordinator;
 import koustav.duelmasters.main.androidgameduelmastersworlds.PvPWorld;
+import koustav.duelmasters.main.androidgameopenglutil.FPSCounter;
 import koustav.duelmasters.main.androidgamesframework.Screen;
 import koustav.duelmasters.main.androidgamesframeworkimpl.AndroidGame;
 
@@ -20,9 +21,12 @@ public class PvPDuelScreen extends Screen {
     PvPWorld world;
     GameState state;
 
+    FPSCounter fpsCounter;
+
     public PvPDuelScreen(AndroidGame game) {
         super(game);
         state = GameState.Initialize;
+        fpsCounter = new FPSCounter();
     }
 
     @Override
@@ -53,6 +57,7 @@ public class PvPDuelScreen extends Screen {
     @Override
     public void present() {
         if (state == GameState.Running) {
+            fpsCounter.logFrame();
             world.draw();
         }
     }
