@@ -54,6 +54,7 @@ public class AssetsAndResource {
     public static ColorShaderProgram colorShaderProgram;
 
     // Frame buffers
+    public static FrameBufferObject SceneBuffer;
     public static FrameBufferObject ShadowBuffer;
 
     // Matrix Fixed
@@ -194,7 +195,8 @@ public class AssetsAndResource {
         colorShaderProgram = new ColorShaderProgram(game);
 
         // Frame Buffers
-        ShadowBuffer = new FrameBufferObject(game.getframeBufferWidth(), game.getframeBufferHeight());
+        SceneBuffer = new FrameBufferObject((int) (AssetsAndResource.aspectRatio * (game.getframeBufferHeight()/2)), (game.getframeBufferHeight()/2));
+        ShadowBuffer = new FrameBufferObject((int) (AssetsAndResource.aspectRatio * (game.getframeBufferHeight()/16)), (game.getframeBufferHeight()/16));
 
         initializePvPFixedTexture();
 
@@ -213,19 +215,39 @@ public class AssetsAndResource {
         orthoM(OrthoProjectionMatrix, 0, -aspectRatio, aspectRatio, -1f, 1f, -1f, 1f);
         invertM(invertedOrthoProjectionMatrix, 0, OrthoProjectionMatrix, 0);
 
-        setLookAtM(tempMatrix, 0, 0f, 2.5f, 0.0f, 0f, 0f, 0.0f, 0f, 0f, -1.0f);
+        // setup light source view
+        setLookAtM(tempMatrix, 0, 0f, 2.88f, 0.0f, 0f, 0f, 0.0f, 0f, 0f, -1.0f);
         multiplyMM(depthVPMatrix, 0, projectionMatrix, 0, tempMatrix, 0);
 
         // Setup IVP Matrix for UI
         game.getInput().setMatrices(AssetsAndResource.invertedOrthoProjectionMatrix, AssetsAndResource.invertedViewProjectionMatrix);
 
         // Light initialization
-        float [] spotLightDirectionInEyeSpace = new float[4];
-        multiplyMV(spotLightDirectionInEyeSpace, 0, AssetsAndResource.viewMatrix, 0, new float[] {0f, -1.0f, 0f, 0f}, 0);
-        GLLight DirectionalLight = new GLLight(GLLight.LightType.Directional, new float[] {0, 0, 0, 0}, spotLightDirectionInEyeSpace,
-                new float[] {0.7f, 0.7f, 0.7f}, 0, 0);
-
+        float [] LightDirectionOrPositionInEyeSpace = new float[4];
+        multiplyMV(LightDirectionOrPositionInEyeSpace, 0, AssetsAndResource.viewMatrix, 0, new float[] {0f, -1.0f, 0f, 0f}, 0);
+        GLLight DirectionalLight = new GLLight(GLLight.LightType.Directional, new float[] {0, 0, 0, 0}, LightDirectionOrPositionInEyeSpace,
+                new float[] {0.2f, 0.2f, 0.2f}, 0, 0);
         Light.add(DirectionalLight);
+
+        multiplyMV(LightDirectionOrPositionInEyeSpace, 0, AssetsAndResource.viewMatrix, 0, new float[] {1.0f, 1.0f, 1.0f, 1.0f}, 0);
+        GLLight PointLight1 = new GLLight(GLLight.LightType.Point, LightDirectionOrPositionInEyeSpace, new float[] {0, 0, 0},
+                new float[] {0.2f, 0.2f, 0.2f}, 0, 0);
+        Light.add(PointLight1);
+
+        multiplyMV(LightDirectionOrPositionInEyeSpace, 0, AssetsAndResource.viewMatrix, 0, new float[] {1.0f, 1.0f, -1.0f, 1.0f}, 0);
+        GLLight PointLight2 = new GLLight(GLLight.LightType.Point, LightDirectionOrPositionInEyeSpace, new float[] {0, 0, 0},
+                new float[] {0.2f, 0.2f, 0.2f}, 0, 0);
+        Light.add(PointLight2);
+
+        multiplyMV(LightDirectionOrPositionInEyeSpace, 0, AssetsAndResource.viewMatrix, 0, new float[] {-1.0f, 1.0f, -1.0f, 1.0f}, 0);
+        GLLight PointLight3 = new GLLight(GLLight.LightType.Point, LightDirectionOrPositionInEyeSpace, new float[] {0, 0, 0},
+                new float[] {0.2f, 0.2f, 0.2f}, 0, 0);
+        Light.add(PointLight3);
+
+        multiplyMV(LightDirectionOrPositionInEyeSpace, 0, AssetsAndResource.viewMatrix, 0, new float[] {-1.0f, 1.0f, 1.0f, 1.0f}, 0);
+        GLLight PointLight4 = new GLLight(GLLight.LightType.Point, LightDirectionOrPositionInEyeSpace, new float[] {0, 0, 0},
+                new float[] {0.2f, 0.2f, 0.2f}, 0, 0);
+        Light.add(PointLight4);
     }
 
 

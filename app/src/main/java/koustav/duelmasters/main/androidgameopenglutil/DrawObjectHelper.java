@@ -3,8 +3,11 @@ package koustav.duelmasters.main.androidgameopenglutil;
 import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAndResource;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
 import koustav.duelmasters.main.androidgameopenglobjectmodels.Cube;
+import koustav.duelmasters.main.androidgameopenglobjectmodels.FullScreenRectangle;
 import koustav.duelmasters.main.androidgameopenglobjectmodels.ScreenRectangle;
 import koustav.duelmasters.main.androidgameopenglobjectmodels.XZRectangle;
+
+import static android.opengl.Matrix.setIdentityM;
 
 /**
  * Created by Koustav on 4/4/2016.
@@ -45,5 +48,14 @@ public class DrawObjectHelper {
         rectangle.bindData(AssetsAndResource.textureProgram.getPositionAttributeLocation(),
                 AssetsAndResource.textureProgram.getTextureCoordinatesAttributeLocation());
         rectangle.draw();
+    }
+
+    public static void drawScreen(FullScreenRectangle screenRectangle, int texture) {
+        AssetsAndResource.textureProgram.useProgram();
+        setIdentityM(AssetsAndResource.tempMatrix, 0);
+        AssetsAndResource.textureProgram.setUniforms(AssetsAndResource.tempMatrix, texture);
+        screenRectangle.bindData(AssetsAndResource.textureProgram.getPositionAttributeLocation(),
+                AssetsAndResource.textureProgram.getTextureCoordinatesAttributeLocation());
+        screenRectangle.draw();
     }
 }

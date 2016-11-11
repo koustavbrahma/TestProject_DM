@@ -40,6 +40,7 @@ import koustav.duelmasters.main.androidgameduelmasterwidgetsimulation.Simulate;
 import koustav.duelmasters.main.androidgameduelmasterwidgetsimulation.SummonCreatureCard;
 import koustav.duelmasters.main.androidgameduelmasterwidgetsimulation.TransientManaCard;
 import koustav.duelmasters.main.androidgameopenglobjectmodels.Cube;
+import koustav.duelmasters.main.androidgameopenglobjectmodels.FullScreenRectangle;
 import koustav.duelmasters.main.androidgameopenglobjectmodels.ScreenRectangle;
 import koustav.duelmasters.main.androidgameopenglobjectmodels.XZRectangle;
 import koustav.duelmasters.main.androidgameopenglutil.DrawObjectHelper;
@@ -121,6 +122,7 @@ public class PvPWidgetCoordinator {
     RectangleButtonWidget ZoomButton;
 
     // GLObjects
+    FullScreenRectangle Screen;
     XZRectangle Base;
     Cube cube;
     Cube glCard;
@@ -155,7 +157,7 @@ public class PvPWidgetCoordinator {
     boolean ZoomMode;
     Hashtable<Integer, CardWidget> ZoneToLastWidgetForSetup;
     WidgetPosition basePosition;
-    WidgetPosition ZoomCardPosition;
+    WidgetPosition ScreenCenterPosition;
     Cards PreviousSelectedCard;
 
     // Listener
@@ -188,7 +190,7 @@ public class PvPWidgetCoordinator {
         this.maze = maze;
 
         // Misc var
-        this.ShadowEnable = false;
+        this.ShadowEnable = true;
         FocusLayout = null;
         selectedCardTracker = new WidgetSelectedCardTracker();
         ZoneToLastWidgetForSetup = new Hashtable<Integer, CardWidget>();
@@ -224,6 +226,8 @@ public class PvPWidgetCoordinator {
         ZoomButton = new RectangleButtonWidget();
 
         // Initialize GLObject
+        Screen = new FullScreenRectangle();
+
         Base = new XZRectangle(new GLMaterial(new float[] {0.8f, 0.8f, 0.8f}, new float[] {0.8f, 0.8f, 0.8f},
                 new float[] {0.1f, 0.1f, 0.1f}, 10.0f), 2.0f, 2.0f, 0);
 
@@ -364,7 +368,7 @@ public class PvPWidgetCoordinator {
         start_touch_y = 0;
         ZoomMode = false;
         basePosition = new WidgetPosition();
-        ZoomCardPosition = new WidgetPosition();
+        ScreenCenterPosition = new WidgetPosition();
         PreviousSelectedCard = null;
     }
 
@@ -1666,12 +1670,31 @@ public class PvPWidgetCoordinator {
     public void draw() {
         AssetsAndResource.ResetCardUsageCount();
 
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        glViewport(0, 0, AssetsAndResource.game.getframeBufferWidth(), AssetsAndResource.game.getframeBufferHeight());
+        AssetsAndResource.game.setGLFragColoring(false);
+        glBindFramebuffer(GL_FRAMEBUFFER, AssetsAndResource.ShadowBuffer.getfboHandle());
+        glViewport(0, 0, AssetsAndResource.ShadowBuffer.getWidth(), AssetsAndResource.ShadowBuffer.getHeight());
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        drawPerspectiveProObj();
 
+        AssetsAndResource.game.setGLFragColoring(true);
+        glBindFramebuffer(GL_FRAMEBUFFER, AssetsAndResource.SceneBuffer.getfboHandle());
+        glViewport(0, 0, AssetsAndResource.SceneBuffer.getWidth(), AssetsAndResource.SceneBuffer.getHeight());
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LEQUAL);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        drawPerspectiveProObj();
+        drawOrthoProObj();
+
+        glDisable(GL_DEPTH_TEST);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glViewport(0, 0, AssetsAndResource.game.getframeBufferWidth(), AssetsAndResource.game.getframeBufferHeight());
+        glClear(GL_COLOR_BUFFER_BIT);
+        DrawObjectHelper.drawScreen(Screen, AssetsAndResource.SceneBuffer.getrenderTex());
+    }
+
+    private void drawPerspectiveProObj() {
         MatrixHelper.setTranslateRotateScale(basePosition);
         DrawObjectHelper.drawOneRectangle(Base, AssetsAndResource.getFixedTexture(AssetsAndResource.BaseID), ShadowEnable);
         battleZoneLayout.draw();
@@ -1683,12 +1706,14 @@ public class PvPWidgetCoordinator {
         graveyardLayout.draw();
         opponentGraveyardLayout.draw();
         handZoneLayout.draw();
+    }
 
+    private void drawOrthoProObj() {
         fixedButtonsLayout.draw();
         controllerLayout.draw();
 
         if (ZoomMode) {
-            MatrixHelper.setTranslate(ZoomCardPosition);
+            MatrixHelper.setTranslate(ScreenCenterPosition);
             DrawObjectHelper.drawOneScreenRectangle(ZoomedCard,
                     AssetsAndResource.getCardTexture(selectedCardTracker.getSelectedCard().getNameID()));
         }

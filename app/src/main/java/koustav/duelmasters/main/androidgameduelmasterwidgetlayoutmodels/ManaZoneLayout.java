@@ -342,7 +342,7 @@ public class ManaZoneLayout implements Layout{
         }
 
         if (DraggingSlot != null) {
-            DraggingSlot.DragUpdate(AssetsAndResource.CardLength * 40f);
+            DraggingSlot.DragUpdate(AssetsAndResource.CardLength * 42f);
         }
 
         SlotsToRemoveDuringTransition.clear();

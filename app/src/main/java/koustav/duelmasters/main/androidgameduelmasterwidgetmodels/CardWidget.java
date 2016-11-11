@@ -76,35 +76,37 @@ public class CardWidget implements Widget {
 
     @Override
     public void draw(){
-        PvPWorld world = null;
-        if (AssetsAndResource.getWorld() instanceof PvPWorld) {
-            world = (PvPWorld) AssetsAndResource.getWorld();
-        }
-        if (world != null && world.getWidgetCoordinator().GetInfo(Query.GetZoomSelectedCard) == card) {
-            for (int i = 0; i< 6; i++) {
-                textureArrays[i] = AssetsAndResource.getFixedTexture(AssetsAndResource.BlueScreenImageID);
+        if (AssetsAndResource.game.getGLFragColoringSkip() == 0) {
+            PvPWorld world = null;
+            if (AssetsAndResource.getWorld() instanceof PvPWorld) {
+                world = (PvPWorld) AssetsAndResource.getWorld();
             }
-            glDepthMask(false);
-            glEnable(GL_BLEND);
-            glBlendColor(0f, 0f, 0f, 0.5f);
-            glBlendFunc(GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA);
-            DrawObjectHelper.drawOneCube(glCurrentSelect, textureArrays, shadowEnable);
-            glDisable(GL_BLEND);
-            glDepthMask(true);
-        }
+            if (world != null && world.getWidgetCoordinator().GetInfo(Query.GetZoomSelectedCard) == card) {
+                for (int i = 0; i < 6; i++) {
+                    textureArrays[i] = AssetsAndResource.getFixedTexture(AssetsAndResource.BlueScreenImageID);
+                }
+                glDepthMask(false);
+                glEnable(GL_BLEND);
+                glBlendColor(0f, 0f, 0f, 0.5f);
+                glBlendFunc(GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA);
+                DrawObjectHelper.drawOneCube(glCurrentSelect, textureArrays, false);
+                glDisable(GL_BLEND);
+                glDepthMask(true);
+            }
 
-        if (world != null && (boolean) world.getWidgetCoordinator().GetInfo(Query.IsCardSelected, card) &&
-                !((boolean) world.getWidgetCoordinator().GetInfo(Query.IsCardSelectedPile, card))) {
-            for (int i = 0; i< 6; i++) {
-                textureArrays[i] = AssetsAndResource.getFixedTexture(AssetsAndResource.RedScreenImageID);
+            if (world != null && (boolean) world.getWidgetCoordinator().GetInfo(Query.IsCardSelected, card) &&
+                    !((boolean) world.getWidgetCoordinator().GetInfo(Query.IsCardSelectedPile, card))) {
+                for (int i = 0; i < 6; i++) {
+                    textureArrays[i] = AssetsAndResource.getFixedTexture(AssetsAndResource.RedScreenImageID);
+                }
+                glDepthMask(false);
+                glEnable(GL_BLEND);
+                glBlendColor(0f, 0f, 0f, 0.5f);
+                glBlendFunc(GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA);
+                DrawObjectHelper.drawOneCube(glSelectedCards, textureArrays, false);
+                glDisable(GL_BLEND);
+                glDepthMask(true);
             }
-            glDepthMask(false);
-            glEnable(GL_BLEND);
-            glBlendColor(0f, 0f, 0f, 0.5f);
-            glBlendFunc(GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA);
-            DrawObjectHelper.drawOneCube(glSelectedCards, textureArrays, shadowEnable);
-            glDisable(GL_BLEND);
-            glDepthMask(true);
         }
 
         for (int i = 0; i< 6; i++) {
