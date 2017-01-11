@@ -5,6 +5,7 @@ import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
 import koustav.duelmasters.main.androidgameopenglobjectmodels.Cube;
 import koustav.duelmasters.main.androidgameopenglobjectmodels.FullScreenRectangle;
 import koustav.duelmasters.main.androidgameopenglobjectmodels.ScreenRectangle;
+import koustav.duelmasters.main.androidgameopenglobjectmodels.UniformXZRectangle;
 import koustav.duelmasters.main.androidgameopenglobjectmodels.XZRectangle;
 
 import static android.opengl.Matrix.setIdentityM;
@@ -25,6 +26,20 @@ public class DrawObjectHelper {
         glret.bindData(AssetsAndResource.textureShaderProgramLight.getPositionAttributeLocation(),
                 AssetsAndResource.textureShaderProgramLight.getNormalAttributeLocation(),
                 AssetsAndResource.textureShaderProgramLight.getTextureCoordinatesAttributeLocation());
+        glret.draw();
+    }
+
+    public static void drawOneUniformRectangle(UniformXZRectangle glret, float[] Color, boolean shadowEnable) {
+        AssetsAndResource.uniformColorShaderLightProgram.useProgram();
+        AssetsAndResource.uniformColorShaderLightProgram.setUniforms(AssetsAndResource.modelViewMatrix, AssetsAndResource.it_modelViewMatrix,
+                ((AssetsAndResource.game.getGLFragColoringSkip() == 0)? AssetsAndResource.modelViewProjectionMatrix :
+                        AssetsAndResource.ShadowMatrix), AssetsAndResource.ShadowMatrix, AssetsAndResource.Light, glret.getMaterial(),
+                Color, AssetsAndResource.ShadowBuffer.getrenderTex(),
+                ((AssetsAndResource.game.getGLFragColoringSkip() == 0)? shadowEnable: false));
+
+        glret.bindData(AssetsAndResource.uniformColorShaderLightProgram.getPositionAttributeLocation(),
+                AssetsAndResource.uniformColorShaderLightProgram.getNormalAttributeLocation(),
+                0);
         glret.draw();
     }
 

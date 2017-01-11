@@ -42,6 +42,7 @@ import koustav.duelmasters.main.androidgameduelmasterwidgetsimulation.TransientM
 import koustav.duelmasters.main.androidgameopenglobjectmodels.Cube;
 import koustav.duelmasters.main.androidgameopenglobjectmodels.FullScreenRectangle;
 import koustav.duelmasters.main.androidgameopenglobjectmodels.ScreenRectangle;
+import koustav.duelmasters.main.androidgameopenglobjectmodels.UniformXZRectangle;
 import koustav.duelmasters.main.androidgameopenglobjectmodels.XZRectangle;
 import koustav.duelmasters.main.androidgameopenglutil.DrawObjectHelper;
 import koustav.duelmasters.main.androidgameopenglutil.GLGeometry;
@@ -124,6 +125,7 @@ public class PvPWidgetCoordinator {
     // GLObjects
     FullScreenRectangle Screen;
     XZRectangle Base;
+    UniformXZRectangle Base2;
     Cube cube;
     Cube glCard;
     ScreenRectangle glRbutton;
@@ -159,6 +161,7 @@ public class PvPWidgetCoordinator {
     WidgetPosition basePosition;
     WidgetPosition ScreenCenterPosition;
     Cards PreviousSelectedCard;
+    float[] Color;
 
     // Listener
     WidgetTouchListener LowFocusListener;
@@ -229,6 +232,9 @@ public class PvPWidgetCoordinator {
         Screen = new FullScreenRectangle();
 
         Base = new XZRectangle(new GLMaterial(new float[] {0.8f, 0.8f, 0.8f}, new float[] {0.8f, 0.8f, 0.8f},
+                new float[] {0.1f, 0.1f, 0.1f}, 10.0f), 2.0f, 2.0f, 0);
+
+        Base2 = new UniformXZRectangle(new GLMaterial(new float[] {0.8f, 0.8f, 0.8f}, new float[] {0.8f, 0.8f, 0.8f},
                 new float[] {0.1f, 0.1f, 0.1f}, 10.0f), 2.0f, 2.0f, 0);
 
         cube = new Cube(new GLMaterial(new float[] {0.8f, 0.8f, 0.8f}, new float[] {0.8f, 0.8f, 0.8f},
@@ -370,6 +376,7 @@ public class PvPWidgetCoordinator {
         basePosition = new WidgetPosition();
         ScreenCenterPosition = new WidgetPosition();
         PreviousSelectedCard = null;
+        Color = new float[] {0.329412f, 0.329412f, 0.329412f, 1f};
     }
 
     private void ResetFlags() {
@@ -1685,18 +1692,19 @@ public class PvPWidgetCoordinator {
         glDepthFunc(GL_LEQUAL);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         drawPerspectiveProObj();
-        drawOrthoProObj();
 
         glDisable(GL_DEPTH_TEST);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glViewport(0, 0, AssetsAndResource.game.getframeBufferWidth(), AssetsAndResource.game.getframeBufferHeight());
         glClear(GL_COLOR_BUFFER_BIT);
         DrawObjectHelper.drawScreen(Screen, AssetsAndResource.SceneBuffer.getrenderTex());
+        drawOrthoProObj();
     }
 
     private void drawPerspectiveProObj() {
         MatrixHelper.setTranslateRotateScale(basePosition);
         DrawObjectHelper.drawOneRectangle(Base, AssetsAndResource.getFixedTexture(AssetsAndResource.BaseID), ShadowEnable);
+        //DrawObjectHelper.drawOneUniformRectangle(Base2, Color, ShadowEnable);
         battleZoneLayout.draw();
         opponentBattleZoneLayout.draw();
         manaZoneLayout.draw();

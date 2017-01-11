@@ -19,6 +19,7 @@ import koustav.duelmasters.main.androidgameshaderprogram.ColorShaderProgram;
 import koustav.duelmasters.main.androidgameshaderprogram.CubeTextureShaderProgramLight;
 import koustav.duelmasters.main.androidgameshaderprogram.TextureShaderProgram;
 import koustav.duelmasters.main.androidgameshaderprogram.TextureShaderProgramLight;
+import koustav.duelmasters.main.androidgameshaderprogram.UniformColorShaderLightProgram;
 
 import static android.opengl.Matrix.invertM;
 import static android.opengl.Matrix.multiplyMM;
@@ -52,6 +53,7 @@ public class AssetsAndResource {
     public static TextureShaderProgramLight textureShaderProgramLight;
     public static CubeTextureShaderProgramLight cubeTextureShaderProgramLight;
     public static ColorShaderProgram colorShaderProgram;
+    public static UniformColorShaderLightProgram uniformColorShaderLightProgram;
 
     // Frame buffers
     public static FrameBufferObject SceneBuffer;
@@ -193,10 +195,11 @@ public class AssetsAndResource {
         textureShaderProgramLight = new TextureShaderProgramLight(game);
         cubeTextureShaderProgramLight = new CubeTextureShaderProgramLight(game);
         colorShaderProgram = new ColorShaderProgram(game);
+        uniformColorShaderLightProgram = new UniformColorShaderLightProgram(game);
 
         // Frame Buffers
-        SceneBuffer = new FrameBufferObject((int) (AssetsAndResource.aspectRatio * (game.getframeBufferHeight()/2)), (game.getframeBufferHeight()/2));
-        ShadowBuffer = new FrameBufferObject((int) (AssetsAndResource.aspectRatio * (game.getframeBufferHeight()/16)), (game.getframeBufferHeight()/16));
+        SceneBuffer = new FrameBufferObject((int) (AssetsAndResource.aspectRatio * (game.getframeBufferHeight() * 0.75)), (int) (game.getframeBufferHeight() * 0.75));
+        ShadowBuffer = new FrameBufferObject((int) (AssetsAndResource.aspectRatio * (game.getframeBufferHeight()/4)), (game.getframeBufferHeight()/4));
 
         initializePvPFixedTexture();
 
@@ -229,25 +232,10 @@ public class AssetsAndResource {
                 new float[] {0.2f, 0.2f, 0.2f}, 0, 0);
         Light.add(DirectionalLight);
 
-        multiplyMV(LightDirectionOrPositionInEyeSpace, 0, AssetsAndResource.viewMatrix, 0, new float[] {1.0f, 1.0f, 1.0f, 1.0f}, 0);
+        multiplyMV(LightDirectionOrPositionInEyeSpace, 0, AssetsAndResource.viewMatrix, 0, new float[] {0f, 2.0f, 0f, 1.0f}, 0);
         GLLight PointLight1 = new GLLight(GLLight.LightType.Point, LightDirectionOrPositionInEyeSpace, new float[] {0, 0, 0},
-                new float[] {0.2f, 0.2f, 0.2f}, 0, 0);
+                new float[] {0.8f, 0.8f, 0.8f}, 0, 0);
         Light.add(PointLight1);
-
-        multiplyMV(LightDirectionOrPositionInEyeSpace, 0, AssetsAndResource.viewMatrix, 0, new float[] {1.0f, 1.0f, -1.0f, 1.0f}, 0);
-        GLLight PointLight2 = new GLLight(GLLight.LightType.Point, LightDirectionOrPositionInEyeSpace, new float[] {0, 0, 0},
-                new float[] {0.2f, 0.2f, 0.2f}, 0, 0);
-        Light.add(PointLight2);
-
-        multiplyMV(LightDirectionOrPositionInEyeSpace, 0, AssetsAndResource.viewMatrix, 0, new float[] {-1.0f, 1.0f, -1.0f, 1.0f}, 0);
-        GLLight PointLight3 = new GLLight(GLLight.LightType.Point, LightDirectionOrPositionInEyeSpace, new float[] {0, 0, 0},
-                new float[] {0.2f, 0.2f, 0.2f}, 0, 0);
-        Light.add(PointLight3);
-
-        multiplyMV(LightDirectionOrPositionInEyeSpace, 0, AssetsAndResource.viewMatrix, 0, new float[] {-1.0f, 1.0f, 1.0f, 1.0f}, 0);
-        GLLight PointLight4 = new GLLight(GLLight.LightType.Point, LightDirectionOrPositionInEyeSpace, new float[] {0, 0, 0},
-                new float[] {0.2f, 0.2f, 0.2f}, 0, 0);
-        Light.add(PointLight4);
     }
 
 
@@ -257,8 +245,10 @@ public class AssetsAndResource {
         textureShaderProgramLight.deleteProgram();
         cubeTextureShaderProgramLight.deleteProgram();
         colorShaderProgram.deleteProgram();
+        uniformColorShaderLightProgram.deleteProgram();
 
         // Frame buffer free
+        SceneBuffer.freeFBO();
         ShadowBuffer.freeFBO();
 
         freePvPFixedTexture();

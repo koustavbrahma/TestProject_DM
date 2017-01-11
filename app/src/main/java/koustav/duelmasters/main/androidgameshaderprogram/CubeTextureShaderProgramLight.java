@@ -43,7 +43,10 @@ public class CubeTextureShaderProgramLight extends ShaderProgram {
     private final int aTextureCoordinatesLocation;
 
     public CubeTextureShaderProgramLight(Context context) {
-        super(context, R.raw.vertex_shader_texture_cube_light, R.raw.fragment_shader_texture_cube_light);
+        // For high detailing use this
+        //super(context, R.raw.vertex_shader_texture_cube_light, R.raw.fragment_shader_texture_cube_light);
+        // For low detailing use this
+        super(context, R.raw.vertex_shader_texture_cube_light_opt, R.raw.fragment_shader_texture_cube_light_opt);
         // Retrieve uniform locations for the shader program.
         uSkipColor = glGetUniformLocation(program, U_SKIP_COLOR);
         uShadowEnable = glGetUniformLocation(program, U_SHADOW_ENABLE);
