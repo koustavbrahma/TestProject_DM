@@ -12,7 +12,7 @@ import koustav.duelmasters.main.androidgameduelmastersdatastructure.TypeOfCard;
 import koustav.duelmasters.main.androidgameduelmasterswidgetcoordinationtools.Actions;
 import koustav.duelmasters.main.androidgameduelmasterswidgetcoordinationtools.Query;
 import koustav.duelmasters.main.androidgameduelmasterswidgetcoordinationtools.Requests;
-import koustav.duelmasters.main.androidgameduelmasterswidgetcoordinationtools.Simulation;
+import koustav.duelmasters.main.androidgameduelmasterwidgetsimulation.LocationLayout;
 import koustav.duelmasters.main.androidgameduelmasterswidgetcoordinationtools.UIRequest;
 import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.PvPWidgetCoordinator;
 import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.PvPWidgetCoordinator.*;
@@ -27,6 +27,8 @@ import koustav.duelmasters.main.androidgameduelmastersutil.NetworkUtil;
 import koustav.duelmasters.main.androidgameduelmastersutil.SetUnsetUtil;
 import koustav.duelmasters.main.androidgameduelmastersutillegacycode.UIUtil;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.ControllerButton;
+import koustav.duelmasters.main.androidgameduelmasterwidgetsimulation.SimulationID;
+import koustav.duelmasters.main.androidgameduelmasterwidgetsimulation.SimulationType;
 
 /**
  * Created by Koustav on 3/28/2015.
@@ -62,6 +64,8 @@ public class OnTurn {
     boolean SummonTapped;
     boolean UnTapAllAtEndOfTurn;
 
+    SimulationID simulationID;
+
     // Stores the present state
     SubStates currentState;
 
@@ -88,6 +92,8 @@ public class OnTurn {
         UnTapCreaturesInstruction = new InstructionSet(instruction2);
         SummonTapped = false;
         UnTapAllAtEndOfTurn = false;
+
+        simulationID = null;
 
         DefineStates();
         setCurrentState(IdealOnTurn);
@@ -208,7 +214,8 @@ public class OnTurn {
                     if (GetUtil.IsAllowedToSummonOrCast(card, world)) {
                         world.setFetchCard(card);
                         coordinator.SendAction(Actions.ClearSelectedCards, null);
-                        coordinator.SendAction(Actions.Simulate, Simulation.PreSummonCard, card);
+                        coordinator.SendAction(Actions.Simulate, SimulationType.CardMovement,
+                                LocationLayout.Hand, LocationLayout.HandPreBattleZone, card);
                         world.getEventLog().setRecording(true);
                         setCurrentState(SummonOrCastUpdate_1);
                     }
@@ -260,10 +267,12 @@ public class OnTurn {
                         world.getEventLog().setRecording(true);
                         if (uiRequest.isDragged()) {
                             setCurrentState(PreManaUpdate);
-                            coordinator.SendAction(Actions.Simulate, Simulation.PreManaAdd, card);
+                            coordinator.SendAction(Actions.Simulate, SimulationType.CardMovement,
+                                    LocationLayout.Hand, LocationLayout.HandPreManaZone, card);
                         } else {
                             setCurrentState(ManaUpdate);
-                            coordinator.SendAction(Actions.Simulate, Simulation.ManaAdd, card, true);
+                            simulationID = (SimulationID)coordinator.SendAction(Actions.Simulate, SimulationType.CardMovement,
+                                    LocationLayout.Hand, LocationLayout.ManaZone, card);
                         }
                     }
 
@@ -396,13 +405,16 @@ public class OnTurn {
                     if (uiRequest.getRequest() == Requests.Accept){
                         ArrayList<Cards> finalList = world.getMaze().getZoneList().get(Maze.temporaryZone).getZoneArray();
                         finalList.clear();
+                        ArrayList<Cards> NonPileCards = new ArrayList<Cards>();
                         for (int i = 0; i < CollectedCardList.size(); i++) {
                             Cards card = CollectedCardList.get(i);
                             finalList.add(card);
                             if (!(boolean)coordinator.GetInfo(Query.IsCardSelectedPile, card)) {
-                                coordinator.SendAction(Actions.Simulate, Simulation.TransientManaCard, card);
+                                NonPileCards.add(card);
                             }
                         }
+                        simulationID = (SimulationID)coordinator.SendAction(Actions.Simulate, SimulationType.CardMovement,
+                                LocationLayout.ManaZone, LocationLayout.ManaNewCoupleZone, NonPileCards);
                         setCurrentState(SummonOrCastUpdate_2);
                         return false;
                     }
@@ -411,8 +423,10 @@ public class OnTurn {
                 if (uiRequest.getRequest() == Requests.Decline){
                     setCurrentState(IdealOnTurn);
                     coordinator.SendAction(Actions.ClearSelectedCards, null);
-                    coordinator.SendAction(Actions.Simulate, Simulation.CancelSummonOrManaAdd, SummoningOrCastCard);
-                    coordinator.SendAction(Actions.Simulate, Simulation.CancelManaCard, null);
+                    coordinator.SendAction(Actions.Simulate, SimulationType.CardMovement,
+                            LocationLayout.HandPreBattleZone, LocationLayout.Hand, SummoningOrCastCard);
+                    coordinator.SendAction(Actions.Simulate, SimulationType.CardMovement,
+                            LocationLayout.ManaNewCoupleZone, LocationLayout.ManaZone);
                     world.getEventLog().setRecording(false);
                     return false;
                 }
@@ -440,7 +454,8 @@ public class OnTurn {
                     if ((boolean)coordinator.GetInfo(Query.IsCardSelected, SelectedCard)) {
                         coordinator.SendAction(Actions.RemoveCardFromSelectedList, SelectedCard);
                         if (uiRequest.isDragged()) {
-                            coordinator.SendAction(Actions.Simulate, Simulation.TransientManaCard, SelectedCard);
+                            coordinator.SendAction(Actions.Simulate, SimulationType.CardMovement,
+                                    LocationLayout.ManaNewCoupleZone, LocationLayout.ManaZone, SelectedCard);
                         }
                         ArrayList<ControllerButton> controllerButtons = new ArrayList<ControllerButton>();
                         controllerButtons.add(ControllerButton.Decline);
@@ -464,20 +479,23 @@ public class OnTurn {
                     if (matchedCivilization) {
                         coordinator.SendAction(Actions.AddCardToSelectedList, SelectedCard, uiRequest.isDragged());
                         if (uiRequest.isDragged()) {
-                            coordinator.SendAction(Actions.Simulate, Simulation.TransientManaCard, SelectedCard);
+                            coordinator.SendAction(Actions.Simulate, SimulationType.CardMovement,
+                                    LocationLayout.ManaZone, LocationLayout.ManaNewCoupleZone, SelectedCard);
                         }
                     } else {
                         int NumberOfCollectedCard = CollectedCardList.size();
                         if (NumberOfCollectedCard < (SummoningOrCastCard.getCost() - 1)) {
                             coordinator.SendAction(Actions.AddCardToSelectedList, SelectedCard, uiRequest.isDragged());
                             if (uiRequest.isDragged()) {
-                                coordinator.SendAction(Actions.Simulate, Simulation.TransientManaCard, SelectedCard);
+                                coordinator.SendAction(Actions.Simulate, SimulationType.CardMovement,
+                                        LocationLayout.ManaZone, LocationLayout.ManaNewCoupleZone, SelectedCard);
                             }
                         } else {
                             if (GetUtil.RequiredCivilization(SelectedCard, SummoningOrCastCard.getCivilization())) {
                                 coordinator.SendAction(Actions.AddCardToSelectedList, SelectedCard, uiRequest.isDragged());
                                 if (uiRequest.isDragged()) {
-                                    coordinator.SendAction(Actions.Simulate, Simulation.TransientManaCard, SelectedCard);
+                                    coordinator.SendAction(Actions.Simulate, SimulationType.CardMovement,
+                                            LocationLayout.ManaZone, LocationLayout.ManaNewCoupleZone, SelectedCard);
                                 }
                             }
                         }
@@ -507,7 +525,8 @@ public class OnTurn {
             @Override
             public boolean updateState() {
                 PvPWidgetCoordinator coordinator = world.getWidgetCoordinator();
-                if (!(boolean)coordinator.GetInfo(Query.IsSimulationDone, Simulation.TransientManaCard)) {
+                if (!(boolean)coordinator.GetInfo(Query.IsSimulationDone, SimulationType.CardMovement,
+                        simulationID)) {
                     return false;
                 }
 
@@ -537,7 +556,8 @@ public class OnTurn {
                         world.getEventLog().registerEvent(world.getFetchCard(), false, 0 , "Tapped", true ,1);
                         SummonTapped = false;
                     }
-                    coordinator.SendAction(Actions.Simulate, Simulation.SummonCreatureCard, world.getFetchCard());
+                    simulationID = (SimulationID)coordinator.SendAction(Actions.Simulate, SimulationType.CardMovement,
+                            LocationLayout.HandPreBattleZone, LocationLayout.BattleZone, world.getFetchCard());
 
                     //sendeventlog
                     String msg = world.getEventLog().getAndClearEvents();
@@ -650,7 +670,8 @@ public class OnTurn {
             @Override
             public boolean updateState() {
                 PvPWidgetCoordinator coordinator = world.getWidgetCoordinator();
-                if (!(boolean)coordinator.GetInfo(Query.IsSimulationDone, Simulation.SummonCreatureCard)) {
+                if (!(boolean)coordinator.GetInfo(Query.IsSimulationDone, SimulationType.CardMovement,
+                        simulationID)) {
                     return false;
                 }
                 if (world.getInstructionIteratorHandler().update()) {
@@ -822,12 +843,14 @@ public class OnTurn {
 
                 if (uiRequest.getRequest() == Requests.Accept) {
                     setCurrentState(ManaUpdate);
-                    coordinator.SendAction(Actions.Simulate, Simulation.ManaAdd, world.getFetchCard(), false);
+                    simulationID = (SimulationID)coordinator.SendAction(Actions.Simulate, SimulationType.CardMovement,
+                            LocationLayout.HandPreManaZone, LocationLayout.ManaZone, world.getFetchCard());
                 }
 
                 if (uiRequest.getRequest() == Requests.Decline) {
                     setCurrentState(IdealOnTurn);
-                    coordinator.SendAction(Actions.Simulate, Simulation.CancelSummonOrManaAdd, world.getFetchCard());
+                    coordinator.SendAction(Actions.Simulate, SimulationType.CardMovement,
+                            LocationLayout.HandPreManaZone, LocationLayout.Hand, world.getFetchCard());
                     world.setFetchCard(null);
                     world.getEventLog().setRecording(false);
                 }
@@ -849,7 +872,8 @@ public class OnTurn {
             @Override
             public boolean updateState() {
                 PvPWidgetCoordinator coordinator = world.getWidgetCoordinator();
-                if (!(boolean)coordinator.GetInfo(Query.IsSimulationDone, Simulation.ManaAdd)) {
+                if (!(boolean)coordinator.GetInfo(Query.IsSimulationDone, SimulationType.CardMovement,
+                        simulationID)) {
                     return false;
                 }
                 boolean addtomanaTapped = false;
@@ -886,7 +910,8 @@ public class OnTurn {
             @Override
             public boolean updateState() {
                 PvPWidgetCoordinator coordinator = world.getWidgetCoordinator();
-                coordinator.SendAction(Actions.Simulate, Simulation.DrawCardFromDeck, 1);
+                coordinator.SendAction(Actions.Simulate, SimulationType.CardMovement,
+                        LocationLayout.Deck, LocationLayout.Hand, 1);
                 String DrawCardInstruction = InstSetUtil.GenerateDrawCardInstruction();
                 InstructionSet instruction = new InstructionSet(DrawCardInstruction);
                 world.getInstructionHandler().setCardAndInstruction(null,instruction);

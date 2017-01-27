@@ -71,6 +71,8 @@ public class CardStackWidget implements Widget{
     // openGL object model, physical unit
     Cube cube;
     Cube glcard;
+    Cube glCurrentSelect;
+    Cube glSelectedCards;
 
     // Logical object
     ArrayList<Cards> cardStack;
@@ -587,6 +589,7 @@ public class CardStackWidget implements Widget{
             widgetPosition.Z_scale = scale * (39.0f - 0.3f * (float) Math.abs(i - selectedCardIndex))/39.0f;
 
             MatrixHelper.setTranslateRotateScale(widgetPosition);
+            DrawObjectHelper.drawHighlightBoundaryOfCard(glCurrentSelect, glSelectedCards, card);
             for (int j = 0; j < 6; j++) {
                 textureArrays[j] = AssetsAndResource.getFixedTexture(AssetsAndResource.cardBorderID);
             }
@@ -607,6 +610,7 @@ public class CardStackWidget implements Widget{
             widgetPosition.Z_scale = scale * (39.0f - 0.3f * (float) Math.abs(i - selectedCardIndex))/39.0f;
 
             MatrixHelper.setTranslateRotateScale(widgetPosition);
+            DrawObjectHelper.drawHighlightBoundaryOfCard(glCurrentSelect, glSelectedCards, card);
             for (int j = 0; j < 6; j++) {
                 textureArrays[j] = AssetsAndResource.getFixedTexture(AssetsAndResource.cardBorderID);
             }
@@ -1101,6 +1105,8 @@ public class CardStackWidget implements Widget{
     public void LinkGLobject(Object ...objs) {
         cube = (Cube) objs[0];
         glcard = (Cube) objs[1];
+        glCurrentSelect = (Cube) objs[2];
+        glSelectedCards = (Cube) objs[3];
     }
 
     @Override

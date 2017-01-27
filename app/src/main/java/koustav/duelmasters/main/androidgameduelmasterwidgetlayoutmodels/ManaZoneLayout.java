@@ -171,6 +171,16 @@ public class ManaZoneLayout implements Layout{
         }
     }
 
+    public boolean IsPresent(CardWidget widget) {
+        CardSlotLayoutXZPlaner slotLayout = WidgetToSlotMapping.get(widget);
+        DynamicCardSlotLayout slotLayout1 = WidgetToDynamicSlotMapping.get(widget);
+        if (slotLayout == null && slotLayout1 == null) {
+            return false;
+        }
+
+        return true;
+    }
+
     private boolean FreeManaCardOverlapping() {
         float gap = (this.width - this.CoupleSlotWidth)/(1f + LeftWingOfCardSlot.size() +RightWingOfCardSlot.size());
 

@@ -217,6 +217,15 @@ public class HandZoneLayout implements Layout  {
         return slotLayout.IsTransition();
     }
 
+    public boolean IsPresent(CardWidget widget) {
+        DynamicCardSlotLayout slotLayout = WidgetToSlotMapping.get(widget);
+        if (slotLayout == null) {
+            return false;
+        }
+
+        return true;
+    }
+
     public void AddToCardWidgetQueue(ArrayList<CardWidget> cardWidgets) {
         for (int i = 0; i < cardWidgets.size(); i++) {
             cardWidgetsQueue.add(cardWidgets.get(i));

@@ -117,6 +117,14 @@ public class BattleZoneLayout implements Layout {
         return slotLayout.IsTransition();
     }
 
+    public boolean IsPresent(CardWidget widget) {
+        CardSlotLayoutXZPlaner slotLayout = WidgetToSlotMapping.get(widget);
+        if (slotLayout == null) {
+            return false;
+        }
+        return true;
+    }
+
     private boolean BattleZoneCardOverlapping() {
         float gap = (this.width)/(1f + LeftWingOfCardSlot.size() +RightWingOfCardSlot.size());
 

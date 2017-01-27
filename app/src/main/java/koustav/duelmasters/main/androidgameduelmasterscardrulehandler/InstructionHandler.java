@@ -6,7 +6,15 @@ import java.util.Random;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.ActiveCard;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.InactiveCard;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
+import koustav.duelmasters.main.androidgameduelmastersdatastructure.Maze;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.TypeOfCard;
+import koustav.duelmasters.main.androidgameduelmastersstatemachine.SubStates;
+import koustav.duelmasters.main.androidgameduelmasterswidgetcoordinationtools.Actions;
+import koustav.duelmasters.main.androidgameduelmasterswidgetcoordinationtools.Query;
+import koustav.duelmasters.main.androidgameduelmasterswidgetcoordinationtools.Requests;
+import koustav.duelmasters.main.androidgameduelmasterswidgetcoordinationtools.UIRequest;
+import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.PvPWidgetCoordinator;
+import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.PvPWidgetCoordinator.*;
 import koustav.duelmasters.main.androidgameduelmastersworlds.PvPWorld;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.WorldFlags;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Zone;
@@ -16,6 +24,7 @@ import koustav.duelmasters.main.androidgameduelmastersutil.GetUtil;
 import koustav.duelmasters.main.androidgameduelmastersutil.NetworkUtil;
 import koustav.duelmasters.main.androidgameduelmastersutil.SetUnsetUtil;
 import koustav.duelmasters.main.androidgameduelmastersutillegacycode.UIUtil;
+import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.ControllerButton;
 
 /**
  * Created by Koustav on 4/17/2015.
@@ -34,12 +43,36 @@ public class InstructionHandler {
     PvPWorld world;
     ArrayList<Cards> CollectCardList;
     boolean InstructionSkipped;
+    boolean Soft;
+
+    SubStates ChooseAnyNCard;
+    SubStates ChooseFirstNCard;
+    SubStates ChooseRandom;
+    SubStates SelfChangeZone;
+    SubStates ChangeZoneAll;
+    SubStates SelfBooster;
+    SubStates SelfBoosterMultiplier;
+    SubStates Aura;
+    SubStates SelfSetAttr;
+    SubStates SetAttr;
+    SubStates SelfCleanUp;
+    SubStates CleanUp;
+    SubStates SelfCleanUpMultiplier;
+    SubStates Shuffle;
+    SubStates Copy;
+    SubStates SetTempSpreadInst;
+    SubStates PassControlToOpponent;
+    SubStates ShowCardToYourOpponent;
+    SubStates SendDeckShuffleUpdate;
+    SubStates ComputeCondition;
 
     public InstructionHandler(PvPWorld world){
         this.world = world;
         this.State = InstructionState.S1;
         CollectCardList = new ArrayList<Cards>();
         InstructionSkipped = false;
+        Soft = false;
+        DefineStates();
     }
 
     public void setCardAndInstruction(InactiveCard card, InstructionSet instruction) {
@@ -61,6 +94,568 @@ public class InstructionHandler {
     public ArrayList<Cards> getCollectCardList() {
         return CollectCardList;
     }
+
+    private void DefineStates() {
+        ChooseAnyNCard = new SubStates() {
+            private int zone;
+
+            private boolean CardSelection() {
+                int filtercount;
+                if(instruction.getCount() !=0) {
+                    filtercount = instruction.getCount();
+                } else {
+                    filtercount = instruction.getConditionCount();
+                }
+                filtercount = (CollectCardList.size() > filtercount) ? filtercount : CollectCardList.size();
+                if (filtercount == 0) {
+                    setCurrentState(S4);
+                    return false;
+                }
+                UIRequest uiRequest = world.getWidgetCoordinator().getUIRequests();
+                if (uiRequest.getRequest() == Requests.None) {
+                    return false;
+                }
+
+                PvPWidgetCoordinator coordinator = world.getWidgetCoordinator();
+                ArrayList<Cards> SelectedCardList = (ArrayList) coordinator.GetInfo(Query.GetSelectedCardList, null);
+                int selectedCardCount = (int) coordinator.GetInfo(Query.SelectedCardCount, null);
+                if (selectedCardCount == filtercount) {
+                    if (uiRequest.getRequest() == Requests.Accept) {
+                        CollectCardList.clear();
+                        for (int i =0; i< SelectedCardList.size(); i++) {
+                            CollectCardList.add(SelectedCardList.get(i));
+                        }
+                        coordinator.SendAction(Actions.ClearSelectedCards, null);
+                        setCurrentState(S4);
+                        return false;
+                    }
+                }
+
+                if (uiRequest.getRequest() == Requests.Decline){
+                    CollectCardList.clear();
+                    coordinator.SendAction(Actions.ClearSelectedCards, null);
+                    InstructionSkipped = true;
+                    setCurrentState(S4);
+                    return false;
+                }
+
+                if (uiRequest.getRequest() == Requests.CardSelected) {
+                    Cards card = uiRequest.getCard();
+
+                    if (card == null) {
+                        throw new RuntimeException("Invalid Condition");
+                    }
+
+                    if (!CollectCardList.contains(card)) {
+                        return false;
+                    }
+
+                    if ((boolean)coordinator.GetInfo(Query.IsCardSelected, card)) {
+                        coordinator.SendAction(Actions.RemoveCardFromSelectedList, card);
+                        if (Soft) {
+                            ArrayList<ControllerButton> controllerButtons = new ArrayList<ControllerButton>();
+                            controllerButtons.add(ControllerButton.Decline);
+                            world.getWidgetCoordinator().SendAction(Actions.AddControlButton, controllerButtons);
+                        } else {
+                            world.getWidgetCoordinator().SendAction(Actions.ClearControlButton, (Object) null);
+                        }
+                        return false;
+                    }
+
+                    if (!(selectedCardCount < filtercount)) {
+                        return false;
+                    }
+
+                    coordinator.SendAction(Actions.AddCardToSelectedList, card, false);
+                    if (SelectedCardList.size() == filtercount) {
+                        ArrayList<ControllerButton> controllerButtons = new ArrayList<ControllerButton>();
+                        controllerButtons.add(ControllerButton.Accept);
+                        if (Soft) {
+                            controllerButtons.add(ControllerButton.Decline);
+                        }
+                        world.getWidgetCoordinator().SendAction(Actions.AddControlButton, controllerButtons);
+                    }
+                }
+                return false;
+            }
+            private SubStates S1 = new SubStates() {
+                @Override
+                public boolean updateState() {
+                    collectCards();
+                    CheckActionZoneConsistencyForChoose();
+                    zone = 0;
+                    if (CollectCardList.size() > 0) {
+                        zone = CollectCardList.get(0).GridPosition().getZone();
+                    }
+
+                    if (zone == Maze.graveyard || zone == Maze.deck ||
+                            zone == Maze.Opponent_graveyard || zone == Maze.Opponent_deck) {
+                        setCurrentState(S2);
+                    } else {
+                        setCurrentState(S3);
+                    }
+                    return false;
+                }
+
+                @Override
+                public void StateSetting() {
+
+                }
+            };
+
+            private SubStates S2 = new SubStates() {
+                @Override
+                public boolean updateState() {
+                    return CardSelection();
+                }
+
+                @Override
+                public void StateSetting() {
+                    if (Soft) {
+                        ArrayList<ControllerButton> controllerButtons = new ArrayList<ControllerButton>();
+                        controllerButtons.add(ControllerButton.Decline);
+                        world.getWidgetCoordinator().SendAction(Actions.AddControlButton, controllerButtons);
+                    } else {
+                        world.getWidgetCoordinator().SendAction(Actions.ClearControlButton, (Object) null);
+                    }
+                    Expand[] expands;
+                    int[] ActionZone = instruction.getActionZone();
+                    if (ActionZone[Maze.graveyard] == 1) {
+                        expands = new Expand[] {Expand.Graveyard};
+                    } else if (ActionZone[Maze.graveyard] == 2) {
+                        expands = new Expand[] {Expand.Graveyard_O};
+                    } else if (ActionZone[Maze.deck] == 1) {
+                        expands = new Expand[] {Expand.Deck};
+                    } else if (ActionZone[Maze.deck] == 2) {
+                        expands = new Expand[] {Expand.Deck_O};
+                    } else {
+                        throw new RuntimeException("Invalid condition");
+                    }
+                    world.getWidgetCoordinator().SetFlags(ZoomLevel.Button, expands,
+                            new Drag[] {Drag.Nil}, false, CardSelectMode.ON, false);
+                }
+            };
+
+            private SubStates S3 = new SubStates() {
+                @Override
+                public boolean updateState() {
+                    return CardSelection();
+                }
+
+                @Override
+                public void StateSetting() {
+                    if (Soft) {
+                        ArrayList<ControllerButton> controllerButtons = new ArrayList<ControllerButton>();
+                        controllerButtons.add(ControllerButton.Decline);
+                        world.getWidgetCoordinator().SendAction(Actions.AddControlButton, controllerButtons);
+                    } else {
+                        world.getWidgetCoordinator().SendAction(Actions.ClearControlButton, (Object) null);
+                    }
+                    Expand[] expands;
+                    int[] ActionZone = instruction.getActionZone();
+                    if (ActionZone[Maze.manaZone] == 0) {
+                        expands = new Expand[] {Expand.Nil};
+                    } else if (ActionZone[Maze.manaZone] == 1) {
+                        expands = new Expand[] {Expand.Mana_Z};
+                    } else if (ActionZone[Maze.manaZone] == 2) {
+                        expands = new Expand[] {Expand.Mana_OZ};
+                    } else if (ActionZone[Maze.manaZone] == 3) {
+                        expands = new Expand[] {Expand.Mana_Z, Expand.Mana_OZ};
+                    } else {
+                        throw new RuntimeException("Invalid condition");
+                    }
+                    world.getWidgetCoordinator().SetFlags(ZoomLevel.Button, expands,
+                            new Drag[] {Drag.Nil}, false, CardSelectMode.ON, true);
+                }
+            };
+
+            SubStates S4 = new SubStates() {
+                @Override
+                public boolean updateState() {
+                    PerformActionOnFilterCard();
+                    setCurrentState(S1);
+                    return true;
+                }
+
+                @Override
+                public void StateSetting() {
+                    world.getWidgetCoordinator().SendAction(Actions.ClearControlButton, (Object) null);
+                    world.getWidgetCoordinator().SetFlags(ZoomLevel.Button_Touched, new Expand[] {Expand.Nil},
+                            new Drag[] {Drag.Nil}, false, CardSelectMode.OFF, true);
+                }
+            };
+
+            private SubStates currentState = S1;
+
+            private void setCurrentState(SubStates state) {
+                currentState = state;
+                currentState.StateSetting();
+            }
+
+            @Override
+            public boolean updateState() {
+                return currentState.updateState();
+            }
+
+            @Override
+            public void StateSetting() {
+
+            }
+        };
+
+        ChooseFirstNCard = new SubStates() {
+            private int zone;
+
+            private SubStates S1 = new SubStates() {
+                @Override
+                public boolean updateState() {
+                    collectCards();
+                    CheckConsistencyForFirstNCardChoose();
+                    CheckActionZoneConsistencyForChoose();
+                    zone = 0;
+                    if (CollectCardList.size() > 0) {
+                        zone = CollectCardList.get(0).GridPosition().getZone();
+                    }
+                    setCurrentState(S2);
+                    return false;
+                }
+
+                @Override
+                public void StateSetting() {
+
+                }
+            };
+
+            private SubStates S2 = new SubStates() {
+                @Override
+                public boolean updateState() {
+                    int filtercount;
+                    if(instruction.getCount() !=0) {
+                        filtercount = instruction.getCount();
+                    } else {
+                        filtercount = instruction.getConditionCount();
+                    }
+                    filtercount = (CollectCardList.size() > filtercount) ? filtercount : CollectCardList.size();
+                    if (filtercount == 0) {
+                        setCurrentState(S3);
+                        return false;
+                    }
+                    UIRequest uiRequest = world.getWidgetCoordinator().getUIRequests();
+                    if (uiRequest.getRequest() == Requests.None) {
+                        return false;
+                    }
+
+                    if ((zone == Maze.deck && uiRequest.getRequest() == Requests.DeckStack) ||
+                            (zone == Maze.graveyard && uiRequest.getRequest() == Requests.GraveyardStack) ||
+                            (zone == Maze.Opponent_deck && uiRequest.getRequest() == Requests.OppDeckStack) ||
+                            (zone == Maze.Opponent_graveyard && uiRequest.getRequest() == Requests.OppGraveyardStack)) {
+                        if (CollectCardList.size() > filtercount) {
+                            ArrayList<Cards> tmp = new ArrayList<Cards>();
+                            for (int i =0; i < filtercount; i++) {
+                                tmp.add(CollectCardList.get(i));
+                            }
+                            CollectCardList.clear();
+                            for (int i =0; i <tmp.size(); i++) {
+                                CollectCardList.add(tmp.get(i));
+                            }
+                        }
+                        setCurrentState(S3);
+                    }
+                    return false;
+                }
+
+                @Override
+                public void StateSetting() {
+                    if (Soft) {
+                        ArrayList<ControllerButton> controllerButtons = new ArrayList<ControllerButton>();
+                        controllerButtons.add(ControllerButton.Decline);
+                        world.getWidgetCoordinator().SendAction(Actions.AddControlButton, controllerButtons);
+                    } else {
+                        world.getWidgetCoordinator().SendAction(Actions.ClearControlButton, (Object) null);
+                    }
+                    world.getWidgetCoordinator().SetFlags(ZoomLevel.Button_Touched, new Expand[] {Expand.Nil},
+                            new Drag[] {Drag.Nil}, false, CardSelectMode.OFF, true);
+                }
+            };
+
+            SubStates S3 = new SubStates() {
+                @Override
+                public boolean updateState() {
+                    PerformActionOnFilterCard();
+                    setCurrentState(S1);
+                    return true;
+                }
+
+                @Override
+                public void StateSetting() {
+                    world.getWidgetCoordinator().SendAction(Actions.ClearControlButton, (Object) null);
+                    world.getWidgetCoordinator().SetFlags(ZoomLevel.Button_Touched, new Expand[] {Expand.Nil},
+                            new Drag[] {Drag.Nil}, false, CardSelectMode.OFF, true);
+                }
+            };
+
+            private SubStates currentState = S1;
+
+            private void setCurrentState(SubStates state) {
+                currentState = state;
+                currentState.StateSetting();
+            }
+
+            @Override
+            public boolean updateState() {
+                return currentState.updateState();
+            }
+
+            @Override
+            public void StateSetting() {
+
+            }
+        };
+
+        ChooseRandom = new SubStates() {
+            @Override
+            public boolean updateState() {
+                collectCards();
+                ChooseRandomNCard();
+                PerformActionOnFilterCard();
+                return true;
+            }
+
+            @Override
+            public void StateSetting() {
+
+            }
+        };
+
+        SelfChangeZone = new SubStates() {
+            @Override
+            public boolean updateState() {
+                ChangeZoneOfCurrentCard();
+                return true;
+            }
+
+            @Override
+            public void StateSetting() {
+
+            }
+        };
+
+        ChangeZoneAll = new SubStates() {
+            @Override
+            public boolean updateState() {
+                collectCards();
+                ChangeZoneAll();
+                return true;
+            }
+
+            @Override
+            public void StateSetting() {
+
+            }
+        };
+
+        SelfBooster = new SubStates() {
+            @Override
+            public boolean updateState() {
+                collectCards();
+                CardBoostFlagAttribute();
+                return true;
+            }
+
+            @Override
+            public void StateSetting() {
+
+            }
+        };
+
+        SelfBoosterMultiplier = new SubStates() {
+            @Override
+            public boolean updateState() {
+                collectCards();
+                CardBoostMultiplierFlagAttribute();
+                return true;
+            }
+
+            @Override
+            public void StateSetting() {
+
+            }
+        };
+
+        Aura = new SubStates() {
+            @Override
+            public boolean updateState() {
+                collectCards();
+                SpreadFlagAttribute();
+                return true;
+            }
+
+            @Override
+            public void StateSetting() {
+
+            }
+        };
+
+        SelfSetAttr = new SubStates() {
+            @Override
+            public boolean updateState() {
+                SetFlagAttributeOfCurrentCard();
+                return true;
+            }
+
+            @Override
+            public void StateSetting() {
+
+            }
+        };
+
+        SetAttr = new SubStates() {
+            @Override
+            public boolean updateState() {
+                collectCards();
+                SetFlagAttributeAll();
+                return true;
+            }
+
+            @Override
+            public void StateSetting() {
+
+            }
+        };
+
+        SelfCleanUp = new SubStates() {
+            @Override
+            public boolean updateState() {
+                CleanUpFlagAttributeOfCurrentCard();
+                return true;
+            }
+
+            @Override
+            public void StateSetting() {
+
+            }
+        };
+
+        CleanUp = new SubStates() {
+            @Override
+            public boolean updateState() {
+                collectCards();
+                CleanUpFlagAttributeAll();
+                return true;
+            }
+
+            @Override
+            public void StateSetting() {
+
+            }
+        };
+
+        SelfCleanUpMultiplier = new SubStates() {
+            @Override
+            public boolean updateState() {
+                collectCards();
+                CleanUpFlagAttrMultiplierOfCurrentCard();
+                return true;
+            }
+
+            @Override
+            public void StateSetting() {
+
+            }
+        };
+
+        Shuffle = new SubStates() {
+            @Override
+            public boolean updateState() {
+                collectCards();
+                PerformShuffleOnZone();
+                return true;
+            }
+
+            @Override
+            public void StateSetting() {
+
+            }
+        };
+
+        Copy = new SubStates() {
+            @Override
+            public boolean updateState() {
+                collectCards();
+                CopyCardToTempZone();
+                return true;
+            }
+
+            @Override
+            public void StateSetting() {
+
+            }
+        };
+
+        SetTempSpreadInst = new SubStates() {
+            @Override
+            public boolean updateState() {
+                collectCards();
+                SetTemporarySpreadInstruction();
+                return true;
+            }
+
+            @Override
+            public void StateSetting() {
+
+            }
+        };
+
+        PassControlToOpponent = new SubStates() {
+            @Override
+            public boolean updateState() {
+                return false;
+            }
+
+            @Override
+            public void StateSetting() {
+
+            }
+        };
+
+        ShowCardToYourOpponent = new SubStates() {
+            @Override
+            public boolean updateState() {
+                return false;
+            }
+
+            @Override
+            public void StateSetting() {
+
+            }
+        };
+
+        SendDeckShuffleUpdate = new SubStates() {
+            @Override
+            public boolean updateState() {
+                SendDeckShuffleUpdate();
+                return true;
+            }
+
+            @Override
+            public void StateSetting() {
+
+            }
+        };
+
+        ComputeCondition = new SubStates() {
+            @Override
+            public boolean updateState() {
+                ComputeCondition();
+                return true;
+            }
+
+            @Override
+            public void StateSetting() {
+
+            }
+        };
+    }
 /*
  execute instruction API. Only public function through which all engines can be used.
  */
@@ -69,121 +664,83 @@ public class InstructionHandler {
             return true;
 
         boolean status = false;
-        if (instruction.getInstructionType() == InstructionType.Choose ||
-                instruction.getInstructionType() == InstructionType.ChooseIncludeCurrentCard) {
-            status = ChooseAnyNCard(false);
-        }
-
-        if (instruction.getInstructionType() == InstructionType.MayChoose) {
-            status = ChooseAnyNCard(true);
-        }
-
-        if (instruction.getInstructionType() == InstructionType.ChooseFromBegin) {
-            status = ChooseFirstNCard(false);
-        }
-
-        if (instruction.getInstructionType() == InstructionType.MayChooseFromBegin) {
-            status = ChooseFirstNCard(true);
-        }
-
-        if (instruction.getInstructionType() == InstructionType.ChooseRandom) {
-            collectCards();
-            ChooseRandomNCard();
-            PerformActionOnFilterCard();
-            status = true;
-        }
-
-        if (instruction.getInstructionType() == InstructionType.SelfChangeZone) {
-            ChangeZoneOfCurrentCard();
-            status = true;
-        }
-
-        if (instruction.getInstructionType() == InstructionType.ChangeZoneAll) {
-            collectCards();
-            ChangeZoneAll();
-            status = true;
-        }
-
-        if (instruction.getInstructionType() == InstructionType.SelfBooster) {
-            collectCards();
-            CardBoostFlagAttribute();
-            status = true;
-        }
-
-        if (instruction.getInstructionType() == InstructionType.SelfBoosterMultiplier) {
-            collectCards();
-            CardBoostMultiplierFlagAttribute();
-            status = true;
-        }
-
-        if (instruction.getInstructionType() == InstructionType.Aura) {
-            collectCards();
-            SpreadFlagAttribute();
-            status = true;
-        }
-
-        if (instruction.getInstructionType() == InstructionType.SelfSetAttr) {
-            SetFlagAttributeOfCurrentCard();
-            status = true;
-        }
-
-        if (instruction.getInstructionType() == InstructionType.SetAttr) {
-            collectCards();
-            SetFlagAttributeAll();
-            status = true;
-        }
-
-        if (instruction.getInstructionType() == InstructionType.SelfCleanUp) {
-            CleanUpFlagAttributeOfCurrentCard();
-            status = true;
-        }
-
-        if (instruction.getInstructionType() == InstructionType.CleanUp) {
-            collectCards();
-            CleanUpFlagAttributeAll();
-            status = true;
-        }
-
-        if (instruction.getInstructionType() == InstructionType.SelfCleanUpMultiplier) {
-            collectCards();
-            CleanUpFlagAttrMultiplierOfCurrentCard();
-            status = true;
-        }
-
-        if (instruction.getInstructionType() == InstructionType.Shuffle) {
-            collectCards();
-            PerformShuffleOnZone();
-            status = true;
-        }
-
-        if (instruction.getInstructionType() == InstructionType.Copy) {
-            collectCards();
-            CopyCardToTempZone();
-            status = true;
-        }
-
-        if (instruction.getInstructionType() == InstructionType.SetTempSpreadInst) {
-            collectCards();
-            SetTemporarySpreadInstruction();
-            status = true;
-        }
-
-        if (instruction.getInstructionType() == InstructionType.PassControlToOpponent) {
-            status = PassControl();
-        }
-
-        if (instruction.getInstructionType() == InstructionType.ShowCardToYourOpponent) {
-            status = ShowCardToYourOpponent();
-        }
-
-        if (instruction.getInstructionType() == InstructionType.SendDeckShuffleUpdate) {
-            SendDeckShuffleUpdate();
-            status = true;
-        }
-
-        if (instruction.getInstructionType() == InstructionType.ComputeCondition) {
-            ComputeCondition();
-            status = true;
+        switch (instruction.getInstructionType()) {
+            case Choose:
+                Soft = false;
+                status = ChooseAnyNCard.updateState();
+                break;
+            case ChooseIncludeCurrentCard:
+                Soft = false;
+                status = ChooseAnyNCard.updateState();
+                break;
+            case MayChoose:
+                Soft = true;
+                status = ChooseAnyNCard.updateState();
+                break;
+            case ChooseFromBegin:
+                Soft = false;
+                status = ChooseFirstNCard.updateState();
+                break;
+            case MayChooseFromBegin:
+                Soft = true;
+                status = ChooseFirstNCard.updateState();
+                break;
+            case ChooseRandom:
+                status = ChooseRandom.updateState();
+                break;
+            case SelfChangeZone:
+                status = SelfChangeZone.updateState();
+                break;
+            case ChangeZoneAll:
+                status = ChangeZoneAll.updateState();
+                break;
+            case SelfBooster:
+                status = SelfBooster.updateState();
+                break;
+            case SelfBoosterMultiplier:
+                status = SelfBoosterMultiplier.updateState();
+                break;
+            case Aura:
+                status = Aura.updateState();
+                break;
+            case SelfSetAttr:
+                status = SelfSetAttr.updateState();
+                break;
+            case SetAttr:
+                status = SetAttr.updateState();
+                break;
+            case SelfCleanUp:
+                status = SelfCleanUp.updateState();
+                break;
+            case CleanUp:
+                status = CleanUp.updateState();
+                break;
+            case SelfCleanUpMultiplier:
+                status = SelfCleanUpMultiplier.updateState();
+                break;
+            case Shuffle:
+                status = Shuffle.updateState();
+                break;
+            case Copy:
+                status = Copy.updateState();
+                break;
+            case SetTempSpreadInst:
+                status = SetTempSpreadInst.updateState();
+                break;
+            case PassControlToOpponent:
+                status = PassControl();
+                break;
+            case ShowCardToYourOpponent:
+                status = ShowCardToYourOpponent();
+                break;
+            case SendDeckShuffleUpdate:
+                status = SendDeckShuffleUpdate.updateState();
+                break;
+            case ComputeCondition:
+                status = ComputeCondition.updateState();
+                break;
+            default:
+                throw new RuntimeException("Invalid instruction type");
         }
 
         SetCleanupInst(status);
@@ -194,6 +751,7 @@ public class InstructionHandler {
 /*
  This API is used to choose N card by user.
  */
+    /*
     private boolean ChooseAnyNCard(boolean CanSkip) {
         boolean status = false;
         if (State == InstructionState.S1) {
@@ -232,11 +790,11 @@ public class InstructionHandler {
             }
         }
         return status;
-    }
+    } */
 /*
  When user selects cards, this API is used.
  */
-    private void UserSelectingCard(boolean CanSkip){
+  /*  private void UserSelectingCard(boolean CanSkip){
         int filtercount;
         if(instruction.getCount() !=0) {
             filtercount = instruction.getCount();
@@ -300,10 +858,10 @@ public class InstructionHandler {
         UIUtil.TrackSelectedCardsWhenUserIsChoosing(TempZone, CollectCardList, SelectedCard);
         if (filtercount == TempZone.size())
             world.setWorldFlag(WorldFlags.AcceptCardSelectingMode);
-    }
+    } */
 /*
     This API is used to search and select card in a stack like deck or graveyard
-     */
+     */ /*
     private void UserSearchAndSelectCard(boolean CanSkip) {
         int filtercount;
         if(instruction.getCount() !=0) {
@@ -380,7 +938,11 @@ public class InstructionHandler {
         UIUtil.TrackSelectedCardsWhenUserIsChoosing(TempZone, CollectCardList, SelectedCard);
         if (filtercount == TempZone.size())
             world.setWorldFlag(WorldFlags.AcceptCardSelectingMode);
-    }
+    } */
+
+    /************************************************************************************************
+     *  Util APIs needed to perform operations
+     ***********************************************************************************************/
 /*
  This API is used to set a attribute on CollectCardList.
  Used for Spreading
@@ -626,6 +1188,7 @@ public class InstructionHandler {
 /*
  This API is used to select first N card.
  */
+    /*
     private boolean ChooseFirstNCard(boolean CanSkip) {
         boolean status = false;
         if (State == InstructionState.S1) {
@@ -651,9 +1214,11 @@ public class InstructionHandler {
 
         return status;
     }
+    */
 /*
  Selecting first N card
  */
+    /*
     private void SelectingFirstNCard(boolean CanSkip) {
         if (CanSkip) {
             if (UIUtil.TouchedAcceptButton(world)) {
@@ -692,6 +1257,7 @@ public class InstructionHandler {
         world.clearWorldFlag(WorldFlags.MaySkipCardSelectingMode);
         world.clearWorldFlag(WorldFlags.AcceptCardSelectingMode);
     }
+    */
 /*
  This API is used to select N card in random.
  */
@@ -1210,6 +1776,17 @@ public class InstructionHandler {
         }
     }
 /*
+  Check consistency for First N card choose
+  */
+    private void CheckConsistencyForFirstNCardChoose() {
+        int [] ActionZone = instruction.getActionZone();
+
+        if (ActionZone[Maze.battleZone] != 0 || ActionZone[Maze.manaZone] != 0 || ActionZone[Maze.shieldZone] != 0 ||
+                ActionZone[Maze.hand] != 0) {
+            throw new RuntimeException("Invalid condition for First N card choose");
+        }
+    }
+/*
  Checks consistency while choosing card.
  */
     private void CheckActionZoneConsistencyForChoose() {
@@ -1217,7 +1794,8 @@ public class InstructionHandler {
         boolean val;
         int count = 0;
 
-        if (ActionZone[0] != 0 || ActionZone[1] != 0 || ActionZone[2] != 0 || ActionZone[3] != 0) {
+        if (ActionZone[Maze.battleZone] != 0 || ActionZone[Maze.manaZone] != 0 || ActionZone[Maze.shieldZone] != 0 ||
+                ActionZone[Maze.hand] != 0) {
             val = true;
         } else {
             val = false;
@@ -1225,17 +1803,17 @@ public class InstructionHandler {
 
         if (val)
             count++;
-        if (ActionZone[4] != 0)
+        if (ActionZone[Maze.graveyard] != 0)
             count++;
-        if (ActionZone[5] != 0)
+        if (ActionZone[Maze.deck] != 0)
             count++;
-        if (ActionZone[6] != 0)
+        if (ActionZone[Maze.temporaryZone] != 0)
             count++;
 
         if (count > 1)
             throw new IllegalArgumentException("Failed Action zone consistency test");
 
-        if (ActionZone[4] == 3 || ActionZone[5] == 3)
+        if (ActionZone[Maze.graveyard] == 3 || ActionZone[Maze.deck] == 3)
             throw new IllegalArgumentException("Failed Action zone consistency test");
     }
 /*
@@ -1245,43 +1823,43 @@ public class InstructionHandler {
         int[] ActionZone = instruction.getActionZone();
         int count = 0;
 
-        if (ActionZone[0] != 0) {
+        if (ActionZone[Maze.battleZone] != 0) {
            count++;
-            if (ActionZone[0] == 3)
+            if (ActionZone[Maze.battleZone] == 3)
                 count++;
         }
 
-        if (ActionZone[1] != 0) {
+        if (ActionZone[Maze.manaZone] != 0) {
             count++;
-            if (ActionZone[1] == 3)
+            if (ActionZone[Maze.manaZone] == 3)
                 count++;
         }
 
-        if (ActionZone[2] != 0) {
+        if (ActionZone[Maze.shieldZone] != 0) {
             count++;
-            if (ActionZone[2] == 3)
+            if (ActionZone[Maze.shieldZone] == 3)
                 count++;
         }
 
-        if (ActionZone[3] != 0) {
+        if (ActionZone[Maze.hand] != 0) {
             count++;
-            if (ActionZone[3] == 3)
+            if (ActionZone[Maze.hand] == 3)
                 count++;
         }
 
-        if (ActionZone[4] != 0) {
+        if (ActionZone[Maze.graveyard] != 0) {
             count++;
-            if (ActionZone[4] == 3)
+            if (ActionZone[Maze.graveyard] == 3)
                 count++;
         }
 
-        if (ActionZone[5] != 0) {
+        if (ActionZone[Maze.deck] != 0) {
             count++;
-            if (ActionZone[5] == 3)
+            if (ActionZone[Maze.deck] == 3)
                 count++;
         }
 
-        if (ActionZone[6] != 0) {
+        if (ActionZone[Maze.temporaryZone] != 0) {
             count++;
         }
 
@@ -1290,7 +1868,7 @@ public class InstructionHandler {
     }
 
     private Cards getFirstTempCard() {
-        return world.getMaze().getZoneList().get(6).getZoneArray().get(0);
+        return world.getMaze().getZoneList().get(Maze.temporaryZone).getZoneArray().get(0);
     }
 
     private boolean PerformCascade(boolean status) {
@@ -1310,7 +1888,8 @@ public class InstructionHandler {
         }
 
         if (instruction.getCascadeCondition() == CascadeType.IfTempZoneIsNonEmptyWithLessValue && instruction.getNextInst() != null) {
-            if (world.getMaze().getZoneList().get(6).zoneSize() > 0 && world.getMaze().getZoneList().get(6).zoneSize() <= count) {
+            if (world.getMaze().getZoneList().get(Maze.temporaryZone).zoneSize() > 0 &&
+                    world.getMaze().getZoneList().get(Maze.temporaryZone).zoneSize() <= count) {
                 instruction = instruction.getNextInst();
                 InstructionSkipped = false;
                 return false;
@@ -1321,7 +1900,7 @@ public class InstructionHandler {
         }
 
         if (instruction.getCascadeCondition() == CascadeType.IfTempZoneIsEmpty && instruction.getNextInst() != null) {
-            if (world.getMaze().getZoneList().get(6).zoneSize() == 0) {
+            if (world.getMaze().getZoneList().get(Maze.temporaryZone).zoneSize() == 0) {
                 instruction = instruction.getNextInst();
                 InstructionSkipped = false;
                 return false;
@@ -1333,7 +1912,7 @@ public class InstructionHandler {
 
 
         if (instruction.getCascadeCondition() == CascadeType.IfTempZoneIsNonEmptyWithMoreOrEqualValue && instruction.getNextInst() != null) {
-            if (world.getMaze().getZoneList().get(6).zoneSize() >= count) {
+            if (world.getMaze().getZoneList().get(Maze.temporaryZone).zoneSize() >= count) {
                 instruction = instruction.getNextInst();
                 InstructionSkipped = false;
                 return false;
@@ -1344,8 +1923,8 @@ public class InstructionHandler {
         }
 
         if (instruction.getCascadeCondition() == CascadeType.IfTempZoneIsNonEmptyAndSetCount && instruction.getNextInst() != null) {
-            if (world.getMaze().getZoneList().get(6).zoneSize() > 0) {
-                instruction.getNextInst().setCount(world.getMaze().getZoneList().get(6).zoneSize());
+            if (world.getMaze().getZoneList().get(Maze.temporaryZone).zoneSize() > 0) {
+                instruction.getNextInst().setCount(world.getMaze().getZoneList().get(Maze.temporaryZone).zoneSize());
                 instruction = instruction.getNextInst();
                 InstructionSkipped = false;
                 return false;
