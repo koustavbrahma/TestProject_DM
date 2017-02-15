@@ -38,6 +38,7 @@ public class DynamicCardSlotLayout implements Layout {
     boolean locked;
     boolean TwoStepTracking;
     boolean TwoStepTransition;
+    boolean changing;
 
     float[] relativeNearPointAfterRot;
     float[] relativeFarPointAfterRot;
@@ -66,6 +67,7 @@ public class DynamicCardSlotLayout implements Layout {
         locked = false;
         TwoStepTracking = false;
         TwoStepTransition = false;
+        changing = true;
 
         relativeNearPointAfterRot = new float[4];
         relativeFarPointAfterRot = new float[4];
@@ -77,6 +79,34 @@ public class DynamicCardSlotLayout implements Layout {
         intermediate_p = new ArrayList<WidgetPosition>();
         time_steps = new ArrayList<Float>();
         hasIntermediatePoints = false;
+    }
+
+    private boolean isSame(WidgetPosition position1, WidgetPosition position2) {
+        boolean status = true;
+
+        if (position1.Centerposition.x != position2.Centerposition.x) {
+            status = false;
+        } else if (position1.Centerposition.y != position2.Centerposition.y) {
+            status = false;
+        } else if (position1.Centerposition.z != position2.Centerposition.z) {
+            status = false;
+        } else if (position1.rotaion.angle != position2.rotaion.angle) {
+            status = false;
+        } else if (position1.rotaion.x != position2.rotaion.x) {
+            status = false;
+        } else if (position1.rotaion.y != position2.rotaion.y) {
+            status = false;
+        } else if (position1.rotaion.z != position2.rotaion.z) {
+            status = false;
+        } else if (position1.X_scale != position2.X_scale) {
+            status = false;
+        } else if (position1.Y_scale != position2.Y_scale) {
+            status = false;
+        } else if (position1.Z_scale != position2.Z_scale) {
+            status = false;
+        }
+
+        return status;
     }
 
     @Override
@@ -129,6 +159,7 @@ public class DynamicCardSlotLayout implements Layout {
             TwoStepTracking = false;
             Disturbed = false;
             running = true;
+            changing = false;
         }
 
         if (running) {
@@ -137,6 +168,16 @@ public class DynamicCardSlotLayout implements Layout {
             percentageComplete = TopDriftSystem.getPercentageComplete(totalTime);
             if (percentageComplete == 1.0f) {
                 running = false;
+            }
+
+            if (!changing && percentageComplete != 0) {
+                if (isSame(this.TopWidgetPosition, widgetPositionUpdate)) {
+                    running = false;
+                }
+            }
+
+            if (percentageComplete != 0) {
+                changing = true;
             }
 
             this.TopWidgetPosition.rotaion.angle = widgetPositionUpdate.rotaion.angle;
@@ -278,6 +319,7 @@ public class DynamicCardSlotLayout implements Layout {
         TwoStepTransition = false;
         locked = false;
         running = false;
+        changing = true;
     }
 
     public void addIntermediatePoint(ArrayList<WidgetPosition> points, ArrayList<Float> time_steps) {

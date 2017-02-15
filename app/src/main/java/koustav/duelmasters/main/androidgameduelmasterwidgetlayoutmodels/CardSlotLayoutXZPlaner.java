@@ -35,6 +35,7 @@ public class CardSlotLayoutXZPlaner implements Layout {
     boolean Disturbed;
     boolean running;
     boolean Expanded;
+    boolean changing;
 
     CardWidget SelectedCardWidget;
     ArrayList<CardWidget> TouchedWidget;
@@ -61,6 +62,7 @@ public class CardSlotLayoutXZPlaner implements Layout {
         Disturbed = false;
         running = false;
         Expanded = false;
+        changing = true;
         TopCardWidget = null;
         SelectedCardWidget = null;
         TouchedWidget = new ArrayList<CardWidget>();
@@ -73,6 +75,34 @@ public class CardSlotLayoutXZPlaner implements Layout {
         derivative = 0f;
         length = 0f;
         ExpandLimit_X = 0f;
+    }
+
+    private boolean isSame(WidgetPosition position1, WidgetPosition position2) {
+        boolean status = true;
+
+        if (position1.Centerposition.x != position2.Centerposition.x) {
+            status = false;
+        } else if (position1.Centerposition.y != position2.Centerposition.y) {
+            status = false;
+        } else if (position1.Centerposition.z != position2.Centerposition.z) {
+            status = false;
+        } else if (position1.rotaion.angle != position2.rotaion.angle) {
+            status = false;
+        } else if (position1.rotaion.x != position2.rotaion.x) {
+            status = false;
+        } else if (position1.rotaion.y != position2.rotaion.y) {
+            status = false;
+        } else if (position1.rotaion.z != position2.rotaion.z) {
+            status = false;
+        } else if (position1.X_scale != position2.X_scale) {
+            status = false;
+        } else if (position1.Y_scale != position2.Y_scale) {
+            status = false;
+        } else if (position1.Z_scale != position2.Z_scale) {
+            status = false;
+        }
+
+        return status;
     }
 
     @Override
@@ -127,11 +157,21 @@ public class CardSlotLayoutXZPlaner implements Layout {
             }
             Disturbed = false;
             running = true;
+            changing = false;
         }
 
         if (running) {
+            boolean stop = true;
             WidgetPosition widgetPositionUpdate = TopDriftSystem.getUpdatePosition(totalTime);
 
+            percentageComplete = TopDriftSystem.getPercentageComplete(totalTime);
+            if (percentageComplete == 1.0f) {
+                running = false;
+            }
+
+            if (!changing) {
+                stop &= isSame(this.TopWidgetPosition, widgetPositionUpdate);
+            }
             this.TopWidgetPosition.rotaion.angle = widgetPositionUpdate.rotaion.angle;
             this.TopWidgetPosition.rotaion.x = widgetPositionUpdate.rotaion.x;
             this.TopWidgetPosition.rotaion.y = widgetPositionUpdate.rotaion.y;
@@ -143,11 +183,6 @@ public class CardSlotLayoutXZPlaner implements Layout {
             this.TopWidgetPosition.Y_scale = widgetPositionUpdate.Y_scale;
             this.TopWidgetPosition.Z_scale = widgetPositionUpdate.Z_scale;
 
-            percentageComplete = TopDriftSystem.getPercentageComplete(totalTime);
-            if (percentageComplete == 1.0f) {
-                running = false;
-            }
-
             derivative = TopDriftSystem.getCurrentDerivative(totalTime);
 
             for (int i = 0; i < cardWidgets.size(); i++) {
@@ -156,6 +191,10 @@ public class CardSlotLayoutXZPlaner implements Layout {
                 DriftSystem driftSystem = driftSystems.get(cardWidget);
 
                 widgetPositionUpdate = driftSystem.getUpdatePosition(totalTime);
+
+                if (!changing) {
+                    stop &= isSame(widgetPosition, widgetPositionUpdate);
+                }
 
                 widgetPosition.rotaion.angle = widgetPositionUpdate.rotaion.angle;
                 widgetPosition.rotaion.x = widgetPositionUpdate.rotaion.x;
@@ -167,6 +206,14 @@ public class CardSlotLayoutXZPlaner implements Layout {
                 widgetPosition.X_scale = widgetPositionUpdate.X_scale;
                 widgetPosition.Y_scale = widgetPositionUpdate.Y_scale;
                 widgetPosition.Z_scale = widgetPositionUpdate.Z_scale;
+            }
+
+            if (!changing && stop && percentageComplete != 0) {
+                running = false;
+            }
+
+            if (percentageComplete != 0) {
+                changing = true;
             }
         } else {
             this.TopWidgetPosition.rotaion.angle = TopSlotPosition.rotaion.angle;
@@ -919,6 +966,7 @@ public class CardSlotLayoutXZPlaner implements Layout {
         cardWidgets.clear();
         Expanded = false;
         running = false;
+        changing = true;
         SelectedCardWidget = null;
     }
 

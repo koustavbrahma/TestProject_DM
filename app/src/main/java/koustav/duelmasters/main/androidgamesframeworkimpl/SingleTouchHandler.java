@@ -169,19 +169,6 @@ public class SingleTouchHandler implements TouchHandler{
     }
 
     @Override
-    public List<TouchEvent> getTouchEvents() {
-        synchronized (this) {
-            int len = touchEvents.size();
-            for(int i = 0; i < len; i++)
-                touchEventPool.free(touchEvents.get(i));
-            touchEvents.clear();
-            touchEvents.addAll(touchEventsBuffer);
-            touchEventsBuffer.clear();
-            return touchEvents;
-        }
-    }
-
-    @Override
     public GLPoint getNearPoint(int pointer) {
         synchronized (this) {
             return nearPoint[pointer];
@@ -206,6 +193,19 @@ public class SingleTouchHandler implements TouchHandler{
     public float getNormalizedY(int pointer) {
         synchronized (this) {
             return normalizedY;
+        }
+    }
+
+    @Override
+    public List<TouchEvent> getTouchEvents() {
+        synchronized (this) {
+            int len = touchEvents.size();
+            for(int i = 0; i < len; i++)
+                touchEventPool.free(touchEvents.get(i));
+            touchEvents.clear();
+            touchEvents.addAll(touchEventsBuffer);
+            touchEventsBuffer.clear();
+            return touchEvents;
         }
     }
 
