@@ -7,4 +7,5 @@ public enum WidgetMode {
     Normal,
     Transition,
     Expand,
+    ExpandLock,
 }

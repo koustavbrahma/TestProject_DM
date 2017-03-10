@@ -25,6 +25,9 @@ import koustav.duelmasters.main.androidgameduelmastersutil.NetworkUtil;
 import koustav.duelmasters.main.androidgameduelmastersutil.SetUnsetUtil;
 import koustav.duelmasters.main.androidgameduelmastersutillegacycode.UIUtil;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.ControllerButton;
+import koustav.duelmasters.main.androidgameduelmasterwidgetsimulation.LocationLayout;
+import koustav.duelmasters.main.androidgameduelmasterwidgetsimulation.SimulationID;
+import koustav.duelmasters.main.androidgameduelmasterwidgetsimulation.SimulationType;
 
 /**
  * Created by Koustav on 4/17/2015.
@@ -44,6 +47,7 @@ public class InstructionHandler {
     ArrayList<Cards> CollectCardList;
     boolean InstructionSkipped;
     boolean Soft;
+    SimulationID simulationID;
 
     SubStates ChooseAnyNCard;
     SubStates ChooseFirstNCard;
@@ -65,6 +69,7 @@ public class InstructionHandler {
     SubStates ShowCardToYourOpponent;
     SubStates SendDeckShuffleUpdate;
     SubStates ComputeCondition;
+    SubStates MoveFirstNCard;
 
     public InstructionHandler(PvPWorld world){
         this.world = world;
@@ -72,6 +77,7 @@ public class InstructionHandler {
         CollectCardList = new ArrayList<Cards>();
         InstructionSkipped = false;
         Soft = false;
+        simulationID = null;
         DefineStates();
     }
 
@@ -126,6 +132,17 @@ public class InstructionHandler {
                             CollectCardList.add(SelectedCardList.get(i));
                         }
                         coordinator.SendAction(Actions.ClearSelectedCards, null);
+                        if (zone == Maze.deck) {
+                            ArrayList<Integer> index = new ArrayList<Integer>();
+                            for (int i =0; i < CollectCardList.size(); i++) {
+                                Cards card = CollectCardList.get(i);
+                                int id = world.getMaze().getZoneList().get(Maze.deck).getZoneArray().indexOf(card);
+                                index.add(new Integer(id));
+                            }
+                            simulationID = (SimulationID) coordinator.SendAction(Actions.Simulate, SimulationType.CardMovement,
+                                    LocationLayout.Deck, LocationLayout.ExpandLock, index);
+                        }
+                        PerformActionOnFilterCard();
                         setCurrentState(S4);
                         return false;
                     }
@@ -135,8 +152,8 @@ public class InstructionHandler {
                     CollectCardList.clear();
                     coordinator.SendAction(Actions.ClearSelectedCards, null);
                     InstructionSkipped = true;
-                    setCurrentState(S4);
-                    return false;
+                    setCurrentState(S1);
+                    return true;
                 }
 
                 if (uiRequest.getRequest() == Requests.CardSelected) {
@@ -178,6 +195,7 @@ public class InstructionHandler {
                 }
                 return false;
             }
+
             private SubStates S1 = new SubStates() {
                 @Override
                 public boolean updateState() {
@@ -272,7 +290,16 @@ public class InstructionHandler {
             SubStates S4 = new SubStates() {
                 @Override
                 public boolean updateState() {
-                    PerformActionOnFilterCard();
+                    if (!(boolean)world.getWidgetCoordinator().GetInfo(Query.IsSimulationDone, SimulationType.CardMovement,
+                            simulationID)) {
+                        return false;
+                    }
+                    int d = instruction.getActionDestination();
+                    if ((zone == Maze.deck || zone == Maze.graveyard || zone == Maze.Opponent_deck ||
+                            zone == Maze.Opponent_graveyard) && d == Maze.hand) {
+                        world.getWidgetCoordinator().SendAction(Actions.Simulate, SimulationType.CardMovement,
+                                LocationLayout.ExpandLock, LocationLayout.Hand, zone);
+                    }
                     setCurrentState(S1);
                     return true;
                 }
@@ -305,6 +332,7 @@ public class InstructionHandler {
 
         ChooseFirstNCard = new SubStates() {
             private int zone;
+            private int filtercount;
 
             private SubStates S1 = new SubStates() {
                 @Override
@@ -329,7 +357,6 @@ public class InstructionHandler {
             private SubStates S2 = new SubStates() {
                 @Override
                 public boolean updateState() {
-                    int filtercount;
                     if(instruction.getCount() !=0) {
                         filtercount = instruction.getCount();
                     } else {
@@ -381,6 +408,7 @@ public class InstructionHandler {
             SubStates S3 = new SubStates() {
                 @Override
                 public boolean updateState() {
+                    Simulate();
                     PerformActionOnFilterCard();
                     setCurrentState(S1);
                     return true;
@@ -391,6 +419,15 @@ public class InstructionHandler {
                     world.getWidgetCoordinator().SendAction(Actions.ClearControlButton, (Object) null);
                     world.getWidgetCoordinator().SetFlags(ZoomLevel.Button_Touched, new Expand[] {Expand.Nil},
                             new Drag[] {Drag.Nil}, false, CardSelectMode.OFF, true);
+                }
+
+                private SimulationID Simulate() {
+                    if ((filtercount > 0) && zone == Maze.deck && instruction.getActionDestination() == Maze.hand) {
+                        world.getWidgetCoordinator().SendAction(Actions.Simulate, SimulationType.CardMovement,
+                                LocationLayout.Deck, LocationLayout.Hand, filtercount);
+                    }
+
+                    return null;
                 }
             };
 
@@ -655,6 +692,20 @@ public class InstructionHandler {
 
             }
         };
+
+        MoveFirstNCard = new SubStates() {
+            @Override
+            public boolean updateState() {
+                collectCards();
+                ChangeZoneFirstNCard();
+                return true;
+            }
+
+            @Override
+            public void StateSetting() {
+
+            }
+        };
     }
 /*
  execute instruction API. Only public function through which all engines can be used.
@@ -738,6 +789,9 @@ public class InstructionHandler {
                 break;
             case ComputeCondition:
                 status = ComputeCondition.updateState();
+                break;
+            case MoveFirstNCard:
+                status = MoveFirstNCard.updateState();
                 break;
             default:
                 throw new RuntimeException("Invalid instruction type");
@@ -1096,6 +1150,18 @@ public class InstructionHandler {
     private void ChangeZoneAll() {
         Cards card;
         for (int i = 0; i < CollectCardList.size(); i++) {
+            card = CollectCardList.get(i);
+            ChangeZoneOfGivenCard(card);
+        }
+    }
+/*
+ This API is used to change zone of first N card in CollectCardList
+ */
+    private void ChangeZoneFirstNCard() {
+        int filter = (instruction.getCount() > 0) ? instruction.getCount() : instruction.getConditionCount();
+        int count = (CollectCardList.size() > filter) ? filter : CollectCardList.size();
+        Cards card;
+        for (int i = 0; i < count; i++) {
             card = CollectCardList.get(i);
             ChangeZoneOfGivenCard(card);
         }

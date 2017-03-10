@@ -61,10 +61,10 @@ public class ControllerLayout implements Layout {
     public void setControllerOrientation(boolean val) {
         if (vertical != val) {
             ControllerButton[] controllerButtons = Buttons.toArray(new ControllerButton[Buttons.size()]);
+            vertical = val;
             unsetControllerButton(true);
             setControllerButton(controllerButtons);
         }
-        vertical = val;
     }
 
     public boolean getControllerOrientation() {

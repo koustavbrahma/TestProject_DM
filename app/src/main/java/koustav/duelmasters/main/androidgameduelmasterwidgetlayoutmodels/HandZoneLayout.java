@@ -252,7 +252,7 @@ public class HandZoneLayout implements Layout  {
             CardWidget cardWidget = cardWidgetsQueue.get(i);
             DynamicCardSlotLayout slotLayout = WidgetToSlotMapping.get(cardWidget);
             if (slotLayout == null) {
-                if (newSlotLayout.getPercentageComplete() > 0.1f) {
+                if (newSlotLayout.getPercentageComplete() > 0.5f) {
                     AddCardWidgetToZone(cardWidget);
                 }
             } else {

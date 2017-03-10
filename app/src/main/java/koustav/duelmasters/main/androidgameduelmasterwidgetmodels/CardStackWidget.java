@@ -6,6 +6,7 @@ import java.util.List;
 
 import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAndResource;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
+import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.PvPWidgetCoordinator;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.Widget;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetMode;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetPosition;
@@ -55,12 +56,17 @@ public class CardStackWidget implements Widget{
     float rotationDir_x;
     float rotationDir_y;
     float rotationDir_z;
+    ArrayList<CardWidget> cardWidgets;
+    Hashtable<CardWidget, WidgetPosition> cardWidgetToWidgetPositionHashtable;
+    ArrayList<Object> cardOriginalList;
+    int originalSelectedCardPosition;
 
     // Stack orientation
     boolean flip;
 
     // Motion model
     Hashtable<Cards, DriftSystem> cardsDriftSystemHashtable;
+    Hashtable<CardWidget, DriftSystem> cardWidgetDriftSystemHashtable;
 
     // shadow enable;
     boolean shadowEnable;
@@ -100,6 +106,11 @@ public class CardStackWidget implements Widget{
         completeCount = 0;
         k1 = 4.0f;
         k2 = 4.0f;
+        cardWidgets = new ArrayList<CardWidget>();
+        cardWidgetToWidgetPositionHashtable = new Hashtable<CardWidget, WidgetPosition>();
+        cardOriginalList = new ArrayList<Object>();
+        originalSelectedCardPosition = 0;
+        cardWidgetDriftSystemHashtable = new Hashtable<CardWidget, DriftSystem>();
 
         flip = false;
 
@@ -124,10 +135,80 @@ public class CardStackWidget implements Widget{
                 0, 0, 0f}, 0);
     }
 
+    public ArrayList<CardWidget> getCardWidgets() {
+        return cardWidgets;
+    }
+
+    public ArrayList<CardWidget> getAndClearCardWidgets() {
+        ArrayList<CardWidget> list = new ArrayList<CardWidget>(cardWidgets);
+        cardWidgets.clear();
+        cardWidgetToWidgetPositionHashtable.clear();
+        return list;
+    }
+
+    public boolean IsWidgetInTransition() {
+        if (mode == WidgetMode.ExpandLock || mode == WidgetMode.Transition) {
+            return true;
+        }
+        return false;
+    }
+
+    public void lockCardsInExpandMode(ArrayList<Integer> index, PvPWidgetCoordinator coordinator) {
+        if (mode != WidgetMode.Expand) {
+            throw new RuntimeException("Not in Expand Mode");
+        }
+        int count = 0;
+        cardWidgets.clear();
+        cardOriginalList.clear();
+        cardWidgetToWidgetPositionHashtable.clear();
+        cardWidgetDriftSystemHashtable.clear();
+        for (int i = 0; i < cardStack.size(); i++) {
+            Cards card = cardStack.get(i);
+            if (index.contains(i)) {
+                if (card.getWidget() != null) {
+                    throw new RuntimeException("Invalid Condition");
+                }
+                CardWidget widget = coordinator.newCardWidget();
+                coordinator.CoupleWidgetForCard(card, widget);
+                WidgetPosition cardPosition = new WidgetPosition();
+                WidgetPosition originalCardPosition = cardWidgetPositionTable.get(card);
+                cardPosition.Centerposition.x = originalCardPosition.Centerposition.x;
+                cardPosition.Centerposition.y = originalCardPosition.Centerposition.y;
+                cardPosition.Centerposition.z = originalCardPosition.Centerposition.z;
+                cardPosition.rotaion.angle = originalCardPosition.rotaion.angle;
+                cardPosition.rotaion.x = originalCardPosition.rotaion.x;
+                cardPosition.rotaion.y = originalCardPosition.rotaion.y;
+                cardPosition.rotaion.z = originalCardPosition.rotaion.z;
+                cardPosition.X_scale = originalCardPosition.X_scale;
+                cardPosition.Y_scale = originalCardPosition.Y_scale;
+                cardPosition.Z_scale = originalCardPosition.Z_scale;
+
+                widget.setTranslateRotateScale(cardPosition);
+                cardWidgets.add(widget);
+                cardOriginalList.add(widget);
+                cardWidgetToWidgetPositionHashtable.put(widget, cardPosition);
+            } else {
+                count++;
+                cardOriginalList.add(card);
+            }
+        }
+
+        if (count == cardStack.size()) {
+            throw new RuntimeException("No Index found");
+        }
+        originalSelectedCardPosition = cardStack.indexOf(SelectedCard);
+        mode = WidgetMode.ExpandLock;
+        SelectedCard = null;
+    }
+
     @Override
     public void update(float deltaTime, float totalTime) {
         if (mode == WidgetMode.Transition) {
             updateTransition(deltaTime, totalTime);
+        }
+
+        if (mode == WidgetMode.ExpandLock) {
+            updateExpandLock(deltaTime, totalTime);
         }
     }
 
@@ -351,6 +432,101 @@ public class CardStackWidget implements Widget{
         }
     }
 
+    // update Expand Lock
+    private void updateExpandLock(float deltaTime, float totalTime) {
+        completeCount = 0;
+        for (int i = 0; i < cardWidgets.size(); i++) {
+            CardWidget widget = cardWidgets.get(i);
+            int position = cardOriginalList.indexOf(widget);
+            if (!(position >= 0 && position < cardOriginalList.size())) {
+                throw new RuntimeException("Invalid condition");
+            }
+            DriftSystem driftSystem = cardWidgetDriftSystemHashtable.get(widget);
+            if (driftSystem == null) {
+                driftSystem = new DriftSystem();
+                cardWidgetDriftSystemHashtable.put(widget, driftSystem);
+                WidgetPosition widgetPosition = cardWidgetToWidgetPositionHashtable.get(widget);
+                if (widgetPosition == null) {
+                    throw new RuntimeException("Invalid Condition");
+                }
+
+                init_position.Centerposition.x = widgetPosition.Centerposition.x;
+                init_position.Centerposition.y = widgetPosition.Centerposition.y;
+                init_position.Centerposition.z = widgetPosition.Centerposition.z;
+                init_position.rotaion.angle = widgetPosition.rotaion.angle;
+                init_position.rotaion.x = widgetPosition.rotaion.x;
+                init_position.rotaion.y = widgetPosition.rotaion.y;
+                init_position.rotaion.z = widgetPosition.rotaion.z;
+                init_position.X_scale = widgetPosition.X_scale;
+                init_position.Y_scale = 1.0f;
+                init_position.Z_scale = widgetPosition.Z_scale;
+
+                ArrayList<WidgetPosition> trans_position = new ArrayList<WidgetPosition>();
+                ArrayList<Float> tracking_point = new ArrayList<Float>();
+                if (position != originalSelectedCardPosition) {
+                    WidgetPosition position1 = new WidgetPosition();
+                    GLVector gapVec = new GLVector(GapVector[0], GapVector[1], GapVector[2]).getDirection();
+                    float gap = (position > originalSelectedCardPosition) ? (2 * AssetsAndResource.CardWidth):
+                            (2 * (-AssetsAndResource.CardWidth));
+                    position1.Centerposition.x = widgetPosition.Centerposition.x + (gap * gapVec.x) + AssetsAndResource.CameraPosition.x * 0.01f;
+                    position1.Centerposition.y = widgetPosition.Centerposition.y + (gap * gapVec.y) + AssetsAndResource.CameraPosition.y * 0.01f;
+                    position1.Centerposition.z = widgetPosition.Centerposition.z + (gap * gapVec.z) + AssetsAndResource.CameraPosition.z * 0.01f;
+                    position1.rotaion.angle = widgetPosition.rotaion.angle;
+                    position1.rotaion.x = widgetPosition.rotaion.x;
+                    position1.rotaion.y = widgetPosition.rotaion.y;
+                    position1.rotaion.z = widgetPosition.rotaion.z;
+                    position1.X_scale = widgetPosition.X_scale;
+                    position1.Y_scale = 1.0f;
+                    position1.Z_scale = widgetPosition.Z_scale;
+
+                    trans_position.add(position1);
+                    tracking_point.add(new Float(0.5f));
+                }
+                ref_position.Centerposition.x = widgetPosition.Centerposition.x;
+                ref_position.Centerposition.y = widgetPosition.Centerposition.y + (AssetsAndResource.CardHeight/4);
+                ref_position.Centerposition.z = widgetPosition.Centerposition.z - (AssetsAndResource.CardHeight/8);
+                ref_position.rotaion.angle = widgetPosition.rotaion.angle;
+                ref_position.rotaion.x = widgetPosition.rotaion.x;
+                ref_position.rotaion.y = widgetPosition.rotaion.y;
+                ref_position.rotaion.z = widgetPosition.rotaion.z;
+                ref_position.X_scale = widgetPosition.X_scale;
+                ref_position.Y_scale = 1.0f;
+                ref_position.Z_scale = widgetPosition.Z_scale;
+
+                driftSystem.setDriftInfo(init_position, ref_position, trans_position, tracking_point, k1, k2, totalTime);
+            } else {
+                WidgetPosition updatePosition = driftSystem.getUpdatePosition(totalTime);
+                float percentageComplete = driftSystem.getPercentageComplete(totalTime);
+                WidgetPosition widgetPosition = cardWidgetToWidgetPositionHashtable.get(widget);
+
+                if (widgetPosition == null) {
+                    throw new RuntimeException("Invalid Condition");
+                }
+
+                if (percentageComplete == 1.0f) {
+                    completeCount++;
+                }
+
+                widgetPosition.Centerposition.x = updatePosition.Centerposition.x;
+                widgetPosition.Centerposition.y = updatePosition.Centerposition.y;
+                widgetPosition.Centerposition.z = updatePosition.Centerposition.z;
+                widgetPosition.rotaion.angle = updatePosition.rotaion.angle;
+                widgetPosition.rotaion.x = updatePosition.rotaion.x;
+                widgetPosition.rotaion.y = updatePosition.rotaion.y;
+                widgetPosition.rotaion.z = updatePosition.rotaion.z;
+                widgetPosition.X_scale = updatePosition.X_scale;
+                widgetPosition.Y_scale = updatePosition.Y_scale;
+                widgetPosition.Z_scale = updatePosition.Z_scale;
+            }
+        }
+
+        if (completeCount == cardWidgets.size()) {
+            cardOriginalList.clear();
+            cardWidgetDriftSystemHashtable.clear();
+            setMode(WidgetMode.Normal);
+        }
+    }
+
     @Override
     public void  draw() {
         if (mode == WidgetMode.Normal) {
@@ -363,6 +539,10 @@ public class CardStackWidget implements Widget{
 
         if (mode == WidgetMode.Expand) {
             drawExpand();
+        }
+
+        if (mode == WidgetMode.ExpandLock) {
+            drawExpandLock();
         }
     }
 
@@ -377,6 +557,18 @@ public class CardStackWidget implements Widget{
         textureArrays[3] = flip ? AssetsAndResource.getFixedTexture(AssetsAndResource.cardBacksideID) : AssetsAndResource.getCardTexture(cardT.getNameID()/*"AquaHulcus"*/);
 
         DrawObjectHelper.drawOneCube(cube, textureArrays, shadowEnable);
+
+        for (int i = 0; i < cardWidgets.size(); i++) {
+            CardWidget widget = cardWidgets.get(i);
+            WidgetPosition widgetPosition = cardWidgetToWidgetPositionHashtable.get(widget);
+
+            if (widgetPosition == null) {
+                throw new RuntimeException("widgetPosition cannot be null");
+            }
+
+            widget.setTranslateRotateScale(widgetPosition);
+            widget.draw();
+        }
     }
 
     // Draw the widget in transition mode
@@ -568,6 +760,18 @@ public class CardStackWidget implements Widget{
         } else {
             throw new IllegalArgumentException("Can't be in this Mode");
         }
+
+        for (int i = 0; i < cardWidgets.size(); i++) {
+            CardWidget widget = cardWidgets.get(i);
+            widgetPosition = cardWidgetToWidgetPositionHashtable.get(widget);
+
+            if (widgetPosition == null) {
+                throw new RuntimeException("widgetPosition cannot be null");
+            }
+
+            widget.setTranslateRotateScale(widgetPosition);
+            widget.draw();
+        }
     }
 
     // Draw the widget in Expand mode
@@ -620,6 +824,82 @@ public class CardStackWidget implements Widget{
         }
     }
 
+    // Draw the widget in ExpandLock mode
+    private void drawExpandLock() {
+        WidgetPosition widgetPosition;
+        int selectedCardIndex;
+
+        selectedCardIndex = originalSelectedCardPosition;
+
+        for (int i = cardOriginalList.size() -1; i > selectedCardIndex; i--) {
+            widgetPosition = null;
+            Object obj = cardOriginalList.get(i);
+            if (obj instanceof Cards) {
+                Cards card = (Cards) obj;
+                widgetPosition = cardWidgetPositionTable.get(card);
+
+                if (widgetPosition == null) {
+                    throw new RuntimeException("widgetPosition cannot be null");
+                }
+
+                MatrixHelper.setTranslateRotateScale(widgetPosition);
+                DrawObjectHelper.drawHighlightBoundaryOfCard(glCurrentSelect, glSelectedCards, card);
+                for (int j = 0; j < 6; j++) {
+                    textureArrays[j] = AssetsAndResource.getFixedTexture(AssetsAndResource.cardBorderID);
+                }
+                textureArrays[2] = AssetsAndResource.getFixedTexture(AssetsAndResource.cardBacksideID);
+                textureArrays[3] = AssetsAndResource.getCardTexture(card.getNameID()/*"AquaHulcus"*/);
+                DrawObjectHelper.drawOneCube(glcard, textureArrays, shadowEnable);
+            } else if (obj instanceof CardWidget) {
+                CardWidget widget = (CardWidget) obj;
+                widgetPosition = cardWidgetToWidgetPositionHashtable.get(widget);
+
+                if (widgetPosition == null) {
+                    throw new RuntimeException("widgetPosition cannot be null");
+                }
+
+                widget.setTranslateRotateScale(widgetPosition);
+                widget.draw();
+            } else {
+                throw new RuntimeException("Invalid Condition");
+            }
+        }
+
+        for (int i = 0; i <= selectedCardIndex; i++) {
+            widgetPosition = null;
+            Object obj = cardOriginalList.get(i);
+            if (obj instanceof Cards) {
+                Cards card = (Cards) obj;
+                widgetPosition = cardWidgetPositionTable.get(card);
+
+                if (widgetPosition == null) {
+                    throw new RuntimeException("widgetPosition cannot be null");
+                }
+
+                MatrixHelper.setTranslateRotateScale(widgetPosition);
+                DrawObjectHelper.drawHighlightBoundaryOfCard(glCurrentSelect, glSelectedCards, card);
+                for (int j = 0; j < 6; j++) {
+                    textureArrays[j] = AssetsAndResource.getFixedTexture(AssetsAndResource.cardBorderID);
+                }
+                textureArrays[2] = AssetsAndResource.getFixedTexture(AssetsAndResource.cardBacksideID);
+                textureArrays[3] = AssetsAndResource.getCardTexture(card.getNameID()/*"AquaHulcus"*/);
+                DrawObjectHelper.drawOneCube(glcard, textureArrays, shadowEnable);
+            } else if (obj instanceof CardWidget) {
+                CardWidget widget = (CardWidget) obj;
+                widgetPosition = cardWidgetToWidgetPositionHashtable.get(widget);
+
+                if (widgetPosition == null) {
+                    throw new RuntimeException("widgetPosition cannot be null");
+                }
+
+                widget.setTranslateRotateScale(widgetPosition);
+                widget.draw();
+            } else {
+                throw new RuntimeException("Invalid Condition");
+            }
+        }
+    }
+
     @Override
     public WidgetTouchEvent isTouched(List<Input.TouchEvent> touchEvents) {
         WidgetTouchEvent widgetTouchEvent = null;
@@ -631,8 +911,8 @@ public class CardStackWidget implements Widget{
             widgetTouchEvent = isTouchedForNormalMode(touchEvents);
         }
 
-        if (mode == WidgetMode.Transition) {
-            widgetTouchEvent = isTouchedForTransition(touchEvents);
+        if (mode == WidgetMode.Transition || mode == WidgetMode.ExpandLock) {
+            widgetTouchEvent = isTouchedForTransitionAndExpandLock(touchEvents);
         }
 
         if (mode == WidgetMode.Expand) {
@@ -854,7 +1134,7 @@ public class CardStackWidget implements Widget{
         return widgetTouchEvent;
     }
 
-    private WidgetTouchEvent isTouchedForTransition(List<Input.TouchEvent> touchEvents) {
+    private WidgetTouchEvent isTouchedForTransitionAndExpandLock(List<Input.TouchEvent> touchEvents) {
         WidgetTouchEvent widgetTouchEvent = AssetsAndResource.widgetTouchEventPool.newObject();
         widgetTouchEvent.resetTouchEvent();
 

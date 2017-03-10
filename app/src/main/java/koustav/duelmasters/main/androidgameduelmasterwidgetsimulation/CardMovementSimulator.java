@@ -9,8 +9,10 @@ import java.util.Map;
 
 import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAndResource;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
+import koustav.duelmasters.main.androidgameduelmastersdatastructure.Maze;
 import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.PvPWidgetCoordinator;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoutmodels.BattleZoneLayout;
+import koustav.duelmasters.main.androidgameduelmasterwidgetlayoutmodels.CardStackZoneLayout;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoutmodels.HandZoneLayout;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoutmodels.ManaZoneLayout;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.Layout;
@@ -91,7 +93,11 @@ public class CardMovementSimulator implements Simulate {
             ID = transientNewCoupleMana(obj);
         } else if (source == LocationLayout.ManaZone && destination == LocationLayout.ManaNewCoupleZone) {
             ID = transientManaCard(obj);
-        } else {
+        } else if (source == LocationLayout.Deck && destination == LocationLayout.ExpandLock) {
+            ID = moveCardToExpandLock(Maze.deck, obj);
+        } else if (source == LocationLayout.ExpandLock && destination == LocationLayout.Hand) {
+            ID = moveExpandCardToHand(obj);
+        }else {
             throw new RuntimeException("Invalid condition");
         }
 
@@ -460,6 +466,95 @@ public class CardMovementSimulator implements Simulate {
             public void run() {
             }
         };
+        simulationInfos.put(ID, simulationInfo);
+        return ID;
+    }
+
+    private SimulationID moveCardToExpandLock(int zone, Object ...obj) {
+        if (!(obj[2] instanceof ArrayList)) {
+            throw new RuntimeException("invalid argument");
+        }
+        final SimulationInfo simulationInfo = new SimulationInfo();
+        counter++;
+        SimulationID ID = new SimulationID(counter);
+
+        if (zone == Maze.deck) {
+            simulationInfo.layout.add(layoutmanager.deckLayout);
+            layoutmanager.deckLayout.lockGivenCards((ArrayList) obj[2]);
+        } else if (zone == Maze.graveyard) {
+            simulationInfo.layout.add(layoutmanager.graveyardLayout);
+            layoutmanager.graveyardLayout.lockGivenCards((ArrayList) obj[2]);
+        } else if (zone == Maze.Opponent_deck) {
+            simulationInfo.layout.add(layoutmanager.opponentDeckLayout);
+            layoutmanager.opponentDeckLayout.lockGivenCards((ArrayList) obj[2]);
+        } else if (zone == Maze.Opponent_graveyard) {
+            simulationInfo.layout.add(layoutmanager.opponentGraveyardLayout);
+            layoutmanager.opponentGraveyardLayout.lockGivenCards((ArrayList) obj[2]);
+        } else {
+            throw new RuntimeException("invalid argument");
+        }
+
+        simulationInfo.logicExpForFinish.add(new LogicExpForFinish() {
+            @Override
+            public boolean IsFinish() {
+                return !((CardStackZoneLayout)simulationInfo.layout.get(0)).IsWidgetInTransition();
+            }
+        });
+        simulationInfo.update = new SimulationUpdate() {
+            @Override
+            public void run() {
+            }
+        };
+        simulationInfos.put(ID, simulationInfo);
+
+        return ID;
+    }
+
+    private SimulationID moveExpandCardToHand(Object ...obj) {
+        if (!(obj[2] instanceof Integer)) {
+            throw new RuntimeException("Invalid Argument");
+        }
+        int zone = (Integer) obj[2];
+        final SimulationInfo simulationInfo = new SimulationInfo();
+        counter++;
+        SimulationID ID = new SimulationID(counter);
+        ArrayList<CardWidget> cardWidget;
+
+        simulationInfo.layout.add(layoutmanager.handZoneLayout);
+        if (zone == Maze.deck) {
+            cardWidget = layoutmanager.deckLayout.getExpandLockCardWidgets();
+        } else if (zone == Maze.graveyard) {
+            cardWidget = layoutmanager.graveyardLayout.getExpandLockCardWidgets();
+        } else if (zone == Maze.Opponent_deck) {
+            cardWidget = layoutmanager.opponentDeckLayout.getExpandLockCardWidgets();
+        } else if (zone == Maze.Opponent_graveyard) {
+            cardWidget = layoutmanager.opponentGraveyardLayout.getExpandLockCardWidgets();
+        } else {
+            throw new RuntimeException("Invalid argument");
+        }
+
+        for (int i = 0; i < cardWidget.size(); i++) {
+            simulationInfo.cardWidgets.add(cardWidget.get(i));
+        }
+        layoutmanager.handZoneLayout.AddToCardWidgetQueue(simulationInfo.cardWidgets);
+
+        simulationInfo.logicExpForFinish.add(new LogicExpForFinish() {
+            @Override
+            public boolean IsFinish() {
+                boolean status = true;
+                for (int i = 0; i < simulationInfo.cardWidgets.size(); i++) {
+                    status &= !((HandZoneLayout)simulationInfo.layout.get(0)).IsWidgetInTransition(simulationInfo.cardWidgets.get(0));
+                }
+                return status;
+            }
+        });
+
+        simulationInfo.update = new SimulationUpdate() {
+            @Override
+            public void run() {
+            }
+        };
+
         simulationInfos.put(ID, simulationInfo);
         return ID;
     }

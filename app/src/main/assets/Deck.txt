@@ -6,5 +6,11 @@ AquaVehicle#BaseSet
 AquaVehicle#BaseSet
 AquaVehicle#BaseSet
 AquaVehicle#BaseSet
+CrystalMemory#BaseSet
 AquaHulcus#BaseSet
+AquaVehicle#BaseSet
+AquaVehicle#BaseSet
+AquaVehicle#BaseSet
+AquaVehicle#BaseSet
+AquaVehicle#BaseSet
 AquaVehicle#BaseSet

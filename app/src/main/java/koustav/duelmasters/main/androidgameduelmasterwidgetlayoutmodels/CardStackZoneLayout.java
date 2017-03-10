@@ -69,11 +69,16 @@ public class CardStackZoneLayout implements Layout {
         cardStackWidget.setMode(WidgetMode.Normal);
     }
 
+    public ArrayList<CardWidget> getExpandLockCardWidgets() {
+        return cardStackWidget.getAndClearCardWidgets();
+    }
+
     public ArrayList<CardWidget> GenerateCardWidgetForFirstNCard(int N) {
         ArrayList<Cards> cardStack = (ArrayList<Cards>)cardStackWidget.getLogicalObject();
         int count = cardStack.size();
         ArrayList<CardWidget> cardWidget = new ArrayList<CardWidget>();
-        for (int i = 0; i < N; i++) {
+        int limit = (N < count) ? N : count;
+        for (int i = 0; i < limit; i++) {
             Cards card = cardStack.get(i);
             if (card.getWidget() != null) {
                 throw new RuntimeException("Invalid Condition");
@@ -83,7 +88,7 @@ public class CardStackZoneLayout implements Layout {
             WidgetPosition cardPosition = new WidgetPosition();
             cardPosition.Centerposition.x = widgetPosition.Centerposition.x;
             cardPosition.Centerposition.y = widgetPosition.Centerposition.y +
-                    (AssetsAndResource.CardLength * count)/2 + (AssetsAndResource.CardLength * (N - i));
+                    (AssetsAndResource.CardLength * count)/2 + (AssetsAndResource.CardLength * (limit - i));
             cardPosition.Centerposition.z = widgetPosition.Centerposition.z;
 
             ArrayList<GLGeometry.GLAngularRotaion> rotaions = new ArrayList<GLGeometry.GLAngularRotaion>();
@@ -106,6 +111,14 @@ public class CardStackZoneLayout implements Layout {
             cardWidget.add(widget);
         }
         return cardWidget;
+    }
+
+    public void lockGivenCards(ArrayList<Integer> index) {
+        cardStackWidget.lockCardsInExpandMode(index, coordinator);
+    }
+
+    public boolean IsWidgetInTransition() {
+        return cardStackWidget.IsWidgetInTransition();
     }
 
     @Override

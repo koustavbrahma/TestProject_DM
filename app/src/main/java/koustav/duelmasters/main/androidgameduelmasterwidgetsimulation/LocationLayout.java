@@ -13,4 +13,5 @@ public enum LocationLayout {
     HandPreBattleZone,
     Graveyard,
     Deck,
+    ExpandLock,
 }

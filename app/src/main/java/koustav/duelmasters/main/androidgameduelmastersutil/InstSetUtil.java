@@ -10,7 +10,7 @@ public class InstSetUtil {
     }
 
     public static String GenerateDrawCardInstruction() {
-        String instructionString = "2 100000 1 0 0 0 0 0 1 3 0 0 0 0 0 0 0 0";
+        String instructionString = "24 100000 1 0 0 0 0 0 0 3 0 0 0 0 0 0 0 0";
         return instructionString;
     }
 

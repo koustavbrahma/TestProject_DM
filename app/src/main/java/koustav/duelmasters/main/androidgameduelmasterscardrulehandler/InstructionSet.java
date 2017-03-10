@@ -100,6 +100,9 @@ public class InstructionSet {
                 case "23":
                     type = InstructionType.ComputeCondition;
                     break;
+                case "24":
+                    type = InstructionType.MoveFirstNCard;
+                    break;
                 default:
                     throw new IllegalArgumentException("Invalid instruction type");
             }
