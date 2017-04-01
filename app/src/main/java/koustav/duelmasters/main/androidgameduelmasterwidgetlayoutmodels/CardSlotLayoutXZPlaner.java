@@ -13,9 +13,9 @@ import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetTouchEven
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.HeadOrientation;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.Layout;
 import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.CardWidget;
-import koustav.duelmasters.main.androidgameopenglmotionmodel.DriftSystem;
-import koustav.duelmasters.main.androidgameopenglutil.GLGeometry;
-import koustav.duelmasters.main.androidgamesframework.Input;
+import koustav.duelmasters.main.androidgameopengl.androidgameopenglmotionmodels.DriftSystem;
+import koustav.duelmasters.main.androidgameopengl.androidgameopenglutil.GLGeometry;
+import koustav.duelmasters.main.androidgamesframework.androidgamesframeworkinterface.Input;
 
 /**
  * Created by Koustav on 5/1/2016.

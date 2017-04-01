@@ -1,10 +1,10 @@
 package koustav.duelmasters.main.androidgameduelmasterscreens;
 
 import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAndResource;
-import koustav.duelmasters.main.androidgamesframework.Graphics;
-import koustav.duelmasters.main.androidgamesframework.Graphics.PixmapFormat;
-import koustav.duelmasters.main.androidgamesframework.Screen;
-import koustav.duelmasters.main.androidgamesframeworkimpl.AndroidGame;
+import koustav.duelmasters.main.androidgamesframework.androidgamesframeworkinterface.Graphics;
+import koustav.duelmasters.main.androidgamesframework.androidgamesframeworkinterface.Graphics.PixmapFormat;
+import koustav.duelmasters.main.androidgamesframework.androidgamesframeworkinterface.Screen;
+import koustav.duelmasters.main.androidgamesframework.androidgamesframeworkimpl.AndroidGame;
 
 /**
  * Created by Koustav on 2/19/2015.

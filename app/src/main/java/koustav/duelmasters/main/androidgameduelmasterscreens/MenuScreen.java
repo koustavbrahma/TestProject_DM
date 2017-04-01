@@ -7,8 +7,8 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 
 import koustav.duelmasters.R;
-import koustav.duelmasters.main.androidgamesframework.Screen;
-import koustav.duelmasters.main.androidgamesframeworkimpl.AndroidGame;
+import koustav.duelmasters.main.androidgamesframework.androidgamesframeworkinterface.Screen;
+import koustav.duelmasters.main.androidgamesframework.androidgamesframeworkimpl.AndroidGame;
 
 /**
  * Created by Koustav on 7/5/2015.

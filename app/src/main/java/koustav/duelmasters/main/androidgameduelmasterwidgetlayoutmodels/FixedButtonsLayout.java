@@ -6,7 +6,7 @@ import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAnd
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetTouchEvent;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.Layout;
 import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.RectangleButtonWidget;
-import koustav.duelmasters.main.androidgamesframework.Input;
+import koustav.duelmasters.main.androidgamesframework.androidgamesframeworkinterface.Input;
 
 /**
  * Created by Koustav on 8/18/2016.

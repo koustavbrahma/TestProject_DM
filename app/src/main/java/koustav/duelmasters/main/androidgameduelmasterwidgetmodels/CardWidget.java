@@ -1,35 +1,21 @@
 package koustav.duelmasters.main.androidgameduelmasterwidgetmodels;
 
 
-import android.app.DownloadManager;
-
 import java.util.List;
 
 import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAndResource;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
-import koustav.duelmasters.main.androidgameduelmasterswidgetcoordinationtools.Query;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.Widget;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetMode;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetPosition;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetTouchEvent;
-import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetTouchFocusLevel;
-import koustav.duelmasters.main.androidgameduelmastersworlds.PvPWorld;
-import koustav.duelmasters.main.androidgameopenglobjectmodels.Cube;
-import koustav.duelmasters.main.androidgameopenglobjectmodels.XZRectangle;
-import koustav.duelmasters.main.androidgameopenglutil.DrawObjectHelper;
-import koustav.duelmasters.main.androidgameopenglutil.GLGeometry;
-import koustav.duelmasters.main.androidgameopenglutil.GLGeometry.*;
-import koustav.duelmasters.main.androidgameopenglutil.MatrixHelper;
-import koustav.duelmasters.main.androidgamesframework.Input;
+import koustav.duelmasters.main.androidgameopengl.androidgameopenglobjectmodels.Cube;
+import koustav.duelmasters.main.androidgameopengl.androidgameopenglutil.DrawObjectHelper;
+import koustav.duelmasters.main.androidgameopengl.androidgameopenglutil.GLGeometry;
+import koustav.duelmasters.main.androidgameopengl.androidgameopenglutil.GLGeometry.*;
+import koustav.duelmasters.main.androidgameopengl.androidgameopenglutil.MatrixHelper;
+import koustav.duelmasters.main.androidgamesframework.androidgamesframeworkinterface.Input;
 
-import static android.opengl.GLES20.GL_BLEND;
-import static android.opengl.GLES20.GL_CONSTANT_ALPHA;
-import static android.opengl.GLES20.GL_ONE_MINUS_CONSTANT_ALPHA;
-import static android.opengl.GLES20.glBlendColor;
-import static android.opengl.GLES20.glBlendFunc;
-import static android.opengl.GLES20.glDepthMask;
-import static android.opengl.GLES20.glDisable;
-import static android.opengl.GLES20.glEnable;
 import static android.opengl.Matrix.*;
 
 /**

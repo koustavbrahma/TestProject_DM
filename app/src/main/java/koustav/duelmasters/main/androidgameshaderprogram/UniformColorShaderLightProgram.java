@@ -5,11 +5,10 @@ import android.content.Context;
 import java.util.ArrayList;
 
 import koustav.duelmasters.R;
-import koustav.duelmasters.main.androidgameopenglutil.GLLight;
-import koustav.duelmasters.main.androidgameopenglutil.GLMaterial;
+import koustav.duelmasters.main.androidgameopengl.androidgameopenglutil.GLLight;
+import koustav.duelmasters.main.androidgameopengl.androidgameopenglutil.GLMaterial;
 
 import static android.opengl.GLES20.GL_TEXTURE0;
-import static android.opengl.GLES20.GL_TEXTURE1;
 import static android.opengl.GLES20.GL_TEXTURE_2D;
 import static android.opengl.GLES20.glActiveTexture;
 import static android.opengl.GLES20.glBindTexture;

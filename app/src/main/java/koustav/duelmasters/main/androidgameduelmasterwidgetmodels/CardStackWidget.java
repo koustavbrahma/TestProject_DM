@@ -11,13 +11,13 @@ import koustav.duelmasters.main.androidgameduelmasterswidgetutil.Widget;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetMode;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetPosition;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetTouchEvent;
-import koustav.duelmasters.main.androidgameopenglmotionmodel.DriftSystem;
-import koustav.duelmasters.main.androidgameopenglobjectmodels.Cube;
-import koustav.duelmasters.main.androidgameopenglutil.DrawObjectHelper;
-import koustav.duelmasters.main.androidgameopenglutil.GLGeometry.*;
-import koustav.duelmasters.main.androidgameopenglutil.GLGeometry;
-import koustav.duelmasters.main.androidgameopenglutil.MatrixHelper;
-import koustav.duelmasters.main.androidgamesframework.Input;
+import koustav.duelmasters.main.androidgameopengl.androidgameopenglmotionmodels.DriftSystem;
+import koustav.duelmasters.main.androidgameopengl.androidgameopenglobjectmodels.Cube;
+import koustav.duelmasters.main.androidgameopengl.androidgameopenglutil.DrawObjectHelper;
+import koustav.duelmasters.main.androidgameopengl.androidgameopenglutil.GLGeometry.*;
+import koustav.duelmasters.main.androidgameopengl.androidgameopenglutil.GLGeometry;
+import koustav.duelmasters.main.androidgameopengl.androidgameopenglutil.MatrixHelper;
+import koustav.duelmasters.main.androidgamesframework.androidgamesframeworkinterface.Input;
 
 import static android.opengl.Matrix.*;
 

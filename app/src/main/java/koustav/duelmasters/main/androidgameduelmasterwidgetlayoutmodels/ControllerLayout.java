@@ -10,7 +10,7 @@ import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetTouchEven
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.ControllerButton;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.Layout;
 import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.RectangleButtonWidget;
-import koustav.duelmasters.main.androidgamesframework.Input;
+import koustav.duelmasters.main.androidgamesframework.androidgamesframeworkinterface.Input;
 
 /**
  * Created by Koustav on 8/5/2016.

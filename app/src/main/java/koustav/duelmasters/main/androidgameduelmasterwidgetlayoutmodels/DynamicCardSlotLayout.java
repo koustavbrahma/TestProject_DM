@@ -4,14 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAndResource;
-import koustav.duelmasters.main.androidgameduelmasterswidgetutil.Widget;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetPosition;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetTouchEvent;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.Layout;
 import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.CardWidget;
-import koustav.duelmasters.main.androidgameopenglmotionmodel.DriftSystem;
-import koustav.duelmasters.main.androidgameopenglutil.GLGeometry;
-import koustav.duelmasters.main.androidgamesframework.Input;
+import koustav.duelmasters.main.androidgameopengl.androidgameopenglmotionmodels.DriftSystem;
+import koustav.duelmasters.main.androidgameopengl.androidgameopenglutil.GLGeometry;
+import koustav.duelmasters.main.androidgamesframework.androidgamesframeworkinterface.Input;
 
 import static android.opengl.Matrix.multiplyMV;
 import static android.opengl.Matrix.rotateM;

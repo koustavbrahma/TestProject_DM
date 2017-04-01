@@ -17,16 +17,16 @@ import koustav.duelmasters.main.androidgameduelmasterwidgetlayoutmodels.ManaZone
 import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.CardStackWidget;
 import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.CardWidget;
 import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.RectangleButtonWidget;
-import koustav.duelmasters.main.androidgameopenglobjectmodels.Cube;
-import koustav.duelmasters.main.androidgameopenglobjectmodels.FullScreenRectangle;
-import koustav.duelmasters.main.androidgameopenglobjectmodels.Points;
-import koustav.duelmasters.main.androidgameopenglobjectmodels.ScreenRectangle;
-import koustav.duelmasters.main.androidgameopenglobjectmodels.XZRectangle;
-import koustav.duelmasters.main.androidgameopenglutil.GLGeometry.*;
-import koustav.duelmasters.main.androidgameopenglutil.GLMaterial;
-import koustav.duelmasters.main.androidgamesframework.Input;
-import koustav.duelmasters.main.androidgamesframework.Screen;
-import koustav.duelmasters.main.androidgamesframeworkimpl.AndroidGame;
+import koustav.duelmasters.main.androidgameopengl.androidgameopenglobjectmodels.Cube;
+import koustav.duelmasters.main.androidgameopengl.androidgameopenglobjectmodels.FullScreenRectangle;
+import koustav.duelmasters.main.androidgameopengl.androidgameopenglobjectmodels.Points;
+import koustav.duelmasters.main.androidgameopengl.androidgameopenglobjectmodels.ScreenRectangle;
+import koustav.duelmasters.main.androidgameopengl.androidgameopenglobjectmodels.XZRectangle;
+import koustav.duelmasters.main.androidgameopengl.androidgameopenglutil.GLGeometry.*;
+import koustav.duelmasters.main.androidgameopengl.androidgameopenglutil.GLMaterial;
+import koustav.duelmasters.main.androidgamesframework.androidgamesframeworkinterface.Input;
+import koustav.duelmasters.main.androidgamesframework.androidgamesframeworkinterface.Screen;
+import koustav.duelmasters.main.androidgamesframework.androidgamesframeworkimpl.AndroidGame;
 
 import static android.opengl.GLES20.*;
 import static android.opengl.Matrix.*;

@@ -23,8 +23,8 @@ import koustav.duelmasters.main.androidgameduelmasterswidgetcoordinationtools.Ac
 import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.GridIndexTrackingTable;
 import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.GridPositionIndex;
 import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.PvPWidgetCoordinator;
-import koustav.duelmasters.main.androidgamesframework.Input.TouchEvent;
-import koustav.duelmasters.main.androidgamesframeworkimpl.AndroidGame;
+import koustav.duelmasters.main.androidgamesframework.androidgamesframeworkinterface.Input.TouchEvent;
+import koustav.duelmasters.main.androidgamesframework.androidgamesframeworkimpl.AndroidGame;
 
 /**
  * Created by Koustav on 2/16/2015.

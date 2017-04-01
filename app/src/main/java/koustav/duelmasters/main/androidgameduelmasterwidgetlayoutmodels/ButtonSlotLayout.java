@@ -8,8 +8,8 @@ import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetPosition;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetTouchEvent;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.Layout;
 import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.RectangleButtonWidget;
-import koustav.duelmasters.main.androidgameopenglmotionmodel.DriftSystem;
-import koustav.duelmasters.main.androidgamesframework.Input;
+import koustav.duelmasters.main.androidgameopengl.androidgameopenglmotionmodels.DriftSystem;
+import koustav.duelmasters.main.androidgamesframework.androidgamesframeworkinterface.Input;
 
 /**
  * Created by Koustav on 8/3/2016.

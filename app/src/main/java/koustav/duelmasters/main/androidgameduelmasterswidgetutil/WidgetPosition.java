@@ -1,6 +1,6 @@
 package koustav.duelmasters.main.androidgameduelmasterswidgetutil;
 
-import koustav.duelmasters.main.androidgameopenglutil.GLGeometry.*;
+import koustav.duelmasters.main.androidgameopengl.androidgameopenglutil.GLGeometry.*;
 
 /**
  * Created by Koustav on 3/26/2016.

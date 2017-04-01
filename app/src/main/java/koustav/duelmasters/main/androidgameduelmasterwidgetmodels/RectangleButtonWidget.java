@@ -7,12 +7,11 @@ import koustav.duelmasters.main.androidgameduelmasterswidgetutil.Widget;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetMode;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetPosition;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetTouchEvent;
-import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetTouchFocusLevel;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.ControllerButton;
-import koustav.duelmasters.main.androidgameopenglobjectmodels.ScreenRectangle;
-import koustav.duelmasters.main.androidgameopenglutil.DrawObjectHelper;
-import koustav.duelmasters.main.androidgameopenglutil.MatrixHelper;
-import koustav.duelmasters.main.androidgamesframework.Input;
+import koustav.duelmasters.main.androidgameopengl.androidgameopenglobjectmodels.ScreenRectangle;
+import koustav.duelmasters.main.androidgameopengl.androidgameopenglutil.DrawObjectHelper;
+import koustav.duelmasters.main.androidgameopengl.androidgameopenglutil.MatrixHelper;
+import koustav.duelmasters.main.androidgamesframework.androidgamesframeworkinterface.Input;
 
 import static android.opengl.Matrix.multiplyMV;
 import static android.opengl.Matrix.rotateM;

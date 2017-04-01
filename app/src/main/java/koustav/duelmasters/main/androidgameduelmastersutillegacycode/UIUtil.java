@@ -6,7 +6,7 @@ import java.util.List;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
 import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.GridPositionIndex;
 import koustav.duelmasters.main.androidgameduelmastersworlds.PvPWorld;
-import koustav.duelmasters.main.androidgamesframework.Input.TouchEvent;
+import koustav.duelmasters.main.androidgamesframework.androidgamesframeworkinterface.Input.TouchEvent;
 
 /**
  * Created by Koustav on 5/3/2015.

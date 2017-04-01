@@ -4,9 +4,9 @@ import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAnd
 import koustav.duelmasters.main.androidgameduelmasterswidgetcoordinationtools.Query;
 import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.PvPWidgetCoordinator;
 import koustav.duelmasters.main.androidgameduelmastersworlds.PvPWorld;
-import koustav.duelmasters.main.androidgameopenglutil.FPSCounter;
-import koustav.duelmasters.main.androidgamesframework.Screen;
-import koustav.duelmasters.main.androidgamesframeworkimpl.AndroidGame;
+import koustav.duelmasters.main.androidgameopengl.androidgameopenglutil.FPSCounter;
+import koustav.duelmasters.main.androidgamesframework.androidgamesframeworkinterface.Screen;
+import koustav.duelmasters.main.androidgamesframework.androidgamesframeworkimpl.AndroidGame;
 
 /**
  * Created by Koustav on 9/30/2016.

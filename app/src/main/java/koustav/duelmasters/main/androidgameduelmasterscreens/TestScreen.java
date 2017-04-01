@@ -6,10 +6,10 @@ import koustav.duelmasters.main.androidgameduelmastersworlds.PvPWorld;
 import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAndResource;
 import koustav.duelmasters.main.androidgameduelmastersutillegacycode.CreateScenarioUtil;
 import koustav.duelmasters.main.androidgameduelmastersutillegacycode.GraphicUtil;
-import koustav.duelmasters.main.androidgamesframework.Graphics;
-import koustav.duelmasters.main.androidgamesframework.Input.TouchEvent;
-import koustav.duelmasters.main.androidgamesframework.Screen;
-import koustav.duelmasters.main.androidgamesframeworkimpl.AndroidGame;
+import koustav.duelmasters.main.androidgamesframework.androidgamesframeworkinterface.Graphics;
+import koustav.duelmasters.main.androidgamesframework.androidgamesframeworkinterface.Input.TouchEvent;
+import koustav.duelmasters.main.androidgamesframework.androidgamesframeworkinterface.Screen;
+import koustav.duelmasters.main.androidgamesframework.androidgamesframeworkimpl.AndroidGame;
 
 /**
  * Created by Koustav on 2/13/2015.

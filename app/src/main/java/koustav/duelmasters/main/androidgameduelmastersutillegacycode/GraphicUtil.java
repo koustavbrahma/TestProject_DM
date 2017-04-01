@@ -12,7 +12,7 @@ import koustav.duelmasters.main.androidgameduelmastersworlds.PvPWorld;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.WorldFlags;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Zone;
 import koustav.duelmasters.main.androidgameduelmastersutil.GetUtil;
-import koustav.duelmasters.main.androidgamesframework.Graphics;
+import koustav.duelmasters.main.androidgamesframework.androidgamesframeworkinterface.Graphics;
 
 /**
  * Created by Koustav on 5/19/2015.

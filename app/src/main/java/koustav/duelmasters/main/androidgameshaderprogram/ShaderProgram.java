@@ -2,8 +2,8 @@ package koustav.duelmasters.main.androidgameshaderprogram;
 
 import android.content.Context;
 
-import koustav.duelmasters.main.androidgameopenglutil.ShaderHelper;
-import koustav.duelmasters.main.androidgamesframeworkimpl.AndroidGame;
+import koustav.duelmasters.main.androidgameopengl.androidgameopenglutil.ShaderHelper;
+import koustav.duelmasters.main.androidgamesframework.androidgamesframeworkimpl.AndroidGame;
 
 import static android.opengl.GLES20.*;
 /**

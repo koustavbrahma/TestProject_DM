@@ -5,16 +5,15 @@ import java.util.Hashtable;
 import java.util.List;
 
 import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAndResource;
-import koustav.duelmasters.main.androidgameduelmasterswidgetutil.Widget;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetPosition;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetTouchEvent;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetTouchFocusLevel;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.HeadOrientation;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.Layout;
 import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.CardWidget;
-import koustav.duelmasters.main.androidgameopenglutil.GLGeometry;
-import koustav.duelmasters.main.androidgamesframework.Input;
-import koustav.duelmasters.main.androidgamesframework.Pool;
+import koustav.duelmasters.main.androidgameopengl.androidgameopenglutil.GLGeometry;
+import koustav.duelmasters.main.androidgamesframework.androidgamesframeworkinterface.Input;
+import koustav.duelmasters.main.androidgamesframework.androidgamesframeworkinterface.Pool;
 
 /**
  * Created by Koustav on 5/31/2016.

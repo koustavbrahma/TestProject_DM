@@ -5,8 +5,8 @@ import android.content.Context;
 import java.util.ArrayList;
 
 import koustav.duelmasters.R;
-import koustav.duelmasters.main.androidgameopenglutil.GLLight;
-import koustav.duelmasters.main.androidgameopenglutil.GLMaterial;
+import koustav.duelmasters.main.androidgameopengl.androidgameopenglutil.GLLight;
+import koustav.duelmasters.main.androidgameopengl.androidgameopenglutil.GLMaterial;
 
 import static android.opengl.GLES20.*;
 
