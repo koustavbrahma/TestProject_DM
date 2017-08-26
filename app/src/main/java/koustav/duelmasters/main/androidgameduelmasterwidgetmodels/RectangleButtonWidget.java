@@ -5,7 +5,7 @@ import java.util.List;
 import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAndResource;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.Widget;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetMode;
-import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetPosition;
+import koustav.duelmasters.main.androidgamenodeviewframework.androidgamenodeviewframeworkimpl.ViewNodePosition;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetTouchEvent;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.ControllerButton;
 import koustav.duelmasters.main.androidgameopengl.androidgameopenglobjectmodels.ScreenRectangle;
@@ -21,7 +21,7 @@ import static android.opengl.Matrix.setIdentityM;
  * Created by Koustav on 8/2/2016.
  */
 public class RectangleButtonWidget implements Widget {
-    WidgetPosition Position;
+    ViewNodePosition Position;
     float[] PointAfterRot;
 
     // GL object
@@ -31,7 +31,7 @@ public class RectangleButtonWidget implements Widget {
     ControllerButton button;
 
     public RectangleButtonWidget() {
-        Position = new WidgetPosition();
+        Position = new ViewNodePosition();
         PointAfterRot = new float[4];
     }
 
@@ -105,7 +105,7 @@ public class RectangleButtonWidget implements Widget {
     }
 
     @Override
-    public void setTranslateRotateScale(WidgetPosition position) {
+    public void setTranslateRotateScale(ViewNodePosition position) {
         // Store this info required for isTouched
 
         this.Position.rotaion.angle = position.rotaion.angle;
@@ -143,7 +143,7 @@ public class RectangleButtonWidget implements Widget {
     }
 
     @Override
-    public WidgetPosition getPosition() {
+    public ViewNodePosition getPosition() {
         return Position;
     }
 }

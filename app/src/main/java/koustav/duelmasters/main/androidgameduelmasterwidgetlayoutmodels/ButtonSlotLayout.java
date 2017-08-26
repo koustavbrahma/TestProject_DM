@@ -4,7 +4,7 @@ import java.util.List;
 
 import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAndResource;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.Widget;
-import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetPosition;
+import koustav.duelmasters.main.androidgamenodeviewframework.androidgamenodeviewframeworkimpl.ViewNodePosition;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetTouchEvent;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.Layout;
 import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.RectangleButtonWidget;
@@ -15,8 +15,8 @@ import koustav.duelmasters.main.androidgamesframework.androidgamesframeworkinter
  * Created by Koustav on 8/3/2016.
  */
 public class ButtonSlotLayout implements Layout {
-    WidgetPosition ButtonSlotPosition;
-    WidgetPosition ButtonWidgetPosition;
+    ViewNodePosition ButtonSlotPosition;
+    ViewNodePosition ButtonWidgetPosition;
     DriftSystem driftSystem;
     Widget buttonWidget;
 
@@ -27,8 +27,8 @@ public class ButtonSlotLayout implements Layout {
     boolean running;
 
     public ButtonSlotLayout() {
-        ButtonSlotPosition = new WidgetPosition();
-        ButtonWidgetPosition = new WidgetPosition();
+        ButtonSlotPosition = new ViewNodePosition();
+        ButtonWidgetPosition = new ViewNodePosition();
         driftSystem = new DriftSystem();
 
         k1 = 0;
@@ -62,7 +62,7 @@ public class ButtonSlotLayout implements Layout {
         }
 
         if (running) {
-            WidgetPosition widgetPositionUpdate = driftSystem.getUpdatePosition(totalTime);
+            ViewNodePosition widgetPositionUpdate = driftSystem.getUpdatePosition(totalTime);
 
             float percentageComplete = driftSystem.getPercentageComplete(totalTime);
             if (percentageComplete == 1.0f) {

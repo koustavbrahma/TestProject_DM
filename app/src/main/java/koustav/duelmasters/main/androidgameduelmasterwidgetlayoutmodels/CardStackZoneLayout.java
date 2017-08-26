@@ -7,7 +7,7 @@ import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAnd
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
 import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.PvPWidgetCoordinator;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetMode;
-import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetPosition;
+import koustav.duelmasters.main.androidgamenodeviewframework.androidgamenodeviewframeworkimpl.ViewNodePosition;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetTouchEvent;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetTouchFocusLevel;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.Layout;
@@ -28,7 +28,7 @@ public class CardStackZoneLayout implements Layout {
     TouchModeCardStackZone touchMode;
 
     PvPWidgetCoordinator coordinator;
-    WidgetPosition widgetPosition;
+    ViewNodePosition widgetPosition;
     CardStackWidget cardStackWidget;
 
     float length;
@@ -36,7 +36,7 @@ public class CardStackZoneLayout implements Layout {
 
     public CardStackZoneLayout(PvPWidgetCoordinator coordinator) {
         this.coordinator = coordinator;
-        widgetPosition = new WidgetPosition();
+        widgetPosition = new ViewNodePosition();
         cardStackWidget = null;
     }
 
@@ -85,7 +85,7 @@ public class CardStackZoneLayout implements Layout {
             }
             CardWidget widget = coordinator.newCardWidget();
             coordinator.CoupleWidgetForCard(card, widget);
-            WidgetPosition cardPosition = new WidgetPosition();
+            ViewNodePosition cardPosition = new ViewNodePosition();
             cardPosition.Centerposition.x = widgetPosition.Centerposition.x;
             cardPosition.Centerposition.y = widgetPosition.Centerposition.y +
                     (AssetsAndResource.CardLength * count)/2 + (AssetsAndResource.CardLength * (limit - i));

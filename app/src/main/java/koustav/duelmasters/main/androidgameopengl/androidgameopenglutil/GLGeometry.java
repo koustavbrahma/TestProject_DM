@@ -4,10 +4,48 @@ package koustav.duelmasters.main.androidgameopengl.androidgameopenglutil;
  * Created by Koustav on 1/22/2016.
  */
 public class GLGeometry {
+    public GLShapeType type;
+
+    public GLGeometry(GLShapeType type) {
+        this.type = type;
+    }
+
+    GLGeometry create(GLShapeType type, Object ...obj) {
+        switch (type) {
+            case Point: return new GLPoint((float)obj[0], (float)obj[1], (float)obj[2]);
+            case Circle: return new GLCircle((GLPoint)obj[0], (float)obj[1]);
+            case Cylinder: return new GLCylinder((GLPoint)obj[0], (float)obj[1], (float)obj[2]);
+            case Cube: return new GLCube((GLPoint)obj[0], (float)obj[1], (float)obj[2], (float)obj[3]);
+            case ConicalFrustum: return new GLConicalFrustum((GLPoint)obj[0], (float)obj[1], (float)obj[2], (float)obj[3]);
+            case Arch: return new GLArch((GLPoint)obj[0], (float)obj[1], (float)obj[2], (float)obj[3]);
+            case Rectangle: return new GLRectangle((GLPoint)obj[0], (float)obj[1], (float)obj[2]);
+            case Plane: return new GLPlane((GLPoint)obj[0], (GLVector)obj[1]);
+            case Vector: return new GLVector((float)obj[0], (float)obj[1], (float)obj[2]);
+            case Ray: return new GLRay((GLPoint)obj[0], (GLVector)obj[1]);
+            case Rotation: return new GLAngularRotaion((float)obj[0], (float)obj[1], (float)obj[2], (float)obj[3]);
+            default: return null;
+        }
+    }
+
+    public enum GLShapeType {
+        Point,
+        Circle,
+        Cylinder,
+        Cube,
+        ConicalFrustum,
+        Arch,
+        Rectangle,
+        Plane,
+        Vector,
+        Ray,
+        Rotation
+    }
+
     // Static classes
-    public static class GLPoint {
+    public static class GLPoint extends GLGeometry{
         public float x, y, z;
         public GLPoint(float x, float y, float z) {
+            super(GLShapeType.Point);
             this.x = x;
             this.y = y;
             this.z = z;
@@ -34,10 +72,11 @@ public class GLGeometry {
         }
     }
 
-    public static class GLCircle {
+    public static class GLCircle extends GLGeometry{
         public final GLPoint center;
         public final float radius;
         public GLCircle(GLPoint center, float radius) {
+            super(GLShapeType.Circle);
             this.center = center;
             this.radius = radius;
         }
@@ -46,23 +85,25 @@ public class GLGeometry {
         }
     }
 
-    public static class GLCylinder {
+    public static class GLCylinder extends GLGeometry{
         public final GLPoint center;
         public final float radius;
         public final float height;
         public GLCylinder(GLPoint center, float radius, float height) {
+            super(GLShapeType.Cylinder);
             this.center = center;
             this.radius = radius;
             this.height = height;
         }
     }
 
-    public static class GLCube {
+    public static class GLCube extends GLGeometry{
         public final GLPoint center;
         public final float width;
         public final float length;
         public final float height;
         public GLCube(GLPoint center, float width, float length, float height) {
+            super(GLShapeType.Cube);
             this.center = center;
             this.width = width;
             this.length = length;
@@ -70,12 +111,13 @@ public class GLGeometry {
         }
     }
 
-    public static class GLConicalFrustum {
+    public static class GLConicalFrustum extends GLGeometry{
         public final GLPoint center;
         public final float topradius;
         public final float botradius;
         public final float height;
         public GLConicalFrustum(GLPoint center, float topradius, float botradius, float height) {
+            super(GLShapeType.ConicalFrustum);
             this.center = center;
             this.topradius = topradius;
             this.botradius = botradius;
@@ -83,12 +125,13 @@ public class GLGeometry {
         }
     }
 
-    public static class GLArch {
+    public static class GLArch extends GLGeometry{
         public final GLPoint center;
         public final float angle;
         public final float radius;
         public final float fallhieght;
         public GLArch(GLPoint center, float angle, float radius, float fallhieght) {
+            super(GLShapeType.Arch);
             this.center = center;
             this.angle = angle;
             this.radius = radius;
@@ -96,21 +139,23 @@ public class GLGeometry {
         }
     }
 
-    public static class GLRectangle {
+    public static class GLRectangle extends GLGeometry{
         public final GLPoint center;
         public final float width;
         public final float height;
 
         public GLRectangle(GLPoint center, float width, float height) {
+            super(GLShapeType.Rectangle);
             this.center = center;
             this.width = width;
             this.height = height;
         }
     }
 
-    public static class GLVector {
+    public static class GLVector extends GLGeometry{
         public float x, y, z;
         public GLVector(float x, float y, float z) {
+            super(GLShapeType.Vector);
             this.x = x;
             this.y = y;
             this.z = z;
@@ -145,31 +190,34 @@ public class GLGeometry {
         }
     }
 
-    public static class GLRay {
+    public static class GLRay extends GLGeometry{
         public GLPoint point;
         public GLVector vector;
         public GLRay(GLPoint point, GLVector vector) {
+            super(GLShapeType.Ray);
             this.point = point;
             this.vector = vector;
         }
     }
 
-    public static class GLPlane {
+    public static class GLPlane extends GLGeometry{
         public GLPoint point;
         public GLVector normal;
         public GLPlane(GLPoint point, GLVector vector) {
+            super(GLShapeType.Plane);
             this.point = point;
             this.normal = vector;
         }
     }
 
-    public static class GLAngularRotaion {
+    public static class GLAngularRotaion extends GLGeometry{
         public float angle;
         public float x;
         public float y;
         public float z;
 
         public GLAngularRotaion(float angle, float x, float y, float z) {
+            super(GLShapeType.Rotation);
             this.angle = angle;
             this.x = x;
             this.y = y;
@@ -177,7 +225,7 @@ public class GLGeometry {
         }
     }
 
-    // APIs
+    //// STATIC APIs
     public static GLVector GLVectorBetween(GLPoint from, GLPoint to) {
         return new GLVector(
                 to.x - from.x,

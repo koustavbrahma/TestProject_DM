@@ -9,7 +9,7 @@ import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
 import koustav.duelmasters.main.androidgameduelmasterswidgetscoordinator.PvPWidgetCoordinator;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.Widget;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetMode;
-import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetPosition;
+import koustav.duelmasters.main.androidgamenodeviewframework.androidgamenodeviewframeworkimpl.ViewNodePosition;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetTouchEvent;
 import koustav.duelmasters.main.androidgameopengl.androidgameopenglmotionmodels.DriftSystem;
 import koustav.duelmasters.main.androidgameopengl.androidgameopenglobjectmodels.Cube;
@@ -33,9 +33,9 @@ public class CardStackWidget implements Widget{
     TransitionState S;
 
     // Misc var
-    WidgetPosition Position;
-    WidgetPosition init_position;
-    WidgetPosition ref_position;
+    ViewNodePosition Position;
+    ViewNodePosition init_position;
+    ViewNodePosition ref_position;
     float[] GapVector;
     float[] relativeNearPointAfterRot;
     float[] relativeFarPointAfterRot;
@@ -43,7 +43,7 @@ public class CardStackWidget implements Widget{
     GLPoint relativeFarPoint;
     WidgetMode mode;
     WidgetMode previousMode;
-    Hashtable<Cards, WidgetPosition> cardWidgetPositionTable;
+    Hashtable<Cards, ViewNodePosition> cardWidgetPositionTable;
     Cards SelectedCard;
     ArrayList<Cards> pickedCardsFromTheList;
     ArrayList<Integer> indexTouched;
@@ -57,7 +57,7 @@ public class CardStackWidget implements Widget{
     float rotationDir_y;
     float rotationDir_z;
     ArrayList<CardWidget> cardWidgets;
-    Hashtable<CardWidget, WidgetPosition> cardWidgetToWidgetPositionHashtable;
+    Hashtable<CardWidget, ViewNodePosition> cardWidgetToWidgetPositionHashtable;
     ArrayList<Object> cardOriginalList;
     int originalSelectedCardPosition;
 
@@ -86,9 +86,9 @@ public class CardStackWidget implements Widget{
     public CardStackWidget() {
         S = TransitionState.START;
 
-        Position = new WidgetPosition();
-        init_position = new WidgetPosition();
-        ref_position = new WidgetPosition();
+        Position = new ViewNodePosition();
+        init_position = new ViewNodePosition();
+        ref_position = new ViewNodePosition();
         GapVector = new float[4];
         relativeNearPointAfterRot = new float[4];
         relativeFarPointAfterRot = new float[4];
@@ -96,7 +96,7 @@ public class CardStackWidget implements Widget{
         relativeFarPoint = new GLPoint(0, 0, 0);
         mode = WidgetMode.Normal;
         previousMode = WidgetMode.Normal;
-        cardWidgetPositionTable = new Hashtable<Cards, WidgetPosition>();
+        cardWidgetPositionTable = new Hashtable<Cards, ViewNodePosition>();
         cardsDriftSystemHashtable = new Hashtable<Cards, DriftSystem>();
         SelectedCard = null;
         pickedCardsFromTheList = new ArrayList<Cards>();
@@ -107,7 +107,7 @@ public class CardStackWidget implements Widget{
         k1 = 4.0f;
         k2 = 4.0f;
         cardWidgets = new ArrayList<CardWidget>();
-        cardWidgetToWidgetPositionHashtable = new Hashtable<CardWidget, WidgetPosition>();
+        cardWidgetToWidgetPositionHashtable = new Hashtable<CardWidget, ViewNodePosition>();
         cardOriginalList = new ArrayList<Object>();
         originalSelectedCardPosition = 0;
         cardWidgetDriftSystemHashtable = new Hashtable<CardWidget, DriftSystem>();
@@ -170,8 +170,8 @@ public class CardStackWidget implements Widget{
                 }
                 CardWidget widget = coordinator.newCardWidget();
                 coordinator.CoupleWidgetForCard(card, widget);
-                WidgetPosition cardPosition = new WidgetPosition();
-                WidgetPosition originalCardPosition = cardWidgetPositionTable.get(card);
+                ViewNodePosition cardPosition = new ViewNodePosition();
+                ViewNodePosition originalCardPosition = cardWidgetPositionTable.get(card);
                 cardPosition.Centerposition.x = originalCardPosition.Centerposition.x;
                 cardPosition.Centerposition.y = originalCardPosition.Centerposition.y;
                 cardPosition.Centerposition.z = originalCardPosition.Centerposition.z;
@@ -214,7 +214,7 @@ public class CardStackWidget implements Widget{
 
     // update transition
     private void updateTransition(float deltaTime, float totalTime) {
-        WidgetPosition widgetPosition;
+        ViewNodePosition widgetPosition;
         DriftSystem driftSystem;
 
         float gaps = (0.8f * AssetsAndResource.MazeHeight)/((float) cardStack.size());
@@ -243,7 +243,7 @@ public class CardStackWidget implements Widget{
                     driftSystem = cardsDriftSystemHashtable.get(card);
 
                     if (widgetPosition == null) {
-                        widgetPosition = new WidgetPosition();
+                        widgetPosition = new ViewNodePosition();
                         driftSystem = new DriftSystem();
 
                         cardWidgetPositionTable.put(card, widgetPosition);
@@ -290,7 +290,7 @@ public class CardStackWidget implements Widget{
                     }
 
                     float percentageComplete = driftSystem.getPercentageComplete(totalTime);
-                    WidgetPosition updatePosition = driftSystem.getUpdatePosition(totalTime);
+                    ViewNodePosition updatePosition = driftSystem.getUpdatePosition(totalTime);
 
                     if (percentageComplete == 1.0f) {
                         completeCount++;
@@ -390,7 +390,7 @@ public class CardStackWidget implements Widget{
                     }
 
                     float percentageComplete = driftSystem.getPercentageComplete(totalTime);
-                    WidgetPosition updatePosition = driftSystem.getUpdatePosition(totalTime);
+                    ViewNodePosition updatePosition = driftSystem.getUpdatePosition(totalTime);
 
                     if (percentageComplete == 1.0f) {
                         completeCount++;
@@ -445,7 +445,7 @@ public class CardStackWidget implements Widget{
             if (driftSystem == null) {
                 driftSystem = new DriftSystem();
                 cardWidgetDriftSystemHashtable.put(widget, driftSystem);
-                WidgetPosition widgetPosition = cardWidgetToWidgetPositionHashtable.get(widget);
+                ViewNodePosition widgetPosition = cardWidgetToWidgetPositionHashtable.get(widget);
                 if (widgetPosition == null) {
                     throw new RuntimeException("Invalid Condition");
                 }
@@ -461,10 +461,10 @@ public class CardStackWidget implements Widget{
                 init_position.Y_scale = 1.0f;
                 init_position.Z_scale = widgetPosition.Z_scale;
 
-                ArrayList<WidgetPosition> trans_position = new ArrayList<WidgetPosition>();
+                ArrayList<ViewNodePosition> trans_position = new ArrayList<ViewNodePosition>();
                 ArrayList<Float> tracking_point = new ArrayList<Float>();
                 if (position != originalSelectedCardPosition) {
-                    WidgetPosition position1 = new WidgetPosition();
+                    ViewNodePosition position1 = new ViewNodePosition();
                     GLVector gapVec = new GLVector(GapVector[0], GapVector[1], GapVector[2]).getDirection();
                     float gap = (position > originalSelectedCardPosition) ? (2 * AssetsAndResource.CardWidth):
                             (2 * (-AssetsAndResource.CardWidth));
@@ -495,9 +495,9 @@ public class CardStackWidget implements Widget{
 
                 driftSystem.setDriftInfo(init_position, ref_position, trans_position, tracking_point, k1, k2, totalTime);
             } else {
-                WidgetPosition updatePosition = driftSystem.getUpdatePosition(totalTime);
+                ViewNodePosition updatePosition = driftSystem.getUpdatePosition(totalTime);
                 float percentageComplete = driftSystem.getPercentageComplete(totalTime);
-                WidgetPosition widgetPosition = cardWidgetToWidgetPositionHashtable.get(widget);
+                ViewNodePosition widgetPosition = cardWidgetToWidgetPositionHashtable.get(widget);
 
                 if (widgetPosition == null) {
                     throw new RuntimeException("Invalid Condition");
@@ -560,7 +560,7 @@ public class CardStackWidget implements Widget{
 
         for (int i = 0; i < cardWidgets.size(); i++) {
             CardWidget widget = cardWidgets.get(i);
-            WidgetPosition widgetPosition = cardWidgetToWidgetPositionHashtable.get(widget);
+            ViewNodePosition widgetPosition = cardWidgetToWidgetPositionHashtable.get(widget);
 
             if (widgetPosition == null) {
                 throw new RuntimeException("widgetPosition cannot be null");
@@ -573,11 +573,11 @@ public class CardStackWidget implements Widget{
 
     // Draw the widget in transition mode
     private void drawTransition() {
-        WidgetPosition widgetPosition;
+        ViewNodePosition widgetPosition;
 
         if (previousMode == WidgetMode.Normal) {
             if (cardStack.size() - moving > 2) {
-                widgetPosition = new WidgetPosition();
+                widgetPosition = new ViewNodePosition();
                 widgetPosition.rotaion.angle = Position.rotaion.angle;
                 widgetPosition.rotaion.x = Position.rotaion.x;
                 widgetPosition.rotaion.y = Position.rotaion.y;
@@ -606,7 +606,7 @@ public class CardStackWidget implements Widget{
                 DrawObjectHelper.drawOneCube(cube, textureArrays, shadowEnable);
 
             } else if (cardStack.size() - moving > 0) {
-                widgetPosition = new WidgetPosition();
+                widgetPosition = new ViewNodePosition();
                 widgetPosition.rotaion.angle = Position.rotaion.angle;
                 widgetPosition.rotaion.x = Position.rotaion.x;
                 widgetPosition.rotaion.y = Position.rotaion.y;
@@ -655,7 +655,7 @@ public class CardStackWidget implements Widget{
 
         } else if (previousMode == WidgetMode.Expand) {
             if (completeCount > 2) {
-                widgetPosition = new WidgetPosition();
+                widgetPosition = new ViewNodePosition();
                 widgetPosition.rotaion.angle = Position.rotaion.angle;
                 widgetPosition.rotaion.x = Position.rotaion.x;
                 widgetPosition.rotaion.y = Position.rotaion.y;
@@ -684,7 +684,7 @@ public class CardStackWidget implements Widget{
                 DrawObjectHelper.drawOneCube(cube, textureArrays, shadowEnable);
 
             } else if (completeCount > 0) {
-                widgetPosition = new WidgetPosition();
+                widgetPosition = new ViewNodePosition();
                 widgetPosition.rotaion.angle = Position.rotaion.angle;
                 widgetPosition.rotaion.x = Position.rotaion.x;
                 widgetPosition.rotaion.y = Position.rotaion.y;
@@ -776,7 +776,7 @@ public class CardStackWidget implements Widget{
 
     // Draw the widget in Expand mode
     private void drawExpand() {
-        WidgetPosition widgetPosition;
+        ViewNodePosition widgetPosition;
         int selectedCardIndex;
 
         selectedCardIndex = cardStack.indexOf(SelectedCard);
@@ -826,7 +826,7 @@ public class CardStackWidget implements Widget{
 
     // Draw the widget in ExpandLock mode
     private void drawExpandLock() {
-        WidgetPosition widgetPosition;
+        ViewNodePosition widgetPosition;
         int selectedCardIndex;
 
         selectedCardIndex = originalSelectedCardPosition;
@@ -1200,7 +1200,7 @@ public class CardStackWidget implements Widget{
                 }
 
                 for (int i = index; i>= 0 ; i--) {
-                    WidgetPosition widgetPosition = cardWidgetPositionTable.get(cardStack.get(i));
+                    ViewNodePosition widgetPosition = cardWidgetPositionTable.get(cardStack.get(i));
 
                     if (widgetPosition != null) {
                         width = Math.abs(intersectingPoint.x - (widgetPosition.Centerposition.x - AssetsAndResource.CameraPosition.x/4));
@@ -1216,7 +1216,7 @@ public class CardStackWidget implements Widget{
                 }
 
                 for (int i = index + 1; i < cardStack.size(); i++) {
-                    WidgetPosition widgetPosition = cardWidgetPositionTable.get(cardStack.get(i));
+                    ViewNodePosition widgetPosition = cardWidgetPositionTable.get(cardStack.get(i));
 
                     if (widgetPosition != null) {
                         width = Math.abs(intersectingPoint.x - (widgetPosition.Centerposition.x - AssetsAndResource.CameraPosition.x/4));
@@ -1294,7 +1294,7 @@ public class CardStackWidget implements Widget{
                         }
 
                         for (int j = index; j >= 0; j--) {
-                            WidgetPosition widgetPosition = cardWidgetPositionTable.get(cardStack.get(j));
+                            ViewNodePosition widgetPosition = cardWidgetPositionTable.get(cardStack.get(j));
 
                             if (widgetPosition != null) {
                                 width = Math.abs(intersectingPoint.x - (widgetPosition.Centerposition.x - AssetsAndResource.CameraPosition.x / 4));
@@ -1309,7 +1309,7 @@ public class CardStackWidget implements Widget{
                         }
 
                         for (int j = index + 1; j < cardStack.size(); j++) {
-                            WidgetPosition widgetPosition = cardWidgetPositionTable.get(cardStack.get(j));
+                            ViewNodePosition widgetPosition = cardWidgetPositionTable.get(cardStack.get(j));
 
                             if (widgetPosition != null) {
                                 width = Math.abs(intersectingPoint.x - (widgetPosition.Centerposition.x - AssetsAndResource.CameraPosition.x / 4));
@@ -1360,7 +1360,7 @@ public class CardStackWidget implements Widget{
     }
 
     @Override
-    public void setTranslateRotateScale(WidgetPosition position) {
+    public void setTranslateRotateScale(ViewNodePosition position) {
         // Store this info required for isTouched
         this.Position.rotaion.angle = position.rotaion.angle;
         this.Position.rotaion.x = position.rotaion.x;
@@ -1407,7 +1407,7 @@ public class CardStackWidget implements Widget{
     }
 
     @Override
-    public WidgetPosition getPosition() {
+    public ViewNodePosition getPosition() {
         return Position;
     }
 

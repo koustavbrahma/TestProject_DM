@@ -6,7 +6,7 @@ import java.util.Random;
 
 import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAndResource;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
-import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetPosition;
+import koustav.duelmasters.main.androidgamenodeviewframework.androidgamenodeviewframeworkimpl.ViewNodePosition;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetTouchEvent;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.ControllerButton;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.HeadOrientation;
@@ -183,7 +183,7 @@ public class PvPDuelScreenTesting extends Screen{
 
 
         List<Input.TouchEvent> touchEvents = game.getInput().getTouchEvents();
-        WidgetPosition position = new WidgetPosition();
+        ViewNodePosition position = new ViewNodePosition();
         position.Centerposition.x = 0f;
         position.Centerposition.y = 0;
         position.Centerposition.z = -0.3f;
@@ -215,7 +215,7 @@ public class PvPDuelScreenTesting extends Screen{
             CardWgtmp.LinkGLobject(glcard2);
             CardWgtmp.ShadowEnable(false);
 
-            WidgetPosition position2 = new WidgetPosition();
+            ViewNodePosition position2 = new ViewNodePosition();
             position2.Centerposition.x = 0.2f;
             position2.Centerposition.y = 0.2f;
             position2.Centerposition.z = 0.5f;
@@ -322,7 +322,7 @@ public class PvPDuelScreenTesting extends Screen{
             CardWgtmp.LinkGLobject(glcard2);
             CardWgtmp.ShadowEnable(false);
 
-            WidgetPosition position2 = new WidgetPosition();
+            ViewNodePosition position2 = new ViewNodePosition();
             position2.Centerposition.x = 0.2f;
             position2.Centerposition.y = 0.2f;
             position2.Centerposition.z = 0.5f;
@@ -374,7 +374,7 @@ public class PvPDuelScreenTesting extends Screen{
         //rotaions.add(rotaion1);
 
         //rotaion = MatrixHelper.getCombinedRotation(rotaions);
-        WidgetPosition position1 = new WidgetPosition();
+        ViewNodePosition position1 = new ViewNodePosition();
         position1.Centerposition.x = 0.68f;
         position1.Centerposition.y = 0.025f;
         position1.Centerposition.z = 0.15f;
@@ -405,7 +405,7 @@ public class PvPDuelScreenTesting extends Screen{
 
         //DisplayCard.bindData(AssetsAndResource.textureProgram.getPositionAttributeLocation(), AssetsAndResource.textureProgram.getTextureCoordinatesAttributeLocation());
         //DisplayCard.draw();
-        WidgetPosition position2 = new WidgetPosition();
+        ViewNodePosition position2 = new ViewNodePosition();
         position2.Centerposition.x = 0.2f;
         position2.Centerposition.y = 0.2f;
         position2.Centerposition.z = 0;

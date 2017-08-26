@@ -7,7 +7,7 @@ import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAnd
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.Widget;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetMode;
-import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetPosition;
+import koustav.duelmasters.main.androidgamenodeviewframework.androidgamenodeviewframeworkimpl.ViewNodePosition;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetTouchEvent;
 import koustav.duelmasters.main.androidgameopengl.androidgameopenglobjectmodels.Cube;
 import koustav.duelmasters.main.androidgameopengl.androidgameopenglutil.DrawObjectHelper;
@@ -22,7 +22,7 @@ import static android.opengl.Matrix.*;
  * Created by Koustav on 3/16/2016.
  */
 public class CardWidget implements Widget {
-    WidgetPosition Position;
+    ViewNodePosition Position;
     float[] relativeNearPointAfterRot;
     float[] relativeFarPointAfterRot;
     GLPoint relativeNearPoint;
@@ -43,7 +43,7 @@ public class CardWidget implements Widget {
     Cards card;
 
     public CardWidget () {
-        Position = new WidgetPosition();
+        Position = new ViewNodePosition();
         relativeNearPointAfterRot = new float[4];
         relativeFarPointAfterRot = new float[4];
         relativeNearPoint = new GLPoint(0, 0, 0);
@@ -161,7 +161,7 @@ public class CardWidget implements Widget {
     }
 
     @Override
-    public void setTranslateRotateScale(WidgetPosition position) {
+    public void setTranslateRotateScale(ViewNodePosition position) {
         // Store this info required for isTouched
 
         this.Position.rotaion.angle = position.rotaion.angle;
@@ -206,7 +206,7 @@ public class CardWidget implements Widget {
     }
 
     @Override
-    public WidgetPosition getPosition() {
+    public ViewNodePosition getPosition() {
         return Position;
     }
 }

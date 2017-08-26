@@ -3,7 +3,7 @@ package koustav.duelmasters.main.androidgameopengl.androidgameopenglutil;
 import java.util.ArrayList;
 
 import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAndResource;
-import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetPosition;
+import koustav.duelmasters.main.androidgamenodeviewframework.androidgamenodeviewframeworkimpl.ViewNodePosition;
 
 import static android.opengl.Matrix.*;
 
@@ -33,7 +33,7 @@ public class MatrixHelper {
         m[15] = 0f;
     }
 
-    public static void setTranslateRotateScale(WidgetPosition position) {
+    public static void setTranslateRotateScale(ViewNodePosition position) {
         setIdentityM(AssetsAndResource.modelMatrix, 0);
         translateM(AssetsAndResource.modelMatrix, 0, position.Centerposition.x, position.Centerposition.y,
                 position.Centerposition.z);
@@ -56,7 +56,7 @@ public class MatrixHelper {
                 AssetsAndResource.modelMatrix, 0);
     }
 
-    public static void setTranslate(WidgetPosition position) {
+    public static void setTranslate(ViewNodePosition position) {
         setIdentityM(AssetsAndResource.modelMatrix, 0);
         translateM(AssetsAndResource.modelMatrix, 0, position.Centerposition.x, position.Centerposition.y,
                 0);

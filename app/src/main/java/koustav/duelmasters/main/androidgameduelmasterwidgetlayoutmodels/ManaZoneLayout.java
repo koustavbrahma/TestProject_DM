@@ -5,7 +5,7 @@ import java.util.Hashtable;
 import java.util.List;
 
 import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAndResource;
-import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetPosition;
+import koustav.duelmasters.main.androidgamenodeviewframework.androidgamenodeviewframeworkimpl.ViewNodePosition;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetTouchEvent;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetTouchFocusLevel;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.HeadOrientation;
@@ -266,8 +266,8 @@ public class ManaZoneLayout implements Layout{
                         WidgetToDynamicSlotMapping.put(widget, DslotLayout);
                         if (onRightSide) {
                             float px = widget.getPosition().Centerposition.x + (AssetsAndResource.CardHeight * 2f);
-                            ArrayList<WidgetPosition> points = new ArrayList<WidgetPosition>();
-                            WidgetPosition widgetPosition = new WidgetPosition();
+                            ArrayList<ViewNodePosition> points = new ArrayList<ViewNodePosition>();
+                            ViewNodePosition widgetPosition = new ViewNodePosition();
                             widgetPosition.Centerposition.x = px;
                             widgetPosition.Centerposition.y = AssetsAndResource.CardLength * 10f;
                             widgetPosition.Centerposition.z = ZCoordinateOfZoneCenter;

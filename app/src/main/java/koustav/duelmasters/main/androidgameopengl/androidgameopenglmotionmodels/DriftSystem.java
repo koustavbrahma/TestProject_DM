@@ -2,7 +2,7 @@ package koustav.duelmasters.main.androidgameopengl.androidgameopenglmotionmodels
 
 import java.util.ArrayList;
 
-import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetPosition;
+import koustav.duelmasters.main.androidgamenodeviewframework.androidgamenodeviewframeworkimpl.ViewNodePosition;
 
 import koustav.duelmasters.main.androidgameopengl.androidgameopenglmotionutil.GLReferenceTracking;
 import koustav.duelmasters.main.androidgameopengl.androidgameopenglutil.GLGeometry;
@@ -11,7 +11,7 @@ import koustav.duelmasters.main.androidgameopengl.androidgameopenglutil.GLGeomet
  * Created by Koustav on 4/30/2016.
  */
 public class DriftSystem {
-    WidgetPosition Position;
+    ViewNodePosition Position;
     float ref_center_x, ref_center_y, ref_center_z, ref_angle_x, ref_angle_y, ref_angle_z, ref_scale_x, ref_scale_y, ref_scale_z;
     float init_center_x, init_center_y, init_center_z, init_angle_x, init_angle_y, init_angle_z, init_scale_x, init_scale_y, init_scale_z;
     GLReferenceTracking referenceTracking;
@@ -22,7 +22,7 @@ public class DriftSystem {
     ArrayList<Float> Y_val, X_val;
 
     public DriftSystem() {
-        Position = new WidgetPosition();
+        Position = new ViewNodePosition();
         referenceTracking = new GLReferenceTracking();
         vector = new GLGeometry.GLVector(0, 0, 0);
 
@@ -42,7 +42,7 @@ public class DriftSystem {
         X_val = new ArrayList<Float>();
     }
 
-    public void setDriftInfo(WidgetPosition init_position, WidgetPosition ref_position, ArrayList<WidgetPosition> trans_position,
+    public void setDriftInfo(ViewNodePosition init_position, ViewNodePosition ref_position, ArrayList<ViewNodePosition> trans_position,
                              ArrayList<Float> tracking_point, float k1, float k2, float startingTime) {
         if ((trans_position != null && tracking_point == null) || (tracking_point != null && trans_position == null)) {
             throw new IllegalArgumentException("Invalid argument");
@@ -100,7 +100,7 @@ public class DriftSystem {
         }
         if (trans_position != null) {
             for (int i = 0; i < trans_position.size(); i++) {
-                WidgetPosition position = trans_position.get(i);
+                ViewNodePosition position = trans_position.get(i);
                 trans_center_x.add(position.Centerposition.x);
                 trans_center_y.add(position.Centerposition.y);
                 trans_center_z.add(position.Centerposition.z);
@@ -161,7 +161,7 @@ public class DriftSystem {
         X_val.add(new Float(1f));
     }
 
-    public WidgetPosition getUpdatePosition(float totalTime) {
+    public ViewNodePosition getUpdatePosition(float totalTime) {
         float ref_track = referenceTracking.getRefTrackingOutCome(0, totalTime);
 
         if (ref_track >= 0.999f && ref_track <=1.0f) {

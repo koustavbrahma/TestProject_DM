@@ -8,7 +8,7 @@ import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAnd
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.ActiveCard;
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.InactiveCard;
 import koustav.duelmasters.main.androidgameduelmastersutil.GetUtil;
-import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetPosition;
+import koustav.duelmasters.main.androidgamenodeviewframework.androidgamenodeviewframeworkimpl.ViewNodePosition;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetTouchEvent;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.HeadOrientation;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.Layout;
@@ -21,16 +21,16 @@ import koustav.duelmasters.main.androidgamesframework.androidgamesframeworkinter
  * Created by Koustav on 5/1/2016.
  */
 public class CardSlotLayoutXZPlaner implements Layout {
-    WidgetPosition TopSlotPosition;
-    Hashtable<CardWidget, WidgetPosition> SlotPositions;
-    WidgetPosition TopWidgetPosition;
-    Hashtable<CardWidget, WidgetPosition> widgetPositions;
+    ViewNodePosition TopSlotPosition;
+    Hashtable<CardWidget, ViewNodePosition> SlotPositions;
+    ViewNodePosition TopWidgetPosition;
+    Hashtable<CardWidget, ViewNodePosition> widgetPositions;
     DriftSystem TopDriftSystem;
     Hashtable<CardWidget, DriftSystem> driftSystems;
     CardWidget TopCardWidget;
     ArrayList<CardWidget> cardWidgets;
 
-    WidgetPosition OldTopSlotPosition;
+    ViewNodePosition OldTopSlotPosition;
 
     boolean Disturbed;
     boolean running;
@@ -50,12 +50,12 @@ public class CardSlotLayoutXZPlaner implements Layout {
     float ExpandLimit_X;
 
     public CardSlotLayoutXZPlaner() {
-        TopSlotPosition = new WidgetPosition();
-        TopWidgetPosition = new WidgetPosition();
-        OldTopSlotPosition = new WidgetPosition();
+        TopSlotPosition = new ViewNodePosition();
+        TopWidgetPosition = new ViewNodePosition();
+        OldTopSlotPosition = new ViewNodePosition();
         TopDriftSystem = new DriftSystem();
-        SlotPositions = new Hashtable<CardWidget, WidgetPosition>();
-        widgetPositions = new Hashtable<CardWidget, WidgetPosition>();
+        SlotPositions = new Hashtable<CardWidget, ViewNodePosition>();
+        widgetPositions = new Hashtable<CardWidget, ViewNodePosition>();
         driftSystems = new Hashtable<CardWidget, DriftSystem>();
         cardWidgets = new ArrayList<CardWidget>();
 
@@ -77,7 +77,7 @@ public class CardSlotLayoutXZPlaner implements Layout {
         ExpandLimit_X = 0f;
     }
 
-    private boolean isSame(WidgetPosition position1, WidgetPosition position2) {
+    private boolean isSame(ViewNodePosition position1, ViewNodePosition position2) {
         boolean status = true;
 
         if (position1.Centerposition.x != position2.Centerposition.x) {
@@ -120,7 +120,7 @@ public class CardSlotLayoutXZPlaner implements Layout {
                 TopSlotPosition.rotaion.angle = 90f * (headOrientationAngle - 1f);
                 for (int i =0; i < cardWidgets.size(); i++) {
                     CardWidget cardWidget = cardWidgets.get(i);
-                    WidgetPosition widgetPosition = SlotPositions.get(cardWidget);
+                    ViewNodePosition widgetPosition = SlotPositions.get(cardWidget);
                     widgetPosition.rotaion.angle = 90f * (headOrientationAngle - 1f);
                     if (((cardWidget.getLogicalObject() instanceof  InactiveCard) ||
                             (cardWidget.getLogicalObject() instanceof ActiveCard)) &&
@@ -133,7 +133,7 @@ public class CardSlotLayoutXZPlaner implements Layout {
                 TopSlotPosition.rotaion.angle = 90f * headOrientationAngle;
                 for (int i =0; i < cardWidgets.size(); i++) {
                     CardWidget cardWidget = cardWidgets.get(i);
-                    WidgetPosition widgetPosition = SlotPositions.get(cardWidget);
+                    ViewNodePosition widgetPosition = SlotPositions.get(cardWidget);
                     widgetPosition.rotaion.angle = 90f * headOrientationAngle;
                     if (((cardWidget.getLogicalObject() instanceof  InactiveCard) ||
                             (cardWidget.getLogicalObject() instanceof ActiveCard)) &&
@@ -150,7 +150,7 @@ public class CardSlotLayoutXZPlaner implements Layout {
 
             for (int i =0; i < cardWidgets.size(); i++) {
                 CardWidget cardWidget = cardWidgets.get(i);
-                WidgetPosition widgetSlotPosition = SlotPositions.get(cardWidget);
+                ViewNodePosition widgetSlotPosition = SlotPositions.get(cardWidget);
                 DriftSystem driftSystem = driftSystems.get(cardWidget);
 
                 driftSystem.setDriftInfo(cardWidget.getPosition(), widgetSlotPosition, null, null,k1, k2, totalTime);
@@ -162,7 +162,7 @@ public class CardSlotLayoutXZPlaner implements Layout {
 
         if (running) {
             boolean stop = true;
-            WidgetPosition widgetPositionUpdate = TopDriftSystem.getUpdatePosition(totalTime);
+            ViewNodePosition widgetPositionUpdate = TopDriftSystem.getUpdatePosition(totalTime);
 
             percentageComplete = TopDriftSystem.getPercentageComplete(totalTime);
             if (percentageComplete == 1.0f) {
@@ -187,7 +187,7 @@ public class CardSlotLayoutXZPlaner implements Layout {
 
             for (int i = 0; i < cardWidgets.size(); i++) {
                 CardWidget cardWidget = cardWidgets.get(i);
-                WidgetPosition widgetPosition = widgetPositions.get(cardWidget);
+                ViewNodePosition widgetPosition = widgetPositions.get(cardWidget);
                 DriftSystem driftSystem = driftSystems.get(cardWidget);
 
                 widgetPositionUpdate = driftSystem.getUpdatePosition(totalTime);
@@ -229,8 +229,8 @@ public class CardSlotLayoutXZPlaner implements Layout {
 
             for (int i = 0; i < cardWidgets.size(); i++) {
                 CardWidget cardWidget = cardWidgets.get(i);
-                WidgetPosition widgetPosition = widgetPositions.get(cardWidget);
-                WidgetPosition slotPosition = SlotPositions.get(cardWidget);
+                ViewNodePosition widgetPosition = widgetPositions.get(cardWidget);
+                ViewNodePosition slotPosition = SlotPositions.get(cardWidget);
 
                 widgetPosition.rotaion.angle = slotPosition.rotaion.angle;
                 widgetPosition.rotaion.x = slotPosition.rotaion.x;
@@ -247,8 +247,8 @@ public class CardSlotLayoutXZPlaner implements Layout {
     }
 
     public void DragUpdate(float y) {
-        WidgetPosition widgetPosition;
-        WidgetPosition slotPosition;
+        ViewNodePosition widgetPosition;
+        ViewNodePosition slotPosition;
         Input input = AssetsAndResource.game.getInput();
         if (!input.isTouchDown(0) || running) {
             return;
@@ -288,7 +288,7 @@ public class CardSlotLayoutXZPlaner implements Layout {
         if (!Expanded || SelectedCardWidget == TopCardWidget) {
             for (int i = cardWidgets.size() - 1; i >= 0; i--) {
                 CardWidget cardWidget = cardWidgets.get(i);
-                WidgetPosition widgetPosition = widgetPositions.get(cardWidget);
+                ViewNodePosition widgetPosition = widgetPositions.get(cardWidget);
                 cardWidget.setTranslateRotateScale(widgetPosition);
                 cardWidget.draw();
             }
@@ -301,7 +301,7 @@ public class CardSlotLayoutXZPlaner implements Layout {
             int index = cardWidgets.indexOf(SelectedCardWidget);
             for (int i = cardWidgets.size() - 1; i > index; i--) {
                 CardWidget cardWidget = cardWidgets.get(i);
-                WidgetPosition widgetPosition = widgetPositions.get(cardWidget);
+                ViewNodePosition widgetPosition = widgetPositions.get(cardWidget);
                 cardWidget.setTranslateRotateScale(widgetPosition);
                 cardWidget.draw();
             }
@@ -313,7 +313,7 @@ public class CardSlotLayoutXZPlaner implements Layout {
 
             for (int i = 0; i <= index; i++) {
                 CardWidget cardWidget = cardWidgets.get(i);
-                WidgetPosition widgetPosition = widgetPositions.get(cardWidget);
+                ViewNodePosition widgetPosition = widgetPositions.get(cardWidget);
                 cardWidget.setTranslateRotateScale(widgetPosition);
                 cardWidget.draw();
             }
@@ -321,7 +321,7 @@ public class CardSlotLayoutXZPlaner implements Layout {
     }
 
     private WidgetTouchEvent TouchResponseInExpandedMode(List<Input.TouchEvent> touchEvents) {
-        WidgetPosition widgetPosition;
+        ViewNodePosition widgetPosition;
         CardWidget cardWidget;
         if (cardWidgets.size() > 0) {
             cardWidget = cardWidgets.get(cardWidgets.size() - 1);
@@ -727,7 +727,7 @@ public class CardSlotLayoutXZPlaner implements Layout {
             return false;
         }
         cardWidgets.add(0, TopCardWidget);
-        WidgetPosition cardWidgetPosition = new WidgetPosition();
+        ViewNodePosition cardWidgetPosition = new ViewNodePosition();
         cardWidgetPosition.Centerposition.x = TopCardWidget.getPosition().Centerposition.x;
         cardWidgetPosition.Centerposition.y = TopCardWidget.getPosition().Centerposition.y;
         cardWidgetPosition.Centerposition.z = TopCardWidget.getPosition().Centerposition.z;
@@ -740,7 +740,7 @@ public class CardSlotLayoutXZPlaner implements Layout {
         cardWidgetPosition.Z_scale = TopCardWidget.getPosition().Z_scale;
         widgetPositions.put(TopCardWidget, cardWidgetPosition);
 
-        WidgetPosition slotPosition = new WidgetPosition();
+        ViewNodePosition slotPosition = new ViewNodePosition();
         slotPosition.Centerposition.y = TopSlotPosition.Centerposition.y;
         slotPosition.Centerposition.z = TopSlotPosition.Centerposition.z;
         slotPosition.rotaion.angle = TopSlotPosition.rotaion.angle;
@@ -761,7 +761,7 @@ public class CardSlotLayoutXZPlaner implements Layout {
 
         for (int i = 0; i < cardWidgets.size(); i++) {
             CardWidget cardWidget = cardWidgets.get(i);
-            WidgetPosition widgetPosition = SlotPositions.get(cardWidget);
+            ViewNodePosition widgetPosition = SlotPositions.get(cardWidget);
 
             widgetPosition.Centerposition.x = TopSlotPosition.Centerposition.x + (i+ 1) * AssetsAndResource.CardStackShift;
         }
@@ -790,7 +790,7 @@ public class CardSlotLayoutXZPlaner implements Layout {
 
             for (int i = 0; i < cardWidgets.size(); i++) {
                 CardWidget cardWidget2 = cardWidgets.get(i);
-                WidgetPosition widgetPosition = SlotPositions.get(cardWidget2);
+                ViewNodePosition widgetPosition = SlotPositions.get(cardWidget2);
                 widgetPosition.Centerposition.x = TopSlotPosition.Centerposition.x + (i + 1) * AssetsAndResource.CardStackShift;
             }
         } else {
@@ -807,7 +807,7 @@ public class CardSlotLayoutXZPlaner implements Layout {
 
             for (int i = 0; i < cardWidgets.size(); i++) {
                 CardWidget cardWidget2 = cardWidgets.get(i);
-                WidgetPosition widgetPosition = SlotPositions.get(cardWidget2);
+                ViewNodePosition widgetPosition = SlotPositions.get(cardWidget2);
                 widgetPosition.Centerposition.x = OldTopSlotPosition.Centerposition.x + (cardWidgets.size() - 1 - i) * gap;
             }
 
@@ -855,7 +855,7 @@ public class CardSlotLayoutXZPlaner implements Layout {
 
             for (int i = 0; i < cardWidgets.size(); i++) {
                 CardWidget cardWidget2 = cardWidgets.get(i);
-                WidgetPosition widgetPosition = SlotPositions.get(cardWidget2);
+                ViewNodePosition widgetPosition = SlotPositions.get(cardWidget2);
                 widgetPosition.Centerposition.x = TopSlotPosition.Centerposition.x + (i + 1) * AssetsAndResource.CardStackShift;
                 widgetPosition.Centerposition.y = AssetsAndResource.CardLength * (cardWidgets.size() - 1 - i) + length;
             }
@@ -873,7 +873,7 @@ public class CardSlotLayoutXZPlaner implements Layout {
 
             for (int i = 0; i < cardWidgets.size(); i++) {
                 CardWidget cardWidget2 = cardWidgets.get(i);
-                WidgetPosition widgetPosition = SlotPositions.get(cardWidget2);
+                ViewNodePosition widgetPosition = SlotPositions.get(cardWidget2);
                 widgetPosition.Centerposition.x = OldTopSlotPosition.Centerposition.x + (cardWidgets.size() - 1 - i) * gap;
             }
 
@@ -925,7 +925,7 @@ public class CardSlotLayoutXZPlaner implements Layout {
 
             for (int i = 0; i < cardWidgets.size(); i++) {
                 CardWidget cardWidget = cardWidgets.get(i);
-                WidgetPosition widgetPosition = SlotPositions.get(cardWidget);
+                ViewNodePosition widgetPosition = SlotPositions.get(cardWidget);
 
                 widgetPosition.Centerposition.x = OldTopSlotPosition.Centerposition.x + (cardWidgets.size() - 1 - i) * gap;
                 widgetPosition.Centerposition.y = y;
@@ -946,7 +946,7 @@ public class CardSlotLayoutXZPlaner implements Layout {
 
             for (int i = 0; i < cardWidgets.size(); i++) {
                 CardWidget cardWidget = cardWidgets.get(i);
-                WidgetPosition widgetPosition = SlotPositions.get(cardWidget);
+                ViewNodePosition widgetPosition = SlotPositions.get(cardWidget);
 
                 widgetPosition.Centerposition.x = OldTopSlotPosition.Centerposition.x + (i+ 1) * AssetsAndResource.CardStackShift;;
                 widgetPosition.Centerposition.y = AssetsAndResource.CardLength * (cardWidgets.size() - 1 - i) + length;
@@ -976,7 +976,7 @@ public class CardSlotLayoutXZPlaner implements Layout {
 
             for (int i = 0; i < cardWidgets.size(); i++) {
                 CardWidget cardWidget = cardWidgets.get(i);
-                WidgetPosition widgetPosition = SlotPositions.get(cardWidget);
+                ViewNodePosition widgetPosition = SlotPositions.get(cardWidget);
 
                 widgetPosition.Centerposition.x = x + (i + 1) * AssetsAndResource.CardStackShift;
             }

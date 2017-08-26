@@ -13,7 +13,7 @@ import koustav.duelmasters.main.androidgameduelmasterswidgetcoordinationtools.Qu
 import koustav.duelmasters.main.androidgameduelmasterswidgetcoordinationtools.Requests;
 import koustav.duelmasters.main.androidgameduelmasterwidgetsimulation.LocationLayout;
 import koustav.duelmasters.main.androidgameduelmasterswidgetcoordinationtools.UIRequest;
-import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetPosition;
+import koustav.duelmasters.main.androidgamenodeviewframework.androidgamenodeviewframeworkimpl.ViewNodePosition;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetSelectedCardTracker;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetTouchFocusLevel;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.ControllerButton;
@@ -132,8 +132,8 @@ public class PvPWidgetCoordinator {
     float start_touch_y;
     boolean ZoomMode;
     Hashtable<Integer, CardWidget> ZoneToLastWidgetForSetup;
-    WidgetPosition basePosition;
-    WidgetPosition ScreenCenterPosition;
+    ViewNodePosition basePosition;
+    ViewNodePosition ScreenCenterPosition;
     Cards PreviousSelectedCard;
     float[] Color;
 
@@ -290,8 +290,8 @@ public class PvPWidgetCoordinator {
         start_touch_x = 0;
         start_touch_y = 0;
         ZoomMode = false;
-        basePosition = new WidgetPosition();
-        ScreenCenterPosition = new WidgetPosition();
+        basePosition = new ViewNodePosition();
+        ScreenCenterPosition = new ViewNodePosition();
         PreviousSelectedCard = null;
         Color = new float[] {0.329412f, 0.329412f, 0.329412f, 1f};
     }

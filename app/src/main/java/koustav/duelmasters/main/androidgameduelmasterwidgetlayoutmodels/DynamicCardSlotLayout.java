@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAndResource;
-import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetPosition;
+import koustav.duelmasters.main.androidgamenodeviewframework.androidgamenodeviewframeworkimpl.ViewNodePosition;
 import koustav.duelmasters.main.androidgameduelmasterswidgetutil.WidgetTouchEvent;
 import koustav.duelmasters.main.androidgameduelmasterwidgetlayoututil.Layout;
 import koustav.duelmasters.main.androidgameduelmasterwidgetmodels.CardWidget;
@@ -20,13 +20,13 @@ import static android.opengl.Matrix.setIdentityM;
  * Created by Koustav on 7/12/2016.
  */
 public class DynamicCardSlotLayout implements Layout {
-    WidgetPosition TopSlotPosition;
-    WidgetPosition TopWidgetPosition;
+    ViewNodePosition TopSlotPosition;
+    ViewNodePosition TopWidgetPosition;
     DriftSystem TopDriftSystem;
     CardWidget TopCardWidget;
 
-    WidgetPosition OldTopSlotPosition;
-    WidgetPosition TopSlotPosition_BreakPoint;
+    ViewNodePosition OldTopSlotPosition;
+    ViewNodePosition TopSlotPosition_BreakPoint;
 
     float k1;
     float k2;
@@ -45,15 +45,15 @@ public class DynamicCardSlotLayout implements Layout {
     GLGeometry.GLPoint relativeFarPoint;
     GLGeometry.GLRay clearance_ray;
 
-    ArrayList<WidgetPosition> intermediate_p;
+    ArrayList<ViewNodePosition> intermediate_p;
     ArrayList<Float> time_steps;
     boolean hasIntermediatePoints;
 
     public DynamicCardSlotLayout() {
-        TopSlotPosition = new WidgetPosition();
-        TopWidgetPosition = new WidgetPosition();
-        OldTopSlotPosition = new WidgetPosition();
-        TopSlotPosition_BreakPoint = new WidgetPosition();
+        TopSlotPosition = new ViewNodePosition();
+        TopWidgetPosition = new ViewNodePosition();
+        OldTopSlotPosition = new ViewNodePosition();
+        TopSlotPosition_BreakPoint = new ViewNodePosition();
         TopDriftSystem = new DriftSystem();
         TopCardWidget = null;
 
@@ -75,12 +75,12 @@ public class DynamicCardSlotLayout implements Layout {
         relativeFarPoint = new GLGeometry.GLPoint(0, 0, 0);
         clearance_ray = new GLGeometry.GLRay(new GLGeometry.GLPoint(0, 0, 0), new GLGeometry.GLVector(0, 0, 0));
 
-        intermediate_p = new ArrayList<WidgetPosition>();
+        intermediate_p = new ArrayList<ViewNodePosition>();
         time_steps = new ArrayList<Float>();
         hasIntermediatePoints = false;
     }
 
-    private boolean isSame(WidgetPosition position1, WidgetPosition position2) {
+    private boolean isSame(ViewNodePosition position1, ViewNodePosition position2) {
         boolean status = true;
 
         if (position1.Centerposition.x != position2.Centerposition.x) {
@@ -142,7 +142,7 @@ public class DynamicCardSlotLayout implements Layout {
                 TopSlotPosition_BreakPoint.X_scale = TopCardWidget.getPosition().X_scale;
                 TopSlotPosition_BreakPoint.Y_scale = TopCardWidget.getPosition().Y_scale;
                 TopSlotPosition_BreakPoint.Z_scale = TopCardWidget.getPosition().Z_scale;
-                ArrayList<WidgetPosition> trans_position = new ArrayList<WidgetPosition>();
+                ArrayList<ViewNodePosition> trans_position = new ArrayList<ViewNodePosition>();
                 trans_position.add(TopSlotPosition_BreakPoint);
                 ArrayList<Float> tracking_point = new ArrayList<Float>();
                 tracking_point.add(new Float(0.5f));
@@ -162,7 +162,7 @@ public class DynamicCardSlotLayout implements Layout {
         }
 
         if (running) {
-            WidgetPosition widgetPositionUpdate = TopDriftSystem.getUpdatePosition(totalTime);
+            ViewNodePosition widgetPositionUpdate = TopDriftSystem.getUpdatePosition(totalTime);
 
             percentageComplete = TopDriftSystem.getPercentageComplete(totalTime);
             if (percentageComplete == 1.0f) {
@@ -321,7 +321,7 @@ public class DynamicCardSlotLayout implements Layout {
         changing = true;
     }
 
-    public void addIntermediatePoint(ArrayList<WidgetPosition> points, ArrayList<Float> time_steps) {
+    public void addIntermediatePoint(ArrayList<ViewNodePosition> points, ArrayList<Float> time_steps) {
         if (Disturbed) {
             if (points.size() != time_steps.size()) {
                 throw new IllegalArgumentException("size must match");
