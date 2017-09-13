@@ -1,17 +1,25 @@
 package koustav.duelmasters.main.androidgamenodeviewframework.androidgamenodeviewframeworkinterface;
 
+import java.util.List;
+
+import koustav.duelmasters.main.androidgamenodeviewframework.androidgamenodeviewframeworkimpl.InternalViewNode;
 import koustav.duelmasters.main.androidgamenodeviewframework.androidgamenodeviewframeworkimpl.ViewNodePosition;
+import koustav.duelmasters.main.androidgamenodeviewframework.androidgamenodeviewframeworkimpl.ViewTree;
 import koustav.duelmasters.main.androidgameopengl.androidgameopenglutil.GLGeometry;
+import koustav.duelmasters.main.androidgamesframework.androidgamesframeworkinterface.Input;
+import koustav.duelmasters.main.androidgamesframework.androidgamesframeworkinterface.Input.*;
 
 /**
  * Created by Koustav on 4/1/2017.
  */
 public abstract class ViewNode {
+    protected ViewTree tree;
     protected GLGeometry shape;
-    protected ViewNode parentNode;
+    protected InternalViewNode parentNode;
     protected ViewNodePosition centerPosition;
 
-    public ViewNode(GLGeometry shape) {
+    public ViewNode(ViewTree tree, GLGeometry shape) {
+        this.tree = tree;
         this.shape = shape;
         parentNode = null;
         centerPosition = new ViewNodePosition();
@@ -19,25 +27,26 @@ public abstract class ViewNode {
 
     public abstract void draw();
     public abstract void update(float deltaTime, float totalTime);
-    public void setParentNode(ViewNode parent) {
+    public abstract boolean isTouched(Input input, List<TouchEvent> touchEvents);
+    public void setParentNode(InternalViewNode parent) {
         parentNode = parent;
     }
     public ViewNode getParentNode() {
         return parentNode;
     }
     public ViewNodePosition getCenterPosition() {
-        ViewNodePosition widgetPosition = new ViewNodePosition();
-        widgetPosition.Centerposition.x = centerPosition.Centerposition.x;
-        widgetPosition.Centerposition.y = centerPosition.Centerposition.y;
-        widgetPosition.Centerposition.z = centerPosition.Centerposition.z;
-        widgetPosition.rotaion.angle = centerPosition.rotaion.angle;
-        widgetPosition.rotaion.x = centerPosition.rotaion.x;
-        widgetPosition.rotaion.y = centerPosition.rotaion.y;
-        widgetPosition.rotaion.z = centerPosition.rotaion.z;
-        widgetPosition.X_scale = centerPosition.X_scale;
-        widgetPosition.Y_scale = centerPosition.Y_scale;
-        widgetPosition.Z_scale = centerPosition.Z_scale;
-        return widgetPosition;
+        ViewNodePosition viewNodePosition = new ViewNodePosition();
+        viewNodePosition.Centerposition.x = centerPosition.Centerposition.x;
+        viewNodePosition.Centerposition.y = centerPosition.Centerposition.y;
+        viewNodePosition.Centerposition.z = centerPosition.Centerposition.z;
+        viewNodePosition.rotaion.angle = centerPosition.rotaion.angle;
+        viewNodePosition.rotaion.x = centerPosition.rotaion.x;
+        viewNodePosition.rotaion.y = centerPosition.rotaion.y;
+        viewNodePosition.rotaion.z = centerPosition.rotaion.z;
+        viewNodePosition.X_scale = centerPosition.X_scale;
+        viewNodePosition.Y_scale = centerPosition.Y_scale;
+        viewNodePosition.Z_scale = centerPosition.Z_scale;
+        return viewNodePosition;
     }
     public void setCenterPosition(ViewNodePosition position) {
         centerPosition.Centerposition.x = position.Centerposition.x;
@@ -50,5 +59,8 @@ public abstract class ViewNode {
         centerPosition.X_scale = position.X_scale;
         centerPosition.Y_scale = position.Y_scale;
         centerPosition.Z_scale = position.Z_scale;
+    }
+    public void clearViewMapKeys() {
+
     }
 }

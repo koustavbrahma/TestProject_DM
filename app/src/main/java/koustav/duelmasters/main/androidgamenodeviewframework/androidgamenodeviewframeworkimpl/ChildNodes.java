@@ -3,9 +3,11 @@ package koustav.duelmasters.main.androidgamenodeviewframework.androidgamenodevie
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 
 import koustav.duelmasters.main.androidgamenodeviewframework.androidgamenodeviewframeworkinterface.ViewMaps;
 import koustav.duelmasters.main.androidgamenodeviewframework.androidgamenodeviewframeworkinterface.ViewNode;
+import koustav.duelmasters.main.androidgamesframework.androidgamesframeworkinterface.Input;
 
 /**
  * Created by Koustav on 4/22/2017.
@@ -26,24 +28,86 @@ public class ChildNodes {
     }
 
     public void addChild(ViewNode node) {
+        if (childrens.contains(node)) {
+            return;
+        }
         childrens.add(node);
+        ArrayList<Integer> targetKeys = new ArrayList<Integer>();
+        nodes.put(node, targetKeys);
     }
 
     public boolean removeChild(ViewNode node) {
         if (!childrens.contains(node)) {
             return false;
         }
-        ArrayList<Integer> targetKeys = nodes.get(node);
-        if (targetKeys == null) {
-            throw new RuntimeException("Keys not found");
-        }
-        for (Integer i: targetKeys) {
-            ArrayList<ViewNode> targetNodes =  keys.get(i);
-            targetNodes.remove(node);
-        }
-        targetKeys.clear();
+        clearViewMapKeysForChildNode(node);
         nodes.remove(node);
         childrens.remove(node);
         return true;
+    }
+
+    public boolean isTouched(Input input, List<Input.TouchEvent> touchEvents) {
+        if (!(nodes.size() > 0)) {
+            return false;
+        }
+        int key = maps.mapTouchEvent(input, touchEvents);
+        ArrayList<ViewNode> childNodes = keys.get(key);
+        ViewNode touchedChild = null;
+        if (childNodes != null) {
+            for (ViewNode node : childNodes) {
+                if (node.isTouched(input, touchEvents)) {
+                    touchedChild = node;
+                    break;
+                }
+            }
+        }
+        if ((touchedChild != null) || (key > 0)) {
+            return true;
+        }
+        return false;
+    }
+
+    public Iterator<ViewNode> getChildUpdateIterator() {
+        return null;
+    }
+
+    public Iterator<ViewNode> getChildDrawIterator() {
+        return null;
+    }
+
+    public void clearViewMapKeysForChildNode(ViewNode node) {
+        if (!childrens.contains(node)) {
+            return;
+        }
+
+        ArrayList<Integer> targetKeys = nodes.get(node);
+        if (targetKeys != null) {
+            for (Integer i : targetKeys) {
+                ArrayList<ViewNode> targetNodes = keys.get(i);
+                targetNodes.remove(node);
+            }
+            targetKeys.clear();
+        }
+    }
+
+    public void addViewMapKeysForChildNode(ViewNode node) {
+        if (!childrens.contains(node)) {
+            return;
+        }
+        ArrayList<Integer> targetKeys = maps.mapNodes(node);
+        ArrayList<Integer> targetKeysOfNode = nodes.get(node);
+        if (targetKeysOfNode == null) {
+            targetKeysOfNode = new ArrayList<Integer>();
+            nodes.put(node, targetKeysOfNode);
+        }
+        for (Integer i : targetKeys) {
+            targetKeysOfNode.add(i);
+            ArrayList<ViewNode> targetNodes = keys.get(i);
+            if (targetNodes == null) {
+                targetNodes = new ArrayList<ViewNode>();
+                keys.put(i, targetNodes);
+            }
+            targetNodes.add(node);
+        }
     }
 }

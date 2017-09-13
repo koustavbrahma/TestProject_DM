@@ -1,5 +1,6 @@
 package koustav.duelmasters.main.androidgamenodeviewframework.androidgamenodeviewframeworkinterface;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import koustav.duelmasters.main.androidgameopengl.androidgameopenglutil.GLGeometry;
@@ -20,11 +21,7 @@ public abstract class ViewMaps {
         return shape;
     }
 
-    public int mapNodes(ViewNode node) {
-        return 1;
-    }
+    public abstract ArrayList<Integer> mapNodes(ViewNode node);
 
-    public int mapTouchEvent(Input input, List<TouchEvent> touchEvents) {
-        return 1;
-    }
+    public abstract int mapTouchEvent(Input input, List<TouchEvent> touchEvents);
 }
