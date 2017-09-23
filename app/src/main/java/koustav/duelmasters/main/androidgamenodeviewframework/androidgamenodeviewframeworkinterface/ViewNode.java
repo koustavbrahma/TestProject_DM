@@ -31,7 +31,7 @@ public abstract class ViewNode {
     public void setParentNode(InternalViewNode parent) {
         parentNode = parent;
     }
-    public ViewNode getParentNode() {
+    public InternalViewNode getParentNode() {
         return parentNode;
     }
     public ViewNodePosition getCenterPosition() {
@@ -59,8 +59,5 @@ public abstract class ViewNode {
         centerPosition.X_scale = position.X_scale;
         centerPosition.Y_scale = position.Y_scale;
         centerPosition.Z_scale = position.Z_scale;
-    }
-    public void clearViewMapKeys() {
-
     }
 }

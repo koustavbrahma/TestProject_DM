@@ -1,6 +1,6 @@
 package koustav.duelmasters.main.androidgamenodeviewframework.androidgamenodeviewframeworkimpl;
 
-import java.util.Hashtable;
+import java.util.ArrayList;
 import java.util.List;
 
 import koustav.duelmasters.main.androidgamenodeviewframework.androidgamenodeviewframeworkinterface.ViewMaps;
@@ -11,27 +11,78 @@ import koustav.duelmasters.main.androidgamesframework.androidgamesframeworkinter
  * Created by Koustav on 4/2/2017.
  */
 public class ViewTree {
-    Hashtable<Integer, ViewNode> Nodes;
+    ArrayList<ViewNode> Nodes;
     ViewNode RootNode;
     ViewNode DragNode;
     ViewNode PopUpNode;
     int IdCounter;
 
     public ViewTree(ViewMaps maps) {
-        Nodes = new Hashtable<Integer, ViewNode>();
+        Nodes = new ArrayList<ViewNode>();
         RootNode = new InternalViewNode(this, maps);
-        Nodes.put(new Integer(1), RootNode);
+        Nodes.add(0, RootNode);
         DragNode = null;
         PopUpNode = null;
-        IdCounter = 2;
+        IdCounter = 1;
     }
 
     public int createInternalNode(ViewMaps maps) {
         InternalViewNode newNode = new InternalViewNode(this, maps);
         int i = IdCounter;
         IdCounter ++;
-        Nodes.put(i, newNode);
+        Nodes.add(i, newNode);
         return i;
+    }
+
+    public int addLeafNodeToTree(ViewNode node) {
+        if (node == null) {
+            return -1;
+        }
+        if (Nodes.contains(node)) {
+            return getIdOfNode(node);
+        }
+
+        int i = IdCounter;
+        IdCounter ++;
+        Nodes.add(i, node);
+        return i;
+    }
+
+    public void setParentOfChid(int parentId, int childId) {
+        ViewNode chidNode = Nodes.get(childId);
+        ViewNode parentNode = Nodes.get(parentId);
+
+        if (chidNode == null || parentNode == null) {
+            return;
+        }
+
+        orphanChild(childId);
+        ((InternalViewNode)parentNode).addChild(chidNode);
+    }
+
+    public void orphanChild(int childId) {
+        ViewNode chidNode = Nodes.get(childId);
+        if (chidNode == null) {
+            return;
+        }
+        if (chidNode.getParentNode() != null) {
+            InternalViewNode oldParentNode = chidNode.getParentNode();
+            oldParentNode.removeChild(chidNode);
+            chidNode.setParentNode(null);
+        }
+    }
+
+    public int getIdOfNode(ViewNode node) {
+        int id = -1;
+        if (Nodes.contains(node)) {
+            return Nodes.indexOf(node);
+        }
+        return id;
+    }
+
+    public ViewNode getViewNode(int id) {
+        ViewNode node = Nodes.get(id);
+        return node;
     }
 
     public boolean setPopUpNode(int Id) {
