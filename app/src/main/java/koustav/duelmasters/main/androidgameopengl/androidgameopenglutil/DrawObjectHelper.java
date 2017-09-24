@@ -4,6 +4,7 @@ import koustav.duelmasters.main.androidgameassetsandresourcesallocator.AssetsAnd
 import koustav.duelmasters.main.androidgameduelmastersdatastructure.Cards;
 import koustav.duelmasters.main.androidgameduelmasterswidgetcoordinationtools.Query;
 import koustav.duelmasters.main.androidgameduelmastersworlds.PvPWorld;
+import koustav.duelmasters.main.androidgameopengl.androidgameopengllightscamerashades.LightsCameraShades;
 import koustav.duelmasters.main.androidgameopengl.androidgameopenglobjectmodels.Cube;
 import koustav.duelmasters.main.androidgameopengl.androidgameopenglobjectmodels.FullScreenRectangle;
 import koustav.duelmasters.main.androidgameopengl.androidgameopenglobjectmodels.ScreenRectangle;
@@ -24,6 +25,20 @@ import static android.opengl.Matrix.setIdentityM;
  * Created by Koustav on 4/4/2016.
  */
 public class DrawObjectHelper {
+    public static void drawOneRectangle(LightsCameraShades lightsCameraShades, XZRectangle glret,
+                                        int texture, boolean shadowEnable) {
+        lightsCameraShades.textureShaderProgramLight.useProgram();
+        lightsCameraShades.textureShaderProgramLight.setUniforms(lightsCameraShades.modelViewMatrix, lightsCameraShades.it_modelViewMatrix,
+                ((lightsCameraShades.game.getGLFragColoringSkip() == 0)? lightsCameraShades.modelViewProjectionMatrix :
+                        lightsCameraShades.ShadowMatrix), lightsCameraShades.ShadowMatrix, lightsCameraShades.Light, glret.getMaterial(),
+                texture, lightsCameraShades.ShadowBuffer.getrenderTex(),
+                ((lightsCameraShades.game.getGLFragColoringSkip() == 0)? shadowEnable: false));
+
+        glret.bindData(lightsCameraShades.textureShaderProgramLight.getPositionAttributeLocation(),
+                lightsCameraShades.textureShaderProgramLight.getNormalAttributeLocation(),
+                lightsCameraShades.textureShaderProgramLight.getTextureCoordinatesAttributeLocation());
+        glret.draw();
+    }
 
     public static void drawOneRectangle(XZRectangle glret, int texture, boolean shadowEnable) {
         AssetsAndResource.textureShaderProgramLight.useProgram();
@@ -39,6 +54,21 @@ public class DrawObjectHelper {
         glret.draw();
     }
 
+    public static void drawOneUniformRectangle(LightsCameraShades lightsCameraShades,
+                                               UniformXZRectangle glret, float[] Color, boolean shadowEnable) {
+        lightsCameraShades.uniformColorShaderLightProgram.useProgram();
+        lightsCameraShades.uniformColorShaderLightProgram.setUniforms(lightsCameraShades.modelViewMatrix, lightsCameraShades.it_modelViewMatrix,
+                ((lightsCameraShades.game.getGLFragColoringSkip() == 0)? lightsCameraShades.modelViewProjectionMatrix :
+                        lightsCameraShades.ShadowMatrix), lightsCameraShades.ShadowMatrix, lightsCameraShades.Light, glret.getMaterial(),
+                Color, lightsCameraShades.ShadowBuffer.getrenderTex(),
+                ((lightsCameraShades.game.getGLFragColoringSkip() == 0)? shadowEnable: false));
+
+        glret.bindData(lightsCameraShades.uniformColorShaderLightProgram.getPositionAttributeLocation(),
+                lightsCameraShades.uniformColorShaderLightProgram.getNormalAttributeLocation(),
+                0);
+        glret.draw();
+    }
+
     public static void drawOneUniformRectangle(UniformXZRectangle glret, float[] Color, boolean shadowEnable) {
         AssetsAndResource.uniformColorShaderLightProgram.useProgram();
         AssetsAndResource.uniformColorShaderLightProgram.setUniforms(AssetsAndResource.modelViewMatrix, AssetsAndResource.it_modelViewMatrix,
@@ -51,6 +81,21 @@ public class DrawObjectHelper {
                 AssetsAndResource.uniformColorShaderLightProgram.getNormalAttributeLocation(),
                 0);
         glret.draw();
+    }
+
+    public static void drawOneCube(LightsCameraShades lightsCameraShades,
+                                   Cube cube, int[] textureArrays, boolean shadowEnable) {
+        lightsCameraShades.cubeTextureShaderProgramLight.useProgram();
+        lightsCameraShades.cubeTextureShaderProgramLight.setUniforms(lightsCameraShades.modelViewMatrix, lightsCameraShades.it_modelViewMatrix,
+                ((lightsCameraShades.game.getGLFragColoringSkip() == 0) ? lightsCameraShades.modelViewProjectionMatrix:
+                        lightsCameraShades.ShadowMatrix), lightsCameraShades.ShadowMatrix, lightsCameraShades.Light, cube.getMaterial(),
+                textureArrays, lightsCameraShades.ShadowBuffer.getrenderTex(),
+                ((lightsCameraShades.game.getGLFragColoringSkip() == 0)? shadowEnable: false));
+
+        cube.bindData(lightsCameraShades.cubeTextureShaderProgramLight.getPositionAttributeLocation(),
+                lightsCameraShades.cubeTextureShaderProgramLight.getNormalAttributeLocation(),
+                lightsCameraShades.cubeTextureShaderProgramLight.getTextureCoordinatesAttributeLocation());
+        cube.draw();
     }
 
     public static void drawOneCube(Cube cube, int[] textureArrays, boolean shadowEnable) {
@@ -75,12 +120,31 @@ public class DrawObjectHelper {
         rectangle.draw();
     }
 
+    public static void drawOneScreenRectangle(LightsCameraShades lightsCameraShades,
+                                              ScreenRectangle rectangle, int texture) {
+        lightsCameraShades.textureProgram.useProgram();
+        lightsCameraShades.textureProgram.setUniforms(lightsCameraShades.modelOrthoProjectionMatrix, texture);
+        rectangle.bindData(lightsCameraShades.textureProgram.getPositionAttributeLocation(),
+                lightsCameraShades.textureProgram.getTextureCoordinatesAttributeLocation());
+        rectangle.draw();
+    }
+
     public static void drawScreen(FullScreenRectangle screenRectangle, int texture) {
         AssetsAndResource.textureProgram.useProgram();
         setIdentityM(AssetsAndResource.tempMatrix, 0);
         AssetsAndResource.textureProgram.setUniforms(AssetsAndResource.tempMatrix, texture);
         screenRectangle.bindData(AssetsAndResource.textureProgram.getPositionAttributeLocation(),
                 AssetsAndResource.textureProgram.getTextureCoordinatesAttributeLocation());
+        screenRectangle.draw();
+    }
+
+    public static void drawScreen(LightsCameraShades lightsCameraShades,
+                                  FullScreenRectangle screenRectangle, int texture) {
+        lightsCameraShades.textureProgram.useProgram();
+        setIdentityM(lightsCameraShades.tempMatrix, 0);
+        lightsCameraShades.textureProgram.setUniforms(lightsCameraShades.tempMatrix, texture);
+        screenRectangle.bindData(lightsCameraShades.textureProgram.getPositionAttributeLocation(),
+                lightsCameraShades.textureProgram.getTextureCoordinatesAttributeLocation());
         screenRectangle.draw();
     }
 

@@ -5,6 +5,7 @@ import java.util.List;
 
 import koustav.duelmasters.main.androidgamenodeviewframework.androidgamenodeviewframeworkinterface.ViewMaps;
 import koustav.duelmasters.main.androidgamenodeviewframework.androidgamenodeviewframeworkinterface.ViewNode;
+import koustav.duelmasters.main.androidgameopengl.androidgameopengllightscamerashades.LightsCameraShades;
 import koustav.duelmasters.main.androidgamesframework.androidgamesframeworkinterface.Input;
 
 /**
@@ -15,15 +16,23 @@ public class ViewTree {
     ViewNode RootNode;
     ViewNode DragNode;
     ViewNode PopUpNode;
+    ArrayList<LeafViewNodeGroup> groups;
+    LightsCameraShades lightsCameraShades;
     int IdCounter;
 
-    public ViewTree(ViewMaps maps) {
+    public ViewTree(ViewMaps maps, LightsCameraShades lightsCameraShades) {
         Nodes = new ArrayList<ViewNode>();
         RootNode = new InternalViewNode(this, maps);
         Nodes.add(0, RootNode);
         DragNode = null;
         PopUpNode = null;
+        groups = new ArrayList<LeafViewNodeGroup>();
+        this.lightsCameraShades = lightsCameraShades;
         IdCounter = 1;
+    }
+
+    public LightsCameraShades getLightsCameraShades() {
+        return lightsCameraShades;
     }
 
     public int createInternalNode(ViewMaps maps) {
@@ -48,6 +57,20 @@ public class ViewTree {
         return i;
     }
 
+    public void setLeafViewNodeGroups(Object ...objects) {
+        groups.clear();
+        for (int i = 0; i < objects.length; i++) {
+            groups.add((LeafViewNodeGroup)objects[i]);
+        }
+    }
+
+    public boolean containsLeafViewNodeGroup(LeafViewNodeGroup group) {
+        if (groups.contains(LeafViewNodeGroup.ALL)) {
+            return true;
+        }
+        return groups.contains(group);
+    }
+
     public void setParentOfChid(int parentId, int childId) {
         ViewNode chidNode = Nodes.get(childId);
         ViewNode parentNode = Nodes.get(parentId);
@@ -56,6 +79,9 @@ public class ViewTree {
             return;
         }
 
+        if (chidNode.getParentNode() == parentNode) {
+            return;
+        }
         orphanChild(childId);
         ((InternalViewNode)parentNode).addChild(chidNode);
     }

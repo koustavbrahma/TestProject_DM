@@ -1,9 +1,11 @@
 package koustav.duelmasters.main.androidgamenodeviewframework.androidgamenodeviewframeworkimpl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import koustav.duelmasters.main.androidgamenodeviewframework.androidgamenodeviewframeworkinterface.ViewNode;
 import koustav.duelmasters.main.androidgameopengl.androidgameopenglutil.GLGeometry;
+import koustav.duelmasters.main.androidgameopengl.androidgameopenglutil.MatrixHelper;
 import koustav.duelmasters.main.androidgamesframework.androidgamesframeworkinterface.Input;
 
 /**
@@ -12,9 +14,11 @@ import koustav.duelmasters.main.androidgamesframework.androidgamesframeworkinter
 public abstract class LeafViewNode extends ViewNode {
     protected Input.TouchEvent event;
     protected boolean DragLock;
+    protected ArrayList<LeafViewNodeGroup> groups;
 
-    public LeafViewNode(ViewTree tree, GLGeometry shape) {
+    public LeafViewNode(ViewTree tree, GLGeometry shape, ArrayList<LeafViewNodeGroup> groups) {
         super(tree, shape);
+        this.groups = groups;
         event = new Input.TouchEvent();
         DragLock = false;
     }
@@ -64,10 +68,8 @@ public abstract class LeafViewNode extends ViewNode {
             }
             return status;
         } else {
-            Input.TouchEvent event = null;
             boolean status = false;
-            for (int i = 0; i < touchEvents.size(); i++) {
-                event = touchEvents.get(i);
+            for (Input.TouchEvent event: touchEvents) {
                 if (event.type == Input.TouchEvent.TOUCH_UP) {
                     if (evaluateTouch(event)) {
                         status = true;
@@ -82,7 +84,24 @@ public abstract class LeafViewNode extends ViewNode {
         }
     }
 
+    @Override
+    public void draw() {
+        boolean draw = false;
+        for (LeafViewNodeGroup group : groups) {
+            if (tree.containsLeafViewNodeGroup(group)) {
+                draw = true;
+                break;
+            }
+        }
+        if (draw) {
+            MatrixHelper.setTranslateRotateScale(getCenterPosition());
+            drawLeafNode();
+        }
+    }
+
     public abstract boolean evaluateTouch(Input.TouchEvent event);
+
+    public abstract void drawLeafNode();
 
     public void  onTouchUpNotify() {}
 
