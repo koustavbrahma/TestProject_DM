@@ -10,7 +10,7 @@ import koustav.duelmasters.main.androidgameopengl.androidgameopenglutil.GLGeomet
 /**
  * Created by Koustav on 4/30/2016.
  */
-public class DriftSystem {
+public class DriftSystem implements MotionModels {
     ViewNodePosition Position;
     float ref_center_x, ref_center_y, ref_center_z, ref_angle_x, ref_angle_y, ref_angle_z, ref_scale_x, ref_scale_y, ref_scale_z;
     float init_center_x, init_center_y, init_center_z, init_angle_x, init_angle_y, init_angle_z, init_scale_x, init_scale_y, init_scale_z;
@@ -161,6 +161,11 @@ public class DriftSystem {
         X_val.add(new Float(1f));
     }
 
+    @Override
+    public ViewNodePosition update(float deltaTime, float totalTime) {
+        return getUpdatePosition(totalTime);
+    }
+
     public ViewNodePosition getUpdatePosition(float totalTime) {
         float ref_track = referenceTracking.getRefTrackingOutCome(0, totalTime);
 
@@ -205,6 +210,11 @@ public class DriftSystem {
         }
 
         return ref_track;
+    }
+
+    @Override
+    public boolean isFinished(float deltaTime, float totalTime) {
+        return (getPercentageComplete(totalTime) == 1.0f);
     }
 
     public float getCurrentDerivative(float totalTime) {

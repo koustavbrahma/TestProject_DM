@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import koustav.duelmasters.main.androidgamenodeviewframework.androidgamenodeviewframeworkinterface.ViewNode;
+import koustav.duelmasters.main.androidgameopengl.androidgameopenglmotionmodels.MotionModels;
 import koustav.duelmasters.main.androidgameopengl.androidgameopenglutil.GLGeometry;
 import koustav.duelmasters.main.androidgameopengl.androidgameopenglutil.MatrixHelper;
 import koustav.duelmasters.main.androidgamesframework.androidgamesframeworkinterface.Input;
@@ -13,28 +14,30 @@ import koustav.duelmasters.main.androidgamesframework.androidgamesframeworkinter
  */
 public abstract class LeafViewNode extends ViewNode {
     protected Input.TouchEvent event;
-    protected boolean DragLock;
+    protected boolean dragLock;
     protected ArrayList<LeafViewNodeGroup> groups;
+    protected MotionModels motionModel;
+    protected boolean continueousViewMapUpdate;
 
-    public LeafViewNode(ViewTree tree, GLGeometry shape, ArrayList<LeafViewNodeGroup> groups) {
+    public LeafViewNode(ViewTree tree, GLGeometry shape, ArrayList<LeafViewNodeGroup> groups,
+                        boolean continueousViewMapUpdate) {
         super(tree, shape);
         this.groups = groups;
         event = new Input.TouchEvent();
-        DragLock = false;
+        dragLock = false;
+        motionModel = null;
+        this.continueousViewMapUpdate = continueousViewMapUpdate;
     }
 
     @Override
     public boolean isTouched(Input input, List<Input.TouchEvent> touchEvents) {
-        if (DragLock) {
+        if (dragLock) {
             if (!input.isTouchDown(0)) {
                 tree.DragNode = null;
-                DragLock = false;
-                onTouchUpNotify();
+                dragLock = false;
+                onTouchEndDragNotify();
             } else {
                 onTouchDownNotify();
-                if (input.TouchType(0) == Input.TouchEvent.TOUCH_DRAGGED) {
-                    onTouchDragNotify();
-                }
             }
             return true;
         }
@@ -61,9 +64,9 @@ public abstract class LeafViewNode extends ViewNode {
             if (status) {
                 onTouchDownNotify();
                 if (event.type == Input.TouchEvent.TOUCH_DRAGGED) {
-                    onTouchDragNotify();
+                    onTouchStartDragNotify();
                     tree.DragNode = this;
-                    DragLock = true;
+                    dragLock = true;
                 }
             }
             return status;
@@ -99,6 +102,40 @@ public abstract class LeafViewNode extends ViewNode {
         }
     }
 
+    @Override
+    public void update(float deltaTime, float totalTime) {
+        if (motionModel != null) {
+            ViewNodePosition position = motionModel.update(deltaTime, totalTime);
+            centerPosition.Centerposition.x = position.Centerposition.x;
+            centerPosition.Centerposition.y = position.Centerposition.y;
+            centerPosition.Centerposition.z = position.Centerposition.z;
+            centerPosition.rotaion.x = position.rotaion.x;
+            centerPosition.rotaion.y = position.rotaion.y;
+            centerPosition.rotaion.z = position.rotaion.z;
+            centerPosition.rotaion.angle = position.rotaion.angle;
+            centerPosition.X_scale = position.X_scale;
+            centerPosition.Y_scale = position.Y_scale;
+            centerPosition.Z_scale = position.Z_scale;
+            if (continueousViewMapUpdate) {
+                clearViewMapKeys();
+                addViewMapKeys();
+            }
+            if (motionModel.isFinished(deltaTime, totalTime)) {
+                detachMotionModel();
+            }
+        }
+    }
+
+    public void attachMotionModel(MotionModels motionModel) {
+        this.motionModel = motionModel;
+        clearViewMapKeys();
+    }
+
+    public void detachMotionModel() {
+        this.motionModel = null;
+        addViewMapKeys();
+    }
+
     public abstract boolean evaluateTouch(Input.TouchEvent event);
 
     public abstract void drawLeafNode();
@@ -107,7 +144,9 @@ public abstract class LeafViewNode extends ViewNode {
 
     public void  onTouchDownNotify() {}
 
-    public void  onTouchDragNotify() {}
+    public void  onTouchStartDragNotify() {}
+
+    public void  onTouchEndDragNotify() {}
 
     public void clearViewMapKeys() {
         if (parentNode != null) {

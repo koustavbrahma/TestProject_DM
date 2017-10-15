@@ -1,8 +1,6 @@
 package koustav.duelmasters.main.androidgamenodeviewframework.androidgamenodeviewframeworkimpl;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 
 import koustav.duelmasters.main.androidgamenodeviewframework.androidgamenodeviewframeworkinterface.ViewMaps;
@@ -72,6 +70,7 @@ public class InternalViewNode extends ViewNode {
     }
 
     public void addViewMapKeysForChildNode(ViewNode node) {
+        maps.clearViewMapKeysForChildNode(node);
         maps.addViewMapKeysForChildNode(node);
     }
 }
